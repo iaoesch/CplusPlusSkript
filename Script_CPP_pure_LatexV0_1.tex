@@ -17,6 +17,10 @@
 %/*                                                                           */
 %/*  To DO:                                                                   */
 %/*                                                                           */
+%/*  C++ Runtime, Startup (init, global ctors, global dtors                   */
+%/*  C++ Internas, Effizienz (vtables, exceptions)                            */
+%/*                                                                           */
+%/*                                                                           */
 %/*  Besser Durchstrukturieren, logische Reihenfolge                          */
 %/*  Zuerst alles UML, dann C++                                               */
 %/*  Codebeispiele feur Designpatterns                                        */
@@ -262,7 +266,14 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 \vspace{\fill}
 
 \today
-%8. Januar 2007
+
+%18. Februar 2011
+
+\tiny
+
+19. Februar 2010
+
+8. Januar 2007
 
 20. Oktober 2005
 
@@ -272,6 +283,7 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 5. 	März 2001
 
+\normalsize
 
 
 \end{center}
@@ -686,6 +698,88 @@ Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekt
 die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
 zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
 wenn die Operatoren << und >> nicht die gewünschte Funktionalität liefern. 
+
+\subsection{Formatierte Ausgabe}
+\index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
+Methode Flags() können die Flags gesetzt oder gelesen werden, mit
+setf können Flags hinzugefügt werden.
+
+Es sind unter anderem folgende Flags definiert:
+
+Wahl des Zahlensystems: ios\_base::dec, ios\_base::hex, ios\_base::oct 
+
+Bündigkeit: ios\_base::left, ios\_base::right
+
+Gleitkommaformat: ios\_base::scientific, ios\_base::fixed
+
+ 
+Beispiel:
+\begin{CCode}
+
+
+  ios_base::fmtflags AlteFlags;
+  
+  AlteFlags = cout.flags(); // Flag Zustand lesen
+
+  // Ausgabeformat waehlen (Flags zusaetzlich setzen)
+  cout.setf(ios_base::left|ios_base::oct|ios_base::fixed);
+  
+  cout << 1.23; // Ausgabe im gewaehlten Format
+  
+  // Alle Flags loeschen, nur Hex ist gesetzt
+  cout.flags(ios_base::hex);
+  
+  cout << 47;
+  
+
+\end{CCode} 
+
+Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
+precision kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
+definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden:
+\begin{CCode}
+
+  std::streamsize OldPrecision;
+  
+  OldPrecision = cout.precision(); // Genauigkeit lesen
+
+  // Genauigkeit waehlen
+  cout.precision(5);
+  
+  // Feldbreite waehlen
+  cout.width(9);
+  
+  // Fuellzeichen waehlen
+  cout.fill('*');
+
+
+  cout << 1.23; // Ausgabe im gewaehlten Format 
+                // gibt ****1.23000 aus
+
+\end{CCode} 
+
+width() gilt nur für die nächste Ausgabe und wird danach wieder
+auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
+
+
+Mit \OviIndex{Manipulatoren} kann das Formatieren und Steuern des
+Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von
+Operator Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen
+gibt es bereits vordefinierte Manuipulatoren, es ist aber auch möglich,
+selbst neue Manipulatoren zu erzeugen.
+
+\begin{CCode}
+
+
+  // Format waehlen und Ausgabe in der selben Zeile
+  cout <<  setprecision(5) << setw(9) << setfill('*') << 1.23;
+
+  //  Zahl hexadezimal ausgeben (ersetzt setf())
+  cout << hex << 123545;
+
+\end{CCode} 
+
+Einige Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
 
  
 \section{Hauptprogramm}
@@ -1208,6 +1302,7 @@ class MyClass {
 \end{CCode}
 
 Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerweise über die \OviIndex{Initialisiererliste}. Die Initialisiererliste wird durch ein ':' eingeleitet, die Attribute werden mit der Konstruktorsyntax initialisiert (Attributname(Wert1, Wert2, ....) ). Basisklassen und eingebettete Klassen ohne Defaultkonstruktor sowie Referenzen können \emph{nur} über die Initialisiererliste initialisiert werden.
+
 \begin{CCode}
    MyClass::MyClass(void) : k(13), j(2)
    {
@@ -1220,6 +1315,62 @@ Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerwe
    }
 \end{CCode}
 
+
+Der Compiler kann zum Teil selbst nach Bedarf Konstruktoren aufrufen, um Typen
+ineinander umzuwandeln. Dies kann mit dem Schlüsselwort \OviIndex{explizit} unterdrückt werden.
+Mit explizit definierte Konstruktoren müssen explizit aufgerufen werden. 
+\begin{CCode}
+
+class YourClass {
+  int k, j;
+  public:
+                YourClass(void);         // Argumentloser Konstruktor
+                YourClass(int new_k);    //  Ueberladen fuer int
+   ...
+};
+
+
+void f1(YourClass y) 
+{
+   ...
+}
+
+   YourClass y1 = 10;  // Ok, ruft implizit Konstruktor YourClass(int) auf
+
+   y1 = 22;            // Ok, ruft implizit Konstruktor YourClass(int) auf
+
+   f1(22)              // Ok, ruft implizit Konstruktor YourClass(int) auf
+
+
+class MyClass {
+  int k, j;
+  public:
+                MyClass(void);                  // Argumentloser Konstruktor
+                explicit MyClass(int new_k);    // explizit Ueberladen fuer int
+   ...
+};
+
+
+void f2(MyClass m) 
+{
+   ...
+}
+
+   :
+   :
+   MyClass m1 = 10;          // Geht nicht, impliziter Konstruktoraufruf verboten
+   MyClass m2 = MyClass(10); // Ok, expliziter Konstruktoraufruf
+
+   m2 = 22;                  // Geht nicht, impliziter Konstruktoraufruf verboten
+   m2 = MyClass(22);         // Ok, expliziter Konstruktoraufruf 
+
+   f2(22)                    // Geht nicht, impliziter Konstruktoraufruf verboten
+   f2(MyClass(22));          // Ok, expliziter Konstruktoraufruf
+   :
+   :
+
+
+\end{CCode}  
 
 \subsection{Copy-Construktor}
 Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
@@ -2054,11 +2205,18 @@ Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, die
 \section{Ausnahmebehandlung (Exceptions)}
 Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
 
-Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Fehler auftritt, der an dieser Stelle nicht behandelt werden kann, wirft man mit throw() eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
+Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit throw() eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
 Mit \OviIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch int, char, ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
 Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler catch(...) fängt jede beliebige Exception. Nach jedem \OviIndex{try}-Block folgt eine Liste von Handlern (catch()). Die Handler werden in der Reihenfolge ihrer Definition durchsucht,  der erste passende Handler wird benutzt, und alle weiteren Handler
 dieser Liste ignoriert. Somit werden alle Handler nach \OviIndex{catch}(...) ignoriert. 
+
+Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort throw() verwendet. Im throw Statement werden alle Exceptions aufgeführt, welche
+von der Funktion ausgelöst werden können. Ein fehlendes throw() Statement bedeutet, dass diese
+Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres throw() bedeutet, dass die
+Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Laufzeit alle erkennbaren
+Widersprüche zu reklamieren. Wenn eine Funktion zur Laufzeit versucht, eine nicht deklarierte
+Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
 Beispiel:
 \begin{CCode}
@@ -2071,7 +2229,18 @@ class NegativeSquareRootErrorClass : public ErrorClass{
 class DivideByZerroErrorClass : public ErrorClass{
 };
 
-int SquareRoot(int x) {
+int ThrowAnything(int x) // Can throw any exception
+{
+  ...
+}
+
+int ThrowNothing(int x) trow() // Can throw no exception, must catch all
+{                              // internal generated exception
+  ...
+}
+
+
+int SquareRoot(int x) throw(NegativeSquareRootErrorClass)  {
    if (x < 0) {
       throw (NegativeSquareRootErrorClass());
    }
@@ -2080,14 +2249,14 @@ int SquareRoot(int x) {
    return (result);
 }
 
-int Inverse(int x) {
+int Inverse(int x) throw(DivideByZerroErrorClass) {
    if (x == 0) {
       throw(DivideByZerroErrorClass());
    }
    return (1/x);
 }
 
-int f(int x1, int x2) {
+int f(int x1, int x2) throw(NegativeSquareRootErrorClass){
    int Result;
    try {
       int r1 = Inverse(x1);
@@ -2332,7 +2501,7 @@ pc = dynamic_cast<C *>(p)   // OK, p zeigt auf etwas von C abgeleitetes
 p  = &b;
 pc = dynamic_cast<C *>(p)   // Runtime-Fehler, p zeigt auf nichts C-aehnliches
                             // pc wird auf NULL gesetzt
-pc = dynamic_cast<C *>(py); // Runtime-Fehler, p zeigt auf nichts C-aehnliches
+pc = dynamic_cast<C *>(py); // Runtime-Fehler, py zeigt auf nichts C-aehnliches
                             // pc wird auf NULL gesetzt
 \end{CCode}
 
@@ -2401,7 +2570,78 @@ std::cout << "Hallo" << std::endl;
 
 schreiben. Dies ist unumgänglich wenn man die neuen Headerfiles einbindet (<iostream>) anstelle der veralteten <iostream.h>.
 
+Fuer Namensbereiche können auch \OviIndex{Aliase} defineirt werden, d.h. man kann für einen bestehenden
+Namensbereich einen neuen Namen einführen.
+
+\begin{CCode}
+namespace bfh = BernerFachhochschule;
+
+bfh::Print(); // ist nun Aequivalent zu
+
+BernerFachhochschule::Print();
+
+
+\end{CCode}
+
+Es können auch \OviIndex{anonyme Namensbereiche} definiert werden, alle in
+einem anonymen Namensbereich definierten Elemente sind nur
+innerhalb der definierenden Übersetzungseineheit (Source-Datei)
+verfügbar. Entspricht in etwa dem Prinzip von static in C.   
+
+\begin{CCode}
+
+namespace {
+
+   void f();
+}
+
+// f() kann ab hier verwendet werden, aber nicht
+// von anderen Modulen benutzt werden
+
+\end{CCode}
  
+\section{Strings}
+\OviIndex{Strings} werden in C++ in Form der Klasse string unterstützt. Diese Klasse
+bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
+das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
+vereinfacht.
+
+Einige Beispiele:
+\begin{CCode}
+
+   string s1 = "Hallo";
+   string s2 = s1 + " Welt";
+   s1[1] = 'e';                 // s1 wird zu Hello
+   if (s1 == s2) { };           // Vergleicht Strings
+   std::cout << s2;             // Gibt s2 aus       
+
+\end{CCode}
+
+Es gibt noch viele weitere Funktionen zum Suchen von Strings innerhalb Strings, Einfügen
+von Strings innerhalb anderer Strings, Zerlegen von Strings in Teilstrings oder
+Ersetzen von Teilstrings in Strings.
+
+Zur Umwandlung zwischen Zahlen und Zeichenketten können die \OviIndex{StringStream} Klassen verwendet
+werden. Stringstreams verhalten sich wie Streams (Dateien) nur dass aus einem
+String gelesen, oder in einen String geschrieben wird:
+
+\begin{CCode}
+
+   std::ostringstream os;
+   int i; 
+   
+   os << "Wert ist " << i << '!'; // Text in stringstream schreiben
+   
+   string s = os.str();           // Inhalt von stringstream s zuweisen
+   
+   s = "123";
+
+   std::istringstream is(s);      // stringstream mit s initialisieren
+   
+   is >> i;                       // Zahl aus is lesen und i zuweisen
+    
+
+\end{CCode}
 
 \chapter{Templates (Schablonen)}
 Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
@@ -3003,6 +3243,253 @@ Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Su
 Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator [] Sucht \emph{und} fügt hinzu, falls nicht gefunden)
 
 
+\chapter{C++ in Embedded Systemen}
+\section{Startup Code}
+
+Im Vergleich zu C muss der Startupcode von  \Cpp wesentlich mehr Arbeit leisten. Bei
+C müssen nur alle globalen und statischen Variablen vor der ersten Benutzung initialisiert
+werden, dies wird meist durch ein kurzes Codestück vor dem Aufruf von main() erledigt.
+
+Bei  \Cpp müssen zusätzlich die Konstruktoren von allen globalen und statischen Objekte
+vor dem Aufruf von main() ausgeführt werden, und entsprechend deren Destruktoren wenn
+das Programm durch Aufruf von exit() oder beenden von main() sein Ende erreicht. Dabei
+darf nicht vwergessen werden, dass neben den vom Programmierer definierten globalen
+und statischen Objekte auch in der Standard-Library globale Objekte vorhanden sind
+(z.B. cin, cerr und cout).
+
+Dieser Initialisierungsablauf ist jedoch sehr Compilerabhängig, bei einigen muss nur eine
+Runtimefunktion (z.B. init()) aufgerufen werden, bei anderen wird eine Tabelle mit
+Funktionszeigern generiert, die Funktionen in dieser Tabelle müssen vor dem Aufruf von
+main() durch den Startupcode aufgerufen werden.
+
+Zudem muss normalerweise der Linker angewiesen werden, diese Initialisierungsdaten
+aus den einzelnen Modulen zusammenzutragen und am richtigen Ort im Speicher abzulegen.
+
+Nachfolgend als Beispiel, wie es beim Carme-Kit gemacht werden muss:
+
+Initialisierungsfunktion (Muss vor Aufruf von main() aufgerufen werden)
+\begin{CCode}
+
+extern unsigned int _ctors_start, _ctors_end;
+   /* Linker provided symbols for constructor function table;
+    */
+/* Init_Constructors
+ * initialize (call) all constructors of global objects
+ */
+extern "C" void _Init_Constructors( void );
+
+void _Init_Constructors( void ) {
+   extern unsigned int _ctors_start, _ctors_end;
+   unsigned int *ctor = &_ctors_start;
+   while (ctor < &_ctors_end) {
+      ((void (*)(void))*ctor)();
+      ctor++;
+   }
+}
+\end{CCode}
+
+Analog müsste das ganze für die Destruktoren gemacht werden, sofern die
+Applikation überhaupt einmal beendet wird. (Wenn das Programm durch
+Ausschalten des Gerätes 'beendet' wird, ist der Aufruf der Destruktoren
+nicht notwendig).
+
+
+Zusätzlicher Inhalt des Linkerskripts:
+\begin{CCode}
+
+		. = ALIGN(4);	/* advance location counter to the next 32bit boundary*/
+  PROVIDE(_ctors_start = .);   
+  KEEP(*(SORT(.ctors.*)))
+  KEEP(*(.ctors))
+  PROVIDE(_ctors_end = .);
+  PROVIDE(_dtors_start_ = .);
+  KEEP(*(SORT(.dtors.*)))
+  KEEP(*(.dtors))
+  PROVIDE(_dtors_end_ = .);/*		*(.ctors*)	*/			
+
+\end{CCode}
+
+ 
+\section{Effizienzbetrachtungen}
+\subsection{Übersicht}
+Bei der entwicklung der Sprache \Cpp wurde Wertt darauf gelegt, dass der generierte Code
+so effizient wie möglich wird, und zusätzlicher Aufwand nur entsteht, wenn die
+entsprechenden Features auch benutzt werden. Ein mit  \Cpp compiliertes C-Programm
+soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre.
+
+
+\begin{center}
+	\begin{tabular}{l l l}
+	   Sprachelement & Zusätzlicher Speicherbedarf & Zusätzlicher Laufzeitbedarf & Deterministisch& In Interrupt einsetzbar\\ 
+	   Namensbereiche & Nein & Nein & Ja & Ja\\
+	   Klassen ohne virtuelle Funktionen & Nein & Nein & Ja & Ja\\
+		 Klassen mit virtuellen Funktionen & Ja & Nein & Ja & Ja\\
+		 Klassen mit virtueller Vererbung & Ja & Bedingt & Ja & Ja\\
+		 Klassen mit Mehrfachvererbung & Nein & Bedingt & Ja & Ja\\
+		 Überladene Funktionen & Nein & Nein & Ja & Ja\\
+		 Klassenmethoden & Nein & Nein & Ja & Ja\\
+		 Nichtvirtuelle Methoden & Wenig & Wenig &  Ja & Ja\\
+		 Virtuelle Methoden & Wenig & Ja & Ja & Bedingt\\
+		 RTTI & Ja & Ja & Ja & Bedingt\\
+		 Dynamic Cast & Ja & Ja & Bedingt & Bedingt\\
+		 New / Delete & Ja & Ja & Bedingt & Bedingt\\
+		 Exception Handling	 & Ja & Bedingt & Nein & Nein\\
+		
+	\end{tabular}
+\end{center}
+
+	   Klassen ohne virtuelle Funktionen & Wie Strukturen in C \\
+		 Klassen mit virtuellen Funktionen & Zusätzlicher, versteckter Pointer in jedem Objekt\\
+		 Überladene Funktionen & Kein zusätzlicher Aufwand\\
+		 Klassenmethoden & Kein zusätzlicher Aufwand\\
+		 Nichtvirtuelle Methoden & Es wird ein zusätzliches, verstecktes Pointerargument (this-Pointer) übergeben\\
+		 Virtuelle Methoden & Es wird ein zusätzliches, verstecktes Pointerargument (this-Pointer) übergeben, zudem erfolgt der Aufruf bei Bedarf indirekt über die vtbl\\
+\subsection{Virtuelle Funktionen}
+\subsection{RTTY (Runtime Type Information)}
+\subsection{Dynamic Cast}
+
+\chapter{\Cpp 11}
+Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschieded. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein.
+Nachfolgend werden einige Neurungen aufgeführt.
+
+\section{Sprachumfang}
+\subsection{RValue References und Move Constructor}
+
+RValue Referenzen werden durch T &&r (im Gegensatz zu T &r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von parametern werden in \Cpp oft temporäre
+Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
+
+Mit RValue Referenzen können nun Temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang).
+
+Beispiel:
+\begin{CCode}
+
+
+class Demo {
+		// ...
+		Demo(const Demo &Src);	 		      // Kopierkonstruktor
+		Demo(Demo&&Src);	            		// Move-Konstruktor
+		Demo& operator=(const Demo &Src);	// Zuweisungsoperator (Kopierend)
+		Demo& operator=(Demo &&Src);		  // Zuweisungsoperator (Schiebend)
+	};	 
+ 
+\end{CCode}
+
+\subsection{constexpr}
+Mit dem Schlüsselwort constexpr können Ausdrücke und Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, wo nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten.
+
+Beispiel
+\begin{CCode}
+
+constexpr int GetLength() 
+{
+   return 15;
+}
+ 
+int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
+
+constexpr int MakeDouble(int x) 
+{
+   return x * 2;
+}
+
+int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
+
+
+constexpr double Erdanziehung = 9.81;
+constexpr double MondAnziehung = Erdanziehung / 6.0;
+\end{CCode}
+
+Entsprechend können auch Konstruktoren als constexpr definiert werden,
+dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können
+auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+
+\subsection{extern Templates}
+Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen variablen und Funktionen)
+
+
+\begin{CCode}
+extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
+\end{CCode}
+
+\subsection{Initialisiererlisten}
+Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu mus jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer_list entgegennimmt.
+
+Beispiel:
+\begin{CCode}
+
+class DemoClass {
+   public:
+   DemoClass(std::initializer_list<int> list);
+};
+
+
+DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
+
+\end{CCode}
+
+Das Template std::initializer_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
+
+\subsection{Vereinheitlichte Initialisierung}
+Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels gescheiften Klammern initialisiert werden, sofern kein Initialisiererlisten-Konstruktor existiert, wird der
+passende Konstruktor aufgerufen (falls vorhanden).
+
+Beispiel:
+\begin{CCode}
+
+class DemoClass {
+
+	 private:
+	 int a;
+	 float b;	
+
+   public:
+   DemoClass(int _a, float _b) : a(_a), b(_b) {};
+	 
+};
+
+
+DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
+DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
+
+// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
+
+DemoClass f() {
+   return {2, 2.7f};
+}
+
+void f2(DemoClass c) {
+}
+
+f2({5, 1.23f});
+
+
+\end{CCode}
+
+\subsection{Automatische Typerkennung}
+Mit dem Schlüselwort auto wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle das Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort decltype kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+\begin{CCode}
+
+auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
+
+auto Magic = 5;  // Magic erhält den Typ int
+
+
+decltype(Magic) OtherMagicVariable = 0; // Selber Typ wie Magic
+
+for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
+   ...
+}
+
+
+
+
+\end{CCode}
+
+
+
+
+
 \appendix
 \chapter{Anhang}
 
@@ -3247,6 +3734,141 @@ Datei Testerb.cpp
 \lstinline$   }	$&Ende der Funktion main, alle lokalen Objekte werde hier automatisch gelöscht (MeinAuto)\\
 \end{CodeTable}
  
+\NextPagePlease 
+ 
+\section{Zusammenarbeit von C und \Cpp}
+In \Cpp können Funktionen überladen werden und Elemente in Namensbereichen abgelegt werden. 
+Um überladene Funktionen zu unterscheiden werden die Funktionsnamen vom \Cpp Compiler um die Argumentlistenbeschreibung sowie den Namensbereichen erweitert,
+dies wird als \OviIndex{Name mangling} bezeichnet.
+Der C Compiler hingegen benutzt direkt die Funktionsnamen. Für den Linker sind deshalb C und  \Cpp Module nicht kompatibel. 
+
+Die Funktion int TuWas(int a, float Zahl, char *Text) könnte
+in  \Cpp zum Beispiel als \_Z5TuWasifpc codiert werden.
+
+Um dieses  \OviIndex{mangling} zu unterdrücken, kann in  \Cpp 
+der Deklaration ein \emph{extern ''C''} vorangestellt werden.
+
+
+Will man innerhalb eines Projektes Module mit C Code und Module mit
+\Cpp Code mischen, müssen im \Cpp Teil Funktionen 
+mit dem Zusatz \emph{extern ''C''} deklariert werden, sonst können sie
+von C aus nicht aufgerufen werden. Auch die Prototypen der
+C Funktionen müssen mit \emph{extern ''C''} deklariert werden, sonst
+können sie vom \Cpp Teil nicht aufgerufen werden.
+
+(Also alle Funktionen die von C und \Cpp gemeinsam benutzt
+werden, müssen für den \Cpp Compiler mit \emph{extern ''C''}
+deklariert werden, hingegen darf der C Compiler \emph{kein}
+extern ''C'' sehen, da er dies nicht kennt.)
+
+Um trotzdem nicht zwei verschiedene Headerdateien für
+C und \Cpp zu haben, setzt man bedingte Compilierung ein,
+dazu wird das vom \Cpp Compiler standardmässig definierte Makro \_\_cplusplus zur
+bedingten Compilierung (Mittles \#ifdef) benutzt.
+ 
+
+Gewöhnliche Strukturen (Ohne Methoden und Vererbung) 
+und globale Nicht-Klassen-Variablen
+können von C und  \Cpp ohne weiteres gemeinsam benutzt werden.
+
+Objekte und Klassen hingegen können nicht direkt zwischen
+C und \Cpp ausgetauscht werden (Zumindest nicht auf eine
+portable Art).
+
+Methoden können somit von C aus nicht aufgerufen werden,
+dazu müssen Schnittstellenfunktionen in  \Cpp
+geschrieben werden.
+
+Man kann jedoch die Adressen von Objekten als void-Pointer
+an C übergeben, und diese void-Pointer auch wieder
+an \Cpp Code weitergeben. Diese void-Pointer müssen anschliessend in \Cpp in den
+original Pointertypen zurück gecastet werden. Dieser Weg ist aber fehleranfaellig,
+da der Programmierer dafür verantwortlich ist, dass der void-Pointer auch tatsaechlich
+die Adresse des erwarteten Objektes enthält, ansonsten
+ist mit undefiniertem Verhalten zu rechnen. 
+
+Nun ein Beispiel zur Zusammenarbeit von C und \Cpp. (Wichtig, das ganze
+muss mit dem \Cpp Linker und den \Cpp Bibliotheken gelinkt werden, d.h.
+als \Cpp Projekt erstellt werden, sonst klappt es nicht).
+
+\NextPagePlease 
+
+EineKlasse.hpp
+\begin{CCode}
+#ifdef __cplusplus
+
+/* Nur sichtbar wenn von C++ Compiler compiliert */
+class EineKlasse {
+        int x;
+   public:
+        EineKlasse(int NewX) : x(NewX) {};
+   void Print(int a, float f);
+};
+/* Als gewoehnliche C Funktion codieren */ 
+extern "C" void CallMethodPrint(void *Object, int a, float f);
+
+#else
+
+/* Fuer normalen C-Compiler ist nur dieser Teil sichtbar */ 
+extern void CallMethodPrint(void *Object, int a, float f);
+ 
+#endif
+\end{CCode}
+
+
+EineKlasse.cpp
+\begin{CCode}
+#include"EineKlasse.hpp"
+#include"CModul.h"
+
+void EineKlasse::Print(int a, float f)
+{
+   std::cout << "Eine Klasse sagt: " << a << " " << f << " " << x << std::endl;
+}
+
+void CallMethodPrint(void *Object, int a, float f) {
+   /* void pointer in Zeiger auf Objekt casten Gefaehrlich, klappt nur */
+   /* wenn void-pointer tatsaechlich auf ein objekt zeigt !!!          */
+   ((EineKlasse *)Object)->Print(a, f);
+}
+
+int main(int argc, char *argv[]) 
+{
+   EineKlasse ek(3);
+   
+   /* Adresse von Objekt ek nach void * casten und C-Funktion aufrufen */
+   TellCAboutIt((void *)(&ek));
+}
+\end{CCode}
+
+CModul.h
+\begin{CCode}
+/* extern "C" nur fuer C++ Compiler sichtbar machen. Diese Variante */
+/* ist besser und sicherer, da so der Prototyp fuer C und C++ nur   */
+/* einmal geschrieben werden muss. (Weniger Fehleranfaellig)        */ 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void TellCAboutIt(void *Object);
+
+#ifdef __cplusplus
+}
+#endif
+\end{CCode}
+
+
+CModul.c
+\begin{CCode}
+#include"CModul.h"
+#include"EineKlasse.hpp"
+
+void TellCAboutIt(void *Object) 
+{
+   /* Ruft Schnittstellenfunktion in C++ auf */
+   CallMethodPrint(Object, 42, 3.14);
+}
+\end{CCode}
 
 
 \section{Glossar}
@@ -3378,7 +4000,7 @@ Lit\ref{UnifiedModelingLanguageReferenceManual}-Lit\ref{UnifiedSoftwareDevelopme
 Sobald eine Funktion virtuell ist, sollte auch der Destruktor virtuell sein.
 
 Wenn eine Klasse einen Destruktor benötigt, sind im allgemeinen auch der
-Copykostruktor und der Zuweisungsoperator selbst zu schreiben, oder allenfalls
+Copykonstruktor und der Zuweisungsoperator selbst zu schreiben, oder allenfalls
 als privat zu deklarieren.
 
 Für jede Klasse je eine eigene Deklarations- (Header-) und Implementationsdatei. (Ausnahme
