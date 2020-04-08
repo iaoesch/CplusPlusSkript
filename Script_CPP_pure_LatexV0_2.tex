@@ -353,7 +353,7 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 \chapter{Zu diesem Skript}
 Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
-In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Unbehandelt bleibt insbesondere die Standard-Bibliothek.
+In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Nur gestreift wird insbesondere die Standard-Bibliothek.
 
 
 
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als static deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich.  
+ein Modul zu beschränken, muss diese als static deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in C++11 eingeführten Lambdafunktionen () (Siehe \autoref{subsec:LambdaFunctions}) 
 
 \section{Module}
 Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
@@ -515,7 +515,7 @@ Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich
 ...
 #endif
 
-#define pi 3.14     // Makro (definition einer Konstanten)
+%#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
 
 #ifdef DEBUG        // Bedingte Kompilierung
 ... // Wird nur compiliert wenn Makro Debug definiert ist
@@ -537,7 +537,9 @@ Es gibt zwei Formen für den Includebefehl:
 \#include <......> sucht die Datei im Systemverzeichnis des Compilers und allfälligen weiteren vom Benutzer angegebenen Verzeichnissen. Diese Form wird für Bibliotheksfunktionen verwendet.
 \#include ''.....'' sucht zuerst im gleichen Verzeichnis in welchem die cpp Datei liegt, und dann in denselben Verzeichnissen wie \#include <...>. Diese Form wird für Projektbezogene Dateien (Vom Benutzer selbst geschriebene Dateien) eingesetzt. 
 
-Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \_\_FILE\_\_, \_\_LINE\_\_, \_\_DATE\_\_, \_\_TIME\_\_, \_\_cplusplus und weitere. \_\_cplusplus ist definiert, wenn ein C++ Compiler compiliert.
+Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \_\_FILE\_\_, \_\_LINE\_\_, \_\_DATE\_\_, \_\_TIME\_\_, \_\_cplusplus und weitere. \_\_cplusplus ist definiert, wenn ein \Cpp Compiler compiliert.
+
+\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie const, constexpr und inline-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
  
 
 \section{Operatoren}
@@ -613,7 +615,7 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$const_cast<Typ>()$&Entfernen der Konstantheit&\lstinline$a = const_cast<int>(b);$\\
 \hline
-\lstinline$(Typ)$&Typumwandlung (Cast), ungeprüft&\lstinline$a = (int)b;$\\
+\lstinline$(Typ)$&Typumwandlung (Cast), ungeprüft, in \Cpp nicht mehr verwenden&\lstinline$a = (int)b;$\\
 \hline
 \lstinline$sizeof()$	&Speicherplatzbedarf eines Objektes oder Typs bestimmen&\lstinline$n = sizeof(int);$\\
 \hline
@@ -941,7 +943,7 @@ char c;          // Eine Zeichenvariable definieren (8 Bit)
 \section{Felder (Arrays)}
 Felder sehen so aus wie bei den meisten anderen Programmiersprachen. Achtung, die Zählung der Elemente beginnt bei 0! Zudem werden die Bereichsgrenzen nicht überprüft, man kann also ohne Probleme über die Grenzen eines Arrays hinaus zugreifen, was aber über kurz oder lang zu Systemabstürzen oder unvorhersehbarem Verhalten führt (Negative Indices sind auch möglich). Arrays sind eigentlich nichts anders als konstante Zeiger die auf einen für das Array reservierten Speicherblock zeigen.
 
-Die Arraygrösse muss ein zur Compilezeit berechenbarar Wert sein. Variable Length Arrays sind im
+Die Arraygrösse muss ein zur Compilezeit berechenbarer Wert sein. Variable Length Arrays sind im
 offiziellen \Cpp Standard (\Cpp 98) nicht enthalten (Wurden in C99 neu eingeführt).
 
 \begin{CCode}
@@ -952,12 +954,42 @@ s[13] = 'f';
 s[99] = 'z'; // Letztes Element (!)
 \end{CCode}
 
+In \Cpp sollten jedoch Container wie z. B. Vector (Siehe \autoref{subsect:Vector} verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und überall eingesetzt werden können wo auch Arrays erwartet werden. Im gegensatz zu Arrays sind sie aber dynamisch (Ihre Grösse kann zur Laufzeit verändert werden), und sie bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
+
+\begin{CCode}
+#include<vector>
+
+std::vector<double> MyVector; //Erstellen eines Vectors von Doublewerten
+  
+MyVector.push_back(123);      //Element am Ende des Vektors anhaengen
+MyVector.pop_back();          //Letztes Element am Ende des Vektors entfernen
+len = MyVector.size();        //Liefert die Anzahl Elemente des Vektors zurueck
+if (MyVector.empty());        //Liefert TRUE wenn der Vektor leer ist
+Val = MyVector.front();       //Liefert den Wert des ersten Elementes zurueck
+Val = MyVector.back();        //Liefert den Wert des letzten Elementes zurueck
+Val = MyVector[21];           //Liefert den Wert des 22. Elementes
+Val = MyVector.at(21);        //Liefert den Wert des 22. Elementes (Exception falls ausserhalb Vektorgrenzen)
+MyVector[21] = 66.4;          //ueberschreibt den Wert des 22.ten Elementes
+
+\end{CCode}
+
+
+
 \section{Zeiger und Referenzen}
 \OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
-Seit C++11 gibt es rValueReferenzen, welche effizienteren Umgang mit Temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}
+Seit C++11 gibt es rValueReferenzen, welche effizienteren Umgang mit Temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}.
+
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie shared oder unique. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+
+Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
+
+Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
+
+Siehe \autoref{sec:Smartpointer} zu Detailierteren Informationen über Smart-Pointer.
+ 
 
 \begin{CCode}
 int j, k, l;    // Drei Integer Variablen definieren
@@ -983,8 +1015,112 @@ void DoSomething(int &a, const int &b)
 }
 
 DoSomething(j, k); // j wird von DoSomething veraendert
-
 \end{CCode}
+
+Beispiel zu Einsatz von unique Pointer:
+\begin{CCode}
+
+#include <memory>  // definiton von unique_ptr
+
+std::unique_ptr<A> f(int i) 
+{
+   return std::make_unique<A>(i);   // UniquePointer erzeugt Objekt und übernimmt Verwaltung
+}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+
+void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
+{
+   // Do something;   
+} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
+
+int TestUnique(int argc, char*argv[])
+{
+   std::unique_ptr<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
+ 
+   f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
+                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu 
+                         // haben -> Destruktor von UniquePointer loescht
+                         // Objekt auf welches der UniquePointer zeigt.  
+
+  spwrong = f(13);       // Zuweisung verboten
+  
+  std::unique_ptr<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
+                         // sp1 uebergeben bevor der zurueckgegebene UniquePointer 
+                         // gelöscht wird -> Destruktor von UniquePointer loescht
+                         // nichts 
+      
+  sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
+  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+
+   try {
+      std::unique_ptr<A> p = std::make_unique<A>(12);
+      g(p);              // Kopie Verboten
+                         
+      g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
+                                       // (Movekonstruktor)
+                                      
+      g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
+                               // p verliert Besitz von Objekt und wird zu nullptr
+
+      std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
+                       
+      std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
+                                            // zuweisen
+
+      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
+      //                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
+   } catch(...) {  
+   }                    
+}
+\end{CCode}
+Beispiel zu Einsatz von shared Pointer:
+\begin{CCode}
+#include <memory>  // definiton von shared_ptr
+std::shared_ptr<A> f(int i) 
+{
+   return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
+}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+
+void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
+{
+   // Do something;   
+} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
+  // und Objekt freigegeben falls counter 0 wird.
+
+int Test(int argc, char*argv[])
+{
+   std::shared_ptr<A> sp1;
+
+   f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
+                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
+                         // -> Destruktor von Sharedpointer loescht
+                         // Objekt auf welches der Sharedpointer zeigt falls counter
+                         // 0 wird.  
+
+  sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
+                         // uebergeben bevor der zurueckgegebene Sharedpointer 
+                         // gelöscht wird -> Destruktor von Sharedpointer
+                         // dekrementiert counter, aber loescht nichts 
+    
+  sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
+  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+
+   try {
+      std::shared_ptr<A> p = std::make_shared<A>(12);
+      g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
+                         // counter wird inkrementiert, p ist weiterhin gueltig
+      std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
+                         // kopiert, counter wird inkrementiert, sp1 ist weiterhin 
+                         // gueltig
+      // Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
+      //                    freigegeben wann auch immer der letzte Pointer darauf
+                         // ungueltig wird  
+   } catch(...) {  
+   }                    
+}
+\end{CCode}
+
+
+
 
 \section{Konstantheit (const)}
 Variablen und Objekte, die nur gelesen werden dürfen, kann man als \OviIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
@@ -1922,6 +2058,7 @@ class StudentClass {
    int Alter;
    AdressClass Adresse; // Eingebettetes Objekt, ist Attribut 
                         // der Klasse StudentClass
+   StudentClass() : Adresse("Holzweg") {};                      
 };
 \end{CCode}
 
@@ -3899,12 +4036,13 @@ while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
  
 
 \subsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
+\label{subsect:Vector}
 Als Beispiel erstellen wir ein Array von double's. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit [] (Ohne Bereichsüberprüfung) und der Methode at() (Mit Bereichsüberprüfung) möglich. 
 \begin{CCode}
 #include<vector>
 #include<algorithm>
 
-std::vector<double> MyVector; //Erstellen einer Liste von Integerwerten
+std::vector<double> MyVector; //Erstellen eines Vektors (Arrays) von Doublewerten
   
 MyVector.push_back(123);      //Element am Ende des Vektors anhaengen
 MyVector.pop_back();          //Letztes Element am Ende des Vektors entfernen
@@ -3913,7 +4051,7 @@ if (MyVector.empty());        //Liefert TRUE wenn der Vektor leer ist
 Val = MyVector.front();       //Liefert den Wert des ersten Elementes zurueck
 Val = MyVector.back();        //Liefert den Wert des letzten Elementes zurueck
 Val = MyVector[21];           //Liefert den Wert des 22. Elementes
-Val = MyVector.at(21);        //Liefert den Wert des 22. Elementes (fehlt bei alten Vers)
+Val = MyVector.at(21);        //Liefert den Wert des 22. Elementes (Exception falls ausserhalb Vektorgrenzen)
 MyVector[21] = 66.4;          //ueberschreibt den Wert des 22.ten Elementes
 
 std::vector<double>::iterator ptr; //Definieren eines Iterators (Zeigers) in einen Vektor
@@ -4463,7 +4601,7 @@ Base *p = &ObjB;
 p->f1(5);
 
 // Effektiv ausgeführter Code
-p->vtblptr->f1(p, 5)
+p->vtblptr.f1(p, 5)
 \end{CCode}
 Es wird also nicht direkt die Funktion f1() aufgerufen, sondern es wird über den vtblptr in der Tabelle der virtuellen Funktionen die Adresse der effektiven Funktion geholt, und diese wird ausgeführt. Der Aufruf einer virtuellen Funktion kostet also einen zusätzlichen Zugriff auf die Tabelle der virtuellen Funktionen. Ausser bei sehr kurzen Funktionen ist dieser Zugriff meist vernachlässigbar. Es kann auch durchaus sinnvoll sein, in einem Interrupthandler virtuelle Funktionen zu benutzen, insbesondere wenn dadurch ein switch() oder ein Vektortabellenzugriff im Handler eingespart werden kann.
 
@@ -4556,7 +4694,7 @@ p->f1(5);
 ObjB.z = 5;
 ObjB.BasePtr->x = 7;
 p = ObjB.BasePtr; (Oder (&ObjB)->BasePtr;)
-p->vtblptr->f1(p + p->vtblptr->DerivedOffsetKorrekturForf1, 5)
+p->vtblptr.f1(p + p->vtblptr.DerivedOffsetKorrekturForf1, 5)
 \end{CCode}
 
 
@@ -4857,7 +4995,7 @@ for (int &r : Elemente) {
 Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
 
 \subsubsection{Anonyme Funktionen (Lambda Funktionen)}
-
+\label{subsec:LambdaFunctions}
 \OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 
 Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
