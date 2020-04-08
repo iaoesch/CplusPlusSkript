@@ -620,7 +620,7 @@ Mit den geschweiften Klammern { } werden in C/\Cpp mehrere Anweisungen zu einem 
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). 
+Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). Delte darf auf NULL-Pointer angewendet werden, diese werden ignoriert. 
 
 \begin{CCode}
 int *Memory;            // Ein Zeiger auf int definieren
@@ -646,7 +646,7 @@ Der aktuelle C++ Standard schreibt 3 Varianten für new vor, wobei der Programmie
 \begin{enumerate}
 	\item das einfache new, dieses erzeugt ein Objekt oder wirft eine std::bad\_alloc Exception wenn der Speicher nicht reserviert werden konnte.
 	\item das new(std::nothrow), dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefaellen verwendet werden, das Exception werfende new führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
-	\item das placement new, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich.
+	\item das placement new, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich. Achtung, mit placement new allozierte Speicherblöcke dürfen nicht mit delete freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
 \end{enumerate}
  
 Beispiele:
@@ -664,12 +664,19 @@ catch (std::bad_alloc) {
    // Error Handling
 }
 
+// Speicher wieder freigeben und Destruktor aufrufen
+delete aptr; 
+
 // Ein neues A-Objekt dynamisch erzeugen (Liefert NULL-Pointer wenn nicht genug Speicher)
 aptr = new(std::nothrow) A;
  
 if (aptr == 0) {
    // Error Handling
 }
+
+// Speicher wieder freigeben und Destruktor aufrufen
+delete aptr; 
+
 
 // Ein neues A-Objekt in vorgegebenem Speicherbereich definieren
 char Memory[sizeof(A)];
@@ -678,6 +685,8 @@ aptr = new(Memory) A;  // Memory kann beliebige Adresse sein, an welcher
                        // das Objekt erzeugt werden soll        
 
 
+// Destruktor aufrufen
+aptr->~A(); 
 
 \end{CCode}
 
@@ -1697,7 +1706,7 @@ int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
 
 
 \section{Der this-Pointer}
-Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) haben implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf die Attribute zugreifen.
+Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) hat implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf die Attribute zugreifen.
 
 \begin{CCode}
 class Auto {
@@ -1787,6 +1796,9 @@ Eine int Variable kann wie folgt erzeugt werden:
   int *p;      // Erzeugen eines Zeigers auf einen Integer
   p = new int; // Dynamisches Erzeugen einer namenlosen Integervariablen und
                   den Zeiger p darauf zeigen lassen
+                  
+                  
+  delete p;    // Resourcen wieder freigeben                
 \end{CCode}
 
 Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
@@ -1796,12 +1808,18 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
   Student *sp;     // Erzeugen eines Zeigers auf einen Studenten
   sp = new Student; // Dynamisches Erzeugen eines namenlosen Studenten-
                     //  objektes und den Zeiger sp darauf zeigen lassen
+
+  delete sp;    // Resourcen wieder freigeben (inkl. Destruktoraufruf)               
+
                       
   Student s2("Hans", 27);         // Mit Argumenten fuer Konstruktor                    
   sp = new Student("Fritz", 28);                      
+
+  delete sp;    // Resourcen wieder freigeben (inkl. Destruktoraufruf)               
+
 \end{CCode}
 
-Wenn Variablen und Objekte normal erzeugt werden (Also nicht dynamisch mit new), dann werden sie automatisch gelöscht wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
+Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit new erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
 Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp des Programms. 
 
 Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
@@ -1817,14 +1835,17 @@ class StudentClass {
 };
 \end{CCode}
 
-Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch den Konstruktor erledigt werden, und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde.
+Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch die übergeordneten Klasse erledigt werden (Meist im Konstruktor), und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde.
 Beispiel:
 \begin{CCode}
 class StudentClass {
    int Alter;
    AdressClass *Adresse; // Eingebettetes Objekt, wird via Zeiger referenziert und 
                          // muss deshalb dynamisch erzeugt werden (Normalerweise
-                         // im Konstruktor) und geloescht werden (Im Destruktor).                        
+                         // im Konstruktor) und geloescht werden (Im Destruktor).  
+                                              
+   ~StudentClass()  {delete Adresse;}; // Resourcen Freigeben, im Falle eines
+                                       // Nullpointers macht delete nichts
 };
 \end{CCode}
 
@@ -2037,7 +2058,7 @@ class ExtendedClass : public MyClass, public AnotherClass{  // Mehrfachvererbung
 };
 \end{CCode}
 Mehrfachvererbung sollte soweit wie möglich vermieden werden, da sie oft Probleme verursacht. Speziell wenn von beiden Seiten Attribute geerbt werden (Wenn z.B. zwei
-Attribute den selben Namen besitzen ist ohne Scoperesolution nie klar, welches gemeint ist). Wenn nur eine Basisklasse Attribute aufweist, und alle anderen nur virtuelle Methoden entspricht dies im Prinzip den \OviIndex{Interfaces} in Java und kann in dieser Form zur Implementation von \OviIndex{Schnittstellen} eingesetzt werden. 
+Attribute den selben Namen besitzen ist ohne Scoperesolution nie klar, welches gemeint ist). Wenn nur eine Basisklasse Attribute aufweist, und alle anderen Basisklassen nur virtuelle Methoden besitzen entspricht dies im Prinzip den \OviIndex{Interfaces} in Java und kann in dieser Form zur Implementation von \OviIndex{Schnittstellen} eingesetzt werden. 
 
 In Bild \ref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu sehen.
 
@@ -2052,17 +2073,99 @@ In Bild \ref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu
 
 Einerseits ist mit D::y nicht klar, ob jetzt das y aus B oder das y aus C gemeint ist. Aber noch viel schwerwiegender ist, dass das Element x aus der Klasse A in D effektiv doppelt vorhanden ist (Also auch \emph{zwei} Speicherplätze belegt). Und je nach Zugriff auf D wird einmal das x von der B-Seite, und einmal dasjenige von der C-Seite benutzt. 
 
+\begin{CCode}
+class A {
+  public:
+  int x;
+  void f();
+};
+
+class B : public A {
+  public:
+  int y;
+  void f();
+};
+
+class C : public A {
+  public:
+  int z;
+  int y;
+  void f();
+};
+
+class D : public B, public C {
+  public:
+  int z;
+  void f();
+};
+
+
+D d;
+
+d.x = 1         // Error, nicht eindeutig
+d.B::A::x = 3;  // x von B Seite nutzen
+d.C::A::x = 5;  // x von C Seite nutzen
+
+cout << d.B::A::x; // gibt 3 aus
+cout << d.C::A::x; // gibt 5 aus
+ 
+\end{CCode}
+
+
 Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden. Grundsätzlich besser ist aber die Vermeidung
 von Mehrfachvererbung wenn mehr als nur Schnittstellen implementiert werden sollen.
+
+\begin{CCode}
+class A {
+  public:
+  int x;
+  void f();
+};
+
+class B : virtuel public A {
+  public:
+  int y;
+  void f();
+};
+
+class C : virtual public A {
+  public:
+  int z;
+  int y;
+  void f();
+};
+
+class D : public B, public C {
+  public:
+  int z;
+  void f();
+};
+
+
+D d;
+
+d.x = 1         // Ok, es gibt nur ein x
+d.B::A::x = 3;  // x von B Seite nutzen, ist dasselbe wie d.x
+d.C::A::x = 5;  // x von C Seite nutzen, ist dasselbe wie d.x
+
+cout << d.x;       // gibt 5 aus
+cout << d.B::A::x; // gibt 5 aus
+cout << d.C::A::x; // gibt 5 aus
+ 
+
+
+\end{CCode}
+
+
  
 
 \section{Polymorphismus (Virtuelle Funktionen)}
 Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \OviIndex{virtual}, aber nicht bei der Definition (Implementation).
-\emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil unter Umständen sonst der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht der der Basisklasse benutzt werden.
+\emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil unter Umständen sonst der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht derjenige der Basisklasse benutzt werden.
 
 Wenn es keinen Sinn macht, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit = 0 in der Deklaration: 'virtual void f(void) = 0'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen.
 \NextPagePlease
-\paragraph{MyClass.h} (Klassendeklaration)
+\paragraph{MyClass.hpp} (Klassendeklaration)
 \begin{CCode}
 class MyClass {
   int k;
@@ -2073,7 +2176,7 @@ class MyClass {
 };
 \end{CCode}
 
-\paragraph{ExtendedClass.h} (Klassendeklaration)
+\paragraph{ExtendedClass.hpp} (Klassendeklaration)
 \begin{CCode}
 #include "MyClass.hpp"
 
@@ -2087,7 +2190,7 @@ class ExtendedClass : public MyClass {  // erben von MyClass
 };
 \end{CCode}
 
-\paragraph{MyClass.c} (Klassendefinition)
+\paragraph{MyClass.cpp} (Klassendefinition)
 \begin{CCode}
 #include "MyClass.hpp"
 #include <iostream>
@@ -2108,7 +2211,7 @@ void MyClass::Print();
 }
 \end{CCode}
 
-\paragraph{ExtendedClass.c} (Klassendefinition)
+\paragraph{ExtendedClass.cpp} (Klassendefinition)
 \begin{CCode}
 #include "ExtendedClass.hpp"
 #include <iostream>
@@ -2130,7 +2233,7 @@ void ExtendedClass::Print();
 
  
 \NextPagePlease
-\paragraph{Main.c} (Klassenbenutzung)
+\paragraph{Main.cpp} (Klassenbenutzung)
 \begin{CCode}
 #include "ExtendedClass.hpp"
 #include <iostream>
@@ -2338,7 +2441,7 @@ int main(int argc, char *argv[])
 \OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (friend-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, muss man beachten, dass der erste Operand immer ein Objekt sein muss.
 Der Ausdruck a + b enspricht somit den Ausdrücken a.operator +(b) oder operator +(a, b), man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
 
-Mann muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
+Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
 Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialitaet. Um Post (i++) und Pre (++i)
 auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 
@@ -2347,8 +2450,8 @@ auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 		\begin{tabular}{ll}
       prefix (++i): &operator++()\\
       postfix (i++):&operator++(int)\\
-      prefix (--i): &operator--()\\
-      postfix (i--):&operator--(int)\\
+      prefix (-{}-i): &operator-{}-()\\
+      postfix (i-{}-):&operator-{}-(int)\\
 		\end{tabular}
    
    Das int Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
@@ -2368,14 +2471,14 @@ class SpecialMemory {
    // Our overloaded new and delete
     void *operator new (size_t size) {
        // some Magic to get memory
-       // in a better way than mewe usually does
+       // in a better way than new usually does
     
        return AdressOfNewMemory;
     };
     
     void *operator new[] (size_t size) {
        // some Magic to get memory
-       // in a better way than mewe usually does
+       // in a better way than new usually does
     
        return AdressOfNewMemory;
     };
@@ -2417,7 +2520,7 @@ dieser Liste ignoriert. Somit werden alle Handler nach \OviIndex{catch}(...) ign
 Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort throw() verwendet. Im throw Statement werden alle Exceptions aufgeführt, welche
 von der Funktion ausgelöst werden können. Ein fehlendes throw() Statement bedeutet, dass diese
 Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres throw() bedeutet, dass die
-Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Laufzeit alle erkennbaren
+Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
 Widersprüche zu reklamieren. Wenn eine Funktion zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
@@ -2750,8 +2853,8 @@ Beim Benutzer
 network::A AnObjectOfClassAfromLibraryNetwork;
 graphic::A AnObjectOfClassAfromLibraryGraphic;
 
-graphic::print();   // Call of print from graphic
-print();  // Illegal, do not know which print to use
+graphic::print();   // print aus graphic wird benutzt
+print();            // Illegal, unklar welches print gemeint ist
 \end{CCode}
 
 Wenn man nicht jedes mal den Namensbereich angeben will, kann die using Direktive verwendet werden:
@@ -2775,7 +2878,7 @@ std::cout << "Hallo" << std::endl;
 
 schreiben. Dies ist unumgänglich wenn man die neuen Headerfiles einbindet (<iostream>) anstelle der veralteten <iostream.h>.
 
-Fuer Namensbereiche können auch \OviIndex{Aliase} defineirt werden, d.h. man kann für einen bestehenden
+Für Namensbereiche können auch \OviIndex{Aliase} definiert werden, d.h. man kann für einen bestehenden
 Namensbereich einen neuen Namen einführen.
 
 \begin{CCode}
@@ -2791,7 +2894,7 @@ BernerFachhochschule::Print();
 Es können auch \OviIndex{anonyme Namensbereiche} definiert werden, alle in
 einem anonymen Namensbereich definierten Elemente sind nur
 innerhalb der definierenden Übersetzungseineheit (Source-Datei)
-verfügbar. Entspricht in etwa dem Prinzip von static in C.   
+verfügbar. Dies entspricht in etwa dem Prinzip von static in C.   
 
 \begin{CCode}
 
