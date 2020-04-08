@@ -622,9 +622,9 @@ nicht an ein Objekt gebunden, sondern gehören zur Klasse. Klassen-Attribute und 
 
 Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Sie gehören sozusagen allen Objekten gemeinsam, und sind deshalb nicht bei einem individuellen Objekt abgelegt.
 
-Klassenmethoden werden eingesetzt, wenn die Methode nicht auf ein Objekt angwendet wird, sondern eher von genereller Natur ist. Insbesondere kann damit verhindert werden, extra ein Objekt erzeugen zu müssen, nur um eine Methode aufzurufen die eigentlich gar kein Objekt benötigt.
+Klassenmethoden werden eingesetzt, wenn die Methode nicht auf ein Objekt angewendet wird, sondern eher von allgemeiner Natur ist. Insbesondere kann damit verhindert werden, extra ein Objekt erzeugen zu müssen, nur um eine Methode aufzurufen die eigentlich gar kein Objekt benötigt.
 
-Ein Beispiel wäre eine Methode, die ausgibt wieviel Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. (Wenn der Zähler als normales Attribut realisiert würde, gäbe es soviele Zähler wie Objekte und der Zähler müsste immer in allen im Moment existierenden Objekten nachgeführt werden.) 
+Ein Beispiel wäre eine Methode, die ausgibt wieviele Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. (Wenn der Zähler als normales Attribut realisiert würde, gäbe es soviele Zähler wie Objekte und der Zähler müsste immer in allen im Moment existierenden Objekten nachgeführt werden.) 
 
 Klassenmethoden und Klassenattribute werden in der UML-Notation durch unterstreichen dargestellt.
 
@@ -687,49 +687,112 @@ Beziehungen
 Ein Softwaresystem besteht im Normalfall aus einer grösseren Menge von Klassen. Zur Strukturierung dieser Klassenmange sucht man die Beziehungen, welche diese Klassen untereinander haben. Hierarchische Beziehungen werden durch Vererbung zum Ausdruck gebracht. Die Zusammenarbeit zwischen den Klassen wird durch Assoziationen dargestellt.
 
 \subsection{Vererbung}
-Bei der \OviIndex{Vererbung} sucht man nach ähnlichen Klassen und Gemeinsamkeiten zwischen Klassen. Daraus lässt sich eine Art Stammbaum der Klassen entwickeln. Zum Beispiel sind Hunde und Katzen Säugetiere, somit könnte man die Gemeinsamkeiten in eine Oberklasse Säugetiere auslagern. Durch die Vererbung können Methoden und Attribute einer bestehenden Klasse als Basis für eine neue Klasse verwendet werden. Die neue Klasse muss nur noch ihre zusätzliche Funktionalität mit ändern der geerbten Methoden und allenfalls durch zusätzlichen Attribute und Methoden realisieren.
+Bei der \OviIndex{Vererbung} sucht man nach ähnlichen Klassen und Gemeinsamkeiten zwischen Klassen. Daraus lässt sich eine Art Stammbaum der Klassen entwickeln. Zum Beispiel sind Hunde und Katzen Säugetiere, somit könnte man die Gemeinsamkeiten in eine Oberklasse Säugetiere auslagern. Durch die Vererbung können Methoden und Attribute einer bestehenden Klasse als Basis für eine neue Klasse verwendet werden. Die neue Klasse muss nur noch ihre zusätzliche Funktionalität durch Ändern der geerbten Methoden und allenfalls durch zusätzliche Attribute und Methoden realisieren.
  
 \subsubsection{Spezialisierung}
+Bei der \OviIndex{Spezialisierung} wird eine bereits existierende Klasse, welche die gewünschte Funktionalität bereits zum Teil erfüllt, um die fehlende Funktionalität ergänzt. Dazu lässt man die neue Klasse (\OviIndex{Abgeleitete Klasse}) von der existierenden Klasse (\OviIndex{Basisklasse}) erben. Anschliessend ergänzt man die Abgeleitete Klasse um die gewünschte zusätzliche Funktionalität, in dem man geerbte  Methoden modifiziert, oder neue Methoden und Attribute hinzufügt.
 
+\subsubsection{Generalisierung}
+Bei der \OviIndex{Generalisierung} werden Gemeinsamkeiten einer Gruppe ähnlicher, bereits bestehender Klassen in einer neuen Klasse (\OviIndex{Oberklasse}) zusammengefasst, und lässt anschliessend die (bestehenden) Klassen (\OviIndex{Unterklassen}) davon erben. Damit können Redundanzen und Code-Duplikate minimiert werden.
 
-\subsubsection{Generalisierung, Spezialisierung, Abstrakte Klassen}
-
-Wie sich bereits gezeigt hat, sind bestimmte Klassen \OviIndex{Spezialisierungen} (Erweiterungen) anderer Klassen. Diese Eigenschaft kann man ausnutzen, um diese ähnlichen Klassen zu gruppieren. Es können auch aus einer Gruppe von ähnlichen Klassen gemeinsame Eigenschaften und Funktionen zu einer neuen Klasse abstrahiert werden. Man spricht an dieser Stelle von \OviIndex{Generalisierung}. Wird aus mehreren Klassen eine neue Klasse generalisiert, so spricht man von einer \OviIndex{Oberklasse}. In umgekehrter Richtung werden die spezielleren Klassen als \OviIndex{Unterklassen} bezeichnet. 
-
+\subsubsection{Abstrakte Klassen}
+Klassen die durch Generalisieren entstanden sind, haben oft keine konkrete Bedeutung und dienen nur der Strukturierung. Von diesen Klassen sollen oft auch gar keine Objekte erzeugt werden (können). In einem solchen Fall handelt es sich um eine  \OviIndex{abstrakte Klasse}. Wenn eine Klasse als  \OviIndex{abstrakt} definiert ist,
+können von ihr keine Objekte erzeugt werden. Abstrakte Klassen werden in der UML durch
+einen in kursiver Schrift gesetzten Namen gekennzeichnet.
+Wenn man eine Klasse abstrakt definiert ist es nicht möglich, davon Objekte zu erzeugen. Unter \Cpp ist eine Klasse abstrakt, sobald sie eine oder mehrere rein virtuelle Methoden besitzt. Abstrakte Klassen werden in der UML durch einen kursiven Namen oder der Einschränkung \{Abstrakt\} gekennzeichnet.
+ 
 Wenn eine Oberklasse nur zur Generalisierung, also zur Zusammenfassung von Gemeinsamkeiten erzeugt wurde, und es keinen Sinn macht von dieser Klasse Objekte erzeugen zu können, kann man diese Klasse als \OviIndex{abstrakt} definieren. Eine abstrakte Klasse wird nur in der Klassenhierarchie als Oberklasse benutzt, es gibt aber keine sinnvollen konkreten Instanzen dieser Klasse (Ein Objekt dieser Klasse hätte keine sinnvolle Bedeutung oder Funktion). 
 
-Wenn man eine Klasse abstrakt definiert ist es nicht möglich, davon Objekte zu erzeugen. Unter \Cpp ist eine Klasse abstrakt, sobald sie eine oder mehrere rein virtuelle Methoden besitzt. Abstrakte Klassen werden in der UML durch einen kursiven Namen oder der Einschränkung \{Abstrakt\} gekennzeichnet.
 
-Man baut zum Beispiel nie einfach ein Auto, sondern immer ein bestimmtes Modell, also macht es auch keinen Sinn, ein Autoobjekt zu erzeugen, aber es macht durchaus Sinn, die Gemeinsamkeiten aller Automodelle in einer gemeinsamen Oberklasse 'Auto' zusammenzufassen, nur ist diese Klasse eben abstrakt.
+Man baut zum Beispiel nie einfach ein Auto, sondern immer ein bestimmtes Modell, also macht es auch keinen Sinn, ein Autoobjekt zu erzeugen, aber es macht durchaus Sinn, die Gemeinsamkeiten aller Automodelle in einer gemeinsamen Oberklasse 'Auto' zusammenzufassen, nur ist diese Klasse eben abstrakt. 
+ 
 
-\subsubsection{Überladen und Überschreiben von Methoden}
-Der Einsatz der Ableitungshierarchie (Vererbungsstruktur) ermöglicht es, Attribute und Methoden zu vererben. Das bedeutet, dass Methoden und Attribute, welche in Oberklassen definiert wurden, automatisch in abgeleiteten Klassen vorhanden sind. Wenn nun aber in einer abgeleiteten Klasse eine Methode mit gleichem Bezeichner (Namen) deklariert wird, dann würde theoretisch ein Konflikt entstehen. In der OOP wird aber genau dies oft angewendet, man spricht hierbei von \OviIndex{Überladung} oder \OviIndex{Überschreibung}. 
+%\subsubsection{Generalisierung, Spezialisierung, Abstrakte Klassen}
 
-Eine Methode ist \emph{überladen}, wenn sie den gleichen Bezeichner (Namen), aber eine andere Parameterliste als eine andere Methode mit gleichem Bezeichner in der Oberklasse (Oder auch in derselben Klasse) besitzt. Überladene Methoden existieren nebeneinander und werden beim Aufruf durch die übergebenen Parameter voneinander unterschieden. Methoden können auch innerhalb einer Klasse überladen sein. 
+%Wie sich bereits gezeigt hat, sind bestimmte Klassen \OviIndex{Spezialisierungen} (Erweiterungen) anderer Klassen. Diese Eigenschaft kann man ausnutzen, um diese ähnlichen Klassen zu gruppieren. Es können auch aus einer Gruppe von ähnlichen Klassen gemeinsame Eigenschaften und Funktionen zu einer neuen Klasse abstrahiert werden. Man spricht an dieser Stelle von \OviIndex{Generalisierung}. Wird aus mehreren Klassen eine neue Klasse generalisiert, so spricht man von einer \OviIndex{Oberklasse}. In umgekehrter Richtung werden die spezielleren Klassen als \OviIndex{Unterklassen} bezeichnet. 
 
-Eine Methode ist \emph{überschrieben}, wenn es eine Methode mit gleicher \OviIndex{Signatur} (Gleichem Namen \emph{und} gleicher Parameterliste) in einer Oberklasse gibt. Dadurch wird die Methode der Oberklasse verdeckt, für Objekte der Unterklasse wird die neue Methode verwendet, ausser es wird beim Aufruf explizit die Methode der Oberklasse verlangt (Durch Verwendung des Scoperesolution-Operator ::). Dadurch steigt die Flexibilität von Klassen. 
+\subsubsection{Zugriffsrechte}
+Für jedes Attribut und jede Methode kann festgelegt werden, wer darauf zugreifen kann. Dafür gibt es die Zugriffsspezifizierer. 
 
-Wenn eine Zeiger- oder eine Referenzvariable (Unter \Cpp{}) zu einer Klasse angelegt wird, dann können diese Variablen auch auf Objekte abgeleiteter Klassen verweisen. Es sind dann aber nur die Methoden und Attribute der Oberklasse verwendbar. 
+Mit 'public' werden Member gekennzeichnet, welche von überall her benutzt werden dürfen.
+
+Mit 'protected' werden Member gekennzeichnet, welche nur innerhalb der Klasse und von dieser Klasse abgeleiteten Klassen benutzt werden dürfen.
+
+Mit 'private' werden Member gekennzeichnet, auf die nur innerhalb der Klasse zugegriffen werden kann. Auf private Member können insbesondere auch abgeleitete Klassen nicht zugreifen.
+
+Attribute werden üblicherweise auf private oder allenfalls protected gesetzt, Methoden sind meistens als public deklariert, die Schnittstellenmethoden der Klasse sind immer public.
+Hilfsmethoden für klasseninterne Zwecke sollten private oder protected sein.
+ 
+
+\subsubsection{Überschreiben von Methoden}
+Bei der Vererbung übernimmt die abgeleitete Klasse alle Methoden und Attribute der Elternklasse. Alle Attribute und Methoden der Elternklasse sind so auch in der abgeleiteten Klasse vorhanden, ausser dies sei durch Einschränken der Zugriffsrechte unterdrückt worden.
+
+Wenn in der abgeleiteten Klasse eine neue Methode definiert wird, welche dieselbe Signatur wie eine Methode der Elternklasse trägt, wird diese Methode überschrieben.
+(Gleiche Signatur bedeutet: Identischer Name und identische Typen und Reihenfolge der Typen in der Argumentenliste). Durch dieses \OviIndex{Überschreiben} wird die Methode der Elternklasse durch die neue Methode ersetzt. Dadurch wird die Methode der Oberklasse verdeckt, für Objekte der Unterklasse wird die neue Methode verwendet, ausser es wird beim Aufruf explizit die Methode der Oberklasse verlangt (Durch Verwendung des Scoperesolution-Operator ::). Dies vereinfacht die Wiederverwendung bereits existierenden Codes. 
+
+\subsubsection{Überladen von Methoden}
+Wenn in einer Klasse eine Methode exisitert, welche denselben Namen wie eine andere Methode der selben Klasse oder einer Basisklasse besitzt, jedoch eine andere Argumentenliste (= Andere Signatur), dann spricht man von \OviIndex{Überladen}.
+Innerhalb einer Klasse kann es beliebig viele überladene Methoden geben, sie müssen sich einfach in ihrer Argumentenliste (Reihenfolge, Anzahl und Art der Typen) unterscheiden. Beim Aufruf einer überladenen Methode wird anhand der Argumente entschieden, welche Methode zu Benutzen ist.
+ 
+
+  
+%Der Einsatz der Ableitungshierarchie (Vererbungsstruktur) ermöglicht es, Attribute und Methoden zu vererben. Das bedeutet, dass Methoden und Attribute, welche in Oberklassen definiert wurden, automatisch in abgeleiteten Klassen vorhanden sind. Wenn nun aber in einer abgeleiteten Klasse eine Methode mit gleichem Bezeichner (Namen) deklariert wird, dann würde theoretisch ein Konflikt entstehen. In der OOP wird aber genau dies oft angewendet, man spricht hierbei von \OviIndex{Überladung} oder \OviIndex{Überschreibung}. 
+
+%Eine Methode ist \emph{überladen}, wenn sie den gleichen Bezeichner (Namen), aber eine andere Parameterliste als eine andere Methode mit gleichem Bezeichner in der Oberklasse (Oder auch in derselben Klasse) besitzt. Überladene Methoden existieren nebeneinander und werden beim Aufruf durch die übergebenen Parameter voneinander unterschieden. Methoden können auch innerhalb einer Klasse überladen sein. 
+
+%Eine Methode ist \emph{überschrieben}, wenn es eine Methode mit gleicher \OviIndex{Signatur} (Gleichem Namen \emph{und} gleicher Parameterliste) in einer Oberklasse gibt. Dadurch wird die Methode der Oberklasse verdeckt, für Objekte der Unterklasse wird die neue Methode verwendet, ausser es wird beim Aufruf explizit die Methode der Oberklasse verlangt (Durch Verwendung des Scoperesolution-Operator ::). Dadurch steigt die Flexibilität von Klassen. 
+
+%Wenn eine Zeiger- oder eine Referenzvariable (Unter \Cpp{}) zu einer Klasse angelegt wird, dann können diese Variablen auch auf Objekte abgeleiteter Klassen verweisen. Es sind dann aber nur die Methoden und Attribute der Oberklasse verwendbar. 
 
 
 \subsubsection{Bindung von überschrieben Methoden}
-Es wird einem Zeiger oder einer Referenz auf eine Oberklasse ein davon abgeleitetes Objekt zugewiesen. Wird nun diesem Objekt via dem Zeiger auf die Oberklasse eine Botschaft gesendet, die überschrieben wurde, muss entschieden werden, welche konkrete Methode nun auszuführen ist. Dieser Vorgang wird als \OviIndex{Bindung} bezeichnet.
-Es gibt dafür drei Möglichkeiten. 
+In einem OO-System können überall wo Objekte einer Elternklasse erwartet werde auch Objekte von Klassen welche von dieser Elternklasse abgeleitet wurden, übergeben werden.
+
+Konkret, wenn jemand ein Tier erwartet, dann dürfen sie ihm jederzeit nach Wahl einen Hund, einen Pudel, einen Berglöwen oder einen Goldfisch übergeben, solange sie alle von Tier abgeleitet sind.
+ 
+Der Empfänger von diesem Objekt kann jedoch nur noch auf Methoden und Attribute zugreifen, die für Objekte der Elternklasse definiert sind.
+
+Konkret: Die Methode füttern könnte für alle Tiere definiert sein, die Methode streicheln nur für Hunde, da der Empfänger aber nicht weiss, welches konkrete Objekt er erhalten hat, kann er nur die Methode füttern anwenden. (Streicheln beim Berglöwen wäre wohl fatal...)
+
+Wenn der Empfänger nun eine Methode der Elternklasse aufruft, die für das übergebene Objekt überschrieben ist, stehen zwei Methoden zur Wahl, welche Aufgerufen werden könnten.
+Einerseits könnte die Methode der Elternklasse aufgerufen werden, es könnte aber auch die entsprechende Methode des Objektes aufgerufen werden.
+
+Konkret: Das Tier könnte die Methode Fortbewegen() besitzen, welche jedoch für den Fisch und für den Pudel jeweils anders implementiert ist.
+
+Die Auswahl der effektiv aufgerufenen Methode wird als \OviIndex{Bindung} bezeichnet. Es gibt drei Verschiedene Arten von Bindung:
+
+
+
+%Es wird einem Zeiger oder einer Referenz auf eine Oberklasse ein davon abgeleitetes Objekt zugewiesen. Wird nun diesem Objekt via dem Zeiger auf die Oberklasse eine Botschaft gesendet, die überschrieben wurde, muss entschieden werden, welche konkrete Methode nun auszuführen ist. Dieser Vorgang wird als \OviIndex{Bindung} bezeichnet.
+%Es gibt dafür drei Möglichkeiten. 
 
 \paragraph{Frühe Bindung}
 \label{FrueheBindung}
-Bei der \OviIndex{frühen Bindung} wird während der Compilierung entschieden, welche Methode auszuführen ist. Es werden letztendlich die Methoden der Oberklasse verwendet, da ja nicht abzusehen ist, ob und welche abgeleitete Klasse in der Variablen gespeichert sein könnte. (Beispiel: Pascal mit Objekten, \Cpp ohne virtuelle Methoden) 
+Bei der \OviIndex{frühen Bindung} wird bereits wärend der Übersetzung vom Compiler entschieden und festgelegt, welche Methode aufgerufen wird. Damit können nur Methoden des erwarteten Objektes benutzt werden, Objekte von abgeleiteten Klassen werden wie Objekte der Basisklasse behandelt. Dieses Verhalten entspricht der gewöhnlichen Prozeduralen Programmierung, auch nicht virtuelle Methoden in  \Cpp werden so behandelt.
+
+% abgeleitetwährend der Compilierung entschieden, welche Methode auszuführen ist. Es werden letztendlich die Methoden der Oberklasse verwendet, da ja nicht abzusehen ist, ob und welche abgeleitete Klasse in der Variablen gespeichert sein könnte. (Beispiel: Pascal mit Objekten, \Cpp ohne virtuelle Methoden) 
 
 \paragraph{Späte Bindung}
 \label{Spaete Bindung}
-Bei der \OviIndex{späten Bindung} wird während der Laufzeit entschieden, welche Methode auszuführen ist. Wird also eine Instanz einer abgeleiteten Klasse in einer (Zeiger-) Variablen vom Typ der Oberklasse gespeichert, dann wird die Methode der abgeleiteten Klasse ausgeführt. Ist eine solche Methode aber nicht definiert, dann wird die Methode der Oberklasse ausgeführt. Dies erfordert mehr Intelligenz vom Laufzeitsystem, aber ermöglicht erst ''richtige'' OOP. Während der Compilierung ist zumindest prüfbar, ob eine Klasse der Ableitungshierarchie die angegebene Methode kennt. (Beispiel: \Cpp mit virtuellen Methoden, Java)
+Bei der \OviIndex{späten Bindung} kennt der Compiler alle möglichen Methoden, die an dieser Stelle aufgerufen werden könnten, aber die effektive Auswahl der Methode findet zur Laufzeit abhängig vom Objekttyp statt. Das heisst, dass immer die effektiv zum Objekt
+gehörende Methode benutzt wird, sofern sie in der abgeleiteten Klasse überladen wurde.
+Wenn die Methode nicht überladen wurde, wird die Methode der Oberklasse benutzt.
+Dies erfordert zusätzlichen Rechenaufwand zur Laufzeit, ist aber eine wesentliche Voraussetzung für OOP. Späte Bindung wird in \Cpp mit virtuellen Methoden realisiert, und ist in Java das standard Verhalten.
+
+
+
+%wird während der Laufzeit entschieden, welche Methode auszuführen ist. Wird also eine Instanz einer abgeleiteten Klasse in einer (Zeiger-) Variablen vom Typ der Oberklasse gespeichert, dann wird die Methode der abgeleiteten Klasse ausgeführt. Ist eine solche Methode aber nicht definiert, dann wird die Methode der Oberklasse ausgeführt. Dies erfordert mehr Intelligenz vom Laufzeitsystem, aber ermöglicht erst ''richtige'' OOP. Während der Compilierung ist zumindest prüfbar, ob eine Klasse der Ableitungshierarchie die angegebene Methode kennt. (Beispiel: \Cpp mit virtuellen Methoden, Java)
  
 \paragraph{''Sehr'' späte Bindung}
 \label{Sehr spaete Bindung}
-Bei der '\OviIndex{sehr späten Bindung}' wird ausschliesslich während des Programmlaufes entschieden welche Methode auszuführen ist. Dies erfolgt durch Signaturvergleich während der Laufzeit. Es ist jedoch möglich, dass eine Methode aufgerufen wird, die gar nicht vorhanden ist, was zu einem Fehler zur Laufzeit führt. (Beispiel: SmallTalk). Dafür können auch noch zur Laufzeit neue Klassen und Methoden hinzugefügt werden.
+Bei der '\OviIndex{sehr späten Bindung}' wird grundsätzlich erst während der Laufzeit nach Methoden gesucht, die an dieser Stelle auszuführen sind. Es ist sogar Möglich, dass zur Laufzeit Methoden vorhanden sind, welche beim erstellen und Compilieren des Programmes noch gar nicht existierten. Dafür kann es auch zur Laufzeit geschehen, dass eine gewünschte Methode gar nicht verfügbar ist, dann wird das Programm mit einer Fehlermeldung abgebrochen. Dafür können sogar zur Laufzeit einem System neue Klassen und Methoden hinzugefügt werden ('Plug in'). Samlltalk hat von Haus aus späte Bindung, in \Cpp muss dieses Verhalten vom Programmierer implementiert werden (Z. B. über dynamic link libraries [dll]).
 
-\paragraph{}
-\OviIndex{Polymorphismus} setzt späte oder sehr späte Bindung voraus. Schliesslich soll ja in jedem Fall die zum effektiven Objekt gehörende Methode aufgerufen werden, und nicht die der Oberklasse. Um bei \Cpp die späte Bindung zu ermöglichen, müssen die betroffenen Memberfunktionen (Methoden) als \OviIndex{virtuell} deklariert werden, dies geschieht durch das voranstellen des Schlüsselwortes \OviIndex{virtual} in der Klassendeklaration, und der Aufruf muss über Zeiger oder Referenzen erfolgen:
+%gefühentschieden, wird ausschliesslich während des Programmlaufes entschieden welche Methode auszuführen ist. Dies erfolgt durch Signaturvergleich während der Laufzeit. Es ist jedoch möglich, dass eine Methode aufgerufen wird, die gar nicht vorhanden ist, was zu einem Fehler zur Laufzeit führt. (Beispiel: SmallTalk). Dafür können auch noch zur Laufzeit neue Klassen und Methoden hinzugefügt werden.
+
+\paragraph{Polymorphismus}
+\OviIndex{Polymorphismus} bedeutet, dass überall wo ein Objekt einer Basisklasse erwartet wird, auch ein Objekt einer davon abgeleiteten Klasse übergeben werden kann, \emph{aber das Objekt dadurch seine Identität nicht verliert}. 
+
+\OviIndex{Polymorphismus} setzt späte oder sehr späte Bindung voraus. Schliesslich soll ja in jedem Fall die zum effektiven Objekt gehörende Methode aufgerufen werden, und nicht die Methode der Oberklasse. Um bei \Cpp die späte Bindung zu ermöglichen, müssen die betroffenen Memberfunktionen (Methoden) als \OviIndex{virtuell} deklariert werden, dies geschieht durch das voranstellen des Schlüsselwortes \OviIndex{virtual} in der Klassendeklaration, und der Aufruf muss über Zeiger oder Referenzen erfolgen:
 
 
 
@@ -810,23 +873,34 @@ class Auto : public Fahrzeug {
 \end{CCode}
 
  
-\subsection{Assoziation, Aggregation, Komposition}
-Wenn mehrere Objekte miteinander verbunden sind, so kann man drei Typen dieser Verbindung unterscheiden.
+\subsection{Weitere Beziehungen zwischen Klassen}
+Wenn mehrere Objekte auf irgend eine Art miteinander zusammenarbeiten, so kann man drei Arten von Assoziationen unterscheiden: Assoziation, Aggregation und Komposition.
+Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
+
 \paragraph{Assoziation}
 \label{sec:Assoziation}
-Bei einer \OviIndex{Assoziation} ''kennen'' die Objekte einander, können aber unabhängig voneinander existieren. Eine Assoziation ist meist von kurzzeitiger Natur. Z. B. Das Auto benutzt die Strasse. Die Assoziation ist der allgemeine Fall, Aggregation und Komposition sind Spezialisierungen der Assoziation.
+Bei einer \OviIndex{Assoziation} ''kennen'' die beteiligten Objekte einander, existerien aber weiterhin unabhängig voneinander. Eine Assoziation ist meist von kurzzeitiger Natur. Z. B. Das Auto benutzt die Strasse. Die Assoziation ist der allgemeine Fall, Aggregation und Komposition sind Spezialisierungen der Assoziation.
 \paragraph{Aggregation}
 \label{sec:Aggregation}
-Bei einer \OviIndex{Aggregation} wird eine 'ist Teil von' Beziehung dargestellt. Z. B. das Rad ist Teil eines Autos, kann aber auch alleine existieren (Reserverad im Keller).
+Bei einer \OviIndex{Aggregation} wird eine 'ist Teil von' Beziehung dargestellt. Z. B. das Rad ist Teil eines Autos, es kann aber auch alleine existieren (Reserverad im Keller). Bei einer Aggregation wird meist eine Gruppe von Objekten miteinander verknüpft, um eine bestimmte Aufgabe zu erledigen. Dabei wird normalerweise ein Objekt allen anderen als Koordinator übergeordnet, und der Rest des Systems kommuniziert nur mit dem Koordinator. Wenn die Aufgabe gelöst ist, können die Objekte wieder voneinander getrennt werden.
+
+Aus einem Metallbaukasten lässt sich ein Modell zusammensetzten, welches aber später wieder auseinandergenommen werden kann, und aus den Einzelteilen lässt sich wieder etwas neues konstruieren.
+  
 \paragraph{Komposition}
 \label{sec:Komposition}
-Bei einer \OviIndex{Komposition} bilden mehrere nicht eigenständige Objekte zusammen eine Einheit. Ein weiteres Merkmal einer Komposition ist, dass ein aussenstehendes Objekt die Einzelobjekte der Aggregation nicht erkennen kann. 
+Bei einer \OviIndex{Komposition} wird meist eine Gruppe von Objekten miteinander verknüpft, um eine bestimmte Aufgabe zu erledigen. Dabei wird normalerweise ein Objekt allen anderen als Koordinator übergeordnet, und der Rest des Systems kommuniziert nur mit dem Koordinator. Die untergeordneten Objekte verlieren ihre Selbständigkeit, sie werden meistens direkt vom Koordinator erzeugt, und auch wieder gelöscht. Die Elemente einer Komposition können nicht auseinander genommen werden, da die Objekte alleine keine Sinnvolle Aufgabe erledigen können.
 
-Diese Unterscheidung wird bei der Implementierung nicht mehr erkennbar sein. Sie hat allerdings Einfluss auf die \OviIndex{Verantwortlichkeiten} beim Anlegen und Löschen von Objekten.
 
-Ein Tisch und vier Stühle bilden eine Sitzgruppe. Ein Tisch kann aber auch eigenständig verwendet werden. Auch ein Stuhl kann ohne Tisch eine Funktion erfüllen. Es handelt sich um eine Aggregation. Vier Tischbeine und eine Tischplatte bilden zusammen das Objekt Tisch. Tischbein und Tischplatte allein haben keine Funktionalität. Erst zusammen als Tisch erfüllen sie einen Zweck. Es handelt sich um eine Komposition. Eine Person im Raum erkennt den Tisch nur als gesamtes Objekt, seine Einzelteile werden nicht wahrgenommen.
+%Bei einer \OviIndex{Komposition} werden mehrere Objektebilden mehrere nicht eigenständige Objekte zusammen eine Einheit. Ein weiteres Merkmal einer Komposition ist, dass ein aussenstehendes Objekt die Einzelobjekte der Aggregation nicht erkennen kann. 
+
+%Diese Unterscheidung wird bei der Implementierung nicht mehr erkennbar sein. Sie hat allerdings Einfluss auf die \OviIndex{Verantwortlichkeiten} beim Anlegen und Löschen von Objekten.
+
+Eine Kaffeemaschine wird von aussen als eine Einheit wahrgenommen, die einzelnen Komponenten der Kaffeemaschine für sich alleine keine nutzbringende Aufgabe erledigen.
+Und wenn die Kaffeemaschine explodiert, sind auch ihre Komponenten nicht mehr vorhanden.
+
+%Ein Tisch und vier Stühle bilden eine Sitzgruppe. Ein Tisch kann aber auch eigenständig verwendet werden. Auch ein Stuhl kann ohne Tisch eine Funktion erfüllen. Es handelt sich um eine Aggregation. Vier Tischbeine und eine Tischplatte bilden zusammen das Objekt Tisch. Tischbein und Tischplatte allein haben keine Funktionalität. Erst zusammen als Tisch erfüllen sie einen Zweck. Es handelt sich um eine Komposition. Eine Person im Raum erkennt den Tisch nur als gesamtes Objekt, seine Einzelteile werden nicht wahrgenommen.
  
-Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
+%Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
 
 \subsubsection{Assoziation und Kardinalität}
 Mit der \OviIndex{Kardinalität} wird angegeben, wie viel Objekte einer Klasse mit wievielen einer anderen Klasse in Beziehung stehen. Im Klassendiagramm der UML wird eine Assoziation mit einer einfachen Verbindungslinie zwischen den beiden Klassen dargestellt. Die Zahlen an den Verbindungsenden werden als Kardinalität bezeichnet. Ein * steht für beliebig viel. Für das Diagramm in Bild \ref{fig:Assoziation2} bedeuten sie, dass ein Besitzer 0 bis beliebig viele Fahrzeuge besitzen kann, dass aber ein Fahrzeug jeweils genau einen Besitzer hat. Bei den Kardinalitäten ist es immer angebracht, sich noch einmal kurz zu überlegen, ob sie wirklich in jedem Fall sinn machen (Kann es nicht sein dass ein Fahrzeug niemandem gehört? Kann ein Fahrzeug mehreren Personen gehören? Und falls wir bei Fahrzeug 1..* gewählt hätten: Besitzen wirklich alle Leute mindestens 1 Fahrzeug? Eine Faustregel sagt, das 0 als untere Grenze meist die bessere Wahl ist)
