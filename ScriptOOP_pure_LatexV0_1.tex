@@ -10,6 +10,7 @@
 %/*                                                                           */
 %/*  History    : 17.11.2004  IO Created                                      */
 %/*               01.01.2006  IO Unified Process added                        */
+%/*               11.02.2006  IO Ueberarbeitet, UML und Cpp getrennt          */
 %/*                                                                           */
 %/*                                                                           */
 %/*  File       : ScriptOOPLatexv0_1.tex                                      */
@@ -19,6 +20,7 @@
 %/*                                                                           */
 %/*  Besser Durchstrukturieren, logische Reihenfolge                          */
 %/*  Zuerst alles UML, dann C++                                               */
+%/*  Grundlagenkapitel holpert, Stilbrüche und redundanzen                    */
 %/*  Codebeispiele feur Designpatterns                                        */
 %/*  Crash-Kurs   Praeprocessor predefined Makros                             */
 %/*  Crash-Kurs   Statische Member (Beispiel)                                 */
@@ -260,7 +262,7 @@ Ivo Oesch
 
 \normalsize
 \begin{quote}
-Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden. Es enthält Auszüge aus dem Skript OOP mit Java von Chris Hübsch. 
+Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden.  
 Es beinhaltet eine Einführung in die objektorientierte Denkweise und stellt eine objektorientierte Analyse und Designmethode (UML) vor.
 \end{quote}
 
@@ -299,7 +301,9 @@ Im ersten Teil wird das grundsätzliche Konzept der Objektorientierung behandelt.
 
 Althergebrachte Design- und Analysemethoden wie Struktogramme oder Flussdiagramme sind für OOP nicht einsetzbar, es müssen andere Methoden verwendet werden. In der OO-Welt hat sich dafür die UML (Unified Modeling Language) durchgesetzt. Im zweiten Teil wird eine Einführung in die UML (Unified Modeling Language) gegeben, wobei aber nur einige ausgewählte der verschiedenen Modelle betrachtet werden
 
-Im Unterricht werden diese Teile soweit möglich parallel zueinander abgehandelt. Dieser Kurs dient nur als Basis, um OOP zu verstehen. Um OOP wirklich anwenden zu können ist die Arbeit mit grösseren Projekten und das Studium weiterführender Literatur unumgänglich.
+Dieser Kurs dient nur als Basis, um OOP zu verstehen. Um OOP wirklich anwenden zu können ist die Arbeit mit grösseren Projekten und das Studium weiterführender Literatur unumgänglich.
+
+Das Grundlagenkapitel basiert ursprünglich auf Auszügen des dem Skriptes \emph{OOP mit Java} von \emph{Chris Hübsch}.
 
 \chapter{Einführung}
 Beim objektorientierten Programmieren wird ein völlig anderer Ansatz als bei der
@@ -344,7 +348,7 @@ erlaubt eine von den Details losgelöste Sicht. Es wird genau beschrieben, \emph{
 tun ist, aber nicht \emph{wie}. 
 
 \section{Kapselung}
-Wie in der Einführung schon dargestellt, ist einer der zentralen Aspekte der OOP, Daten mit den zugehörigen Funktionen zusammenzuführen und gegen Aussen möglichst zu verstecken. Diesen Prozess bezeichnet man als \OviIndex{Kapselung}, die daraus resultierende Datenstruktur nennt sich Klasse. Eine Variable oder Konstante, die auf dieser Datenstruktur basiert, nennt sich eine Instanz der Klasse. Der wesentliche Unterschied einer Klasse des OOP zu den schon bekannten Datenstrukturen (z.B. ein struct in C oder einem RECORD in Pascal) ist, dass eine Klasse zusätzlich zu den Daten üblicherweise auch weitreichende Funktionalitäten übernimmt. Dadurch wird sie zu einem Datentyp, der zu den Inhalten (den Daten) auch die Möglichkeiten spezifiziert, mit ihnen umzugehen (die Funktionen). 
+Wie in der Einführung schon dargestellt, ist einer der zentralen Aspekte der OOP, Daten mit den zugehörigen Funktionen zusammenzuführen und gegen Aussen möglichst zu verstecken. Diesen Prozess bezeichnet man als \OviIndex{Kapselung}, die daraus resultierende Datenstruktur nennt sich Klasse. Eine Variable oder Konstante, die auf dieser Datenstruktur basiert, nennt sich eine Instanz der Klasse (Ein Objekt ist somit eine Instanz einer Klasse). Der wesentliche Unterschied einer Klasse des OOP zu den schon bekannten Datenstrukturen (z.B. ein struct in C oder einem RECORD in Pascal) ist, dass eine Klasse zusätzlich zu den Daten üblicherweise auch weitreichende Funktionalitäten übernimmt. Dadurch wird sie zu einem Datentyp, der zu den Inhalten (den Daten) auch die Möglichkeiten spezifiziert, mit ihnen umzugehen (die Funktionen). 
 
 Die Daten einer Klasse werden dabei als \OviIndex{Elemente} oder \OviIndex{Attribute}, und die Funktionen als \OviIndex{Elementfunktionen} oder \OviIndex{Methoden} bezeichnet. Normalerweise sind die Attribute (Daten) eines Objektes von aussen nicht direkt zugänglich, sondern werden gegen Aussen gekapselt. Auf die Daten kann nur indirekt über Zugriffsfunktionen zugegriffen werden. Somit ist die interne Repräsentation der Daten Sache des Objektes, sie geht sonst niemanden etwas an.
 
@@ -524,7 +528,7 @@ Diese Fähigkeiten werden als \emph{Methoden} des Objektes / der Klasse Feuerzeug
 
 \section	{Klassen} 
 
-Um Struktur in die Menge der Objekt zu bringen, werden Objekte klassifiziert, indem sie Klassen zugeordnet werden. Eine Klasse beschreibt ein einzelnes Objekt oder eine Gruppe von Objekten, die alle die gleichen Arten von Eigenschaften und Fähigkeiten haben. Aber jedes Objekt hat individuelle Werte für diese Eigenschaften. Durch eine Klasse werden die Objekte abstrahiert, eine Klasse beschreibt somit eine Menge von gleichartigen Objekten.
+Durch klassifizieren bringt man Struktur in die Menge der Objekte. Dazu werden die Objekte Klassen zugeordnet. Eine Klasse beschreibt ein einzelnes Objekt oder eine Gruppe von Objekten, welche alle die gleichen Arten von Eigenschaften und Fähigkeiten haben. Aber jedes Objekt einer Klasse besitzt individuelle Werte für diese Eigenschaften. Durch eine Klasse wird eine Gruppe von Objekten abstrahiert, eine Klasse beschreibt eine Menge von gleichartigen Objekten.
 
 %Sie besuchen eine Zoohandlung und sehen Meerschweinchen
 
@@ -532,7 +536,7 @@ Um Struktur in die Menge der Objekt zu bringen, werden Objekte klassifiziert, in
 %Objekte lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Häufig haben Objekte auch einen Namen. 
 %Finden sich mehrere Objekte, die gleiche Attributarten und Methoden besitzen, so kann man diese zu einer \OviIndex{Klasse} abstrahieren. Eine Klasse ist also ein Prototyp für eine Gruppe von Objekten.
 
-Jedes Objekt gehört zu einer bestimmten Klasse. Zu einer Klasse können jedoch beliebig viele Objekte gehören. 
+Jedes Objekt gehört zu einer bestimmten Klasse. Zu einer Klasse können beliebig viele Objekte gehören. 
 
 Bei unserem Beispiel könnten wir ein rotes, ein grünes und ein blaues Feuerzeug besitzen,
 die alle zur Klasse Feuerzeug gehören.
@@ -582,9 +586,9 @@ class FeuerZeug {
 
 %Wenn man ein Objekt nicht über die Klasse erzeugen könnte, wäre es unmöglich, jemals auch nur ein Objekt zu erzeugen. Denn man müsste zum Erzeugen des ersten Objektes bereits ein Objekt haben, das es aber nicht gibt, weil man ja noch kein Objekt dieser Art erzeugt hat...
 
-\subsection{Attribute (Elemente, Member)} 
+\subsection{Attribute (Membervariablen, Elemente)} 
 
-Die \OviIndex{Attribute} beschreiben ein Objekt und dessen Zustand. Jedes Objekt einer Klasse hat eigene Werte für seine Attribute, welche auch vom Objekt selbst verwaltet werden. Die Attribute eines Objektes sollten nicht von aussen zugänglich sein, nur die Methoden des Objektes sollten Zugriff auf dessen Attribute haben.
+Die \OviIndex{Attribute} beschreiben ein Objekt und dessen Zustand. Jedes Objekt einer Klasse hat eigene Werte für seine Attribute, welche auch vom Objekt selbst verwaltet werden. Die Attribute eines Objektes sollten  von aussen nicht zugänglich sein, nur die Methoden des Objektes sollten Zugriff auf dessen Attribute haben.
 
 Durch diese Kapselung der Attribute gegen aussen ist sichergestellt, dass Attribute nicht unkontrolliert geändert werden können. Zudem kann so die interne Repräsentation der Atribute geändert werden, ohne dass dies Auswirkungen auf andere Klassen hat, einzig die eigenen Methoden müssen allenfalls angepasst werden.
 
@@ -602,11 +606,11 @@ ablegen kann, die gegen Aussen nicht direkt sichtbar sind.
 
 \subsection{Methoden (Memberfunktionen, Botschaften)} 
 
-Über die Methoden stellt ein Objekt seine Dienste gegen aussen zur Verfügung. Methoden sehen zwar aus wie Funktionen aus der strukturierten Programmierung, und haben auch dieselbe Funktionsprinzip. Im Gegensatz zu gewöhnlichen Funktionen werden Methoden auf ein Objekt angewandt, eine Methode wirkt also immer auf ein Objekt ein. Die Methode hat dabei Zugriff auf alle Attribute und andere Methoden dieses Objektes. Der Aufruf einer \OviIndex{Methode} wird auch als Senden einer \OviIndex{Botschaft} bezeichnet. Statt \emph{Die Methode zeichnen() des Objekts wird aufgerufen} sagt man auch \emph{Die Botschaft zeichnen wird an das Objekt gesendet}.
+Über die Methoden stellt ein Objekt seine Dienste gegen aussen zur Verfügung. Methoden sehen zwar aus wie Funktionen aus der strukturierten Programmierung, und haben auch dieselbe Funktionsprinzip, aber im Gegensatz zu gewöhnlichen Funktionen werden Methoden auf ein Objekt angewandt. Eine Methode wirkt also immer auf ein Objekt ein. Die Methode hat dabei Zugriff auf alle Attribute und andere Methoden dieses Objektes. Der Aufruf einer \OviIndex{Methode} wird auch als Senden einer \OviIndex{Botschaft} bezeichnet. Statt \emph{Die Methode zeichnen() des Objekts wird aufgerufen} sagt man auch \emph{Die Botschaft zeichnen wird an das Objekt gesendet}.
 
 Erst mit den Methoden wird das Objekt zum Leben erweckt und kann dynamisch mit seiner Umwelt interagieren. Ein Softwaresystem besteht aus vielen Objekten, und erst durch die gegenseitige Kommunikation via Methoden können die Objekte gemeinsam die Funktionalität des Systems liefern.
 
-Die Menge aller Methoden, die ein Objekt gegen Aussen zur Verfügung stellt, definiert seine Schnittstelle, und über diese Schnittstelle können dem Objekt befehle erteilt, oder Dienste vom Objekt in Anspruch genommen werden. 
+Die Menge aller Methoden, die ein Objekt gegen Aussen zur Verfügung stellt, definiert seine Schnittstelle, und über diese Schnittstelle können dem Objekt Befehle erteilt, oder Dienste vom Objekt in Anspruch genommen werden. 
 
 Ein Objekt kann auch private Methoden besitzen, die nur vom Objekt
 selbst, oder anderen Objekten derselben Klasse benutzt werden können.
@@ -615,14 +619,15 @@ Methoden können Rückgabewerte und Parameter besitzen, eine Methode wird durch Ih
 
 
 \subsection{Klassenmember (Statische Member)} 
---------------------------------------------------------
-Üblicherweise sind Attribute und Methoden an ein Objekt gebunden, und können nur zusammen mit einem Objekt exixtieren oder benutzt werden.
+
+Üblicherweise sind Attribute und Methoden an ein Objekt gebunden, und können nur zusammen mit einem Objekt existieren respektive benutzt werden.
 Es ist aber auch möglich, \OviIndex{Klassen-Attributen} und \OviIndex{Klassen-Methoden} zu definieren. Diese sind 
 nicht an ein Objekt gebunden, sondern gehören zur Klasse. Klassen-Attribute und Klassen-Methoden können benutzt werden, ohne dass ein Objekt existiert. 
 
-Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Sie gehören sozusagen allen Objekten gemeinsam, und sind deshalb nicht bei einem individuellen Objekt abgelegt.
+Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Klassenattribute gehören sozusagen allen Objekten gemeinsam, und sind deshalb nicht bei einem individuellen Objekt abgelegt. Klassenattribute werden oft für Klasseninterne Verwaltungsaufgaben eingesetzt.
 
-Klassenmethoden werden eingesetzt, wenn die Methode nicht auf ein Objekt angewendet wird, sondern eher von allgemeiner Natur ist. Insbesondere kann damit verhindert werden, extra ein Objekt erzeugen zu müssen, nur um eine Methode aufzurufen die eigentlich gar kein Objekt benötigt.
+Eine Klassenmethode wird nicht auf ein bestimmtes Objekt angewendet, sondern auf die Klasse generell. Klassenmethoden werden oft für Verwaltungsaufgaben oder allgemeine Aufgaben eingesetzt.  
+Insbesondere kann Klessenmethoden  verhindert werden, extra ein Objekt erzeugen zu müssen, nur um eine Methode aufzurufen die eigentlich gar kein Objekt benötigt.
 
 Ein Beispiel wäre eine Methode, die ausgibt wieviele Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. (Wenn der Zähler als normales Attribut realisiert würde, gäbe es soviele Zähler wie Objekte und der Zähler müsste immer in allen im Moment existierenden Objekten nachgeführt werden.) 
 
@@ -643,23 +648,23 @@ Zum Erzeugen eines neuen Objektes muss eine Klassenmethode benuzt werden. Ansons
 %Erst mit den Methoden wird das Objekt zum Leben erweckt und kann dynamisch mit seiner Umwelt interagieren. Ein Softwaresystem besteht aus vielen Objekten, und erst durch die gegenseitige Kommunikation via Methoden können die Objekte gemeinsam die Funktionalität des Systems liefern.
 
 %Die Menge aller Methoden, die ein Objekt gegen Aussen zur Verfügung stellt, definiert seine Schnittstelle. 
----------------------------------------
-
-Objekte 
-Klassen
--Attribute
--Methoden
--Statische Member
-Beziehungen
--Vererbung
---Generalisation
---Spezialisierung
---Polymorphismus
----Bindung
--Assoziation
---Navigation
---Aggregation
---Komposition
+%---------------------------------------
+%
+%Objekte 
+%Klassen
+%-Attribute
+%-Methoden
+%-Statische Member
+%Beziehungen
+%-Vererbung
+%--Generalisation
+%--Spezialisierung
+%--Polymorphismus
+%---Bindung
+%-Assoziation
+%--Navigation
+%--Aggregation
+%--Komposition
 %tzalität.  Ein einzelnes Objekt kann nicht die Leistung eines gesamten Systems erbringen. (Würde es das können, dann wäre beim Entwurf ein Fehler gemacht worden.) Ein System arbeitet dadurch, dass verschiedene Objekte miteinander kommunizieren und damit Dienste von anderen Objekten in Anspruch nehmen oder diese Objekte verändern. 
 
 %Ein Objekt tritt mit einem andern in Kontakt, indem es diesem eine \OviIndex{Botschaft} sendet (Das heisst, eine \OviIndex{Methode} des anderen Objektes aufruft). Welche Botschaften ein Objekt versteht, wird durch seine \OviIndex{Schnittstelle} (Interface) definiert. Das \OviIndex{Interface} besteht aus einer Reihe von Methoden. Der Unterschied zwischen einer Methode und einer gewöhnlichen Funktion der strukturierten Programmierung besteht darin, dass eine Methode an ein bestimmtes Objekt gebunden ist (mit Ausnahme von Klassenmethoden, welche an eine Klasse gebunden sind).
@@ -679,39 +684,7 @@ Beziehungen
 %Die Methode zum Erzeugen einer neuen \OviIndex{Instanz} einer Klasse ist in echten Objekt-Sprachen immer eine Klassenmethode. Eine Möglichkeit zum Mitzählen der Instanzen einer Klasse würde ebenfalls als Klassen-Methode und Klassen-Attribut realisiert werden. Den Zähler für die Anzahl Objekte sollte es ja nur einmal geben, und nicht in jedem Objekt einzeln, sonst wäre es kaum möglich, alle Zähler in allen Objekten aktuell zu halten.	 
 %\end{quote} 
 
-
-
-
-\section{Beziehungen zwischen Klassen}
-
-Ein Softwaresystem besteht im Normalfall aus einer grösseren Menge von Klassen. Zur Strukturierung dieser Klassenmange sucht man die Beziehungen, welche diese Klassen untereinander haben. Hierarchische Beziehungen werden durch Vererbung zum Ausdruck gebracht. Die Zusammenarbeit zwischen den Klassen wird durch Assoziationen dargestellt.
-
-\subsection{Vererbung}
-Bei der \OviIndex{Vererbung} sucht man nach ähnlichen Klassen und Gemeinsamkeiten zwischen Klassen. Daraus lässt sich eine Art Stammbaum der Klassen entwickeln. Zum Beispiel sind Hunde und Katzen Säugetiere, somit könnte man die Gemeinsamkeiten in eine Oberklasse Säugetiere auslagern. Durch die Vererbung können Methoden und Attribute einer bestehenden Klasse als Basis für eine neue Klasse verwendet werden. Die neue Klasse muss nur noch ihre zusätzliche Funktionalität durch Ändern der geerbten Methoden und allenfalls durch zusätzliche Attribute und Methoden realisieren.
- 
-\subsubsection{Spezialisierung}
-Bei der \OviIndex{Spezialisierung} wird eine bereits existierende Klasse, welche die gewünschte Funktionalität bereits zum Teil erfüllt, um die fehlende Funktionalität ergänzt. Dazu lässt man die neue Klasse (\OviIndex{Abgeleitete Klasse}) von der existierenden Klasse (\OviIndex{Basisklasse}) erben. Anschliessend ergänzt man die Abgeleitete Klasse um die gewünschte zusätzliche Funktionalität, in dem man geerbte  Methoden modifiziert, oder neue Methoden und Attribute hinzufügt.
-
-\subsubsection{Generalisierung}
-Bei der \OviIndex{Generalisierung} werden Gemeinsamkeiten einer Gruppe ähnlicher, bereits bestehender Klassen in einer neuen Klasse (\OviIndex{Oberklasse}) zusammengefasst, und lässt anschliessend die (bestehenden) Klassen (\OviIndex{Unterklassen}) davon erben. Damit können Redundanzen und Code-Duplikate minimiert werden.
-
-\subsubsection{Abstrakte Klassen}
-Klassen die durch Generalisieren entstanden sind, haben oft keine konkrete Bedeutung und dienen nur der Strukturierung. Von diesen Klassen sollen oft auch gar keine Objekte erzeugt werden (können). In einem solchen Fall handelt es sich um eine  \OviIndex{abstrakte Klasse}. Wenn eine Klasse als  \OviIndex{abstrakt} definiert ist,
-können von ihr keine Objekte erzeugt werden. Abstrakte Klassen werden in der UML durch
-einen in kursiver Schrift gesetzten Namen gekennzeichnet.
-Wenn man eine Klasse abstrakt definiert ist es nicht möglich, davon Objekte zu erzeugen. Unter \Cpp ist eine Klasse abstrakt, sobald sie eine oder mehrere rein virtuelle Methoden besitzt. Abstrakte Klassen werden in der UML durch einen kursiven Namen oder der Einschränkung \{Abstrakt\} gekennzeichnet.
- 
-Wenn eine Oberklasse nur zur Generalisierung, also zur Zusammenfassung von Gemeinsamkeiten erzeugt wurde, und es keinen Sinn macht von dieser Klasse Objekte erzeugen zu können, kann man diese Klasse als \OviIndex{abstrakt} definieren. Eine abstrakte Klasse wird nur in der Klassenhierarchie als Oberklasse benutzt, es gibt aber keine sinnvollen konkreten Instanzen dieser Klasse (Ein Objekt dieser Klasse hätte keine sinnvolle Bedeutung oder Funktion). 
-
-
-Man baut zum Beispiel nie einfach ein Auto, sondern immer ein bestimmtes Modell, also macht es auch keinen Sinn, ein Autoobjekt zu erzeugen, aber es macht durchaus Sinn, die Gemeinsamkeiten aller Automodelle in einer gemeinsamen Oberklasse 'Auto' zusammenzufassen, nur ist diese Klasse eben abstrakt. 
- 
-
-%\subsubsection{Generalisierung, Spezialisierung, Abstrakte Klassen}
-
-%Wie sich bereits gezeigt hat, sind bestimmte Klassen \OviIndex{Spezialisierungen} (Erweiterungen) anderer Klassen. Diese Eigenschaft kann man ausnutzen, um diese ähnlichen Klassen zu gruppieren. Es können auch aus einer Gruppe von ähnlichen Klassen gemeinsame Eigenschaften und Funktionen zu einer neuen Klasse abstrahiert werden. Man spricht an dieser Stelle von \OviIndex{Generalisierung}. Wird aus mehreren Klassen eine neue Klasse generalisiert, so spricht man von einer \OviIndex{Oberklasse}. In umgekehrter Richtung werden die spezielleren Klassen als \OviIndex{Unterklassen} bezeichnet. 
-
-\subsubsection{Zugriffsrechte}
+\subsection{Zugriffsrechte}
 Für jedes Attribut und jede Methode kann festgelegt werden, wer darauf zugreifen kann. Dafür gibt es die Zugriffsspezifizierer. 
 
 Mit 'public' werden Member gekennzeichnet, welche von überall her benutzt werden dürfen.
@@ -723,6 +696,35 @@ Mit 'private' werden Member gekennzeichnet, auf die nur innerhalb der Klasse zug
 Attribute werden üblicherweise auf private oder allenfalls protected gesetzt, Methoden sind meistens als public deklariert, die Schnittstellenmethoden der Klasse sind immer public.
 Hilfsmethoden für klasseninterne Zwecke sollten private oder protected sein.
  
+\subsection{Abstrakte Klassen}
+Klassen die durch Generalisieren entstanden sind, haben oft keine konkrete Bedeutung und dienen nur der Strukturierung. Von diesen Klassen sollen oft auch gar keine Objekte erzeugt werden (können). In einem solchen Fall handelt es sich um eine  \OviIndex{abstrakte Klasse}. Eine abstrakte Klasse wird nur in der Klassenhierarchie als Oberklasse benutzt, es gibt aber keine sinnvollen konkreten Instanzen dieser Klasse (Ein Objekt dieser Klasse hätte keine sinnvolle Bedeutung oder Funktion). Wenn eine Klasse als  \OviIndex{abstrakt} definiert ist,
+können von ihr keine Objekte erzeugt werden. Abstrakte Klassen werden in der UML durch
+einen in kursiver Schrift gesetzten Namen gekennzeichnet.
+Wenn man eine Klasse abstrakt definiert ist es nicht möglich, davon Objekte zu erzeugen. Unter \Cpp ist eine Klasse abstrakt, sobald sie eine oder mehrere rein virtuelle Methoden besitzt. Abstrakte Klassen werden in der UML durch einen kursiven Namen oder der Einschränkung \{Abstrakt\} gekennzeichnet.
+ 
+
+
+Man baut zum Beispiel nie einfach ein Auto, sondern immer ein bestimmtes Modell, also macht es auch keinen Sinn, ein Autoobjekt zu erzeugen, aber es macht durchaus Sinn, die Gemeinsamkeiten aller Automodelle in einer gemeinsamen Oberklasse 'Auto' zusammenzufassen, nur ist diese Klasse eben abstrakt. 
+ 
+
+\section{Beziehungen zwischen Klassen}
+
+Ein Softwaresystem besteht im Normalfall aus einer grösseren Menge von Klassen. Zur Strukturierung dieser Klassenmenge sucht man die Beziehungen, welche diese Klassen untereinander haben. Ähnlichkeits-Beziehungen werden durch Vererbung, Zusammenarbeit zwischen den Klassen durch Assoziationen dargestellt.
+
+\subsection{Vererbung}
+Bei der \OviIndex{Vererbung} sucht man nach ähnlichen Klassen und Gemeinsamkeiten zwischen Klassen. Daraus lässt sich eine Art Stammbaum der Klassen entwickeln. Zum Beispiel sind Hunde und Katzen Säugetiere, somit könnte man die Gemeinsamkeiten in eine Oberklasse Säugetiere auslagern. Durch die Vererbung können Methoden und Attribute einer bestehenden Klasse als Basis für eine neue Klasse verwendet werden. Die neue Klasse muss nur noch ihre zusätzliche Funktionalität durch Ändern der geerbten Methoden und allenfalls durch zusätzliche Attribute und Methoden realisieren.
+ 
+\subsubsection{Spezialisierung}
+Bei der \OviIndex{Spezialisierung} wird eine bereits existierende Klasse, welche die gewünschte Funktionalität bereits zum Teil erfüllt, um die fehlende Funktionalität ergänzt. Dazu lässt man die neue Klasse (\OviIndex{Abgeleitete Klasse}) von der existierenden Klasse (\OviIndex{Basisklasse}) erben. Anschliessend ergänzt man die abgeleitete Klasse um die gewünschte zusätzliche Funktionalität, in dem man geerbte  Methoden modifiziert, oder neue Methoden und Attribute hinzufügt.
+
+\subsubsection{Generalisierung}
+Bei der \OviIndex{Generalisierung} werden Gemeinsamkeiten einer Gruppe ähnlicher, bereits bestehender Klassen in einer neuen Klasse (\OviIndex{Oberklasse}) zusammengefasst, und lässt anschliessend die (bestehenden) Klassen (\OviIndex{Unterklassen}) davon erben. Damit können Redundanzen und Code-Duplikate minimiert werden.
+
+
+%\subsubsection{Generalisierung, Spezialisierung, Abstrakte Klassen}
+
+%Wie sich bereits gezeigt hat, sind bestimmte Klassen \OviIndex{Spezialisierungen} (Erweiterungen) anderer Klassen. Diese Eigenschaft kann man ausnutzen, um diese ähnlichen Klassen zu gruppieren. Es können auch aus einer Gruppe von ähnlichen Klassen gemeinsame Eigenschaften und Funktionen zu einer neuen Klasse abstrahiert werden. Man spricht an dieser Stelle von \OviIndex{Generalisierung}. Wird aus mehreren Klassen eine neue Klasse generalisiert, so spricht man von einer \OviIndex{Oberklasse}. In umgekehrter Richtung werden die spezielleren Klassen als \OviIndex{Unterklassen} bezeichnet. 
+
 
 \subsubsection{Überschreiben von Methoden}
 Bei der Vererbung übernimmt die abgeleitete Klasse alle Methoden und Attribute der Elternklasse. Alle Attribute und Methoden der Elternklasse sind so auch in der abgeleiteten Klasse vorhanden, ausser dies sei durch Einschränken der Zugriffsrechte unterdrückt worden.
@@ -789,7 +791,7 @@ Bei der '\OviIndex{sehr späten Bindung}' wird grundsätzlich erst während der Lau
 
 %gefühentschieden, wird ausschliesslich während des Programmlaufes entschieden welche Methode auszuführen ist. Dies erfolgt durch Signaturvergleich während der Laufzeit. Es ist jedoch möglich, dass eine Methode aufgerufen wird, die gar nicht vorhanden ist, was zu einem Fehler zur Laufzeit führt. (Beispiel: SmallTalk). Dafür können auch noch zur Laufzeit neue Klassen und Methoden hinzugefügt werden.
 
-\paragraph{Polymorphismus}
+\subsubsection{Polymorphismus}
 \OviIndex{Polymorphismus} bedeutet, dass überall wo ein Objekt einer Basisklasse erwartet wird, auch ein Objekt einer davon abgeleiteten Klasse übergeben werden kann, \emph{aber das Objekt dadurch seine Identität nicht verliert}. 
 
 \OviIndex{Polymorphismus} setzt späte oder sehr späte Bindung voraus. Schliesslich soll ja in jedem Fall die zum effektiven Objekt gehörende Methode aufgerufen werden, und nicht die Methode der Oberklasse. Um bei \Cpp die späte Bindung zu ermöglichen, müssen die betroffenen Memberfunktionen (Methoden) als \OviIndex{virtuell} deklariert werden, dies geschieht durch das voranstellen des Schlüsselwortes \OviIndex{virtual} in der Klassendeklaration, und der Aufruf muss über Zeiger oder Referenzen erfolgen:
@@ -873,23 +875,40 @@ class Auto : public Fahrzeug {
 \end{CCode}
 
  
-\subsection{Weitere Beziehungen zwischen Klassen}
+\subsection{Assoziationen}
 Wenn mehrere Objekte auf irgend eine Art miteinander zusammenarbeiten, so kann man drei Arten von Assoziationen unterscheiden: Assoziation, Aggregation und Komposition.
-Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
 
-\paragraph{Assoziation}
+Aggregation und Komposition sind Spezialfälle von Assoziationen. Eine reine Aggregation hat die Bedeutung von 'Enthält', eine Komposition die von 'Besteht aus'. Die Aggregation ist etwas lockerer als die Komposition. Teilnehmer einer Komposition gehören normalerweise nur zu einer Komposition, Teilnehmer einer Aggregation können zu verschiedenen Aggregationen gehören. Eine Komposition ist eine feste Einheit, die einzelnen Mitglieder können nicht selbständig existieren und sind von Aussen meist nicht sichtbar.
+
+\subsubsection{Einfache Assoziation}
 \label{sec:Assoziation}
-Bei einer \OviIndex{Assoziation} ''kennen'' die beteiligten Objekte einander, existerien aber weiterhin unabhängig voneinander. Eine Assoziation ist meist von kurzzeitiger Natur. Z. B. Das Auto benutzt die Strasse. Die Assoziation ist der allgemeine Fall, Aggregation und Komposition sind Spezialisierungen der Assoziation.
-\paragraph{Aggregation}
+Bei einer \OviIndex{Assoziation} ''kennen'' die beteiligten Objekte einander, existerien aber weiterhin unabhängig voneinander. Eine Assoziation ist meist von kurzzeitiger Natur. Z. B. Das Auto benutzt die Strasse. Die Assoziation ist der allgemeine Fall, Aggregation und Komposition sind Spezialisierungen der Assoziation. Im Klassendiagramm gemäss der UML wird eine Assoziation mit einer einfachen Verbindungslinie zwischen den beiden Klassen dargestellt. 
+
+\subsubsection{Aggregation}
 \label{sec:Aggregation}
 Bei einer \OviIndex{Aggregation} wird eine 'ist Teil von' Beziehung dargestellt. Z. B. das Rad ist Teil eines Autos, es kann aber auch alleine existieren (Reserverad im Keller). Bei einer Aggregation wird meist eine Gruppe von Objekten miteinander verknüpft, um eine bestimmte Aufgabe zu erledigen. Dabei wird normalerweise ein Objekt allen anderen als Koordinator übergeordnet, und der Rest des Systems kommuniziert nur mit dem Koordinator. Wenn die Aufgabe gelöst ist, können die Objekte wieder voneinander getrennt werden.
 
 Aus einem Metallbaukasten lässt sich ein Modell zusammensetzten, welches aber später wieder auseinandergenommen werden kann, und aus den Einzelteilen lässt sich wieder etwas neues konstruieren.
+
+Im Klassendiagramm gemäss der UML wird eine Aggregation durch eine Verbindungslinie zwischen den beiden Klassen mit mit einem leeren Rhombus bei der übergeordneten Klasse dargestellt. 
   
-\paragraph{Komposition}
+Ein Beispiel für eine Aggregation wäre eine Schulklasse wie in Bild \ref{fig:Aggregation}. Eine Klasse setzt sich aus Studenten zusammen, aber wenn die Klasse aufgelöst wird, existieren die Studenten weiter. Zudem können (Müssen aber nicht, daher 0..1) die Studenten an weiteren Verbindungen wie z.B. an einem Verein teilnehmen.
+
+\begin{figure}[htb]
+	  \centering
+		\includegraphics{Aggregation}
+		\caption{Eine Aggreggation}
+	\label{fig:Aggregation}
+\end{figure}
+
+Eine Aggregation wird in \Cpp üblicherweise mit Zeigern implementiert.
+  
+  
+\subsubsection{Komposition}
 \label{sec:Komposition}
 Bei einer \OviIndex{Komposition} wird meist eine Gruppe von Objekten miteinander verknüpft, um eine bestimmte Aufgabe zu erledigen. Dabei wird normalerweise ein Objekt allen anderen als Koordinator übergeordnet, und der Rest des Systems kommuniziert nur mit dem Koordinator. Die untergeordneten Objekte verlieren ihre Selbständigkeit, sie werden meistens direkt vom Koordinator erzeugt, und auch wieder gelöscht. Die Elemente einer Komposition können nicht auseinander genommen werden, da die Objekte alleine keine Sinnvolle Aufgabe erledigen können.
 
+Aggregation und Komposition sind Spezialfälle von Assoziationen. Eine reine Aggregation hat die Bedeutung von 'Enthält', eine Komposition die von 'Besteht aus'. Die Aggregation ist etwas lockerer als die Komposition. Teilnehmer einer Komposition gehören normalerweise nur zu einer Komposition, Teilnehmer einer Aggregation können zu verschiedenen Aggregationen gehören. Eine Komposition ist eine feste Einheit, die einzelnen Mitglieder können nicht selbständig existieren und sind von Aussen meist nicht sichtbar.
 
 %Bei einer \OviIndex{Komposition} werden mehrere Objektebilden mehrere nicht eigenständige Objekte zusammen eine Einheit. Ein weiteres Merkmal einer Komposition ist, dass ein aussenstehendes Objekt die Einzelobjekte der Aggregation nicht erkennen kann. 
 
@@ -898,24 +917,71 @@ Bei einer \OviIndex{Komposition} wird meist eine Gruppe von Objekten miteinander
 Eine Kaffeemaschine wird von aussen als eine Einheit wahrgenommen, die einzelnen Komponenten der Kaffeemaschine für sich alleine keine nutzbringende Aufgabe erledigen.
 Und wenn die Kaffeemaschine explodiert, sind auch ihre Komponenten nicht mehr vorhanden.
 
+Im Klassendiagramm gemäss der UML wird eine Komposition durch eine Verbindungslinie zwischen den beiden Klassen mit mit einem vollen Rhombus bei der übergeordneten Klasse dargestellt. 
+
+
+Bild \ref{fig:Komposition} zeigt ein Beispiel für eine Komposition: Ein Auto besteht aus 4 Rädern, 4 Türen und einem Chassis. Wenn das Auto aufhört zu existieren verschwinden auch die restlichen Komponenten:
+ 
+\begin{figure}[htbp]
+	  \centering
+		\includegraphics{Komposition}
+		\caption{Eine Komposition}
+	\label{fig:Komposition}
+\end{figure}
+
+Eine Komposition wird in \Cpp durch Zeiger, Referenzen oder Attribute realisiert:
+\pagebreak[4]
+\begin{multicols}{2}[ ][1cm] 
+\begin{CCode}
+// Als Attribute
+
+class Auto {
+   Chassis MeinChassis;
+   Rad     MeineRaeder[4];  // Array fuer 
+                            // 4 Raeder
+   Tuere   MeineTueren[4];  // Array fuer 
+                            // 4 Tueren
+
+   public:
+        Auto();
+       ~Auto();
+       
+       
+};
+\end{CCode}
+
+\begin{CCode}
+// Als Zeiger
+
+class Auto {
+   Chassis *MeinChassis;
+   Rad     *MeineRaeder[4]; //Array fuer 
+                            //4 Zeiger 
+                            // auf Raeder
+   Tuere   *MeineTueren[4]; //Array fuer 
+                            //4 Zeiger 
+                            // auf Tueren
+
+   public:
+        Auto();
+       ~Auto();
+};
+\end{CCode}
+\end{multicols}
+ 
+
+
 %Ein Tisch und vier Stühle bilden eine Sitzgruppe. Ein Tisch kann aber auch eigenständig verwendet werden. Auch ein Stuhl kann ohne Tisch eine Funktion erfüllen. Es handelt sich um eine Aggregation. Vier Tischbeine und eine Tischplatte bilden zusammen das Objekt Tisch. Tischbein und Tischplatte allein haben keine Funktionalität. Erst zusammen als Tisch erfüllen sie einen Zweck. Es handelt sich um eine Komposition. Eine Person im Raum erkennt den Tisch nur als gesamtes Objekt, seine Einzelteile werden nicht wahrgenommen.
  
 %Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
 
-\subsubsection{Assoziation und Kardinalität}
-Mit der \OviIndex{Kardinalität} wird angegeben, wie viel Objekte einer Klasse mit wievielen einer anderen Klasse in Beziehung stehen. Im Klassendiagramm der UML wird eine Assoziation mit einer einfachen Verbindungslinie zwischen den beiden Klassen dargestellt. Die Zahlen an den Verbindungsenden werden als Kardinalität bezeichnet. Ein * steht für beliebig viel. Für das Diagramm in Bild \ref{fig:Assoziation2} bedeuten sie, dass ein Besitzer 0 bis beliebig viele Fahrzeuge besitzen kann, dass aber ein Fahrzeug jeweils genau einen Besitzer hat. Bei den Kardinalitäten ist es immer angebracht, sich noch einmal kurz zu überlegen, ob sie wirklich in jedem Fall sinn machen (Kann es nicht sein dass ein Fahrzeug niemandem gehört? Kann ein Fahrzeug mehreren Personen gehören? Und falls wir bei Fahrzeug 1..* gewählt hätten: Besitzen wirklich alle Leute mindestens 1 Fahrzeug? Eine Faustregel sagt, das 0 als untere Grenze meist die bessere Wahl ist)
-
-\begin{figure}[H]
-	  \centering
-		\includegraphics{Assoziation2}
-	\caption{Ungerichtete Assoziation} 
-	\label{fig:Assoziation2}
-\end{figure}
- 
 
 \subsubsection{Gerichtete Assoziation (Navigation)}
  
-Falls eine Assoziation nur in eine Richtung \OviIndex{navigierbar} ist, das heisst nur einer der Teilnehmer den anderen kennt, kann dies durch einen Pfeil ausgedrückt werden. Wenn zum Beispiel der Besitzer sein Fahrzeug kennt, aber das Fahrzeug nicht seinen Besitzer, würde das wie in Bild \ref{fig:Assoziation1} aussehen:
+Falls eine Assoziation, Komposition oder Aggregation nur in eine Richtung \OviIndex{navigierbar} ist, das heisst nur einer der Teilnehmer den anderen kennt, kann dies durch einen Pfeil ausgedrückt werden.
+Bei Komposition und Aggregation kann die Navigation nur vom Rhombus (Übergeordneten Objekt) wegzeigen. 
+
+Wenn zum Beispiel der Besitzer sein Fahrzeug kennt, aber das Fahrzeug nicht seinen Besitzer, würde das wie in Bild \ref{fig:Assoziation1} aussehen:
  
 \begin{figure}[H]
 	  \centering
@@ -973,72 +1039,85 @@ class Besitzer {
 };
 \end{CCode}
 
-Kardinalitäten die grösser als 1 sind, werden durch Listen oder Felder von Zeigern oder Objekten realisiert. Wenn die Anzahl von Objekten während dem Programmlauf dynamisch ändern kann oder keine fixe Obergrenze für die Anzahl von Objekten definiert ist, werden vor allem Listen eingesetzt.
  
-\subsubsection{Aggregation, Komposition}
-Aggregation und Komposition sind Spezialfälle von Assoziationen. Eine reine Aggregation hat die Bedeutung von 'Enthält', eine Komposition die von 'Besteht aus'. Die Aggregation ist etwas lockerer als die Komposition. Teilnehmer einer Komposition gehören normalerweise nur zu einer Komposition, Teilnehmer einer Aggregation können zu verschiedenen Aggregationen gehören. Eine Komposition ist eine feste Einheit, die einzelnen Mitglieder können nicht selbständig existieren und sind von Aussen meist nicht sichtbar.
+%\subsubsection{Aggregation, Komposition}
+%Aggregation und Komposition sind Spezialfälle von Assoziationen. Eine reine Aggregation hat die Bedeutung von 'Enthält', eine Komposition die von 'Besteht aus'. Die Aggregation ist etwas lockerer als die Komposition. Teilnehmer einer Komposition gehören normalerweise nur zu einer Komposition, Teilnehmer einer Aggregation können zu verschiedenen Aggregationen gehören. Eine Komposition ist eine feste Einheit, die einzelnen Mitglieder können nicht selbständig existieren und sind von Aussen meist nicht sichtbar.
 
-Bild \ref{fig:Komposition} zeigt ein Beispiel für eine Komposition: Ein Auto besteht aus 4 Rädern, 4 Türen und einem Chassis. Wenn das Auto aufhört zu existieren verschwinden auch die restlichen Komponenten:
+%Bild \ref{fig:Komposition} zeigt ein Beispiel für eine Komposition: Ein Auto besteht aus 4 Rädern, 4 Türen und einem Chassis. Wenn das Auto aufhört zu existieren verschwinden auch die restlichen Komponenten:
  
-\begin{figure}[htbp]
+%\begin{figure}[htbp]
+%	  \centering
+%		\includegraphics{Komposition}
+%		\caption{Eine Komposition}
+%	\label{fig:Komposition}
+%\end{figure}
+
+%Eine Komposition wird in \Cpp durch Zeiger, Referenzen oder Attribute realisiert:
+%\pagebreak[4]
+%\begin{multicols}{2}[ ][1cm] 
+%\begin{CCode}
+%// Als Attribute
+%
+%class Auto {
+%   Chassis MeinChassis;
+%   Rad     MeineRaeder[4];  // Array fuer 
+%                            // 4 Raeder
+%   Tuere   MeineTueren[4];  // Array fuer 
+%                            // 4 Tueren
+%
+%   public:
+%        Auto();
+%       ~Auto();
+%       
+%       
+%};
+%\end{CCode}
+%
+%\begin{CCode}
+%// Als Zeiger
+%
+%class Auto {
+%   Chassis *MeinChassis;
+%   Rad     *MeineRaeder[4]; //Array fuer 
+%                            //4 Zeiger 
+%                            // auf Raeder
+%   Tuere   *MeineTueren[4]; //Array fuer 
+%                            //4 Zeiger 
+%                            // auf Tueren
+%
+%   public:
+%        Auto();
+%       ~Auto();
+%};
+%\end{CCode}
+%\end{multicols}
+% 
+
+ 
+%Ein Beispiel für eine Aggregation wäre eine Schulklasse wie in Bild \ref{fig:Aggregation}. Eine Klasse setzt sich aus Studenten zusammen, aber wenn die Klasse aufgelöst wird, existieren die Studenten weiter. Zudem können (Müssen aber nicht, daher 0..1) die Studenten an weiteren Verbindungen wie z.B. an einem Verein teilnehmen.
+
+%\begin{figure}[htb]
+%	  \centering
+%		\includegraphics{Aggregation}
+%		\caption{Eine Aggreggation}
+%	\label{fig:Aggregation}
+%\%end{figure}
+
+%Eine Aggregation wird in \Cpp üblicherweise mit Zeigern implementiert.
+
+\subsubsection{Kardinalität}
+Mit der \OviIndex{Kardinalität} wird bei den Assoziationen angegeben, wieviele Objekte einer Klasse mit wievielen Objekten einer anderen Klasse in Beziehung stehen. Dies wird durch Zahlen oder Symbolen an den Verbindungsenden der Assoziationslinien dargestellt. Ein * steht für beliebig viel, n..m steht für einen Bereich. Für das Diagramm in Bild \ref{fig:Assoziation2} bedeuten sie, dass ein Besitzer 0 bis beliebig viele Fahrzeuge besitzen kann, dass aber ein Fahrzeug jeweils genau einen Besitzer hat. Bei den Kardinalitäten ist es immer angebracht, sich noch einmal kurz zu überlegen, ob sie wirklich in jedem Fall sinn machen (Kann es nicht sein dass ein Fahrzeug niemandem gehört? Kann ein Fahrzeug mehreren Personen gehören? Und falls wir bei Fahrzeug 1..* gewählt hätten: Besitzen wirklich alle Leute mindestens 1 Fahrzeug? Eine Faustregel sagt, das 0 als untere Grenze meist die bessere Wahl ist)
+Bei einer Komposition ist die Kardinalität beim übergeordneten Objekt (Am Rhombusseitigen Ende) implizit immer 1 und wird nicht geschrieben.
+
+\begin{figure}[H]
 	  \centering
-		\includegraphics{Komposition}
-		\caption{Eine Komposition}
-	\label{fig:Komposition}
+		\includegraphics{Assoziation2}
+	\caption{Ungerichtete Assoziation} 
+	\label{fig:Assoziation2}
 \end{figure}
-
-Eine Komposition wird in \Cpp durch Zeiger, Referenzen oder Attribute realisiert:
-\pagebreak[4]
-\begin{multicols}{2}[ ][1cm] 
-\begin{CCode}
-// Als Attribute
-
-class Auto {
-   Chassis MeinChassis;
-   Rad     MeineRaeder[4];  // Array fuer 
-                            // 4 Raeder
-   Tuere   MeineTueren[4];  // Array fuer 
-                            // 4 Tueren
-
-   public:
-        Auto();
-       ~Auto();
-       
-       
-};
-\end{CCode}
-
-\begin{CCode}
-// Als Zeiger
-
-class Auto {
-   Chassis *MeinChassis;
-   Rad     *MeineRaeder[4]; //Array fuer 
-                            //4 Zeiger 
-                            // auf Raeder
-   Tuere   *MeineTueren[4]; //Array fuer 
-                            //4 Zeiger 
-                            // auf Tueren
-
-   public:
-        Auto();
-       ~Auto();
-};
-\end{CCode}
-\end{multicols}
  
+ Kardinalitäten die grösser als 1 sind, werden durch Listen oder Felder von Zeigern oder Objekten realisiert. Wenn die Anzahl von Objekten während dem Programmlauf dynamisch ändern kann oder keine fixe Obergrenze für die Anzahl von Objekten definiert ist, werden vor allem Listen eingesetzt.
 
- 
-Ein Beispiel für eine Aggregation wäre eine Schulklasse wie in Bild \ref{fig:Aggregation}. Eine Klasse setzt sich aus Studenten zusammen, aber wenn die Klasse aufgelöst wird, existieren die Studenten weiter. Zudem können (Müssen aber nicht, daher 0..1) die Studenten an weiteren Verbindungen wie z.B. an einem Verein teilnehmen.
-
-\begin{figure}[htb]
-	  \centering
-		\includegraphics{Aggregation}
-		\caption{Eine Aggreggation}
-	\label{fig:Aggregation}
-\end{figure}
-
-Eine Aggregation wird in \Cpp üblicherweise mit Zeigern implementiert.
 
 
 \section{Objektdiagramm}
@@ -1088,7 +1167,7 @@ In den nachfolgenden Beispielen dient das Klassendiagramm in Bild \ref{fig:Verka
 	\label{fig:VerkaeuferKlasse}
 \end{figure}
 
-\section{Sequenzdiagramm}
+\subsection{Sequenzdiagramm}
 Mit Sequenzdiagrammen stellt man den Ablauf einer bestimmten Aktion dar. Dieses Diagramm betont vor allem den zeitlichen Ablauf. Es dient einerseits der Kontrolle ob man alle möglichen (Anwendungs-) Fälle korrekt abgedeckt hat aber auch zur Demonstation wie man sich den Ablauf der Handlung vorstellt. Dies ist auch ein gutes Hilfsmittel, um anderen Personen einen Einblick in die Funktionalität des Modells zu geben.
 Bei diesem Diagramm läuft die Zeitachse von oben nach unten. Die rechteckigen Kästen entlang der Objektachse zeigen die Lebensdauer einer Funktion, gehen also vom Anfang bis zum Ende eines Funktionslaufes. Bei verschachtelten Funktionsaufrufen werden Kästen überlagert. Ein Objekt kann erst später in der Zeitachse erzeugt werden, und auch explizit zerstört werden (Durch ein schräges Kreuz symbolisiert). 
 
@@ -1101,7 +1180,7 @@ In Bild \ref{fig:VerkaeuferSequenz} ist als Beispiel der Ablauf eines Vertragsab
 	\label{fig:VerkaeuferSequenz}
 \end{figure}
 
-\section{Kollaborationsdiagramm}
+\subsection{Kollaborationsdiagramm}
 Mit \OviIndex{Kollaborationsdiagrammen} kann man den gleichen Sachverhalt wie mit den Sequenzdiagrammen darstellen, aber die Betonung liegt nicht auf dem zeitlichen Ablauf, sondern auf der Zusammenarbeit der verschiedenen Objekten und deren Kommunikation.
 Die Reihenfolge der Methodenaufrufe wird hier durch Numerierung kenntlich gemacht.
 

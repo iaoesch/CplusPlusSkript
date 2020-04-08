@@ -3312,15 +3312,17 @@ Zusätzlicher Inhalt des Linkerskripts:
  
 \section{Effizienzbetrachtungen}
 \subsection{Übersicht}
-Bei der entwicklung der Sprache \Cpp wurde Wertt darauf gelegt, dass der generierte Code
+Bei der Entwicklung der Sprache \Cpp wurde Wert darauf gelegt, dass der generierte Code
 so effizient wie möglich wird, und zusätzlicher Aufwand nur entsteht, wenn die
 entsprechenden Features auch benutzt werden. Ein mit  \Cpp compiliertes C-Programm
-soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre.
+soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre. Nachfolgend eine Aufstellung der Kosten von \Cpp Features:
 
 
 \begin{center}
-	\begin{tabular}{l l l}
-	   Sprachelement & Zusätzlicher Speicherbedarf & Zusätzlicher Laufzeitbedarf & Deterministisch& In Interrupt einsetzbar\\ 
+	\begin{tabular}{|p{0.3\textwidth}|p{0.125\textwidth}|p{0.125\textwidth}|p{0.125\textwidth}|p{0.125\textwidth}|}
+		\hline
+	   Sprachelement & Zusätzlicher Speicherbedarf & Zusätzlicher Laufzeitbedarf & Deter-ministisch& In Interrupt einsetzbar\\ 
+		\hline
 	   Namensbereiche & Nein & Nein & Ja & Ja\\
 	   Klassen ohne virtuelle Funktionen & Nein & Nein & Ja & Ja\\
 		 Klassen mit virtuellen Funktionen & Ja & Nein & Ja & Ja\\
@@ -3334,19 +3336,96 @@ soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre.
 		 Dynamic Cast & Ja & Ja & Bedingt & Bedingt\\
 		 New / Delete & Ja & Ja & Bedingt & Bedingt\\
 		 Exception Handling	 & Ja & Bedingt & Nein & Nein\\
+		\hline
 		
 	\end{tabular}
 \end{center}
 
-	   Klassen ohne virtuelle Funktionen & Wie Strukturen in C \\
-		 Klassen mit virtuellen Funktionen & Zusätzlicher, versteckter Pointer in jedem Objekt\\
-		 Überladene Funktionen & Kein zusätzlicher Aufwand\\
-		 Klassenmethoden & Kein zusätzlicher Aufwand\\
-		 Nichtvirtuelle Methoden & Es wird ein zusätzliches, verstecktes Pointerargument (this-Pointer) übergeben\\
-		 Virtuelle Methoden & Es wird ein zusätzliches, verstecktes Pointerargument (this-Pointer) übergeben, zudem erfolgt der Aufruf bei Bedarf indirekt über die vtbl\\
+		 
+
+\subsection{Member Funktionen}
+Jeder Memberfunktion wird beim Aufruf ein zusätzliches, vor dem Programmierer verstecktes Argument übergeben, nämlich ein Zeiger auf das Objekt für welches die Methode aufgerufen wird. Innerhalb der Methode kann auf diesen Zeiger mit dem Schlüsselwort this zugegriffen werden.
+\begin{CCode}
+	x->f(a, 12);
+  // wird zu	
+	f(&x, a, 12);
+\end{CCode}
+ 
 \subsection{Virtuelle Funktionen}
-\subsection{RTTY (Runtime Type Information)}
+Beim Aufruf einer virtuellen Funktion soll die Funktion, welche zum effektiven Objekt gehört, aufgerufen werden. 
+
+Wenn eine virtuelle Funktion direkt auf ein Objekt angewendet wird, kann der Compiler bereits zur Compilezeit bestimmen, welches Objekt vorliegt, und den Funktionsaufruf direkt codieren. In diesem Fall entsteht kein zusätzlicher Laufzeitaufwand.
+
+Wenn eine virtuelle Funktion auf einen Pointer oder eine Referenz auf ein Objekt angewendet wird, kann der Compiler zur Compilezeit nicht bestimmen, welches Objekt vorliegt, es muss zur Laufzeit entschieden werden, welches Objekt vorliegt.
+
+Das setzt voraus, dass in jedem Objekt eine Information über das Objekt selbst abgelegt ist. Üblicherweise wird dazu an erster Stelle im Objekt ein zusätzlicher Pointer auf eine Tabelle abgelegt. Dieser Pointer wird vtblptr (Pointer auf die Virtuelle Funktionstabelle) genannt. 
+
+Für jede Klasse mit virtuellen Funktionen wird einmal eine solche Tabelle angelegt, alle Objekte einer Klasse verweisen auf dieselbe Tabelle.
+
+Ausgehend von folgendem Codefragment 
+\begin{CCode}
+	class Base {
+	   int x;
+		 int y;
+		
+	public:
+		           Base();
+		  virtual ~Base();
+		
+		  virtual void f1(int x);  
+		  virtual void f2();  
+		  virtual void f3();
+              void g();				
+	
+	};
+	
+	class Derived : public Base {
+      int z;
+		
+		
+	public:
+		           Derived();
+		  virtual ~Derived();
+		
+		  virtual void f1(int x);  
+		  virtual void f2();  
+		  virtual void f4();  
+              void h();				
+	
+	};
+	
+	
+	Base    ObjA();
+	Derived ObjB();
+
+\end{CCode}
+Könnten sich folgende Datenstrukturen ergeben:
+\begin{figure}[h]
+\centering
+%\def\svgwidth{\columnwidth}
+\input{VirtuelFunctionTable.pdf_tex}
+\end{figure}
+In den Tabellen der virtuellen Funktionen sind die Adressen der entsprechenden Methoden abgelegt. In einer abgeleiteten Klasse können neue Einträge hinzugefügt werden, aber das Layout und die Reihenfolge der Einträge der Basisklasse müssen erhalten bleiben. Bei überschriebenen Methoden werden an der entsprechenden Stelle in der Tabelle die Adressen der neuen Methoden abgelegt, bei geerbten Methoden werden die Adressen der Methoden der Basisklasse abgelegt, und bei neuen Methoden wird die Tabelle erweitert und die neuen Einträge hinten angefügt. 
+
+Der Aufruf einer virtuellen Methode würde in diesem Fall zu folgendem Code führen:
+\begin{CCode}
+
+// C++ Code
+Base *p = &ObjB;
+p->f1(5);
+
+// Effektiv ausgeführter Code
+p->vtblptr->f1(p, 5)
+\end{CCode}
+Es wird also nicht direkt die Funktion f1() aufgerufen, sondern es wird über den vtblptr in der Tabelle der virtuellen Funktionen die Adresse der effektiven Funktion geholt, und diese wird ausgeführt. Der Aufruf einer virtuellen Funktion kostet also einen zusaetzlichen Zugriff auf die Tabelle der virtuellen Funktionen. Ausser bei sehr kurzen Funktionen ist dieser Zugriff meist vernachlässigbar. Es kann auch durchaus sinnvoll sein, in einem Interrupthandler virtuelle Funktionen zu benutzen, insbesondere wenn dadurch ein switch() oder ein Vektortabellenzugriff im Handler eingespart werden kann. 
+ 
+\subsection{RTTI (Runtime Type Information)}
+Für die Runtime-Type-Information werden zusätzliche Inforamtionen für polymorphe Klassen abgelegt. Diese Information kann in die virtuelle Funktionstabelle integriert werden, oder die virtuelle Funktionstabelle wird um einen Eintrag auf die Typeninformation erweitert. Auf jeden Fall wird für jede Klasse zusätzlicher Speicher für diese Informationen benötigt.
+
+Ausser beim expliziten Zugriff auf die Typeninformation mit typeid() hat RTTI keinen Einfluss auf das Laufzeitverhalten.
+
 \subsection{Dynamic Cast}
+
 
 \chapter{\Cpp 11}
 Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschieded. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein.
@@ -3355,7 +3434,7 @@ Nachfolgend werden einige Neurungen aufgeführt.
 \section{Sprachumfang}
 \subsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
 
-RValue Referenzen werden durch T &&r (im Gegensatz zu T &r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von parametern werden in \Cpp oft temporäre
+RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
 
 Mit RValue Referenzen können nun Temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang).
@@ -3413,7 +3492,7 @@ extern template class std::vector<DemoClass>; // Template darf in diesem Modul b
 \end{CCode}
 
 \subsection{Initialisiererlisten}
-Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu mus jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer_list entgegennimmt.
+Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu mus jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
 
 Beispiel:
 \begin{CCode}
@@ -3428,7 +3507,7 @@ DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
 
 \end{CCode}
 
-Das Template std::initializer_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
+Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
 
 \subsection{Vereinheitlichte Initialisierung}
 Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels gescheiften Klammern initialisiert werden, sofern kein Initialisiererlisten-Konstruktor existiert, wird der
@@ -3516,7 +3595,7 @@ Mit Capture kann der Funktion zugriff auf Variablen der definierenden Funktion (
 
 Parameter ist die parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
-->return_type definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
+-\textgreater return\_type definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
 
 Body enthält den Code der Funktion.
 
@@ -3698,7 +3777,9 @@ u"Ein spezielles UTF-16 Zeichen: \u2018"
 U"Ein spezielles UTF-32 Zeichen: \U00002018"  
 \end{CCode}
 
-Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "Begrenzung( und )Begrenzung" eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"\textbackslash ) enthalten. 'Begrenzung kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+
+
+Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "Begrenzung( und )Begrenzung" eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. 'Begrenzung kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
 
 Beispiel:
 \begin{CCode}
@@ -3721,7 +3802,7 @@ OutputType operator "" _kg(unsigned long long);    // Erhaelt den Integerwert de
 OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
 \end{CCode}
 
-Die Operatorfunktionen können dabe einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix _kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern.
+Die Operatorfunktionen können dabe einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern.
 
 Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
 
@@ -3756,7 +3837,29 @@ class Demo {
 \end{CCode}
 Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
 
+\subsection{Weitere Neuerungen}
 
+\begin{itemize}
+	 \item Geänderte Definiton von POD (plain old data)
+   \item Template Alias
+   \item Gelockerte Restriktionen bei Unions
+   \item Neuer Datentyp long long int
+   \item Static Assertions
+   \item Sizeof auch bei Klassenmembern ohne ein effektives Objekt möglich
+   \item Alignementkontrolle bei Objekten
+   \item Einfacher Support für Garbagecollection
+   \item Attribute
+   \item Standardlibrary um Tupletypen erweitert
+   \item Standardlibrary um Hashtabellen erweitert
+   \item Standardlibrary um Regular expressions erweitert
+   \item Standardlibrary um General-purpose smart pointers erweitert
+   \item Standardlibrary mit erweiterbaren Zufahlszahlenhandling ergänzt
+   \item Standardlibrary mit Wrapper Referenzen erweitert
+   \item Standardlibrary mit polymorphen Wrappern für Funktionsobjekte ergänzt
+   \item Standardlibrary mit Type Traits zur Metaprogrammierung erweitert
+   \item Standardlibrary um vereinheitlichte Methode zur Bestimmung der Rückgabetypen von Funktionsobjekten erweitert.
+	
+\end{itemize}
 
 
 \appendix
