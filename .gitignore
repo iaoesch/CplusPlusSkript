@@ -1,0 +1,7 @@
+*.ps
+*.html
+*.dvi
+/ScriptOOPLatexV0_0.pdf
+*.tmp
+/ScriptOOPLatexV0_1.pdf
+/ScriptOOPLatexV0_12.pdf

@@ -1,0 +1,13 @@
+\expandafter\ifx\csname doTocEntry\endcsname\relax \expandafter\endinput\fi
+\doTocEntry\toclikechapter{}{\csname a:TocLink\endcsname{2}{x2-1000}{QQ2-2-1}{Inhaltsverzeichnis}}{5}\relax 
+\doTocEntry\tocchapter{1}{\csname a:TocLink\endcsname{3}{x3-20001}{QQ2-3-2}{Einleitung}}{7}\relax 
+\doTocEntry\tocchapter{2}{\csname a:TocLink\endcsname{4}{x4-30002}{QQ2-4-3}{Einf\"uhrung}}{9}\relax 
+\doTocEntry\tocsection{2.1}{\csname a:TocLink\endcsname{4}{x4-40002.1}{QQ2-4-4}{Geschichtliches, Motivation}}{9}\relax 
+\doTocEntry\tocsubsection{2.1.1}{\csname a:TocLink\endcsname{4}{x4-50002.1.1}{QQ2-4-5}{Unstrukturierte Programmierung}}{9}\relax 
+\doTocEntry\tocsubsection{2.1.2}{\csname a:TocLink\endcsname{4}{x4-60002.1.2}{QQ2-4-6}{Prozedurale Programmierung}}{9}\relax 
+\doTocEntry\tocsubsection{2.1.3}{\csname a:TocLink\endcsname{4}{x4-70002.1.3}{QQ2-4-7}{Modulare Programmierung}}{9}\relax 
+\doTocEntry\tocsubsection{2.1.4}{\csname a:TocLink\endcsname{4}{x4-80002.1.4}{QQ2-4-8}{Objektorientierte Programmierung}}{10}\relax 
+\doTocEntry\tocchapter{3}{\csname a:TocLink\endcsname{5}{x5-90003}{QQ2-5-9}{OOP Einf\"uhrung}}{12}\relax 
+\doTocEntry\tocsection{3.1}{\csname a:TocLink\endcsname{5}{x5-100003.1}{QQ2-5-10}{Kapselung}}{12}\relax 
+\doTocEntry\tocsection{3.2}{\csname a:TocLink\endcsname{5}{x5-110003.2}{QQ2-5-11}{Vererbung}}{12}\relax 
+\doTocEntry\tocsection{3.3}{\csname a:TocLink\endcsname{5}{x5-120003.3}{QQ2-5-12}{Polymorphismus}}{13}\relax 

@@ -1,0 +1,74 @@
+\contentsline {chapter}{\numberline {1}Einleitung}{3}
+\contentsline {chapter}{\numberline {2}Einf\"uhrung}{4}
+\contentsline {section}{\numberline {2.1}Geschichtliches, Motivation}{4}
+\contentsline {subsection}{\numberline {2.1.1}Unstrukturierte Programmierung}{4}
+\contentsline {subsection}{\numberline {2.1.2}Prozedurale Programmierung}{4}
+\contentsline {subsection}{\numberline {2.1.3}Modulare Programmierung}{4}
+\contentsline {subsection}{\numberline {2.1.4}Objektorientierte Programmierung}{5}
+\contentsline {chapter}{\numberline {3}OOP Einf\"uhrung}{6}
+\contentsline {section}{\numberline {3.1}Kapselung}{6}
+\contentsline {section}{\numberline {3.2}Vererbung}{6}
+\contentsline {section}{\numberline {3.3}Polymorphismus}{7}
+\contentsline {chapter}{\numberline {4}OOP Vertiefung}{9}
+\contentsline {section}{\numberline {4.1}Objekt und Klasse}{9}
+\contentsline {section}{\numberline {4.2}Botschaften und Attribute}{10}
+\contentsline {section}{\numberline {4.3}Vererbung, Aggregation, Assoziation}{11}
+\contentsline {subsection}{\numberline {4.3.1}Vererbung}{11}
+\contentsline {subsubsection}{Generalisierung, Spezialisierung, Abstrakte Klassen}{11}
+\contentsline {subsubsection}{\"Uberladen und \"Uberschreiben von Methoden}{12}
+\contentsline {subsubsection}{Bindung von \"uberschrieben Methoden}{12}
+\contentsline {paragraph}{Fr\"uhe Bindung}{12}
+\contentsline {paragraph}{Sp\"ate Bindung}{12}
+\contentsline {paragraph}{''Sehr'' sp\"ate Bindung}{12}
+\contentsline {paragraph}{}{12}
+\contentsline {subsubsection}{Notation der Vererbung}{13}
+\contentsline {subsection}{\numberline {4.3.2}Assoziation, Aggregation, Komposition}{14}
+\contentsline {paragraph}{Assoziation}{14}
+\contentsline {paragraph}{Aggregation}{14}
+\contentsline {paragraph}{Komposition}{14}
+\contentsline {subsubsection}{Assoziation und Kardinalit\"at}{14}
+\contentsline {subsubsection}{Aggregation, Komposition}{16}
+\contentsline {section}{\numberline {4.4}Objektdiagramm}{17}
+\contentsline {section}{\numberline {4.5}Sequenz und Kollaborationsdiagramme}{18}
+\contentsline {section}{\numberline {4.6}Sequenzdiagramme}{19}
+\contentsline {section}{\numberline {4.7}Kollaborationsdiagramme}{19}
+\contentsline {chapter}{\numberline {5}Entwurfsmuster (Design Patterns)}{21}
+\contentsline {section}{\numberline {5.1}Dekorator}{21}
+\contentsline {section}{\numberline {5.2}Zustand}{21}
+\contentsline {section}{\numberline {5.3}Beobachter (Observer)}{23}
+\contentsline {section}{\numberline {5.4}Proxy}{26}
+\contentsline {chapter}{\numberline {6}Klassen unter C{\tt ++} }{29}
+\contentsline {section}{\numberline {6.1}Erzeugen von Objekten}{30}
+\contentsline {section}{\numberline {6.2}Konstruktoren / Destruktoren}{30}
+\contentsline {section}{\numberline {6.3}Zugriffsrechte}{31}
+\contentsline {paragraph}{Public:}{31}
+\contentsline {paragraph}{Protected:}{31}
+\contentsline {paragraph}{Private:}{31}
+\contentsline {section}{\numberline {6.4}Deklaration einer Klasse}{31}
+\contentsline {subsection}{\numberline {6.4.1}Zugriffsrechte}{32}
+\contentsline {subsection}{\numberline {6.4.2}Attribute}{32}
+\contentsline {subsection}{\numberline {6.4.3}Konstruktoren}{32}
+\contentsline {subsection}{\numberline {6.4.4}Destruktor ('Es kann nur einen geben')}{32}
+\contentsline {subsection}{\numberline {6.4.5}Zuweisungsoperator}{32}
+\contentsline {subsection}{\numberline {6.4.6}Methoden}{32}
+\contentsline {section}{\numberline {6.5}Implementation der Klassen-Methoden}{33}
+\contentsline {subsection}{\numberline {6.5.1}Einbinden des eigenen Headerfile (Deklaration)}{33}
+\contentsline {subsection}{\numberline {6.5.2}Konstruktoren}{33}
+\contentsline {subsection}{\numberline {6.5.3}Destruktor}{33}
+\contentsline {subsection}{\numberline {6.5.4}Zuweisungsoperator}{34}
+\contentsline {subsection}{\numberline {6.5.5}Methoden}{34}
+\contentsline {subsection}{\numberline {6.5.6}Der this-Pointer}{35}
+\contentsline {section}{\numberline {6.6}Benutzung der Klasse}{35}
+\contentsline {section}{\numberline {6.7}Vererbung}{36}
+\contentsline {subsection}{\numberline {6.7.1}Deklaration}{36}
+\contentsline {subsection}{\numberline {6.7.2}Implementation}{37}
+\contentsline {subsection}{\numberline {6.7.3}Benutzung der Klasse}{38}
+\contentsline {section}{\numberline {6.8}Polymorphismus}{39}
+\contentsline {subsection}{\numberline {6.8.1}Deklaration}{39}
+\contentsline {subsection}{\numberline {6.8.2}Implementation}{39}
+\contentsline {subsection}{\numberline {6.8.3}Deklaration}{40}
+\contentsline {subsection}{\numberline {6.8.4}Implementation}{40}
+\contentsline {subsection}{\numberline {6.8.5}Deklaration}{40}
+\contentsline {subsection}{\numberline {6.8.6}Implementation}{40}
+\contentsline {subsection}{\numberline {6.8.7}Benutzung der Klassen}{41}
+\contentsline {chapter}{\numberline {7}\"Ubungen}{42}

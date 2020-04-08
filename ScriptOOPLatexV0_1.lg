@@ -1,0 +1,275 @@
+htfcss: ecbx  font-weight: bold;
+htfcss: ecsx  font-weight: bold;
+htfcss: ecbi  font-weight: bold;   font-style: italic;
+htfcss: ecit  font-style: italic; font-family: monospace;
+htfcss: ecss  font-family: sans-serif;
+htfcss: ecff  font-family: fantasy;
+htfcss: ecti  font-style: italic;
+htfcss: ectt  font-family: monospace;
+htfcss: ecsi font-style: italic; font-family: sans-serif;
+htfcss: cmmi font-style: italic;
+htfcss: cmmib font-style: italic; font-weight: bold;
+File: ScriptOOPLatexV0_1.html
+File: ScriptOOPLatexV0_1.css
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1li1.html
+File: ScriptOOPLatexV0_1ch1.html
+File: ScriptOOPLatexV0_1ch2.html
+File: ScriptOOPLatexV0_1ch3.html
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1ch4.html
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1ch5.html
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1ch6.html
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1ch7.html
+File: ScriptOOPLatexV0_1ch8.html
+File: ScriptOOPLatexV0_1ch9.html
+File: ScriptOOPLatexV0_1.tmp
+File: ScriptOOPLatexV0_1ch10.html
+Font_Class(1,"1"): <img  src="" alt="" class="%s-%dx-x-%x" />
+File: ScriptOOPLatexV0_1ap1.html
+Css: p.noindent { text-indent: 0em }
+Css: p.nopar { text-indent: 0em; }
+Css: p.indent{ text-indent: 1.5em }
+Css: @media print {div.crosslinks {visibility:hidden;}}
+Css: a img { border-top: 0; border-left: 0; border-right: 0; }
+Font_Css("4"): .small-caps{font-variant: small-caps; }
+Font_Css("10"): .htf-cmbx {font-weight: bold; font-style:normal;}
+Font_Css("12"): .htf-calligraphy {font-family:cursive}
+Font_Css("14"): .htf-italic {font-style: italic;}
+Font_Css("16"): .htf-bold {font-weight: bold;}
+Font_Css("12"): .htf-calligraphy-bold {font-family:cursive ; font-weight: bold; }
+Css: center { margin-top:1em; margin-bottom:1em; }
+Css: td center { margin-top:0em; margin-bottom:0em; }
+Css: .Canvas { position:relative; }
+Css: img.math{vertical-align:middle;}
+Css: li p.indent { text-indent: 0em }
+Css: .enumerate1 {list-style-type:decimal}
+Css: .enumerate2 {list-style-type:lower-alpha}
+Css: .enumerate3 {list-style-type:lower-roman}
+Css: .enumerate4 {list-style-type:upper-alpha}
+Css: .obeylines-h,.obeylines-v {white-space: nowrap; }
+Css: div.obeylines-v p { margin-top:0; margin-bottom:0; }
+Css: .overline{ text-decoration:overline; }
+Css: .overline img{ border-top: 1px solid black; }
+Css: td.displaylines {text-align:center; white-space:nowrap;}
+Css: .centerline {text-align:center;}
+Css: .rightline {text-align:right;}
+Css: div.verbatim {font-family: monospace; white-space: nowrap; }
+Css: .fbox {padding-left:3.0pt; padding-right:3.0pt; text-indent:0pt; border:solid black 0.4pt; }
+Css: table.minipage{width:100%;}
+Css: div.center, div.center div.center {text-align: center; margin-left:1em; margin-right:1em;}
+Css: div.center div {text-align: left;}
+Css: div.flushright, div.flushright div.flushright {text-align: right;}
+Css: div.flushright div {text-align: left;}
+Css: div.flushleft {text-align: left;}
+Css: .underline{ text-decoration:underline; }
+Css: .underline img{ border-bottom: 1px solid black; margin-bottom:1pt; }
+Css: .framebox-c, .framebox-l, .framebox-r { padding-left:3.0pt; padding-right:3.0pt; text-indent:0pt; border:solid black 0.4pt; }
+Css: .framebox-c {text-align:center;}
+Css: .framebox-l {text-align:left;}
+Css: .framebox-r {text-align:right;}
+Css: span.thank-mark{ vertical-align: super }
+Css: div.tabular, div.center div.tabular {text-align: center; margin-top:0.5em; margin-bottom:0.5em; }
+Css: table.tabular td p{margin-top:0em;}
+Css: table.tabular {margin-left: auto; margin-right: auto;}
+Css: div.td00{ margin-left:0pt; margin-right:0pt; }
+Css: div.td01{ margin-left:0pt; margin-right:5pt; }
+Css: div.td10{ margin-left:5pt; margin-right:0pt; }
+Css: div.td11{ margin-left:5pt; margin-right:5pt; }
+Css: td.td00{ padding-left:0pt; padding-right:0pt; }
+Css: td.td01{ padding-left:0pt; padding-right:5pt; }
+Css: td.td10{ padding-left:5pt; padding-right:0pt; }
+Css: td.td11{ padding-left:5pt; padding-right:5pt; }
+Css: .hline hr, .cline hr{ height : 1px; }
+Css: .tabbing-right {text-align:right;}
+Css: div.newtheorem { margin-bottom: 2em; margin-top: 2em;}
+Css: span.TEX {letter-spacing: -0.125em; }
+Css: span.TEX span.E{ position:relative;top:0.5ex;left:-0.0417em;}
+Css: a span.TEX span.E {text-decoration: none; }
+Css: span.LATEX span.A{ position:relative; top:-0.5ex; left:-0.4em; font-size:85%;}
+Css: span.LATEX span.TEX{ position:relative; left: -0.4em; }
+Css: .marginpar {width:20%; float:right; text-align:left; margin-left:auto; margin-top:0.5em; font-size:85%; text-decoration:underline;}
+Css: .marginpar p{margin-top:0.4em; margin-bottom:0.4em;}
+Css: div.float img, div.float .caption {text-align:center;}
+Css: div.figure img, div.figure .caption {text-align:center;}
+Css: .equation td{text-align:center; }
+Css: td.equation { margin-top:1em; margin-bottom:1em; } 
+Css: td.eqnarray4 { width:5%; white-space: normal; }
+Css: td.eqnarray2 { width:5%; }
+Css: table.eqnarray-star, table.eqnarray {width:100%;}
+Css: div.eqnarray{text-align:center;}
+Css: div.array {text-align:center;}
+Css: div.pmatrix {text-align:center;}
+Css: span.pmatrix img{vertical-align:middle;}
+Css: div.pmatrix {text-align:center;}
+Css: img.cdots{vertical-align:middle;}
+Css: div.tabular, div.center div.tabular {text-align: center; margin-top:0.5em; margin-bottom:0.5em; }
+Css: table.tabular td p{margin-top:0em;}
+Css: table.tabular {margin-left: auto; margin-right: auto;}
+Css: div.td00{ margin-left:0pt; margin-right:0pt; }
+Css: div.td01{ margin-left:0pt; margin-right:5pt; }
+Css: div.td10{ margin-left:5pt; margin-right:0pt; }
+Css: div.td11{ margin-left:5pt; margin-right:5pt; }
+Css: td.td00{ padding-left:0pt; padding-right:0pt; }
+Css: td.td01{ padding-left:0pt; padding-right:5pt; }
+Css: td.td10{ padding-left:5pt; padding-right:0pt; }
+Css: td.td11{ padding-left:5pt; padding-right:5pt; }
+Css: .hline hr, .cline hr{ height : 1px; }
+Css: div.array {text-align:center;}
+Css: h2.titleHead{text-align:center;}
+Css: div.maketitle{ margin-bottom: 2em; text-align:center; }
+Css: div.author, div.date {text-align:center;}
+Css: div.thanks{text-align:left; margin-left:10%; font-size:80%; font-style:italic; }
+Css: div.dedication {text-align:center;}
+Css: p.bibitem { text-indent: -2em; margin-left: 2em; margin-top:0.6em; margin-bottom:0.6em; }
+Css: p.bibitem-p { text-indent: 0em; margin-left: 2em; margin-top:0.6em; margin-bottom:0.6em; }
+Css: h1.partHead{text-align: center}
+Css: .quote {margin-bottom:0.25em; margin-top:0.25em; margin-left:1em; }
+Css: .caption td.id{font-weight: bold; white-space: nowrap; }
+Css: div.cation {text-align:center;}
+Css: .verse{white-space:nowrap; margin-left:2em}
+Css: .quotation {margin-bottom:0.25em; margin-top:0.25em; margin-left:1em; }
+Css: h1.partHead{text-align: center}
+Css: .abstract p {margin-left:5%; margin-right:5%;}
+Css: span.footnote-mark{ vertical-align: super }
+Css: .partToc a, .partToc, .likepartToc a, .likepartToc {line-height: 200%; font-weight:bold; font-size:110%;}
+Css: .chapterToc a, .chapterToc, .likechapterToc a, .likechapterToc, .appendixToc a, .appendixToc, .addchapToc a {line-height: 200%; font-weight:bold;}
+Css: .paragraphHead, .likeparagraphHead { margin-top:2em; font-weight: bold;}
+Css: .subparagraphHead, .likesubparagraphHead { font-weight: bold;}
+Css: div.lstinputlisting{ font-family: monospace; white-space: nowrap; }
+Css: table.multicols { width:100%; margin-left:1em; margin-top:1em; margin-bottom:1em; }
+Css: div.longtable{text-align:center;}
+Css: .figure img.graphics {margin-left:10%;}
+--- needs --- ScriptOOPLatexV0_1.idv[2] ==> ScriptOOPLatexV0_10x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[4] ==> ScriptOOPLatexV0_11x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[6] ==> ScriptOOPLatexV0_12x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[7] ==> ScriptOOPLatexV0_13x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[9] ==> ScriptOOPLatexV0_14x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[11] ==> ScriptOOPLatexV0_15x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[13] ==> ScriptOOPLatexV0_16x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[15] ==> ScriptOOPLatexV0_17x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[17] ==> ScriptOOPLatexV0_18x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[19] ==> ScriptOOPLatexV0_19x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[21] ==> ScriptOOPLatexV0_110x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[23] ==> ScriptOOPLatexV0_111x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[25] ==> ScriptOOPLatexV0_112x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[27] ==> ScriptOOPLatexV0_113x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[29] ==> ScriptOOPLatexV0_114x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[31] ==> ScriptOOPLatexV0_115x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[33] ==> ScriptOOPLatexV0_116x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[35] ==> ScriptOOPLatexV0_117x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[37] ==> ScriptOOPLatexV0_118x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[39] ==> ScriptOOPLatexV0_119x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[41] ==> ScriptOOPLatexV0_120x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[43] ==> ScriptOOPLatexV0_121x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[45] ==> ScriptOOPLatexV0_122x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[47] ==> ScriptOOPLatexV0_123x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[49] ==> ScriptOOPLatexV0_124x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[51] ==> ScriptOOPLatexV0_125x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[53] ==> ScriptOOPLatexV0_126x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[55] ==> ScriptOOPLatexV0_127x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[57] ==> ScriptOOPLatexV0_128x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[59] ==> ScriptOOPLatexV0_129x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[61] ==> ScriptOOPLatexV0_130x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[63] ==> ScriptOOPLatexV0_131x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[65] ==> ScriptOOPLatexV0_132x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[67] ==> ScriptOOPLatexV0_133x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[69] ==> ScriptOOPLatexV0_134x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[71] ==> ScriptOOPLatexV0_135x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[73] ==> ScriptOOPLatexV0_136x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[75] ==> ScriptOOPLatexV0_137x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[77] ==> ScriptOOPLatexV0_138x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[79] ==> ScriptOOPLatexV0_139x.png ---
+Css:  #TBL-3-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-4-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-5-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-6-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-7-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-8-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-9-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-10-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-11-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-12-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-13-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-14-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-15-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-16-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-17-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-18-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-19-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-20-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-21-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-22-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-23-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-24-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-25-1{ background-color:rgb(204,204,204)}
+Css:  #TBL-26-1{ background-color:rgb(204,204,204)}
+Css: span#colorbox1{background-color:rgb(204,204,204);}
+Css: span#colorbox2{background-color:rgb(204,204,204);}
+--- needs --- ScriptOOPLatexV0_1.idv[81] ==> ScriptOOPLatexV0_140x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[83] ==> ScriptOOPLatexV0_141x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[84] ==> ScriptOOPLatexV0_142x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[85] ==> ScriptOOPLatexV0_143x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[86] ==> ScriptOOPLatexV0_144x.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[88] ==> ScriptOOPLatexV0_145x.png ---
+--- characters ---
+Font("cmr","10","10","100")
+Font("cmmi","7","7","100")
+Font("cmmi","10","10","100")
+Font("cmsy","10","10","100")
+--- needs --- ScriptOOPLatexV0_1.idv[90] ==> opqr0a5e.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[91] ==> opqr0a38.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[92] ==> opqr0a32.png ---
+--- needs --- ScriptOOPLatexV0_1.idv[93] ==> opqr0a21.png ---
+Font("ecrm","1000","10","100")
+Font("ecbx","3583","35","100")
+Font("ecrm","1440","14","100")
+Font("ectt","1000","10","100")
+Font("ecrm","0800","8","100")
+Font("ectt","0800","8","100")
+Font("ecit","0800","8","100")
+Font("ecti","1000","10","100")
+Font("ecbx","1000","10","100")
+Font("ecrm","0900","9","100")
+Font("ecbx","0900","9","100")
+Font("ectt","0900","9","100")
+Font("ecti","0900","9","100")

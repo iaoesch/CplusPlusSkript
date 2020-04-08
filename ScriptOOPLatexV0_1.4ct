@@ -1,0 +1,221 @@
+\expandafter\ifx\csname doTocEntry\endcsname\relax \expandafter\endinput\fi 
+\doTocEntry\toclikechapter{}{\csname a:TocLink\endcsname{2}{x2-1000}{QQ2-2-1}{Inhaltsverzeichnis}}{6}\relax 
+\doTocEntry\tocchapter{1}{\csname a:TocLink\endcsname{3}{x3-20001}{QQ2-3-2}{Zu diesem Skript}}{11}\relax 
+\doTocEntry\tocchapter{2}{\csname a:TocLink\endcsname{4}{x4-30002}{QQ2-4-3}{Einf\"uhrung}}{13}\relax 
+\doTocEntry\tocsection{2.1}{\csname a:TocLink\endcsname{4}{x4-40002.1}{QQ2-4-4}{Geschichtliches, Motivation}}{13}\relax 
+\doTocEntry\tocsubsection{2.1.1}{\csname a:TocLink\endcsname{4}{x4-50002.1.1}{QQ2-4-5}{Unstrukturierte Programmierung}}{13}\relax 
+\doTocEntry\tocsubsection{2.1.2}{\csname a:TocLink\endcsname{4}{x4-60002.1.2}{QQ2-4-6}{Prozedurale Programmierung}}{13}\relax 
+\doTocEntry\tocsubsection{2.1.3}{\csname a:TocLink\endcsname{4}{x4-70002.1.3}{QQ2-4-7}{Modulare Programmierung}}{13}\relax 
+\doTocEntry\tocsubsection{2.1.4}{\csname a:TocLink\endcsname{4}{x4-80002.1.4}{QQ2-4-8}{Objektorientierte Programmierung}}{14}\relax 
+\doTocEntry\tocchapter{3}{\csname a:TocLink\endcsname{5}{x5-90003}{QQ2-5-9}{OOP Einf\"uhrung}}{16}\relax 
+\doTocEntry\tocsection{3.1}{\csname a:TocLink\endcsname{5}{x5-100003.1}{QQ2-5-10}{Kapselung}}{16}\relax 
+\doTocEntry\tocsection{3.2}{\csname a:TocLink\endcsname{5}{x5-110003.2}{QQ2-5-11}{Vererbung}}{16}\relax 
+\doTocEntry\tocsection{3.3}{\csname a:TocLink\endcsname{5}{x5-120003.3}{QQ2-5-12}{Polymorphismus}}{17}\relax 
+\doTocEntry\toclof{3.1}{\csname a:TocLink\endcsname{5}{x5-12001r1}{}{\ignorespaces Klassendiagramm mit Vererbung}}{figure}\relax 
+\doTocEntry\tocchapter{4}{\csname a:TocLink\endcsname{6}{x6-130004}{QQ2-6-14}{OOP Vertiefung}}{23}\relax 
+\doTocEntry\tocsection{4.1}{\csname a:TocLink\endcsname{6}{x6-140004.1}{QQ2-6-15}{Objekt und Klasse}}{23}\relax 
+\doTocEntry\tocsection{4.2}{\csname a:TocLink\endcsname{6}{x6-150004.2}{QQ2-6-16}{Botschaften und Attribute}}{24}\relax 
+\doTocEntry\tocsection{4.3}{\csname a:TocLink\endcsname{6}{x6-160004.3}{QQ2-6-17}{Vererbung, Aggregation, Assoziation}}{25}\relax 
+\doTocEntry\tocsubsection{4.3.1}{\csname a:TocLink\endcsname{6}{x6-170004.3.1}{QQ2-6-18}{Vererbung}}{26}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{6}{x6-180004.3.1}{QQ2-6-19}{Generalisierung, Spezialisierung, Abstrakte Klassen}}{26}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{6}{x6-190004.3.1}{QQ2-6-20}{\"Uberladen und \"Uberschreiben von Methoden}}{26}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{6}{x6-200004.3.1}{QQ2-6-21}{Bindung von \"uberschrieben Methoden}}{27}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-210004.3.1}{QQ2-6-22}{Fr\"uhe Bindung}}{27}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-220004.3.1}{QQ2-6-23}{Sp\"ate Bindung}}{27}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-230004.3.1}{QQ2-6-24}{''Sehr'' sp\"ate Bindung}}{27}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-240004.3.1}{QQ2-6-25}{}}{27}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{6}{x6-250004.3.1}{QQ2-6-26}{Notation der Vererbung}}{28}\relax 
+\doTocEntry\toclof{4.1}{\csname a:TocLink\endcsname{6}{x6-25001r1}{}{\ignorespaces Darstellungsvarianten der Vererbung}}{figure}\relax 
+\doTocEntry\tocsubsection{4.3.2}{\csname a:TocLink\endcsname{6}{x6-260004.3.2}{QQ2-6-28}{Assoziation, Aggregation, Komposition}}{31}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-270004.3.2}{QQ2-6-29}{Assoziation}}{31}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-280004.3.2}{QQ2-6-30}{Aggregation}}{31}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{6}{x6-290004.3.2}{QQ2-6-31}{Komposition}}{31}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{6}{x6-300004.3.2}{QQ2-6-32}{Assoziation und Kardinalit\"at}}{31}\relax 
+\doTocEntry\toclof{4.2}{\csname a:TocLink\endcsname{6}{x6-30001r2}{}{\ignorespaces Ungerichtete Assoziation}}{figure}\relax 
+\doTocEntry\toclof{4.3}{\csname a:TocLink\endcsname{6}{x6-30002r3}{}{\ignorespaces Gerichtete Assoziation}}{figure}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{6}{x6-310004.3.2}{QQ2-6-35}{Aggregation, Komposition}}{37}\relax 
+\doTocEntry\toclof{4.4}{\csname a:TocLink\endcsname{6}{x6-31001r4}{}{\ignorespaces Eine Komposition}}{figure}\relax 
+\doTocEntry\toclof{4.5}{\csname a:TocLink\endcsname{6}{x6-31032r5}{}{\ignorespaces Eine Aggreggation}}{figure}\relax 
+\doTocEntry\tocsection{4.4}{\csname a:TocLink\endcsname{6}{x6-320004.4}{QQ2-6-38}{Objektdiagramm}}{44}\relax 
+\doTocEntry\toclof{4.6}{\csname a:TocLink\endcsname{6}{x6-32001r6}{}{\ignorespaces Klassendiagramm}}{figure}\relax 
+\doTocEntry\toclof{4.7}{\csname a:TocLink\endcsname{6}{x6-32002r7}{}{\ignorespaces Ein m\"ogliches Objektdiagramm}}{figure}\relax 
+\doTocEntry\toclof{4.8}{\csname a:TocLink\endcsname{6}{x6-32003r8}{}{\ignorespaces Objektdiagramm nach \"Anderung der Besitzverh\"altnisse}}{figure}\relax 
+\doTocEntry\tocsection{4.5}{\csname a:TocLink\endcsname{6}{x6-330004.5}{QQ2-6-42}{Sequenz und Kollaborationsdiagramme}}{53}\relax 
+\doTocEntry\toclof{4.9}{\csname a:TocLink\endcsname{6}{x6-33001r9}{}{\ignorespaces Klassendiagramm einer Autohandlung}}{figure}\relax 
+\doTocEntry\tocsection{4.6}{\csname a:TocLink\endcsname{6}{x6-340004.6}{QQ2-6-44}{Sequenzdiagramme}}{56}\relax 
+\doTocEntry\toclof{4.10}{\csname a:TocLink\endcsname{6}{x6-34001r10}{}{\ignorespaces Sequenzdiagramm eines Vertragsabschlusses}}{figure}\relax 
+\doTocEntry\tocsection{4.7}{\csname a:TocLink\endcsname{6}{x6-350004.7}{QQ2-6-46}{Kollaborationsdiagramme}}{59}\relax 
+\doTocEntry\toclof{4.11}{\csname a:TocLink\endcsname{6}{x6-35001r11}{}{\ignorespaces Kollaborationsdiagramm eines Vertragsabschlusses}}{figure}\relax 
+\doTocEntry\tocchapter{5}{\csname a:TocLink\endcsname{7}{x7-360005}{QQ2-7-48}{Entwurfsmuster (Design Patterns)}}{64}\relax 
+\doTocEntry\tocsection{5.1}{\csname a:TocLink\endcsname{7}{x7-370005.1}{QQ2-7-49}{Dekorator}}{64}\relax 
+\doTocEntry\toclof{5.1}{\csname a:TocLink\endcsname{7}{x7-37001r1}{}{\ignorespaces Grundmuster des Dekorators}}{figure}\relax 
+\doTocEntry\toclof{5.2}{\csname a:TocLink\endcsname{7}{x7-37002r2}{}{\ignorespaces Klassendiagramm eines GUI mit Dekroatormuster}}{figure}\relax 
+\doTocEntry\toclof{5.3}{\csname a:TocLink\endcsname{7}{x7-37003r3}{}{\ignorespaces Sequenzdiagramm des GUI mit Dekroatormuster}}{figure}\relax 
+\doTocEntry\tocsection{5.2}{\csname a:TocLink\endcsname{7}{x7-380005.2}{QQ2-7-53}{Zustand}}{74}\relax 
+\doTocEntry\toclof{5.4}{\csname a:TocLink\endcsname{7}{x7-38001r4}{}{\ignorespaces Grundmuster des Zustands}}{figure}\relax 
+\doTocEntry\toclof{5.5}{\csname a:TocLink\endcsname{7}{x7-38002r5}{}{\ignorespaces Klassendiagramm einer Netzwerkverbindung mit Zustandsmuster}}{figure}\relax 
+\doTocEntry\toclof{5.6}{\csname a:TocLink\endcsname{7}{x7-38003r6}{}{\ignorespaces Sequenzdiagramm eines Verbindungsaufbaus}}{figure}\relax 
+\doTocEntry\toclof{5.7}{\csname a:TocLink\endcsname{7}{x7-38004r7}{}{\ignorespaces Sequenzdiagramm eines Sendebefehls}}{figure}\relax 
+\doTocEntry\tocsection{5.3}{\csname a:TocLink\endcsname{7}{x7-390005.3}{QQ2-7-58}{Beobachter (Observer)}}{86}\relax 
+\doTocEntry\toclof{5.8}{\csname a:TocLink\endcsname{7}{x7-39001r8}{}{\ignorespaces Grundmuster des Beobachters}}{figure}\relax 
+\doTocEntry\toclof{5.9}{\csname a:TocLink\endcsname{7}{x7-39002r9}{}{\ignorespaces Sequenzdiagramm des Beobachters bei einer \"Anderung}}{figure}\relax 
+\doTocEntry\tocsection{5.4}{\csname a:TocLink\endcsname{7}{x7-400005.4}{QQ2-7-61}{Proxy}}{92}\relax 
+\doTocEntry\toclof{5.10}{\csname a:TocLink\endcsname{7}{x7-40001r10}{}{\ignorespaces Grundmuster des Proxy}}{figure}\relax 
+\doTocEntry\toclof{5.11}{\csname a:TocLink\endcsname{7}{x7-40002r11}{}{\ignorespaces Klassendiagramm des Dokumenteneditors}}{figure}\relax 
+\doTocEntry\toclof{5.12}{\csname a:TocLink\endcsname{7}{x7-40003r12}{}{\ignorespaces Sequenzdiagramm des Dokumenteneditors}}{figure}\relax 
+\doTocEntry\tocsection{5.5}{\csname a:TocLink\endcsname{7}{x7-410005.5}{QQ2-7-65}{Singleton}}{102}\relax 
+\doTocEntry\toclof{5.13}{\csname a:TocLink\endcsname{7}{x7-41001r13}{}{\ignorespaces Grundmuster des Singleton}}{figure}\relax 
+\doTocEntry\toclof{5.14}{\csname a:TocLink\endcsname{7}{x7-41002r14}{}{\ignorespaces Klassendiagramm der Benutzerverwaltung}}{figure}\relax 
+\doTocEntry\toclof{5.15}{\csname a:TocLink\endcsname{7}{x7-41003r15}{}{\ignorespaces Sequenzdiagramm der Benutzerverwaltung}}{figure}\relax 
+\doTocEntry\tocsection{5.6}{\csname a:TocLink\endcsname{7}{x7-420005.6}{QQ2-7-69}{Command}}{111}\relax 
+\doTocEntry\toclof{5.16}{\csname a:TocLink\endcsname{7}{x7-42001r16}{}{\ignorespaces Grundmuster des Commandmusters}}{figure}\relax 
+\doTocEntry\toclof{5.17}{\csname a:TocLink\endcsname{7}{x7-42002r17}{}{\ignorespaces Klassendiagramm der Textverarbeitung}}{figure}\relax 
+\doTocEntry\toclof{5.18}{\csname a:TocLink\endcsname{7}{x7-42003r18}{}{\ignorespaces Sequenzdiagramm des Textverarbeitung}}{figure}\relax 
+\doTocEntry\tocsection{5.7}{\csname a:TocLink\endcsname{7}{x7-430005.7}{QQ2-7-73}{Iterator}}{121}\relax 
+\doTocEntry\toclof{5.19}{\csname a:TocLink\endcsname{7}{x7-43001r19}{}{\ignorespaces Grundmuster des Iterators}}{figure}\relax 
+\doTocEntry\toclof{5.20}{\csname a:TocLink\endcsname{7}{x7-43002r20}{}{\ignorespaces Klassendiagramm der Datenverwaltung}}{figure}\relax 
+\doTocEntry\toclof{5.21}{\csname a:TocLink\endcsname{7}{x7-43003r21}{}{\ignorespaces Sequenzdiagramm des Datenverwaltung}}{figure}\relax 
+\doTocEntry\tocchapter{6}{\csname a:TocLink\endcsname{8}{x8-440006}{QQ2-8-77}{Weitere UML-Diagrammarten}}{132}\relax 
+\doTocEntry\tocsection{6.1}{\csname a:TocLink\endcsname{8}{x8-450006.1}{QQ2-8-78}{Anwendungsfall Diagramm}}{132}\relax 
+\doTocEntry\toclof{6.1}{\csname a:TocLink\endcsname{8}{x8-45001r1}{}{\ignorespaces Usecasediagramm eines Billetautomaten}}{figure}\relax 
+\doTocEntry\tocsection{6.2}{\csname a:TocLink\endcsname{8}{x8-460006.2}{QQ2-8-80}{Zustandsdiagramm}}{136}\relax 
+\doTocEntry\toclof{6.2}{\csname a:TocLink\endcsname{8}{x8-46001r2}{}{\ignorespaces Zustandsdiagramm eines Billetautomaten}}{figure}\relax 
+\doTocEntry\tocsection{6.3}{\csname a:TocLink\endcsname{8}{x8-470006.3}{QQ2-8-82}{Aktivit\"atsdiagramm}}{139}\relax 
+\doTocEntry\toclof{6.3}{\csname a:TocLink\endcsname{8}{x8-47001r3}{}{\ignorespaces Aktivit\"atsdiagramm eines Billetautomaten}}{figure}\relax 
+\doTocEntry\toclof{6.4}{\csname a:TocLink\endcsname{8}{x8-47002r4}{}{\ignorespaces Aktivit\"atsdiagramm des Billetautomaten mit Verantwortlichkeitsbereichen}}{figure}\relax 
+\doTocEntry\tocsection{6.4}{\csname a:TocLink\endcsname{8}{x8-480006.4}{QQ2-8-85}{Paketdiagramm}}{145}\relax 
+\doTocEntry\toclof{6.5}{\csname a:TocLink\endcsname{8}{x8-48001r5}{}{\ignorespaces Paketdiagramm des Billetautomaten}}{figure}\relax 
+\doTocEntry\tocchapter{7}{\csname a:TocLink\endcsname{9}{x9-490007}{QQ2-9-87}{Klassen unter C{\tt  ++} }}{150}\relax 
+\doTocEntry\tocsection{7.1}{\csname a:TocLink\endcsname{9}{x9-500007.1}{QQ2-9-88}{Erzeugen von Objekten}}{150}\relax 
+\doTocEntry\tocsection{7.2}{\csname a:TocLink\endcsname{9}{x9-510007.2}{QQ2-9-89}{Konstruktoren / Destruktoren}}{151}\relax 
+\doTocEntry\tocsection{7.3}{\csname a:TocLink\endcsname{9}{x9-520007.3}{QQ2-9-90}{Zugriffsrechte}}{152}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{9}{x9-530007.3}{QQ2-9-91}{public:}}{152}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{9}{x9-540007.3}{QQ2-9-92}{protected:}}{152}\relax 
+\doTocEntry\tocparagraph{}{\csname a:TocLink\endcsname{9}{x9-550007.3}{QQ2-9-93}{private:}}{152}\relax 
+\doTocEntry\tocsection{7.4}{\csname a:TocLink\endcsname{9}{x9-560007.4}{QQ2-9-94}{Deklaration einer Klasse}}{152}\relax 
+\doTocEntry\tocsubsection{7.4.1}{\csname a:TocLink\endcsname{9}{x9-570007.4.1}{QQ2-9-95}{Zugriffsrechte}}{152}\relax 
+\doTocEntry\tocsubsection{7.4.2}{\csname a:TocLink\endcsname{9}{x9-580007.4.2}{QQ2-9-96}{Attribute}}{153}\relax 
+\doTocEntry\tocsubsection{7.4.3}{\csname a:TocLink\endcsname{9}{x9-590007.4.3}{QQ2-9-97}{Konstruktoren}}{153}\relax 
+\doTocEntry\tocsubsection{7.4.4}{\csname a:TocLink\endcsname{9}{x9-600007.4.4}{QQ2-9-98}{Destruktor ('Es kann nur einen geben')}}{153}\relax 
+\doTocEntry\tocsubsection{7.4.5}{\csname a:TocLink\endcsname{9}{x9-610007.4.5}{QQ2-9-99}{Zuweisungsoperator}}{153}\relax 
+\doTocEntry\tocsubsection{7.4.6}{\csname a:TocLink\endcsname{9}{x9-620007.4.6}{QQ2-9-100}{Methoden}}{154}\relax 
+\doTocEntry\tocsection{7.5}{\csname a:TocLink\endcsname{9}{x9-630007.5}{QQ2-9-101}{Implementation der Klassen-Methoden}}{154}\relax 
+\doTocEntry\tocsubsection{7.5.1}{\csname a:TocLink\endcsname{9}{x9-640007.5.1}{QQ2-9-102}{Einbinden des eigenen Headerfile (Deklaration)}}{154}\relax 
+\doTocEntry\tocsubsection{7.5.2}{\csname a:TocLink\endcsname{9}{x9-650007.5.2}{QQ2-9-103}{Konstruktoren}}{154}\relax 
+\doTocEntry\tocsubsection{7.5.3}{\csname a:TocLink\endcsname{9}{x9-660007.5.3}{QQ2-9-104}{Destruktor}}{155}\relax 
+\doTocEntry\tocsubsection{7.5.4}{\csname a:TocLink\endcsname{9}{x9-670007.5.4}{QQ2-9-105}{Zuweisungsoperator}}{156}\relax 
+\doTocEntry\tocsubsection{7.5.5}{\csname a:TocLink\endcsname{9}{x9-680007.5.5}{QQ2-9-106}{Methoden}}{156}\relax 
+\doTocEntry\tocsubsection{7.5.6}{\csname a:TocLink\endcsname{9}{x9-690007.5.6}{QQ2-9-107}{Der this-Pointer}}{157}\relax 
+\doTocEntry\tocsection{7.6}{\csname a:TocLink\endcsname{9}{x9-700007.6}{QQ2-9-108}{Benutzung der Klasse}}{158}\relax 
+\doTocEntry\tocsection{7.7}{\csname a:TocLink\endcsname{9}{x9-710007.7}{QQ2-9-109}{Vererbung}}{159}\relax 
+\doTocEntry\tocsubsection{7.7.1}{\csname a:TocLink\endcsname{9}{x9-720007.7.1}{QQ2-9-110}{Deklaration}}{159}\relax 
+\doTocEntry\tocsubsection{7.7.2}{\csname a:TocLink\endcsname{9}{x9-730007.7.2}{QQ2-9-111}{Implementation}}{161}\relax 
+\doTocEntry\tocsubsection{7.7.3}{\csname a:TocLink\endcsname{9}{x9-740007.7.3}{QQ2-9-112}{Benutzung der Klasse}}{162}\relax 
+\doTocEntry\tocsection{7.8}{\csname a:TocLink\endcsname{9}{x9-750007.8}{QQ2-9-113}{Polymorphismus}}{162}\relax 
+\doTocEntry\tocsubsection{7.8.1}{\csname a:TocLink\endcsname{9}{x9-760007.8.1}{QQ2-9-114}{Deklaration}}{164}\relax 
+\doTocEntry\tocsubsection{7.8.2}{\csname a:TocLink\endcsname{9}{x9-770007.8.2}{QQ2-9-115}{Implementation}}{164}\relax 
+\doTocEntry\tocsubsection{7.8.3}{\csname a:TocLink\endcsname{9}{x9-780007.8.3}{QQ2-9-116}{Deklaration}}{164}\relax 
+\doTocEntry\tocsubsection{7.8.4}{\csname a:TocLink\endcsname{9}{x9-790007.8.4}{QQ2-9-117}{Implementation}}{165}\relax 
+\doTocEntry\tocsubsection{7.8.5}{\csname a:TocLink\endcsname{9}{x9-800007.8.5}{QQ2-9-118}{Deklaration}}{165}\relax 
+\doTocEntry\tocsubsection{7.8.6}{\csname a:TocLink\endcsname{9}{x9-810007.8.6}{QQ2-9-119}{Implementation}}{166}\relax 
+\doTocEntry\tocsubsection{7.8.7}{\csname a:TocLink\endcsname{9}{x9-820007.8.7}{QQ2-9-120}{Benutzung der Klassen}}{166}\relax 
+\doTocEntry\tocchapter{8}{\csname a:TocLink\endcsname{10}{x10-830008}{QQ2-10-121}{\"Ubungen}}{168}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-840008}{QQ2-10-122}{\"Ubung 1}}{168}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-850008}{QQ2-10-123}{\"Ubung 2}}{168}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-860008}{QQ2-10-124}{\"Ubung 3}}{169}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-870008}{QQ2-10-125}{\"Ubung 4}}{169}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-880008}{QQ2-10-126}{\"Ubung 5}}{170}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-890008}{QQ2-10-127}{\"Ubung 6}}{170}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-900008}{QQ2-10-128}{\"Ubung 7}}{171}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-910008}{QQ2-10-129}{\"Ubung 8}}{172}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-920008}{QQ2-10-130}{\"Ubung 9}}{172}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-930008}{QQ2-10-131}{\"Ubung 10}}{173}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-940008}{QQ2-10-132}{\"Ubung 11}}{173}\relax 
+\doTocEntry\toclikesection{}{\csname a:TocLink\endcsname{10}{x10-950008}{QQ2-10-133}{\"Ubung 12}}{174}\relax 
+\doTocEntry\tocchapter{9}{\csname a:TocLink\endcsname{11}{x11-960009}{QQ2-11-134}{C{\tt  ++} Crash Kurs}}{176}\relax 
+\doTocEntry\tocsection{9.1}{\csname a:TocLink\endcsname{11}{x11-970009.1}{QQ2-11-135}{Das einfachste C{\tt  ++} Programm}}{177}\relax 
+\doTocEntry\tocsection{9.2}{\csname a:TocLink\endcsname{11}{x11-980009.2}{QQ2-11-136}{Grunds\"atzliches}}{177}\relax 
+\doTocEntry\tocsection{9.3}{\csname a:TocLink\endcsname{11}{x11-990009.3}{QQ2-11-137}{Module}}{177}\relax 
+\doTocEntry\tocsubsection{9.3.1}{\csname a:TocLink\endcsname{11}{x11-1000009.3.1}{QQ2-11-138}{Beispiel eines kleinen C++-Projektes}}{178}\relax 
+\doTocEntry\tocsection{9.4}{\csname a:TocLink\endcsname{11}{x11-1010009.4}{QQ2-11-139}{Kommentare}}{179}\relax 
+\doTocEntry\tocsection{9.5}{\csname a:TocLink\endcsname{11}{x11-1020009.5}{QQ2-11-140}{Pr\"aprozessorbefehle}}{179}\relax 
+\doTocEntry\tocsection{9.6}{\csname a:TocLink\endcsname{11}{x11-1030009.6}{QQ2-11-141}{Deklarieren von Variablen}}{180}\relax 
+\doTocEntry\tocsection{9.7}{\csname a:TocLink\endcsname{11}{x11-1040009.7}{QQ2-11-142}{Operatoren}}{180}\relax 
+\doTocEntry\tocsection{9.8}{\csname a:TocLink\endcsname{11}{x11-1050009.8}{QQ2-11-143}{Bl\"ocke}}{182}\relax 
+\doTocEntry\tocsection{9.9}{\csname a:TocLink\endcsname{11}{x11-1060009.9}{QQ2-11-144}{Dynamische Speicherverwaltung}}{182}\relax 
+\doTocEntry\tocsection{9.10}{\csname a:TocLink\endcsname{11}{x11-1070009.10}{QQ2-11-145}{Ein- und Ausgabe}}{182}\relax 
+\doTocEntry\tocsection{9.11}{\csname a:TocLink\endcsname{11}{x11-1080009.11}{QQ2-11-146}{Datei Ein- und Ausgabe}}{182}\relax 
+\doTocEntry\tocsection{9.12}{\csname a:TocLink\endcsname{11}{x11-1090009.12}{QQ2-11-147}{Hauptprogramm}}{183}\relax 
+\doTocEntry\tocsection{9.13}{\csname a:TocLink\endcsname{11}{x11-1100009.13}{QQ2-11-148}{Kontrollstrukturen}}{183}\relax 
+\doTocEntry\tocsubsection{9.13.1}{\csname a:TocLink\endcsname{11}{x11-1110009.13.1}{QQ2-11-149}{if() then else}}{183}\relax 
+\doTocEntry\tocsubsection{9.13.2}{\csname a:TocLink\endcsname{11}{x11-1120009.13.2}{QQ2-11-150}{while(), do while()}}{184}\relax 
+\doTocEntry\tocsubsection{9.13.3}{\csname a:TocLink\endcsname{11}{x11-1130009.13.3}{QQ2-11-151}{for()}}{184}\relax 
+\doTocEntry\tocsubsection{9.13.4}{\csname a:TocLink\endcsname{11}{x11-1140009.13.4}{QQ2-11-152}{switch()}}{184}\relax 
+\doTocEntry\tocsection{9.14}{\csname a:TocLink\endcsname{11}{x11-1150009.14}{QQ2-11-153}{Felder (Arrays)}}{185}\relax 
+\doTocEntry\tocsection{9.15}{\csname a:TocLink\endcsname{11}{x11-1160009.15}{QQ2-11-154}{Funktionen}}{185}\relax 
+\doTocEntry\tocsubsection{9.15.1}{\csname a:TocLink\endcsname{11}{x11-1170009.15.1}{QQ2-11-155}{Prototypen}}{185}\relax 
+\doTocEntry\tocsection{9.16}{\csname a:TocLink\endcsname{11}{x11-1180009.16}{QQ2-11-156}{Zeiger und Referenzen}}{186}\relax 
+\doTocEntry\tocsection{9.17}{\csname a:TocLink\endcsname{11}{x11-1190009.17}{QQ2-11-157}{Konstantheit (const)}}{186}\relax 
+\doTocEntry\tocsection{9.18}{\csname a:TocLink\endcsname{11}{x11-1200009.18}{QQ2-11-158}{Umgehung der Konstantheit (Mutable)}}{186}\relax 
+\doTocEntry\tocsection{9.19}{\csname a:TocLink\endcsname{11}{x11-1210009.19}{QQ2-11-159}{Klassen}}{187}\relax 
+\doTocEntry\tocsubsection{9.19.1}{\csname a:TocLink\endcsname{11}{x11-1220009.19.1}{QQ2-11-160}{Zugriffsberechtigungen}}{187}\relax 
+\doTocEntry\tocsubsection{9.19.2}{\csname a:TocLink\endcsname{11}{x11-1230009.19.2}{QQ2-11-161}{Friendfunktionen}}{187}\relax 
+\doTocEntry\tocsubsection{9.19.3}{\csname a:TocLink\endcsname{11}{x11-1240009.19.3}{QQ2-11-162}{Beispiel einer Klasse}}{187}\relax 
+\doTocEntry\tocsubsection{9.19.4}{\csname a:TocLink\endcsname{11}{x11-1250009.19.4}{QQ2-11-163}{Vererbung}}{188}\relax 
+\doTocEntry\tocsubsection{9.19.5}{\csname a:TocLink\endcsname{11}{x11-1260009.19.5}{QQ2-11-164}{Mehrfachvererbung}}{188}\relax 
+\doTocEntry\toclof{9.1}{\csname a:TocLink\endcsname{11}{x11-126016r1}{}{\ignorespaces Problematische Mehrfachvererbung}}{figure}\relax 
+\doTocEntry\tocsubsection{9.19.6}{\csname a:TocLink\endcsname{11}{x11-1270009.19.6}{QQ2-11-166}{Polymorphismus}}{191}\relax 
+\doTocEntry\tocsubsection{9.19.7}{\csname a:TocLink\endcsname{11}{x11-1280009.19.7}{QQ2-11-167}{Konstruktoren / Destruktoren}}{191}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{11}{x11-1290009.19.7}{QQ2-11-168}{Copy-Konstruktor}}{191}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{11}{x11-1300009.19.7}{QQ2-11-169}{Zuweisungsoperator}}{192}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{11}{x11-1310009.19.7}{QQ2-11-170}{Destruktor}}{192}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{11}{x11-1320009.19.7}{QQ2-11-171}{Umwandlungsoperator}}{192}\relax 
+\doTocEntry\tocsubsection{9.19.8}{\csname a:TocLink\endcsname{11}{x11-1330009.19.8}{QQ2-11-172}{Forw\"arts Deklarationen}}{192}\relax 
+\doTocEntry\tocsubsection{9.19.9}{\csname a:TocLink\endcsname{11}{x11-1340009.19.9}{QQ2-11-173}{Statische Member}}{192}\relax 
+\doTocEntry\tocsection{9.20}{\csname a:TocLink\endcsname{11}{x11-1350009.20}{QQ2-11-174}{\"Uberladen von Funktionen}}{193}\relax 
+\doTocEntry\tocsection{9.21}{\csname a:TocLink\endcsname{11}{x11-1360009.21}{QQ2-11-175}{\"Uberladen von Operatoren}}{193}\relax 
+\doTocEntry\tocsection{9.22}{\csname a:TocLink\endcsname{11}{x11-1370009.22}{QQ2-11-176}{Ausnahmebehandlung (Exceptions)}}{193}\relax 
+\doTocEntry\tocsection{9.23}{\csname a:TocLink\endcsname{11}{x11-1380009.23}{QQ2-11-177}{Laufzeit Typinformation (RTTI run-time type information)}}{194}\relax 
+\doTocEntry\tocsection{9.24}{\csname a:TocLink\endcsname{11}{x11-1390009.24}{QQ2-11-178}{Typumwandlungen (Casts)}}{195}\relax 
+\doTocEntry\toclikeparagraph{}{\csname a:TocLink\endcsname{11}{x11-1400009.24}{QQ2-11-179}{reinterpret\_cast<>() und (cast)}}{195}\relax 
+\doTocEntry\toclikeparagraph{}{\csname a:TocLink\endcsname{11}{x11-1410009.24}{QQ2-11-180}{static\_cast<>()}}{195}\relax 
+\doTocEntry\toclikeparagraph{}{\csname a:TocLink\endcsname{11}{x11-1420009.24}{QQ2-11-181}{const\_cast<>()}}{195}\relax 
+\doTocEntry\toclikeparagraph{}{\csname a:TocLink\endcsname{11}{x11-1430009.24}{QQ2-11-182}{dynamic\_cast<>()}}{195}\relax 
+\doTocEntry\tocsection{9.25}{\csname a:TocLink\endcsname{11}{x11-1440009.25}{QQ2-11-183}{Zeiger auf Elemente (Memberpointer)}}{196}\relax 
+\doTocEntry\tocsection{9.26}{\csname a:TocLink\endcsname{11}{x11-1450009.26}{QQ2-11-184}{Templates (Schablonen)}}{196}\relax 
+\doTocEntry\tocsubsection{9.26.1}{\csname a:TocLink\endcsname{11}{x11-1460009.26.1}{QQ2-11-185}{Funktionstemplates}}{196}\relax 
+\doTocEntry\tocsubsection{9.26.2}{\csname a:TocLink\endcsname{11}{x11-1470009.26.2}{QQ2-11-186}{\"Uberladen von Funktionstemplates}}{197}\relax 
+\doTocEntry\tocsubsection{9.26.3}{\csname a:TocLink\endcsname{11}{x11-1480009.26.3}{QQ2-11-187}{Klassentemplates}}{197}\relax 
+\doTocEntry\tocsubsection{9.26.4}{\csname a:TocLink\endcsname{11}{x11-1490009.26.4}{QQ2-11-188}{Default Templateparameter}}{198}\relax 
+\doTocEntry\tocsubsection{9.26.5}{\csname a:TocLink\endcsname{11}{x11-1500009.26.5}{QQ2-11-189}{Spezialisierung von Templates}}{198}\relax 
+\doTocEntry\tocsubsection{9.26.6}{\csname a:TocLink\endcsname{11}{x11-1510009.26.6}{QQ2-11-190}{Komplette spezialisierung von Templates}}{198}\relax 
+\doTocEntry\tocsubsection{9.26.7}{\csname a:TocLink\endcsname{11}{x11-1520009.26.7}{QQ2-11-191}{Partielle spezialisierung von Templates}}{199}\relax 
+\doTocEntry\tocsubsection{9.26.8}{\csname a:TocLink\endcsname{11}{x11-1530009.26.8}{QQ2-11-192}{Template-Metaprogrammierung}}{199}\relax 
+\doTocEntry\tocsubsection{9.26.9}{\csname a:TocLink\endcsname{11}{x11-1540009.26.9}{QQ2-11-193}{Templates und Vererbung}}{200}\relax 
+\doTocEntry\tocsection{9.27}{\csname a:TocLink\endcsname{11}{x11-1550009.27}{QQ2-11-194}{Namensbereiche (Namespaces)}}{200}\relax 
+\doTocEntry\tocsection{9.28}{\csname a:TocLink\endcsname{11}{x11-1560009.28}{QQ2-11-195}{Die STL (Standard Template Library)}}{201}\relax 
+\doTocEntry\tocsubsection{9.28.1}{\csname a:TocLink\endcsname{11}{x11-1570009.28.1}{QQ2-11-196}{Kurz\"ubersicht zu Container list<> aus STL}}{201}\relax 
+\doTocEntry\tocsubsection{9.28.2}{\csname a:TocLink\endcsname{11}{x11-1580009.28.2}{QQ2-11-197}{Kurz\"ubersicht zu Container vector<> aus STL}}{202}\relax 
+\doTocEntry\tocsubsection{9.28.3}{\csname a:TocLink\endcsname{11}{x11-1590009.28.3}{QQ2-11-198}{Kurz\"ubersicht zu Container map<> aus STL}}{202}\relax 
+\doTocEntry\tocchapter{10}{\csname a:TocLink\endcsname{12}{x12-16000010}{QQ2-12-199}{Systematisches Testen von Software}}{204}\relax 
+\doTocEntry\tocsection{10.1}{\csname a:TocLink\endcsname{12}{x12-16100010.1}{QQ2-12-200}{Statische Tests (Reviews)}}{204}\relax 
+\doTocEntry\tocsection{10.2}{\csname a:TocLink\endcsname{12}{x12-16200010.2}{QQ2-12-201}{Funktionstests}}{205}\relax 
+\doTocEntry\tocsubsection{10.2.1}{\csname a:TocLink\endcsname{12}{x12-16300010.2.1}{QQ2-12-202}{Blackboxtest}}{205}\relax 
+\doTocEntry\tocsubsection{10.2.2}{\csname a:TocLink\endcsname{12}{x12-16400010.2.2}{QQ2-12-203}{Whiteboxtest}}{206}\relax 
+\doTocEntry\tocsubsection{10.2.3}{\csname a:TocLink\endcsname{12}{x12-16500010.2.3}{QQ2-12-204}{Systematisches erzeugen von Testf\"allen}}{206}\relax 
+\doTocEntry\tocsubsection{10.2.4}{\csname a:TocLink\endcsname{12}{x12-16600010.2.4}{QQ2-12-205}{Testabbruch}}{206}\relax 
+\doTocEntry\tocsection{10.3}{\csname a:TocLink\endcsname{12}{x12-16700010.3}{QQ2-12-206}{Der Entwicklungsprozess}}{207}\relax 
+\doTocEntry\tocsection{10.4}{\csname a:TocLink\endcsname{12}{x12-16800010.4}{QQ2-12-207}{Abstrakter Datentyp}}{207}\relax 
+\doTocEntry\tocappendix{A}{\csname a:TocLink\endcsname{13}{x13-169000A}{QQ2-13-208}{Anhang}}{210}\relax 
+\doTocEntry\tocsection{A.1}{\csname a:TocLink\endcsname{13}{x13-170000A.1}{QQ2-13-209}{Glossar}}{210}\relax 
+\doTocEntry\tocsection{A.2}{\csname a:TocLink\endcsname{13}{x13-171000A.2}{QQ2-13-210}{Literaturverzeichnis}}{211}\relax 
+\doTocEntry\tocsection{A.3}{\csname a:TocLink\endcsname{13}{x13-172000A.3}{QQ2-13-211}{Die verschiedenen Diagramme und ihr Einsatz}}{212}\relax 
+\doTocEntry\tocsection{A.4}{\csname a:TocLink\endcsname{13}{x13-173000A.4}{QQ2-13-212}{UML-Checkliste}}{214}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{13}{x13-174000A.4}{QQ2-13-213}{Klassen:}}{214}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{13}{x13-175000A.4}{QQ2-13-214}{Attribute}}{214}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{13}{x13-176000A.4}{QQ2-13-215}{Vererbung}}{215}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{13}{x13-177000A.4}{QQ2-13-216}{Operationen}}{215}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{13}{x13-178000A.4}{QQ2-13-217}{Assoziation, Typ Komposition}}{215}\relax 
+\doTocEntry\tocsubsubsection{}{\csname a:TocLink\endcsname{13}{x13-179000A.4}{QQ2-13-218}{Assoziation, Typ Aggregation}}{215}\relax 
+\doTocEntry\tocsection{A.5}{\csname a:TocLink\endcsname{13}{x13-180000A.5}{QQ2-13-219}{\"Ubersetzungtabelle UML}}{217}\relax 
+\par 
