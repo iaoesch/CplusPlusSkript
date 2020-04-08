@@ -2,9 +2,6 @@
 %/*  Module     : OOP-Skript                                     Version 1.1  */
 %/*****************************************************************************/
 %/*                                                                           */
-%/*  Function   : Solves Sudoku problems                                      */
-%/*                                                                           */
-%/*  Procedures : main                                                        */
 %/*                                                                           */
 %/*  Author     : I. Oesch                                                    */
 %/*                                                                           */
@@ -49,13 +46,6 @@
 %/* MagicSoft                                                                 */
 %/*****************************************************************************/
 
-%/* imports */
-
-%/* module constant declaration */
-
-%/* module type declaration */
-
-%/* module data declaration */
 
 
 %Schriftgröße, Layout, Papierformat, Art des Dokumentes
@@ -144,7 +134,7 @@
 \renewcommand{\footrulewidth}{0.5pt}
 
 \setlength{\parskip}{1ex plus0.5ex minus0.3ex} 
-\newcommand{\Cpp}{C{\tt ++} }
+\newcommand{\Cpp}{C{\texttt ++} }
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
 
@@ -714,146 +704,146 @@ int main(int argc, char *argv[])
 
 \OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren.
 
-\section{Datei Ein- und Ausgabe}
-\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
-
-Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
-
-\begin{CCode}
-#include <fstream>
-
-using namespace std;
-
-int main(int argc, char *argv[]) 
-{
-  int a = 4, b = 5;
-  ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
-  if (AusgabeDatei) {
-    AusgabeDatei << "Mein erstes File" << endl;
-    AusgabeDatei << "a + b ist " << (a + b) << endl;
-  } else {
-    cout << "Fehler, konnte Datei nicht oeffnen" << endl;
-  }
-  return 0
-} 
-\end{CCode}
-
-
-
-Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
-Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden.
-ios\_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben.
-ios\_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus.
-
-Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
-\begin{CCode}
-
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
-                                                          // anhaengen erzeugen
-
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          // modus erzeugen
-
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
-                                                          // Binaere Datei zum 
-                                                          // anhaengen erzeugen
-
-  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
-                                                          // modus zum Lesen oeffnen
-
-  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          // modus zum Lesen oeffnen
-
-\end{CCode}
-
-Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
-die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
-zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
-wenn die Operatoren $<<$ und $>>$ nicht die gewünschte Funktionalität liefern. 
-
-\subsection{Formatierte Ausgabe}
-\index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
-Methode Flags() können die Flags gesetzt oder gelesen werden, mit
-setf können Flags hinzugefügt werden.
-
-Es sind unter anderem folgende Flags definiert:
-
-Wahl des Zahlensystems: ios\_base::dec, ios\_base::hex, ios\_base::oct 
-
-Bündigkeit: ios\_base::left, ios\_base::right
-
-Gleitkommaformat: ios\_base::scientific, ios\_base::fixed
-
- 
-Beispiel:
-\begin{CCode}
-
-
-  std::ios_base::fmtflags AlteFlags;
-  
-  AlteFlags = std::cout.flags(); // Flag Zustand lesen
-
-  // Ausgabeformat waehlen (Flags zusaetzlich setzen)
-  std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed);
-  
-  std::cout << 1.23; // Ausgabe im gewaehlten Format
-  
-  // Alle Flags loeschen, nur Hex ist gesetzt
-  std::cout.flags(std::ios_base::hex);
-  
-  std::cout << 47;
-  
-
-\end{CCode} 
-
-Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
-precision kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
-definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden:
-\begin{CCode}
-
-  std::streamsize OldPrecision;
-  
-  OldPrecision = std::cout.precision(); // Genauigkeit lesen
-
-  // Genauigkeit waehlen
-  std::cout.precision(5);
-  
-  // Feldbreite waehlen
-  std::cout.width(9);
-  
-  // Fuellzeichen waehlen
-  std::cout.fill('*');
-
-
-  std::cout << 1.23; // Ausgabe im gewaehlten Format 
-                // gibt ****1.23000 aus
-
-\end{CCode} 
-
-width() gilt nur für die nächste Ausgabe und wird danach wieder
-auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
-
-
-Mit \OviIndex{Manipulatoren} kann das Formatieren und Steuern des
-Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von
-Operator Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen
-gibt es bereits vordefinierte Manuipulatoren, es ist aber auch möglich,
-selbst neue Manipulatoren zu erzeugen.
-
-\begin{CCode}
-
-
-  // Format waehlen und Ausgabe in der selben Zeile
-  std::cout <<  std::setprecision(5) << std::setw(9) << std::setfill('*') << 1.23;
-
-  //  Zahl hexadezimal ausgeben (ersetzt setf())
-  std::cout << std::hex << 123545;
-
-\end{CCode} 
-
-Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
-
- 
+%\section{Datei Ein- und Ausgabe}
+%\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
+%
+%Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
+%
+%\begin{CCode}
+%#include <fstream>
+%
+%using namespace std;
+%
+%int main(int argc, char *argv[]) 
+%{
+  %int a = 4, b = 5;
+  %ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
+  %if (AusgabeDatei) {
+    %AusgabeDatei << "Mein erstes File" << endl;
+    %AusgabeDatei << "a + b ist " << (a + b) << endl;
+  %} else {
+    %cout << "Fehler, konnte Datei nicht oeffnen" << endl;
+  %}
+  %return 0
+%} 
+%\end{CCode}
+%
+%
+%
+%Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
+%Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden.
+%ios\_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben.
+%ios\_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+%
+%Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
+%\begin{CCode}
+%
+  %ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
+                                                          %// anhaengen erzeugen
+%
+  %ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          %// modus erzeugen
+%
+  %ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
+                                                          %// Binaere Datei zum 
+                                                          %// anhaengen erzeugen
+%
+  %ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
+                                                          %// modus zum Lesen oeffnen
+%
+  %ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          %// modus zum Lesen oeffnen
+%
+%\end{CCode}
+%
+%Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
+%die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
+%zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
+%wenn die Operatoren $<<$ und $>>$ nicht die gewünschte Funktionalität liefern. 
+%
+%\subsection{Formatierte Ausgabe}
+%\index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
+%Methode Flags() können die Flags gesetzt oder gelesen werden, mit
+%setf können Flags hinzugefügt werden.
+%
+%Es sind unter anderem folgende Flags definiert:
+%
+%Wahl des Zahlensystems: ios\_base::dec, ios\_base::hex, ios\_base::oct 
+%
+%Bündigkeit: ios\_base::left, ios\_base::right
+%
+%Gleitkommaformat: ios\_base::scientific, ios\_base::fixed
+%
+ %
+%Beispiel:
+%\begin{CCode}
+%
+%
+  %std::ios_base::fmtflags AlteFlags;
+  %
+  %AlteFlags = std::cout.flags(); // Flag Zustand lesen
+%
+  %// Ausgabeformat waehlen (Flags zusaetzlich setzen)
+  %std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed);
+  %
+  %std::cout << 1.23; // Ausgabe im gewaehlten Format
+  %
+  %// Alle Flags loeschen, nur Hex ist gesetzt
+  %std::cout.flags(std::ios_base::hex);
+  %
+  %std::cout << 47;
+  %
+%
+%\end{CCode} 
+%
+%Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
+%precision kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
+%definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden:
+%\begin{CCode}
+%
+  %std::streamsize OldPrecision;
+  %
+  %OldPrecision = std::cout.precision(); // Genauigkeit lesen
+%
+  %// Genauigkeit waehlen
+  %std::cout.precision(5);
+  %
+  %// Feldbreite waehlen
+  %std::cout.width(9);
+  %
+  %// Fuellzeichen waehlen
+  %std::cout.fill('*');
+%
+%
+  %std::cout << 1.23; // Ausgabe im gewaehlten Format 
+                %// gibt ****1.23000 aus
+%
+%\end{CCode} 
+%
+%width() gilt nur für die nächste Ausgabe und wird danach wieder
+%auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
+%
+%
+%Mit \OviIndex{Manipulatoren} kann das Formatieren und Steuern des
+%Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von
+%Operator Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen
+%gibt es bereits vordefinierte Manuipulatoren, es ist aber auch möglich,
+%selbst neue Manipulatoren zu erzeugen.
+%
+%\begin{CCode}
+%
+%
+  %// Format waehlen und Ausgabe in der selben Zeile
+  %std::cout <<  std::setprecision(5) << std::setw(9) << std::setfill('*') << 1.23;
+%
+  %//  Zahl hexadezimal ausgeben (ersetzt setf())
+  %std::cout << std::hex << 123545;
+%
+%\end{CCode} 
+%
+%Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
+%
+ %
 \section{Hauptprogramm}
 Jedes lauffähige \Cpp Programm muss eine Funktion main() enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente argc und argv enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
 
@@ -2908,48 +2898,6 @@ namespace {
 
 \end{CCode}
  
-\section{Strings}
-\OviIndex{Strings} werden in C++ in Form der Klasse string unterstützt. Diese Klasse
-bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
-das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
-vereinfacht.
-
-Einige Beispiele:
-\begin{CCode}
-
-   string s1 = "Hallo";
-   string s2 = s1 + " Welt";
-   s1[1] = 'e';                 // s1 wird zu Hello
-   if (s1 == s2) { };           // Vergleicht Strings
-   std::cout << s2;             // Gibt s2 aus       
-
-\end{CCode}
-
-Es gibt noch viele weitere Funktionen zum Suchen von Strings innerhalb Strings, Einfügen
-von Strings innerhalb anderer Strings, Zerlegen von Strings in Teilstrings oder
-Ersetzen von Teilstrings in Strings.
-
-Zur Umwandlung zwischen Zahlen und Zeichenketten können die \OviIndex{StringStream} Klassen verwendet
-werden. Stringstreams verhalten sich wie Streams (Dateien) nur dass aus einem
-String gelesen, oder in einen String geschrieben wird:
-
-\begin{CCode}
-
-   std::ostringstream os;
-   int i; 
-   
-   os << "Wert ist " << i << '!'; // Text in stringstream schreiben
-   
-   string s = os.str();           // Inhalt von stringstream s zuweisen
-   
-   s = "123";
-
-   std::istringstream is(s);      // stringstream mit s initialisieren
-   
-   is >> i;                       // Zahl aus is lesen und i zuweisen
-    
-
-\end{CCode}
 
 \chapter{Templates (Schablonen)}
 Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
@@ -3382,14 +3330,300 @@ template <int X> struct GGT<X, 0> {
 };
 \end{CCode}
 
-\subsection{Templates und Vererbung}
+\subsection{Templateklassen und Vererbung}
 Von Templateklassen kann wie von normalen Klassen abgeleitet werden,
 und Templateklassen können von normalen Klassen oder Templateklassen
 erben. Templateklassen verhalten sich bei der Vererbung
 wie 'gewöhnliche' Klassen.
 
+\subsection{Templateklassen und Friends}
+
+Um innerhalb von Templateklassen Friend-Funktionen zu definieren gibt es drei Varianten:
+ 
+\subsubsection{Offen}
+
+Man definiert einfach eine Templatefunktion als Friend. Der Nachteil dieser Variante ist dass hier alle 
+möglichen Templatevarianten als friend anerkannt werden. Ein boesartiger Proegrammierer
+könnte durch eigene Instanzen der Friendfunktion Zugriff auf Internas von Demo1-Instanzen erhalten.
 
 
+\begin{CCode}
+
+template <class T>
+class Demo1 {
+   T InternalData;
+   template <class U>      // Alle Instanzen dieses Templates sind Freunde
+   friend std::ostream& operator<<(std::ostream&, const Demo1<U>& );
+};
+template <class T>
+std::ostream& operator<<( std::ostream& o, const Demo1<T>& ) {
+   // Jede Instanz dieses Templates hat Zugriff auf jede
+   // Instanz von Demo1
+
+  
+}
+
+\end{CCode}
+
+\subsubsection{Geschlossen mit Inlining}
+
+Die Friendfunktion wird gleich inline definiert und ist selbst kein Template. Diese
+Funktion wird aber bei jeder neuen Instanzierung des Template Demo2 ebenfalls neu
+mit den passenden Typen erzeugt und sie hat nur Zugriff auf ihre Instanz.
+
+\begin{CCode}
+template <class T>
+class Demo2 {
+   T InternalData;
+   friend std::ostream& operator<<( std::ostream& o, const Demo2& t ) {
+      // Kann nur auf Elemente der eigenen Templateinstanz zugreifen.
+   }
+};
+\end{CCode}
+
+\subsubsection{Geschlossen ohne Inlining}
+
+Hier wird kein Inlining verwendet, aber auch hier kann nur eine
+definierte Instanz der Friendfunktion auf Internas seiner
+Demo3-Instanz zugreifen.
+
+\begin{CCode}
+
+// Forwärtsdeklarationen (Geht nicht ohne)
+template <class T> class Demo3;
+template <class T> std::ostream& operator<<( std::ostream&, const Demo3<T>& );
+
+// Das Template selbst
+template <class T>
+class Demo3 {
+   T InternalData;
+   friend std::ostream& operator<< <T>( std::ostream&, const Demo3<T>& );
+};
+
+// Implementation der Operatorfunktion
+template <class T>
+std::ostream& operator<<( std::ostream& o, const Demo3<T>& t ) {
+   // Hat nur Zugriff auf seine eigene Demo3-Instanz 
+}
+\end{CCode}
+
+\subsubsection{Problem der Offenen Friendfunktionstemplatesn}
+Mit folgendem Code könnte ein bösartiger Programmierer bei der
+offenen Variante Zugriff auf private Member von Demo-Instanzen erhalten:
+
+\begin{CCode}
+namespace hacker {
+   struct unique {}; // Neuer einmaliger Typ defineren 
+                     // (Desshalb in eigenem Namespace)
+   
+  Demo1<int> *Opfer1 = &SomeObject1;
+  Demo2<int> *Opfer2 = &SomeObject2;
+  Demo3<int> *Opfer3 = &SomeObject3;
+  
+  template <> 
+   std::ostream& operator<< <unique>( std::ostream&, const Demo1<unique>& )
+   {
+      int KnownSecret = Opfer1->InteralData; // Ok, kein Fehler
+   }
+
+  template <> 
+   std::ostream& operator<< <unique>( std::ostream&, const Demo2<unique>& )
+   {
+      int KnownSecret = Opfer2->InteralData; // Error kein Freund von Demo2<int>
+   }
+
+  template <> 
+   std::ostream& operator<< <unique>( std::ostream&, const Demo3<unique>& )
+   {
+      int KnownSecret = Opfer3->InteralData; // Error kein Freund von Demo3<int>
+   }
+}
+\end{CCode}
+
+\chapter{Die Standardbibliothek}
+Die Standarbibliothek ist eine umfangreiche Klassen- und Templatesammlung, ähnlich der Standardlibrary von C.
+Sie stellt unter anderem Elemente aus der vormaligen STL (Datenhaltung und Datenverarbeitung), Strings, Ein- Ausgabe über Streams, Numerische Funktionen, Zufallszahlen, Multithreading und Reguläre Ausdrücke zur Verfügung. Einige dieser Aspekte werden in den nachfolgenden Kapiteln näher vorgestellt.   
+\section{Strings}
+\OviIndex{Strings} werden in C++ in Form der Klasse string unterstützt. Diese Klasse
+bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
+das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
+vereinfacht.
+
+Einige Beispiele:
+\begin{CCode}
+
+   string s1 = "Hallo";
+   string s2 = s1 + " Welt";
+   s1[1] = 'e';                 // s1 wird zu Hello
+   if (s1 == s2) { };           // Vergleicht Strings
+   std::cout << s2;             // Gibt s2 aus       
+
+\end{CCode}
+
+Es gibt noch viele weitere Funktionen zum Suchen von Strings innerhalb Strings, Einfügen
+von Strings innerhalb anderer Strings, Zerlegen von Strings in Teilstrings oder
+Ersetzen von Teilstrings in Strings.
+
+Zur Umwandlung zwischen Zahlen und Zeichenketten können die \OviIndex{StringStream} Klassen verwendet
+werden. Stringstreams verhalten sich wie Streams (Dateien) nur dass aus einem
+String gelesen, oder in einen String geschrieben wird:
+
+\begin{CCode}
+
+   std::ostringstream os;
+   int i; 
+   
+   os << "Wert ist " << i << '!'; // Text in stringstream schreiben
+   
+   string s = os.str();           // Inhalt von stringstream s zuweisen
+   
+   s = "123";
+
+   std::istringstream is(s);      // stringstream mit s initialisieren
+   
+   is >> i;                       // Zahl aus is lesen und i zuweisen
+    
+
+\end{CCode}
+
+\section{Datei Ein- und Ausgabe}
+\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
+
+Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
+
+\begin{CCode}
+#include <fstream>
+
+using namespace std;
+
+int main(int argc, char *argv[]) 
+{
+  int a = 4, b = 5;
+  ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
+  if (AusgabeDatei) {
+    AusgabeDatei << "Mein erstes File" << endl;
+    AusgabeDatei << "a + b ist " << (a + b) << endl;
+  } else {
+    cout << "Fehler, konnte Datei nicht oeffnen" << endl;
+  }
+  return 0
+} 
+\end{CCode}
+
+
+
+Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
+Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden.
+ios\_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben.
+ios\_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+
+Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
+\begin{CCode}
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
+                                                          // anhaengen erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
+                                                          // Binaere Datei zum 
+                                                          // anhaengen erzeugen
+
+  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
+                                                          // modus zum Lesen oeffnen
+
+  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus zum Lesen oeffnen
+
+\end{CCode}
+
+Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
+die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
+zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
+wenn die Operatoren $<<$ und $>>$ nicht die gewünschte Funktionalität liefern. 
+
+\subsection{Formatierte Ausgabe}
+\index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
+Methode Flags() können die Flags gesetzt oder gelesen werden, mit
+setf können Flags hinzugefügt werden.
+
+Es sind unter anderem folgende Flags definiert:
+
+Wahl des Zahlensystems: ios\_base::dec, ios\_base::hex, ios\_base::oct 
+
+Bündigkeit: ios\_base::left, ios\_base::right
+
+Gleitkommaformat: ios\_base::scientific, ios\_base::fixed
+
+ 
+Beispiel:
+\begin{CCode}
+
+
+  std::ios_base::fmtflags AlteFlags;
+  
+  AlteFlags = std::cout.flags(); // Flag Zustand lesen
+
+  // Ausgabeformat waehlen (Flags zusaetzlich setzen)
+  std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed);
+  
+  std::cout << 1.23; // Ausgabe im gewaehlten Format
+  
+  // Alle Flags loeschen, nur Hex ist gesetzt
+  std::cout.flags(std::ios_base::hex);
+  
+  std::cout << 47;
+  
+
+\end{CCode} 
+
+Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
+precision kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
+definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden:
+\begin{CCode}
+
+  std::streamsize OldPrecision;
+  
+  OldPrecision = std::cout.precision(); // Genauigkeit lesen
+
+  // Genauigkeit waehlen
+  std::cout.precision(5);
+  
+  // Feldbreite waehlen
+  std::cout.width(9);
+  
+  // Fuellzeichen waehlen
+  std::cout.fill('*');
+
+
+  std::cout << 1.23; // Ausgabe im gewaehlten Format 
+                // gibt ****1.23000 aus
+
+\end{CCode} 
+
+width() gilt nur für die nächste Ausgabe und wird danach wieder
+auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
+
+
+Mit \OviIndex{Manipulatoren} kann das Formatieren und Steuern des
+Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von
+Operator Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen
+gibt es bereits vordefinierte Manuipulatoren, es ist aber auch möglich,
+selbst neue Manipulatoren zu erzeugen.
+
+\begin{CCode}
+
+
+  // Format waehlen und Ausgabe in der selben Zeile
+  std::cout <<  std::setprecision(5) << std::setw(9) << std::setfill('*') << 1.23;
+
+  //  Zahl hexadezimal ausgeben (ersetzt setf())
+  std::cout << std::hex << 123545;
+
+\end{CCode} 
+
+Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
 
 
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
@@ -3402,9 +3636,106 @@ Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implemen
 
 \OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende einer Sequenz). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
 
+%Weiter gibt es noch \OviIndex{Einfüge-Iteratoren} (OviIndex{Insert Iterator}), welche die geschriebenen Werte einfach in eine Sequenz einfügen (Inkrement und Dekrement haben bei einem Einfüge-Iterator keine Funktion.) 
+%
+%Hier eine mögliche Implementierung des Insert Iterators
+%\begin{CCode}
+%template <class Container>
+  %class insert_iterator :
+    %public iterator<output_iterator_tag,void,void,void,void>
+%{
+%protected:
+  %Container* container;
+  %typename Container::iterator iter;
+%
+%public:
+  %typedef Container container_type;
+  %explicit insert_iterator (Container& x, typename Container::iterator i)
+    %: container(&x), iter(i) {}
+  %insert_iterator<Container>& operator= (typename Container::const_reference value)
+    %{ iter=container->insert(iter,value); ++iter; return *this; }
+  %insert_iterator<Container>& operator* ()
+    %{ return *this; }
+  %insert_iterator<Container>& operator++ ()
+    %{ return *this; }
+  %insert_iterator<Container>& operator++ (int)
+    %{ return *this; }
+%};
+%\end{CCode}
+
 \OviIndex{Algorithmen} wiederum können auf Sequenzen und Container angewendet werden. Es gibt unter anderem folgende Algorithmen: Suchen, Sortieren, Doppelte oder mehrfache Einträge entfernen, Zufällig Mischen, Suchen und entfernen, Eine Operation auf alle Elemente anwenden, Alle Elemente zählen die eine Bedingung erfüllen, ...
 
-In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map vorgestellt:
+%In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map sowie einige Algorithmen vorgestellt:
+
+\subsection{Kurzübersicht zu den Iteratoren aus der \Cpp - Standardbibliothek}
+Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen ++ und * definiert sind. bidirektionale Iteratoren bieten noch -- an, und Random-Access-Iteratoren haben weiter die Operatoren [] und += definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
+
+Moegliche Implementationen von Iteratoren:
+\begin{CCode}
+class MyIterator : public std::iterator<std::input_iterator_tag, int>
+{
+  int* p;
+public:
+  MyIterator(int* x) :p(x) {}
+  MyIterator(const MyIterator& mit) : p(mit.p) {}
+  MyIterator& operator++() {++p;return *this;}
+  MyIterator operator++(int) {MyIterator tmp(*this); operator++(); return tmp;}
+  bool operator==(const MyIterator& rhs) {return p==rhs.p;}
+  bool operator!=(const MyIterator& rhs) {return p!=rhs.p;}
+  int& operator*() {return *p;}
+};
+
+class MyListIterator : public std::iterator<std::input_iterator_tag, int>
+{
+  ListElement* p;
+public:
+  MyIterator(ListElement* x) :p(x) {}
+  MyIterator(const MyIterator& mit) : p(mit.p) {}
+  MyIterator& operator++() {p = p->Next; return *this;}
+  MyIterator operator++(int) {MyIterator tmp(*this); operator++(); return tmp;}
+  bool operator==(const MyIterator& rhs) {return p==rhs.p;}
+  bool operator!=(const MyIterator& rhs) {return p!=rhs.p;}
+  ListElement& operator*() {return *p;}
+};
+
+
+\end{CCode}
+
+Weiter gibt es noch \OviIndex{Einfüge-Iteratoren} (OviIndex{Insert Iterator}), welche die geschriebenen Werte einfach in eine Sequenz einfügen (Inkrement und Dekrement haben bei einem Einfüge-Iterator keine Funktion.) 
+
+Hier eine mögliche Implementierung des Insert Iterators (*i++ = Value; soll zum einfügen von Value führen,
+also operator =(operator *(operator++(i)), Value) soll schlussendlich Value einfügen).
+\begin{CCode}
+template <class Container>
+  class insert_iterator :
+    public iterator<output_iterator_tag,void,void,void,void>
+{
+protected:
+  Container* container;
+  typename Container::iterator iter;
+
+public:
+  typedef Container container_type;
+  explicit insert_iterator (Container& x, typename Container::iterator i)
+    : container(&x), iter(i) {}
+    
+  // Operator = fuegt den Wert im Container ein  
+  insert_iterator<Container>& operator= (typename Container::const_reference value)
+    { iter=container->insert(iter,value); ++iter; return *this; }
+    
+  // Operator * liefert einfach wieder den Iterator zurueck, damit ++, * und = verkettet
+  // werden können 
+  insert_iterator<Container>& operator* ()
+    { return *this; }
+    
+  // Operator ++ liefert einfach wieder den Iterator zurueck, damit ++, * und = verkettet
+  // werden können 
+  insert_iterator<Container>& operator++ ()
+    { return *this; }
+  insert_iterator<Container>& operator++ (int)
+    { return *this; }
+};
+\end{CCode}
  
 
 \subsection{Kurzübersicht zu Container list<> aus der \Cpp - Standardbibliothek}
@@ -3583,6 +3914,182 @@ muss eine Multimap verwendet werden.
 Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Suchen von
 Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator [] Sucht \emph{und} fügt hinzu, falls nicht gefunden)
 
+\subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
+\subsubsection{for\_each()}
+Der wohl einfachste Algorithmus ist for\_each. Mit \OviIndex{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. for\_each benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer oder ein Objekt mit überladenem () operator.
+Die Funktion oder der Operator() wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \OviIndex{mem\_fn()} aus der Standardlibrary benutzt werden (Vor C++1 \OviIndex{mem\_fun()}).
+\begin{CCode}
+
+#include <algorithm>
+#include <functional>  
+
+   class DataSet {
+      int Value;
+      
+      public:
+      virtual void Print() {std::cout << Value << std::endl;};
+      virtual void Save(std::ofstream &s) {s << Value;};
+      }
+
+   std::list<DataSet *> Daten;
+  
+   // Simple helper function taking a pointer to a DataSet-Object
+   // and calling its Print() method. 
+   void CallPrint(DataSet *p) {
+      p->Prinf(); 
+   } 
+ 
+   // Add some values into the list
+
+
+   // Print all values using for_each() and helper function
+   std::for_each(Daten.begin(), Daten.end(), CallPrint);
+
+
+   // Print all values using for_each() and mem_fn()
+   std::for_each(Daten.begin(), Daten.end(), std::mem_fn(&DataSet::Print));
+
+   // Fuer alle Elemente delete aufrufen, benutzt Lambafunktion
+   // decltype(Variable) liefert Typ von Variable (int a; decltype(a) b definiert b als int)
+   // valuetype liefert fuer jeden Container den enthaltenen Datentypen, hier DataSet * 
+   std::for_each(Daten.begin(), Daten.end(), [](decltype(Daten)::value_type p){delete p;});
+
+   Save (std::ostream &s) {
+      // Ruft fuer jedes Element in Liste Save() auf und uebergibt dabei s
+      // benutzt lambdafunktion
+      std::for_each(Figuren.begin(), Figuren.end(), [&s](decltype(Figuren)::value_type p){p->Save(s);});
+   }
+\end{CCode}
+\subsubsection{transform()}
+\OviIndex{Transform()} funktioniert ähnlich wie for\_each, nur dass die Rückgabewerte der einzelnen Funktionsaufrufe in einer weiteren Sequenz gesammelt werden. Falls die Zielsequenz identisch zur Quellsequenz ist, überschreibt das Ergebnis das Originalelement.
+Mithilfe eines Einfüge Iterators (Spezieller Iterator) können die Ergebnisse auch an einen Container angefügt werden.
+\begin{CCode}
+#include <iterator>
+#include <algorithm>
+#include <functional>  
+   class DataSet {
+      int Value;
+      
+      public:
+      virtual void Print() {std::cout << Value << std::endl;};
+      virtual DataSet *Clone() {return new *this);};
+      }
+      
+      std::list<DataSet *> Daten;
+
+      // CopiedDatas must be of same type as Daten (A list of DataSet*)
+      decltype(Daten) CopiedDatas;
+
+      // Transform calls Clone for all DataSet in given Range and places each result
+      // in CopiedDatas (Clone returns a copy if the adressed object)
+      // std::next(i, n) returns an iterator with the given offset from the given Iterator (e.g. i+n)
+      // std::back_inserter returns an Iterator which will Insert Elements at the end of the given Container
+      std::transform(std::next(Daten.begin(), first), std::next(Daten.begin(), last+1), 
+                                             std::back_inserter(CopiedDatas), std::mem_fn(&DataSet::Clone));
+
+\end{CCode}
+
+
+\subsubsection{swap()}
+\OviIndex{Swapp()} vertauscht den Inhalt zweier Objekte so effizient wie möglich. Die Defaultimplementation führt eine gewöhnliche Vertauschung über ein Hilfsobjekt durch.
+
+
+\begin{CCode}
+// Vor C++11
+template<class T>
+void swap(T &a, T&b) 
+{
+   T c(a);
+   a = b;
+   b = c;
+}
+\end{CCode}
+
+Seit  \Cpp11 werden Move-Konstruktor und Move-Zuweisung benutzt, falls
+unterstützt. (Wird durch das template move() ermöglicht) 
+\begin{CCode}
+// Seit C++11
+template <class T> void swap (T& a, T& b)
+{
+   T c(std::move(a)); 
+   a=std::move(b);
+   b=std::move(c);
+}
+
+template <class T, size_t N> void swap (T (&a)[N], T (&b)[N])
+{
+  for (size_t i = 0; i<N; ++i) swap (a[i],b[i]);
+}
+\end{CCode}
+
+Für die meisten Typen der Standardlibrary gibt es überladene Versionen, welche den Tausch effizienter ausführen (Bei Container wird meist der Inhalt ausgetauscht, indem einfach die Pointer auf die Inhalte ausgetauscht werden, der Inhalt muss so nicht bewegt werden). Viele Algorithmen der Standardlibrary nutzen die Swap-Funktin, wenn sie Elemente tauschen müssen, deshalb empfiehlt es sich, auch für eigene Klassen eine optimierte swapfunktion zu schreiben, wenn Algorithmen benutzt werden.
+
+\subsubsection{merge()}  
+Mit \OviIndex{merge()} können zwei sortierte Sequenzen so zusammengefügt werden, dass die resultierende Sequenz ebenfalls sortiert ist. Merge benötigt je einen Iterator auf Start und Ende der ersten sowie der zweiten Sequenz und einen Iterator für die resultierende Sequenz.
+
+Merge könnte wie folgt definiert sein:
+\begin{CCode}
+template <class InputIterator1, class InputIterator2, class OutputIterator>
+  OutputIterator merge (InputIterator1 first1, InputIterator1 last1,
+                        InputIterator2 first2, InputIterator2 last2,
+                        OutputIterator result)
+{
+  while (true) {
+    if (first1==last1) return std::copy(first2,last2,result);
+    if (first2==last2) return std::copy(first1,last1,result);
+    *result++ = (*first2<*first1)? *first2++ : *first1++;
+  }
+}
+\end{CCode}
+
+\subsubsection{copy()}
+\OviIndex{Copy()} kopiert alle Elemente einer Sequenz in eine andere Sequenz. Copy benötigt je einen Iterator auf Start und Ende der zu kopierenden Sequenz und einen Iterator für das Ziel des Kopiervorganges.
+
+Copy könnte wie folgt definiert sein:
+\begin{CCode}
+ template<class InputIterator, class OutputIterator>
+  OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result)
+{
+  while (first!=last) {
+    *result = *first;
+    ++result; ++first;
+  }
+  return result;
+}
+ \end{CCode}
+\subsubsection{count\_if()}
+\OviIndex{Count\_if()} zählt alle Elemente einer Sequenz, welche eine gegebene Bedingung erfüllen. Die Bedingung wird als Prädikat übergeben, das ist eine Funktion oder ein Objekt mit operator() welche mit jedem Objekt in der Sequenz aufgerufen wird und true zurückliefert, wenn das Objekt gezählt werden soll.
+ \begin{CCode}
+template <class InputIterator, class UnaryPredicate>
+  typename iterator_traits<InputIterator>::difference_type
+    count_if (InputIterator first, InputIterator last, UnaryPredicate pred)
+{
+  typename iterator_traits<InputIterator>::difference_type ret = 0;
+  while (first!=last) {
+    if (pred(*first)) ++ret;
+    ++first;
+  }
+  return ret;
+}
+
+//Anwendung (Zaehlt alle Eintraege > 5):
+
+int Array[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+bool Test(int &i) {
+   return i > 5;
+}
+
+int Count = std::count_if(&Array[0], &Array[9], Test);
+
+\end{CCode}
+\subsubsection{Splice()}
+\OviIndex{Splice()} bewegt alle Elemente einer Sequenz in eine andere Sequenz, dabei können auch nur Ausschnitte aus einer grösseren Sequenz bewegt werden. Alle bewegten Elemente werden aus der Quellsequenz entfernt und in der Zielsequenz eingefügt
+
+\begin{CCode}
+      // Alle Elemente aus Figuren nach GroupedElements transferieren
+      GroupedElements.splice (GroupedElements.begin(), Figuren, Figuren.begin(), Figuren.end());
+\end{CCode}
 
 \chapter{C++ in Embedded Systemen}
 \section{Startup Code}
@@ -3946,11 +4453,12 @@ einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigest
 
 Ein Embedded-C++ Programm ist ein subset von standard C++ und lässt sich mit jedem standardkonformen C++ Compiler übersetzen.
 
-\chapter{\Cpp 11}
+\chapter{Standardisierungen}
+\section{\Cpp 11}
 Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
 
-\section{Neuerungen}
-\subsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
+\subsection{Neuerungen}
+\subsubsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
 \label{subsec:RValueRefs}
 
 RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
@@ -4002,7 +4510,7 @@ class Demo {
  
 \end{CCode}
 
-\subsection{constexpr}
+\subsubsection{constexpr}
 Mit dem Schlüsselwort constexpr können Ausdrücke und Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten.
 
@@ -4032,7 +4540,7 @@ Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erla
 
 Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
 
-\subsection{extern Templates}
+\subsubsection{extern Templates}
 Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
 
 
@@ -4040,7 +4548,7 @@ Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt 
 extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
 \end{CCode}
 
-\subsection{Initialisiererlisten}
+\subsubsection{Initialisiererlisten}
 Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu mus jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
 
 Beispiel:
@@ -4058,7 +4566,7 @@ DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
 
 Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
 
-\subsection{Vereinheitlichte Initialisierung}
+\subsubsection{Vereinheitlichte Initialisierung}
 Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels gescheiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
 passende Konstruktor aufgerufen (falls vorhanden).
 
@@ -4094,7 +4602,7 @@ f2({5, 1.23f});
 
 \end{CCode}
 
-\subsection{Automatische Typerkennung}
+\subsubsection{Automatische Typerkennung}
 Mit dem Schlüselwort auto wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort decltype kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
 \begin{CCode}
 
@@ -4114,7 +4622,7 @@ for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
 
 \end{CCode}
 
-\subsection{Automatische For-Schlaufe}
+\subsubsection{Automatische For-Schlaufe}
 
 Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
 
@@ -4131,7 +4639,7 @@ for (int &r : Elemente) {
 
 Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
 
-\subsection{Anonyme Funktionen (Lambda Funktionen)}
+\subsubsection{Anonyme Funktionen (Lambda Funktionen)}
 
 Lambda Funktionen sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 
@@ -4179,7 +4687,7 @@ std::for_each( begin(Liste), end(Liste), [&Total](int x) {
 Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
 Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
 
-\subsection{Alternative Funktionsdefinition}
+\subsubsection{Alternative Funktionsdefinition}
 
 Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
 
@@ -4207,7 +4715,7 @@ auto Demo::MemberFunktion(int x, int y) -> int // Rueckgabewert ist int
 \end{CCode}
 
 
-\subsection{Vereinfachte Objektkonstruktion}
+\subsubsection{Vereinfachte Objektkonstruktion}
 
 Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können Defaultwerte für Membervariablen festgelegt werden.
 
@@ -4239,7 +4747,7 @@ private:
 }\end{CCode}
 
 
-\subsection{Kontrolliertes Überschreiben von Funktionen}
+\subsubsection{Kontrolliertes Überschreiben von Funktionen}
 
 Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
 
@@ -4263,11 +4771,11 @@ class Abgeleitet : Basisklasse {
 
 \end{CCode}
 
-\subsection{Nullpointer}
+\subsubsection{Nullpointer}
 Neu gibt es ein Schlüsselwort für den Nullpointer: nullptr
 Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig.
 
-\subsection{Typsicherere Enummerationen}
+\subsubsection{Typsicherere Enummerationen}
 Neu gibt es einen typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
 
 Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
@@ -4296,13 +4804,13 @@ enum class Enum2 : unsigned int {Item1, Item2};
 
 \end{CCode}
 
-\subsection{Template-Verschachtelung $>>$}
+\subsubsection{Template-Verschachtelung $>>$}
 Bei verschachtelten Templates wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
 
-\subsection{Explizite Umwandlungsoperatoren}
+\subsubsection{Explizite Umwandlungsoperatoren}
 Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
 
-\subsection{Template mit variabler Argumentenanzahl}
+\subsubsection{Template mit variabler Argumentenanzahl}
 
 Neu können Templates Variable Argumentenlisten haben.
 \begin{CCode}
@@ -4415,7 +4923,7 @@ int main()
 \end{CCode}
 
 
-\subsection{Erweiterte Stringliterale}
+\subsubsection{Erweiterte Stringliterale}
 Neu können auch UTF-Codierte Stringliterale definiert werden, dazu werden die Prefixes u8, u und U verwendet.
 
 \begin{CCode}
@@ -4443,7 +4951,7 @@ R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz"
 
 R und U können auch kombiniert werden.
 
-\subsection{Benutzerdefinierte Literale}
+\subsubsection{Benutzerdefinierte Literale}
 
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
 
@@ -4470,7 +4978,7 @@ OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaeng
 
 Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
 
-\subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen}
+\subsubsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen}
 Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
 
 \begin{CCode}
@@ -4488,7 +4996,7 @@ class Demo {
 \end{CCode}
 Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
 
-\section{Weitere Neuerungen}
+\subsection{Weitere Neuerungen}
 
 \begin{itemize}
 	 \item Geänderte Definiton von POD (plain old data)
@@ -4515,11 +5023,11 @@ Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würd
 
 
 
-\chapter{\Cpp 14}
+\section{\Cpp 14}
 Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Dieser bietet einige kleinere Verbesserungen sowie Korrekturen an \Cpp 11 an.
  
 
-\section{Neuerungen}
+\subsection{Neuerungen}
 \begin{itemize}
 	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
 	 \item Alternative Typendeduktion bei Deklarationen
@@ -4535,7 +5043,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 	
 \end{itemize}
 
-\chapter{\Cpp 17}
+\section{\Cpp 17}
 Bereits in der Entwicklungsphase
 
 \appendix
