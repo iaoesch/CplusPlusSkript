@@ -3,10 +3,10 @@ Type=TeXnicCenterProjectInformation
 Version=4
 
 [ProjectInfo]
-MainFile=ScriptOOPLatexV0_1.tex
+MainFile=ScriptOOP_pure_LatexV0_1.tex
 UseBibTeX=0
 UseMakeIndex=1
-ActiveProfile=LaTeX => DVI
+ActiveProfile=LaTeX => PDF
 ProjectLanguage=de
-ProjectDialect=CH
+ProjectDialect=DE
 

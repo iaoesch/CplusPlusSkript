@@ -1,0 +1,2314 @@
+%/*****************************************************************************/
+%/*  Module     : OOP-Skript                                     Version 1.1  */
+%/*****************************************************************************/
+%/*                                                                           */
+%/*  Function   : Solves Sudoku problems                                      */
+%/*                                                                           */
+%/*  Procedures : main                                                        */
+%/*                                                                           */
+%/*  Author     : I. Oesch                                                    */
+%/*                                                                           */
+%/*  History    : 17.11.2004  IO Created                                      */
+%/*               01.01.2006  IO Unified Process added                        */
+%/*                                                                           */
+%/*                                                                           */
+%/*  File       : ScriptOOPLatexv0_1.tex                                      */
+%/*                                                                           */
+%/*                                                                           */
+%/*  To DO:                                                                   */
+%/*                                                                           */
+%/*  Besser Durchstrukturieren, logische Reihenfolge                          */
+%/*  Zuerst alles UML, dann C++                                               */
+%/*  Codebeispiele feur Designpatterns                                        */
+%/*  Crash-Kurs   Praeprocessor predefined Makros                             */
+%/*  Crash-Kurs   Statische Member (Beispiel)                                 */
+%/*  Crash-Kurs   Rein virtuelle Metoden/Abstrakte Klasse                     */
+%/*  Crash-Kurs   Stereotypen                                                 */
+%/*  Crash-Kurs   UML Sprachelemente                                          */
+%/*                                                                           */
+%/*  Kap 6.1 Ev bessere Notation fuer Alternativereignisse/Events             */
+%/*                                                                           */
+%/*                                                                           */
+%/*  Fehler in Bilder:                                                        */  
+%/*   5.3 EinFenster Klassenname fehlt                                        */
+%/*   5.8 Undruckbares Zeichen in Notiz                                       */
+%/*   5.12 Punktierte Linien                                                  */
+%/*   5.13 Machwas Machauchwas Reihenfolge drehen                             */
+%/*   5.14 <<Static>> fehlt vor EinzigesExemplar                              */
+%/*   5.17 CMDPaste auch assoziiert mit Dokument                              */
+%/*   5.20/5.21 Klient/Client                                                 */
+%/*   6.2 Versuchen Abgerundetet Rechtecke hinzubekommen                      */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*****************************************************************************/
+%/* MagicSoft                                                                 */
+%/*****************************************************************************/
+
+%/* imports */
+
+%/* module constant declaration */
+
+%/* module type declaration */
+
+%/* module data declaration */
+
+
+%Schriftgröße, Layout, Papierformat, Art des Dokumentes
+\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+%\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+%\documentclass[10pt,a4paper]{report}
+%\usepackage{bookman}
+%\typearea[current]{calc}
+
+
+
+
+
+%Einstellungen der Seitenränder
+%\usepackage[left=2.5cm,right=2.5cm,top=1cm,bottom=1cm,includeheadfoot]{geometry}
+
+%alte Rechtschreibung
+\usepackage{german}
+\usepackage{color}
+\usepackage{color,listings}
+\usepackage{framed}
+\usepackage{hhline}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{longtable}
+%\usepackage{html,makeidx}
+
+\usepackage{graphicx}
+
+%Umlaute ermöglichen
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{makeidx}
+
+%Kopf- und Fußzeile
+\usepackage{fancyhdr}
+
+\lstloadlanguages{[ISO]C++}
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\makeindex
+
+%Kopfzeile links bzw. innen
+\fancyhead[L]{\MyTitle}
+
+%Kopfzeile mitte bzw. innen
+%\fancyhead[C]{\includegraphics[height=13pt]{logo_bfh}\parbox[b]{3.2cm}{\footnotesize Berner %Fachhochschule Technik und Informatik}}
+
+%Kopfzeile rechts bzw. außen
+\fancyhead[R]{\nouppercase{\leftmark}}
+%Linie oben
+\renewcommand{\headrulewidth}{0.5pt}
+
+%Fußzeile links bzw. innen
+\fancyfoot[L]{Version 1.3\hspace{2ex} I. Oesch}
+%Fußzeile mittig
+\fancyfoot[C]{\today}
+%Fußzeile rechts bzw. außen
+\fancyfoot[R]{\thepage}
+%Linie unten
+\renewcommand{\footrulewidth}{0.5pt}
+
+\setlength{\parskip}{1ex plus0.5ex minus0.3ex} 
+\newcommand{\Cpp}{C{\tt ++} }
+
+\newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
+
+\newcommand{\NextPagePlease}{\pagebreak[4]}
+
+\newcommand{\MyTitle}{Einführung in die OOP}
+
+\raggedbottom
+
+\definecolor{Mygray}{gray}{0.8}
+%\fcolorbox{black}{Mygray}{
+% \definecolor{myspecialcolor}{colscale}{val}
+% 
+% \newcommand{\mylistinginput}[1]{%
+% \lstset{%
+%  basicstyle=\ttfamily,%
+%  backgroundcolor=\color{myspecialcolor},%
+%%if you want a coloured frame around the code:
+%  framesep=0.5em,fillcolor=\color{myspecialcolor},%
+%  rulecolor=\color{myspecialcolor},%
+%  xleftmargin=1.75em,xrightmargin=1.5em,%
+%  frame=tlrb%
+% }% 
+% \lstinputlisting{../examples/#1}%
+% }
+%% for an environment, just use the \lstset command as init (2nd to
+%% last) argument of the \lstnewenvironment{}[][]{}{} command
+\lstnewenvironment{CCode}{
+\pagebreak[3]
+\lstset{showspaces=false,
+showtabs=false,
+language={[ISO]C++},
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+backgroundcolor=\color{Mygray},
+%frame=single,
+tab=\rightarrowfill}
+%\begin{framed} 
+}
+{
+%\end{framed}
+}
+
+\lstset{showspaces=false,
+showtabs=false,
+language={[ISO]C++},
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+%backgroundcolor=\color{Mygray},
+%frame=single,
+tab=\rightarrowfill}
+
+
+
+\makeatletter
+
+\def\newverbatim{\let\@NVtempa\newcommand\@newverbatim}
+\def\renewverbatim{\let\@NVtempa\renewcommand\@newverbatim}
+\def\@newverbatim#1{\@ifnextchar[%]
+     {\@inewverbatim{#1}}{\@inewverbatim{#1}[0]}}
+\long\def\@inewverbatim#1[#2]#3#4#5#6{%
+ \expandafter\@NVtempa\csname #1\endcsname[#2]%
+  {#3\@verbatim\frenchspacing\@vobeyspaces#4\@defxverbatim{#1}%
+\@xverbatim}%
+ \@namedef{end#1}{#5\endverbatim#6}}
+
+\begingroup \catcode `|=0 \catcode `[= 1
+\catcode`]=2 \catcode `\{=12 \catcode `\}=12
+\catcode`\\=12 
+|gdef|@defxverbatim#1[|def|@xverbatim##1\end{#1}[##1|end[#1]]]
+|endgroup
+
+%\newverbatim{CCode}{}{}{}{}
+
+\restylefloat{figure}
+
+%\newenvironment{CCode}
+%{
+%\begin{verbatim}   
+%}
+%{
+%\end{verbatim}   
+%}
+
+
+\newenvironment{framedquote}{
+\begin{framed}
+\begin{quote}
+}
+{
+\end{quote}
+\end{framed}
+}
+
+\newenvironment{CodeTable}{
+\noindent
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{>{\columncolor[gray]{0.8}[0.9\tabcolsep]}p{0.45\textwidth}p{0.5\textwidth}}
+}
+{
+\end{tabular}
+}
+
+\setcounter{tocdepth}{1}
+
+
+\begin{document}
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+{
+\fontsize{200pt}{240pt}\selectfont
+\textbf{
+\MyTitle
+}
+}
+
+\vspace{3\parskip}
+
+\Large
+Ivo Oesch
+
+\vspace{\fill}
+
+\begin{figure}[h]
+   \includegraphics[width=\textwidth]{Titelbild}
+%   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
+\end{figure}
+
+\vspace{\fill}
+
+\normalsize
+\begin{quote}
+Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden. Es enthält Auszüge aus dem Skript OOP mit Java von Chris Hübsch. 
+Es beinhaltet eine Einführung in die objektorientierte Denkweise und stellt eine objektorientierte Analyse und Designmethode (UML) vor.
+\end{quote}
+
+\vspace{\fill}
+
+\today
+
+26. Februar 2008
+
+20. Oktober 2006  %Was really 20. october 2006 !
+
+20. Oktober 2005
+
+17. Oktober 2004 
+
+12. Dezember 2001
+
+5. 	März 2001
+
+
+
+\end{center}
+\end{titlepage}
+%\maketitle
+
+%\begin{figure}
+%   \includegraphics[width=\textwidth]{Titelbild}
+%   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
+%\end{figure}
+\cleardoublepage
+\tableofcontents
+\chapter{Zu diesem Skript}
+Dieses Skript ist eine Einführung in die Objekt Orientierte Programmierung (OOP), es behandelt zwei grundlegende Aspekte der objektorientierten Programmierung.
+
+Im ersten Teil werden die zugrundeliegenden Ideen der Objektorientierung behandelt. Hier werden das Konzept und die Grundlagen der objektorientierten Denkweise und der Unterschied zu den herkömmlichen Methoden erläutert. 
+
+Der zweite Teil stellt die dazugehörigen Analyse- und Design-Methoden vor. Bekannte Designmethoden wie Struktogramme oder Flussdiagramme sind für OOP nicht einsetzbar, es müssen andere Methoden verwendet werden. Es wird eine Einführung in die UML (Unified Modeling Language) gegeben, wobei aber nur einige der verschiedenen Modelle betrachtet werden
+
+Im Unterricht werden diese Teile soweit möglich parallel zueinander abgehandelt. Dieser Kurs dient nur als Basis, um OOP zu verstehen. Um OOP wirklich anwenden zu können ist die Arbeit mit grösseren Projekten und das Studium weiterführender Literatur unumgänglich.
+
+\chapter{Einführung}
+Objektorientiert ist noch immer ein Schlagwort, das man oft hört, sich aber meist nicht viel darunter vorstellen kann. Objektorientiert zu Programmieren heisst nicht, eine bestimmte Programmiersprache zu verwenden, es ist viel mehr eine andere Denkweise, ein anderer Ansatz um Programme zu entwerfen. (Es ist im Prinzip sogar möglich, in Assembler objektorientiert zu Programmieren, es wäre nur sehr aufwendig).
+\section{Geschichtliches, Motivation}
+Softwareprojekte wurden seit Beginn der Informatik ständig grösser und komplexer, und entsprechend haben sich auch die Anforderungen an die Designmethoden geändert.
+Mit den im Laufe der Zeit gewonnen Erfahrungen bei der Softwareentwicklung haben sich deshalb auch die Softwaredesignmethoden weiterentwickelt. Am Anfang stand der kompakte, meist unstrukturierte 'Spaghetticode', der sich über prozedurale und modulare Programmierung nun unter anderem zum objektorientierten Ansatz weiterentwickelt hat. 
+\subsection{Unstrukturierte Programmierung}
+Die Anwendung besteht hier aus einem einzigen Hauptprogramm welches aus einer langen Sequenz von Anweisungen besteht, und oft mit Sprunganweisungen 'goto' quer durch das Programm und einer Menge von globalen Variablen arbeitet. Diese Methode führt schnell zu unübersichtlichen und fehleranfälligen Programmen die kaum zu warten sind.
+\subsection{Prozedurale Programmierung}
+Bei dieser Art der Programmierung wird die Arbeit auf mehrere Prozeduren verteilt, es gibt ein Hauptprogramm welches den Aufruf der einzelnen Prozeduren koordiniert. Daten werden den Prozeduren beim Aufruf zur Verarbeitung übergeben, und die Prozeduren liefern die Ergebnisse der Verarbeitung anschliessend an den aufrufenden Programmteil zurück. Prozeduren müssen nur einmal getestet werden, können aber beliebig oft verwendet werden. Programme werden dadurch deutlich übersichtlicher und einfacher zu warten.
+\subsection{Modulare Programmierung}
+Hier werden zusammengehörende Funktionen zu Modulen (Separate Dateien) zusammengefasst. Module können einzeln übersetzt und getestet werden und erleichtern so die Wiederverwendbarkeit. Module können zudem interne Zustände speichern und sich an Ereignisse früherer Aufrufe 'erinnern' (z. B. Dateinamen, Fehlerzustände, Zwischenergebnisse). Solche Module können beliebig zu neuen Programmen zusammengesetzt werden. Einzelne Module sind einfacher zu warten und zu testen. Die Funktionsweise eines Modular aufgebauten Programms ist zudem einfacher zu verstehen, dadurch werden bereits viele Fehler vermieden. Ein Modul muss nur einmal getestet werden und kann anschliessend in anderen Projekten wieder verwendet werden. Den Benutzer eines Moduls interessiert im Normalfall der interne Aufbau des Moduls nicht, für ihn ist nur die Schnittstelle (öffentliche Funktionen des Moduls) massgebend. Solange die Schnittstelle und die Funktionalität des Moduls bestehen bleibt, kann das Modul bei Bedarf modifiziert oder verbessert werden, ohne dass Anwender des Moduls ihren Code ändern müssen (Aber sie profitieren von den Verbesserungen). 
+ 
+\subsection{Objektorientierte Programmierung}
+Die objektorientierte Programmierung kann als Weiterführung der modularen Programmierung angesehen werden. Man fasst hierbei die Daten und die dazugehörigen Funktionen zu einer Einheit zusammen. Bei diesem Vorgehen steht nun nicht mehr die Funktionalität, also das wie, sondern die Daten, also das was im Vordergrund. Ein Objekt ist eine Einheit, die bestimmte Eigenschaften aufweist, und bestimmte Befehle ausführen kann. Ein Objekt kann eine konkrete Entsprechung in der realen Welt haben, aber auch etwas abstraktes wie einen Algorithmus umfassen.
+Beim objektorientierten Entwurf sucht man zuerst alle am Problem beteiligten Objekte, bestimmt anschliessend deren Eigenschaften und Aufgaben und findet heraus, wie diese Objekte miteinander in Beziehung stehen. Eine Gruppe (oder auch einzelne Objekte) von gleichartigen Objekten werden in einer Klasse zusammengefasst. Eine Klasse kann als Beschreibung der Objekte angesehen werden, oder auch einfach als Datentyp, und ein Objekt entsprechend als Variable von diesem Typ. Die zu den Daten gehörenden Funktionen (Aufgaben) werden dabei in die Objekte/Klassen integriert. Man spricht dabei nicht mehr von Funktionen, sondern von Memberfunktionen oder Methoden. Die Daten werden entsprechend als Attribute (Eigenschaften) oder Member bezeichnet.
+
+Funktionsaufrufe resp. Methodenaufrufe werden in der Literatur oft als '\OviIndex{Botschaften}' an ein Objekt bezeichnet. (Z. B. Objekt A sendet die Botschaft 'ZeichneDich()' an Objekt B).
+
+Häufig hört oder liest man, dass eine Klasse ein \OviIndex{Abstrakter Datentyp} (ADT) sei, aber das ist nicht in jedem Fall mathematisch korrekt, es hängt von der Art der Klasse ab. Abstrakte Klassen, bei denen alle Methoden rein virtuell sind, können als ADT bezeichnet werden.
+
+(Ein ADT ist eine mathematisch genaue Beschreibung der Eigenschaften und der Funktion eines Datentyps, aber es wird nichts darüber gesagt, wie der ADT realisiert wird, es handelt sich nur um eine präzise Beschreibung, die es einem erlaubt, den Datentyp zu nutzen, ohne seine Realisierung zu kennen. Mit der Beschreibung eines ADT ist es andererseits auch möglich, einen Typ zu implementieren, der genau diesen Vorgaben entspricht, und überall dort eingesetzt werden kann, wo ein solcher ADT vorgesehen ist).
+
+\chapter{OO Prinzipien}
+Objekt orientiertes\r Design (OOD) und Objekt orientierte Programmierung (OOP) sind Vorgehensweisen zum Lösuen von Problemen. 
+OOD ist eine Modellierungsmethode, die sich im Laufe der Zeit entwickelt hat. Eine ihrer Grundlagen war die strukturierte Programmierung. Deshalb wird auch das Wort ''orientiert'' verwendet. In vielen dieser ''orientierten'' Sprachen gibt es noch sehr viele Elemente aus der strukturierten Programmierung (z.B. \Cpp mit struct oder Pascal mit record). Selbst die verschiedenen Methoden zum Festlegen des Programmablaufes oder primitive Datentypen stammen aus der strukturierten Programmierung. Reine Objekt-Sprachen (z.B. SmallTalk) realisieren diese Funktionalität nur mit Methoden und es gibt nur noch Objekte.
+
+Da sich die OOP aus der strukturierten Programmierung entwickelt hat, stellt sich die Frage, warum es dann die strukturierte Programmierung überhaupt noch gibt. Darauf lässt sich antworten, dass jede Methode ihre Einsatzgebiete hat, für die sie besser geeignet ist als die andere.
+
+In den Nachfolgenden Kapitel sind die wichtigsten Prinzipien der OOP kurz aufgeführt.
+
+\section{Abstraktion}
+Durch \OviIndex{Abstraktion} werden die wesentlichen Eigenschaften eines Objektes erfasst. Die unwesentlichen
+oder irrelevanten Eigenschaften werden ignoriert. Die Konzentration auf das Wesentliche
+erlaubt eine von den Details losgelöste Sicht. Es wird genau beschrieben, \emph{was} zu
+tun ist, aber nicht \emph{wie}. 
+
+\section{Kapselung}
+Wie in der Einführung schon dargestellt, ist einer der zentralen Aspekte der OOP, Daten mit den zugehörigen Funktionen zusammenzuführen und gegen Aussen möglichst zu verstecken. Diesen Prozess bezeichnet man als \OviIndex{Kapselung}, die daraus resultierende Datenstruktur nennt sich Klasse. Eine Variable oder Konstante, die auf dieser Datenstruktur basiert, nennt sich eine Instanz der Klasse. Der wesentliche Unterschied einer Klasse des OOP zu den schon bekannten Datenstrukturen (z.B. ein struct in C oder einem RECORD in Pascal) ist, dass eine Klasse zusätzlich zu den Daten auch weitreichende Funktionalitäten übernehmen kann. Dadurch wird sie zu einem Datentyp, der zu den Inhalten (den Daten) auch die Möglichkeiten spezifiziert, mit ihnen umzugehen (die Funktionen). 
+
+Die Daten einer Klasse werden dabei als \OviIndex{Elemente} oder \OviIndex{Attribute}, und die Funktionen als \OviIndex{Elementfunktionen} oder \OviIndex{Methoden} bezeichnet. Normalerweise sind die Attribute (Daten) eines Objektes von aussen nicht direkt zugänglich, sondern werden gegen Aussen gekapselt. Auf die Daten kann nur indirekt über Zugriffsfunktionen zugegriffen werden. Somit ist die interne Repräsentation der Daten Sache des Objektes, sie geht sonst niemanden etwas an.
+
+Beim Erzeugen eines Objektes wird dieses üblicherweise automatisch initialisiert, es ist somit unmöglich, nicht initialisierte Objekte im System zu haben. Und wenn ein Objekt aufhört zu existieren räumt es hinter sich ordentlich auf, bevor es verschwindet. Objekte haben somit fast eine Art Eigenleben.
+
+\NextPagePlease
+\section{Vererbung}
+Der dritte wichtige Aspekt der OOP ist die Möglichkeit der \OviIndex{Vererbung}. Um nicht jedesmal eine komplett neue Klasse entwerfen zu müssen, kann man festlegen, dass eine Klasse alle Elemente und Methoden einer bereits existierenden Klasse 'erben' soll, d.h. die neue Klasse enthält von vornherein schon alle Attribute und Methoden dieser Klasse.
+Die Attribute und Methoden der neuen Klasse können anschliessend um weitere ergänzt oder bei Bedarf auch überschrieben (überschreiben = für die neue Klasse neu definiert) werden. 
+
+Damit wird eine Beziehung wie z.B. 'ein Apfel ist eine Frucht' realisiert, durch zusätzliche Elemente und Methoden wird die neue Klasse genauer spezifiziert, dieser Vorgang wird als '\OviIndex{Spezialisieren}' bezeichnet. Die alte Klasse wird dabei als \OviIndex{Basisklasse} bezeichnet, die neue als abgeleitete Klasse und die Beziehungsstruktur, die durch die Vererbung entsteht, als \OviIndex{Klassenhierarchie}. 
+
+Man kann auch den umgekehrten Weg gehen, indem man \OviIndex{Gemeinsamkeiten} von Klassen in einer \OviIndex{Oberklasse} (Basisklasse) zusammenfasst (und anschliessend von dieser erbt). Man spricht in diesem Fall von \OviIndex{Generalisierung}.
+
+\section{Polymorphismus}
+Der vierte grundlegende Aspekt ist der des \OviIndex{Polymorphismus}. Wie erwähnt kann man in einer abgeleiteten Klasse Methoden der Basisklasse überschreiben. Dadurch hat die abgeleitete Klasse eine neue Methode, die aber immer noch den gleichen Namen trägt wie die Methode der Basisklasse. Polymorphismus bedeutet, dass nun überall, wo ein Objekt der Basisklasse erwartet wird, auch ein davon abgeleitetes Objekt eingesetzt werden kann. Beim Aufruf von Methoden werden aber die Methoden des tatsächlichen Objektes, und nicht die der Basisklasse benutzt. Es wird somit nicht wie sonst üblich zur Compilezeit bestimmt, welche Methode aufgerufen wird, sondern erst zur Laufzeit. (Es ist zur Compilezeit ja nicht bekannt, welches Objekt später einmal bearbeitet wird, da sowohl ein Objekt der Basisklasse oder ein davon abgeleitetes zum Einsatz kommen kann). Diesen Vorgang bezeichnet man auch als späte oder \OviIndex{dynamische Bindung}, im Gegensatz zur herkömmlichen \OviIndex{statischen Bindung}.
+
+Nehmen wir folgendes Beispiel aus der Tierwelt:
+
+\begin{quote}
+Amseln, Spechte und Adler sind Vögel, alle legen Eier und müssen einen Brutplatz vorbereiten. Somit gibt es für die drei Arten die Oberklasse Vogel. Für die Klasse Vogel gibt es die Methoden EierLegen() und BrutplatzVorbereiten(). Die Methode BrutplatzVorbereiten() heisst zwar für jede Vogelart gleich, doch jede besitzt ihre eigene Art von Brutplatz. Die (Klasse) Amsel baut sich ein Nest in einem Strauch, einem Baum oder einem anderen geschützten Platz. Der (Die Klasse) Specht sucht sich eine Höhle in einem Baum oder meisselt sich selber eine neue Höhle. Ein Adler wiederum baut sich einen Horst an einer unzugänglichen Stelle. Aber dennoch lassen sich alle von der Klasse Vogel ableiten, da sie eine Menge Gemeinsamkeiten aufweisen.
+\end{quote}
+
+Wenn wir nun einem Vogel die Botschaft senden, dass er einen Brutplatz vorbereiten soll, erwarten wir, dass er es seiner Art entsprechend tut, auch wenn wir nicht wissen, zu welcher Art der Vogel gehört (Es könnte ja sein dass wir die Vogelart nicht erkennen und einfach einen Vogel sehen. Wir erwarten dennoch von ihm, dass er weiss was zu tun ist, auch wenn wir selbst es nicht wissen).
+
+
+ 
+In der UML Notation könnte unser Beispiel wie in Bild \ref{Vogel} aussehen (Die Notation wird im nächsten Kapitel erklärt):
+\begin{figure}[h]
+   \includegraphics[width=\textwidth]{Vogel}
+   \caption{Klassendiagramm mit Vererbung}
+   \label{Vogel}
+%   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
+\end{figure}
+
+\NextPagePlease
+Dieses UML Diagramm könnte in folgenden \Cpp Code umgesetzt werden (\Cpp ist noch nicht vorgestellt worden, aber man kann gleichwohl bereits einige Zusammenhänge zwischen Diagram und \Cpp Code erkennen):
+
+
+%\fcolorbox{black}{Mygray}{
+% \definecolor{myspecialcolor}{colscale}{val}
+% 
+% \newcommand{\mylistinginput}[1]{%
+% \lstset{%
+%  basicstyle=\ttfamily,%
+%  backgroundcolor=\color{myspecialcolor},%
+%%if you want a coloured frame around the code:
+%  framesep=0.5em,fillcolor=\color{myspecialcolor},%
+%  rulecolor=\color{myspecialcolor},%
+%  xleftmargin=1.75em,xrightmargin=1.5em,%
+%  frame=tlrb%
+% }% 
+% \lstinputlisting{../examples/#1}%
+% }
+%% for an environment, just use the \lstset command as init (2nd to
+%% last) argument of the \lstnewenvironment{}[][]{}{} command
+
+
+%\lstset{showspaces=false,
+%showtabs=false,
+%language={[ISO]C++},
+%breaklines=true,
+%breakatwhitespace=true,
+%backgroundcolor=\color{Mygray},
+%tab=\rightarrowfill}
+%\begin{lstlisting}[frame=single]
+%\begin{lstlisting}[frame=single]
+
+\begin{CCode}
+// Deklaration
+class Vogel {
+  int Alter;
+  public:
+  void EierLegen();
+  virtual void BrutplatzVorbereiten() = 0;  //Rein Virtuell, kann kein Objekt Vogel
+                                            // erzeugen. Vogel ist somit Abstrakt
+};
+
+class Amsel : public Vogel {
+  public:
+  void BrutplatzVorbereiten();  //Nest auf Baum bauen
+};
+
+class Specht : public Vogel {
+  public:
+  void BrutplatzVorbereiten();  //Hoehle in Baum meisseln
+};
+
+class Adler : public Vogel {
+  public:
+  void BrutplatzVorbereiten();  //Horst Bauen
+};
+
+// Implementation
+
+#include <iostream>
+
+void Vogel::EierLegen()                 // Definition der Methode Eierlegen() von Vogel
+{
+   cout << "Ei gelegt" << endl;         // Einfach Text ausgeben
+}
+
+void Amsel::BrutplatzVorbereiten()
+{
+   cout << "Baue Nest auf Baum oder Strauch" << endl;
+}
+
+void Specht::BrutplatzVorbereiten()
+{
+   cout << "Meissle Hoehle in einen Baum" << endl;
+}
+
+void Adler::BrutplatzVorbereiten()
+{
+   cout << "Baue Horst auf Felsvorsprung" << endl;
+}
+
+
+int main(int argc, char *argv[]) 
+{
+   Vogel *EinVogel;                  // Zeiger auf einen Vogel (oder was davon
+                                     // abgeleitetes)
+   
+   EinVogel = new Adler();           // Erzeuge einen neuen Adler
+   EinVogel->BrutplatzVorbereiten(); // Ausgabe: Horst bauen 
+   delete EinVogel;                  // Objekt wieder loeschen
+   EinVogel = new Specht();          // Erzeuge einen neuen Specht
+   EinVogel->BrutplatzVorbereiten(); // Ausgabe: Hoehle meisseln 
+   delete EinVogel;                  // Objekt wieder loeschen
+   return 0;
+}
+
+\end{CCode}
+
+
+
+\chapter {OOA/OOD Grundlagen}
+In diesem Kapitel wird vertieft auf wichtige Eigenschaften der OO eingegangen.
+\section	{Objekt und Klasse} 
+Eine OO-Welt ist durch eine Menge von Objekten gekennzeichnet, die miteinander in Beziehung stehen. Ein \OviIndex{Objekt} ist durch Fähigkeiten bzw. Verhalten und einen Zustand gekennzeichnet. Die Fähigkeiten werden als \OviIndex{Methoden} implementiert, und der Zustand wird in den \OviIndex{Attributen} aufbewahrt. 
+
+Zwei Beispiele für Objekte:
+\begin{quote}
+	Ein \emph{Auto} hat einen bestimmen Hersteller, wurde an einem bestimmten Tag produziert, hat Fahrzeug- und Motornummern, gehört jemandem, hat eine Farbe und einen Kilometerstand auf dem Tacho... 
+	
+	Ein \emph{Bankkonto} hat einen Kontostand, einen Inhaber und wird bei einem bestimmten Kreditinstitut geführt. 
+\end{quote}
+
+Objekte lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Häufig haben Objekte auch einen Namen. 
+Finden sich mehrere Objekte, die gleiche Attributarten und Methoden besitzen, so kann man diese zu einer \OviIndex{Klasse} abstrahieren. Eine Klasse ist also ein Prototyp für eine Gruppe von Objekten.
+
+\OviIndex{Objektorientiert} zu Denken entspricht eigentlich der natürlichen Vorgehensweise. Wir beschäftigen uns tagtäglich mit Objekten, ihren Eigenschaften und Fähigkeiten. Unsere ganze Umwelt besteht aus Objekten, die miteinander in Beziehung stehen. Als einfaches Beispiel eines ein Objektes nehmen wir ein Feuerzeug:
+
+Zu einem Feuerzeug könnte folgende Beschreibung gegeben sein: 
+
+\begin{framedquote}
+Ein Feuerzeug kann eine bestimmte Grösse besitzen, hat ein bestimmtes Gewicht und ist in verschiedenen Farben erhältlich. Jedes Feuerzeug hat nach dem Volltanken eine bestimmte Brenndauer. Das Feuerzeug kann eine Flamme erzeugen, die Flamme wieder löschen und bei Bedarf nachgetankt werden. Feuerzeuge werden in einer Fabrik hergestellt und am Lebensende wieder vernichtet.
+\end{framedquote}
+
+
+
+Daraus kann man folgende Informationen entnehmen:
+
+Ein Feuerzeug hat die \emph{Eigenschaften} Farbe, Brenndauer, Grösse und Gewicht. Diese Eigenschaften werden als \emph{Attribute} des Objektes / der Klasse Feuerzeug bezeichnet.
+Ein Feuerzeug hat die \emph{Fähigkeiten} (oder Funktionen) Eine Flamme zu entzünden, Die Flamme wieder zu löschen und Treibstoff nachzutanken. Ein Feuerzeug kann erzeugt (hergestellt) werden, und auch wieder vernichtet werden.
+Diese Fähigkeiten werden als \emph{Methoden} des Objektes / der Klasse Feuerzeug bezeichnet.
+
+
+Eine Klasse ist die Beschreibung solcher Objekte. Bestimmte Objekte gehören somit zu einer bestimmten Klasse. Zu einer Klasse können beliebig viele Objekte gehören. Bei unserem Beispiel könnten wir ein rotes, ein grünes und ein blaues Feuerzeug besitzen.
+
+Unter UML (Unified Modeling Language) könnte diese Klasse wie folgt aussehen:
+
+\begin{center}
+\begin{tabular}{|l|l}
+\hhline{-}
+Feuerzeug&Klassenname\\
+\hhline{-}
+Farbe&Attribute\\
+Brenndauer\\
+Grösse\\
+Gewicht\\
+\hhline{-}
+\underline{Erzeugen()}&Methoden\\
+Vernichten()\\
+FlammeEntzünden()\\
+FlammeLöschen()\\
+Nachfüllen()\\
+\hhline{-}
+\end{tabular}
+\end{center}
+
+
+Unter \Cpp könnte die Feuerzeug Klasse wie folgt deklariert werden:
+
+\begin{CCode}
+class FeuerZeug {
+  private:                      // Privat, niemand ausser dem Objekt hat Zugriff
+  string Farbe;                 // auf die Attribute
+  int Brenndauer;
+  string Groesse;
+
+  public:                       // Public, auf die Methoden haben alle Zugriff
+  FeuerZeug();                  // Konstruktor, initialisiert ein neues Feuerzeug
+ ~FeuerZeug();                  // Destruktor, vernichtet ein Feuerzeug
+  void FlammeEntzuenden();
+  void FlammeLoeschen();
+  void Nachfuellen(int TreibstoffMenge);
+};
+\end{CCode}
+
+
+Das Erzeugen eines neuen Objektes ist üblicherweise eine \OviIndex{Klassenmethode}, das heisst dass diese Methode nicht auf Objekte angewendet werden kann, sondern eine Methode der Klasse ist. Man fordert also bei der Klasse ein neues Objekt vom Typ der Klasse an. Klassenmethoden und \OviIndex{Klassenattribute} werden in der UML-Notation durch unterstreichen dargestellt.
+
+Wenn man ein Objekt nicht über die Klasse erzeugen könnte, wäre es unmöglich, jemals auch nur ein Objekt zu erzeugen. Denn man müsste zum Erzeugen des ersten Objektes bereits ein Objekt haben, das es aber nicht gibt, weil man ja noch kein Objekt dieser Art erzeugt hat...
+
+ 
+\section{Botschaften und Attribute} 
+Ein einzelnes Objekt kann nicht die Leistung eines gesamten Systems erbringen. (Würde es das können, dann wäre beim Entwurf ein Fehler gemacht worden.) Ein System arbeitet dadurch, dass verschiedene Objekte miteinander kommunizieren und damit Dienste von anderen Objekten in Anspruch nehmen oder diese Objekte verändern. 
+
+Ein Objekt tritt mit einem andern in Kontakt, indem es diesem eine \OviIndex{Botschaft} sendet (Das heisst, eine \OviIndex{Methode} des anderen Objektes aufruft). Welche Botschaften ein Objekt versteht, wird durch seine \OviIndex{Schnittstelle} (Interface) definiert. Das \OviIndex{Interface} besteht aus einer Reihe von Methoden. Der Unterschied zwischen einer Methode und einer gewöhnlichen Funktion der strukturierten Programmierung besteht darin, dass eine Methode an ein bestimmtes Objekt gebunden ist (mit Ausnahme von Klassenmethoden, welche an eine Klasse gebunden sind).
+
+Methoden sind zumeist öffentlich bekannt und können von anderen Objekten aufgerufen werden. Durch diesen Aufruf wird eine Botschaft übermittelt. Die Implementation der Methoden ist dem Sender der Botschaft nicht bekannt. Eine Botschaft (Methode) kann auch Parameter besitzen. Bezeichner und Reihenfolge sowie Typ der Parameter bilden die \OviIndex{Signatur} der Methode (Signatur = Eindeutige Kennzeichnung). 
+
+Die \OviIndex{Attribute} eines Objektes sind im allgemeinen nicht von aussen zugänglich (dafür sind die Methoden da!). Ein Attribut entspricht einer Variablen in der strukturierten Programmierung, jedoch sind Attribute ebenfalls an Objekte gebunden (mit Ausnahme von Klassenattributen). Weil Attribute nicht öffentlich sind, hat das einzelne Objekt eine bessere Kontrolle über die Werte, die in den Attributen abgelegt werden, zudem kann die Art, wie die Attribute abgelegt werden verändert werden, ohne das andere Klassen davon betroffen sind, es sind nur Änderungen an der eigenen Klasse nötig. Dies führt zu sicherem und gleichzeitig flexiblem Code.  
+
+\begin{framedquote}
+\OviIndex{Attribute} speichern den Zustand von Objekten und sind verborgen.\\ 
+\OviIndex{Methoden} realisieren Funktionaliät der Objekte und werden durch Botschaften von anderen Objekten aktiviert. 
+\end{framedquote}
+
+Attribute und Methoden können auch an Klassen gebunden werden anstatt an ein konkretes Objekt. Man spricht dann auch von \OviIndex{Klassen-Attributen} und \OviIndex{Klassen-Methoden}. Diese werden vorwiegend verwendet, um Dienste zu realisieren, die für alle Objekte dieser Klasse gleich sind und sich nicht auf ein bestimmtes Objekt beziehen, oder es semantisch ungünstig wäre extra ein Objekt anzulegen. (Damit wird vermieden, dass extra zur Ausführung einer bestimmten Methode ein Objekt angelegt werden muss, nur um es anschliessend wieder zu vernichten). Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Ein Beispiel wäre eine Methode, die ausgibt wieviel Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. Klassenmethoden und Klassenattribute werden in der UML-Notation durch unterstreichen dargestellt.
+
+\begin{quote}
+Die Methode zum Erzeugen einer neuen \OviIndex{Instanz} einer Klasse ist in echten Objekt-Sprachen immer eine Klassenmethode. Eine Möglichkeit zum Mitzählen der Instanzen einer Klasse würde ebenfalls als Klassen-Methode und Klassen-Attribut realisiert werden. Den Zähler für die Anzahl Objekte sollte es ja nur einmal geben, und nicht in jedem Objekt einzeln, sonst wäre es kaum möglich, alle Zähler in allen Objekten aktuell zu halten.	 
+\end{quote} 
+
+\section{Vererbung, Aggregation, Assoziation} 
+Mit \OviIndex{Vererbung}, Assoziation und Aggregation bringt man die Beziehungen der Klassen untereinander zum Ausdruck.
+
+\subsection{Vererbung}
+
+\subsubsection{Generalisierung, Spezialisierung, Abstrakte Klassen}
+
+Wie sich bereits gezeigt hat, sind bestimmte Klassen \OviIndex{Spezialisierungen} (Erweiterungen) anderer Klassen. Diese Eigenschaft kann man ausnutzen, um diese ähnlichen Klassen zu gruppieren. Es können auch aus einer Gruppe von ähnlichen Klassen gemeinsame Eigenschaften und Funktionen zu einer neuen Klasse abstrahiert werden. Man spricht an dieser Stelle von \OviIndex{Generalisierung}. Wird aus mehreren Klassen eine neue Klasse generalisiert, so spricht man von einer \OviIndex{Oberklasse}. In umgekehrter Richtung werden die spezielleren Klassen als \OviIndex{Unterklassen} bezeichnet. 
+
+Wenn eine Oberklasse nur zur Generalisierung, also zur Zusammenfassung von Gemeinsamkeiten erzeugt wurde, und es keinen Sinn macht von dieser Klasse Objekte erzeugen zu können, kann man diese Klasse als \OviIndex{abstrakt} definieren. Eine abstrakte Klasse wird nur in der Klassenhierarchie als Oberklasse benutzt, es gibt aber keine sinnvollen konkreten Instanzen dieser Klasse (Ein Objekt dieser Klasse hätte keine sinnvolle Bedeutung oder Funktion). 
+
+Wenn man eine Klasse abstrakt definiert ist es nicht möglich, davon Objekte zu erzeugen. Unter \Cpp ist eine Klasse abstrakt, sobald sie eine oder mehrere rein virtuelle Methoden besitzt. Abstrakte Klassen werden in der UML durch einen kursiven Namen oder der Einschränkung \{Abstrakt\} gekennzeichnet.
+
+Man baut zum Beispiel nie einfach ein Auto, sondern immer ein bestimmtes Modell, also macht es auch keinen Sinn, ein Autoobjekt zu erzeugen, aber es macht durchaus Sinn, die Gemeinsamkeiten aller Automodelle in einer gemeinsamen Oberklasse 'Auto' zusammenzufassen, nur ist diese Klasse eben abstrakt.
+
+\subsubsection{Überladen und Überschreiben von Methoden}
+Der Einsatz der Ableitungshierarchie (Vererbungsstruktur) ermöglicht es, Attribute und Methoden zu vererben. Das bedeutet, dass Methoden und Attribute, welche in Oberklassen definiert wurden, automatisch in abgeleiteten Klassen vorhanden sind. Wenn nun aber in einer abgeleiteten Klasse eine Methode mit gleichem Bezeichner (Namen) deklariert wird, dann würde theoretisch ein Konflikt entstehen. In der OOP wird aber genau dies oft angewendet, man spricht hierbei von \OviIndex{Überladung} oder \OviIndex{Überschreibung}. 
+
+Eine Methode ist \emph{überladen}, wenn sie den gleichen Bezeichner (Namen), aber eine andere Parameterliste als eine andere Methode mit gleichem Bezeichner in der Oberklasse (Oder auch in derselben Klasse) besitzt. Überladene Methoden existieren nebeneinander und werden beim Aufruf durch die übergebenen Parameter voneinander unterschieden. Methoden können auch innerhalb einer Klasse überladen sein. 
+
+Eine Methode ist \emph{überschrieben}, wenn es eine Methode mit gleicher \OviIndex{Signatur} (Gleichem Namen \emph{und} gleicher Parameterliste) in einer Oberklasse gibt. Dadurch wird die Methode der Oberklasse verdeckt, für Objekte der Unterklasse wird die neue Methode verwendet, ausser es wird beim Aufruf explizit die Methode der Oberklasse verlangt (Durch Verwendung des Scoperesolution-Operator ::). Dadurch steigt die Flexibilität von Klassen. 
+
+Wenn eine Zeiger- oder eine Referenzvariable (Unter \Cpp{}) zu einer Klasse angelegt wird, dann können diese Variablen auch auf Objekte abgeleiteter Klassen verweisen. Es sind dann aber nur die Methoden und Attribute der Oberklasse verwendbar. 
+
+
+\subsubsection{Bindung von überschrieben Methoden}
+Es wird einem Zeiger oder einer Referenz auf eine Oberklasse ein davon abgeleitetes Objekt zugewiesen. Wird nun diesem Objekt via dem Zeiger auf die Oberklasse eine Botschaft gesendet, die überschrieben wurde, muss entschieden werden, welche konkrete Methode nun auszuführen ist. Dieser Vorgang wird als \OviIndex{Bindung} bezeichnet.
+Es gibt dafür drei Möglichkeiten. 
+
+\paragraph{Frühe Bindung}
+\label{FrueheBindung}
+Bei der \OviIndex{frühen Bindung} wird während der Compilierung entschieden, welche Methode auszuführen ist. Es werden letztendlich die Methoden der Oberklasse verwendet, da ja nicht abzusehen ist, ob und welche abgeleitete Klasse in der Variablen gespeichert sein könnte. (Beispiel: Pascal mit Objekten, \Cpp ohne virtuelle Methoden) 
+
+\paragraph{Späte Bindung}
+\label{Spaete Bindung}
+Bei der \OviIndex{späten Bindung} wird während der Laufzeit entschieden, welche Methode auszuführen ist. Wird also eine Instanz einer abgeleiteten Klasse in einer (Zeiger-) Variablen vom Typ der Oberklasse gespeichert, dann wird die Methode der abgeleiteten Klasse ausgeführt. Ist eine solche Methode aber nicht definiert, dann wird die Methode der Oberklasse ausgeführt. Dies erfordert mehr Intelligenz vom Laufzeitsystem, aber ermöglicht erst ''richtige'' OOP. Während der Compilierung ist zumindest prüfbar, ob eine Klasse der Ableitungshierarchie die angegebene Methode kennt. (Beispiel: \Cpp mit virtuellen Methoden, Java)
+ 
+\paragraph{''Sehr'' späte Bindung}
+\label{Sehr spaete Bindung}
+Bei der '\OviIndex{sehr späten Bindung}' wird ausschliesslich während des Programmlaufes entschieden welche Methode auszuführen ist. Dies erfolgt durch Signaturvergleich während der Laufzeit. Es ist jedoch möglich, dass eine Methode aufgerufen wird, die gar nicht vorhanden ist, was zu einem Fehler zur Laufzeit führt. (Beispiel: SmallTalk). Dafür können auch noch zur Laufzeit neue Klassen und Methoden hinzugefügt werden.
+
+\paragraph{}
+\OviIndex{Polymorphismus} setzt späte oder sehr späte Bindung voraus. Schliesslich soll ja in jedem Fall die zum effektiven Objekt gehörende Methode aufgerufen werden, und nicht die der Oberklasse. Um bei \Cpp die späte Bindung zu ermöglichen, müssen die betroffenen Memberfunktionen (Methoden) als \OviIndex{virtuell} deklariert werden, dies geschieht durch das voranstellen des Schlüsselwortes \OviIndex{virtual} in der Klassendeklaration, und der Aufruf muss über Zeiger oder Referenzen erfolgen:
+
+
+
+\begin{CCode}
+class Demo {
+   public:
+   virtual void Demonstrate(void); // virtuelle Funktion, Polymorphismus aktiv
+           void Normal(void);      // keine virtuelle Funktion, kein Polymorphismus
+};
+\end{CCode}
+
+Eine Klasse wird in \Cpp  \OviIndex{abstrakt}, sobald eine ihrer Methoden \OviIndex{rein virtuell} ist, dies wird in der Deklaration durch den Zusatz =0 erreicht:
+
+\begin{CCode}
+class Demo {
+   public:
+   virtual void Demonstrate(void) = 0;  // rein virtuelle Funktion, Methode muss für
+                                        // diese Klasse nicht implementiert werden
+                                        // da es sowieso keine Objekte dieser Klasse
+                                        // geben kann
+           void Normal(void);           // keine virtuelle Funktion, 
+                                        // kein Polymorphismus
+};
+\end{CCode}
+ 
+\subsubsection{Notation der Vererbung}
+Unter UML wird die \OviIndex{Vererbung} wie in Bild \ref{fig:Vererbung1} dargestellt durch einen Pfeil ausgedrückt. Es gibt dazu zwei Varianten, einmal mit einzelnen Pfeilen, oder mit einer Zusammenfassung der Pfeile. Diese beiden Darstellungsformen sind gleichwertig.
+
+ 
+\begin{figure}[h]
+	%\centering
+		\includegraphics{Vererbung1}
+    \hfill
+		\includegraphics{Vererbung2}
+		\caption{Darstellungsvarianten der Vererbung}
+	\label{fig:Vererbung1}
+\end{figure}
+
+%\begin{figure}
+%   \includegraphics[width=\textwidth]{Vogel}
+%   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
+%\end{figure}
+
+ 
+
+
+
+Aus dem Diagramm erkennt man, dass ein Fahrzeug ein Gewicht hat und die Methode Fahren() Besitzt. Sowohl Fahrrad als auch Auto sind Fahrzeuge, haben also grundsätzlich alle Eigenschaften eines Fahrzeuges. Ein Auto hat noch zusätzlich eine Polsterfarbe und die Methode Auftanken, das Fahrad ist um die Sattelfarbe und die Methode Treten() erweitert worden.
+
+Unter \Cpp könnte man diese Klassen wie folgt Deklarieren:
+\begin{CCode}
+class Fahrzeug {
+   int Gewicht;
+
+   public:
+        Fahrzeug ();
+       ~Fahrzeug ();
+   void Fahren();
+};
+
+class Fahrrad : public Fahrzeug {
+   String Sattelfarbe;
+
+   public:
+        Fahrrad ();
+       ~Fahrrad ();
+   void Treten();
+};
+
+class Auto : public Fahrzeug {
+   String Polsterfarbe;
+
+   public:
+        Auto();
+       ~Auto();
+   void Tanken(int Menge);
+};
+\end{CCode}
+
+ 
+\subsection{Assoziation, Aggregation, Komposition}
+Wenn mehrere Objekte miteinander verbunden sind, so kann man drei Typen dieser Verbindung unterscheiden.
+\paragraph{Assoziation}
+\label{sec:Assoziation}
+Bei einer \OviIndex{Assoziation} ''kennen'' die Objekte einander, können aber unabhängig voneinander existieren. Eine Assoziation ist meist von kurzzeitiger Natur. Z. B. Das Auto benutzt die Strasse. Die Assoziation ist der allgemeine Fall, Aggregation und Komposition sind Spezialisierungen der Assoziation.
+\paragraph{Aggregation}
+\label{sec:Aggregation}
+Bei einer \OviIndex{Aggregation} wird eine 'ist Teil von' Beziehung dargestellt. Z. B. das Rad ist Teil eines Autos, kann aber auch alleine existieren (Reserverad im Keller).
+\paragraph{Komposition}
+\label{sec:Komposition}
+Bei einer \OviIndex{Komposition} bilden mehrere nicht eigenständige Objekte zusammen eine Einheit. Ein weiteres Merkmal einer Komposition ist, dass ein aussenstehendes Objekt die Einzelobjekte der Aggregation nicht erkennen kann. 
+
+Diese Unterscheidung wird bei der Implementierung nicht mehr erkennbar sein. Sie hat allerdings Einfluss auf die \OviIndex{Verantwortlichkeiten} beim Anlegen und Löschen von Objekten.
+
+Ein Tisch und vier Stühle bilden eine Sitzgruppe. Ein Tisch kann aber auch eigenständig verwendet werden. Auch ein Stuhl kann ohne Tisch eine Funktion erfüllen. Es handelt sich um eine Aggregation. Vier Tischbeine und eine Tischplatte bilden zusammen das Objekt Tisch. Tischbein und Tischplatte allein haben keine Funktionalität. Erst zusammen als Tisch erfüllen sie einen Zweck. Es handelt sich um eine Komposition. Eine Person im Raum erkennt den Tisch nur als gesamtes Objekt, seine Einzelteile werden nicht wahrgenommen.
+ 
+Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
+
+\subsubsection{Assoziation und Kardinalität}
+Mit der \OviIndex{Kardinalität} wird angegeben, wie viel Objekte einer Klasse mit wievielen einer anderen Klasse in Beziehung stehen. Im Klassendiagramm der UML wird eine Assoziation mit einer einfachen Verbindungslinie zwischen den beiden Klassen dargestellt. Die Zahlen an den Verbindungsenden werden als Kardinalität bezeichnet. Ein * steht für beliebig viel. Für das Diagramm in Bild \ref{fig:Assoziation2} bedeuten sie, dass ein Besitzer 0 bis beliebig viele Fahrzeuge besitzen kann, dass aber ein Fahrzeug jeweils genau einen Besitzer hat. Bei den Kardinalitäten ist es immer angebracht, sich noch einmal kurz zu überlegen, ob sie wirklich in jedem Fall sinn machen (Kann es nicht sein dass ein Fahrzeug niemandem gehört? Kann ein Fahrzeug mehreren Personen gehören? Und falls wir bei Fahrzeug 1..* gewählt hätten: Besitzen wirklich alle Leute mindestens 1 Fahrzeug? Eine Faustregel sagt, das 0 als untere Grenze meist die bessere Wahl ist)
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics{Assoziation2}
+	\caption{Ungerichtete Assoziation} 
+	\label{fig:Assoziation2}
+\end{figure}
+ 
+
+\subsubsection{Gerichtete Assoziation (Navigation)}
+ 
+Falls eine Assoziation nur in eine Richtung \OviIndex{navigierbar} ist, das heisst nur einer der Teilnehmer den anderen kennt, kann dies durch einen Pfeil ausgedrückt werden. Wenn zum Beispiel der Besitzer sein Fahrzeug kennt, aber das Fahrzeug nicht seinen Besitzer, würde das wie in Bild \ref{fig:Assoziation1} aussehen:
+ 
+\begin{figure}[H]
+	  \centering
+		\includegraphics{Assoziation1}
+	\caption{Gerichtete Assoziation} 
+  \label{fig:Assoziation1}
+\end{figure}
+
+Navigierbarkeiten werden oft erst in einer späteren Phase des Designs definiert.
+ 
+In \Cpp wird eine Assoziation im allgemeinen durch einen Zeiger oder eine Referenz realisiert, bei einer ungerichteten Assoziation haben jeweils beide daran beteiligte Objekte einen Zeiger (Referenz) auf den jeweiligen Partner, bei einer gerichteten Assoziation hat nur ein Objekt einen Verweis auf seinen Partner:
+
+\begin{CCode}
+class Besitzer;            // Forward declaration
+
+class Fahrzeug {
+   int Gewicht;
+   Besitzer *MeinBesitzer;   // Zeiger auf den Besitzer (Faellt weg falls gerichtete 
+                             // Assoziation und Fahrzeug Besitzer nicht kennt
+   public:
+        Fahrzeug ();
+       ~Fahrzeug ();
+   void Fahren();
+};
+
+class Fahrrad : public Fahrzeug {
+   String Sattelfarbe;
+
+   public:
+        Fahrrad ();
+       ~Fahrrad ();
+   void Treten();
+};
+
+class Auto : public Fahrzeug {
+   String Polsterfarbe;
+
+   public:
+        Auto();
+       ~Auto();
+   void Tanken(int Menge);
+};
+
+class Besitzer {
+   int Alter;
+   String Name;
+   Fahrzeug *MeinFahrzeug;     // Zeiger auf mein Fahrzeug, eigentlich muesste
+                               // hier eine Liste oder ein Array von Zeigern sein,
+                               // da ein Besitzer auch mehrere Fahrzeuge besitzen kann
+
+   public:
+        Besitzer ();
+       ~Besitzer ();
+   void BenutzeFahrzeug();
+};
+\end{CCode}
+
+Kardinalitäten die grösser als 1 sind, werden durch Listen oder Felder von Zeigern oder Objekten realisiert. Wenn die Anzahl von Objekten während dem Programmlauf dynamisch ändern kann oder keine fixe Obergrenze für die Anzahl von Objekten definiert ist, werden vor allem Listen eingesetzt.
+ 
+\subsubsection{Aggregation, Komposition}
+Aggregation und Komposition sind Spezialfälle von Assoziationen. Eine reine Aggregation hat die Bedeutung von 'Enthält', eine Komposition die von 'Besteht aus'. Die Aggregation ist etwas lockerer als die Komposition. Teilnehmer einer Komposition gehören normalerweise nur zu einer Komposition, Teilnehmer einer Aggregation können zu verschiedenen Aggregationen gehören. Eine Komposition ist eine feste Einheit, die einzelnen Mitglieder können nicht selbständig existieren und sind von Aussen meist nicht sichtbar.
+
+Bild \ref{fig:Komposition} zeigt ein Beispiel für eine Komposition: Ein Auto besteht aus 4 Rädern, 4 Türen und einem Chassis. Wenn das Auto aufhört zu existieren verschwinden auch die restlichen Komponenten:
+ 
+\begin{figure}[htbp]
+	  \centering
+		\includegraphics{Komposition}
+		\caption{Eine Komposition}
+	\label{fig:Komposition}
+\end{figure}
+
+Eine Komposition wird in \Cpp durch Zeiger, Referenzen oder Attribute realisiert:
+\pagebreak[4]
+\begin{multicols}{2}[ ][1cm] 
+\begin{CCode}
+// Als Attribute
+
+class Auto {
+   Chassis MeinChassis;
+   Rad     MeineRaeder[4];  // Array fuer 
+                            // 4 Raeder
+   Tuere   MeineTueren[4];  // Array fuer 
+                            // 4 Tueren
+
+   public:
+        Auto();
+       ~Auto();
+       
+       
+};
+\end{CCode}
+
+\begin{CCode}
+// Als Zeiger
+
+class Auto {
+   Chassis *MeinChassis;
+   Rad     *MeineRaeder[4]; //Array fuer 
+                            //4 Zeiger 
+                            // auf Raeder
+   Tuere   *MeineTueren[4]; //Array fuer 
+                            //4 Zeiger 
+                            // auf Tueren
+
+   public:
+        Auto();
+       ~Auto();
+};
+\end{CCode}
+\end{multicols}
+ 
+
+ 
+Ein Beispiel für eine Aggregation wäre eine Schulklasse wie in Bild \ref{fig:Aggregation}. Eine Klasse setzt sich aus Studenten zusammen, aber wenn die Klasse aufgelöst wird, existieren die Studenten weiter. Zudem können (Müssen aber nicht, daher 0..1) die Studenten an weiteren Verbindungen wie z.B. an einem Verein teilnehmen.
+
+\begin{figure}[htb]
+	  \centering
+		\includegraphics{Aggregation}
+		\caption{Eine Aggreggation}
+	\label{fig:Aggregation}
+\end{figure}
+
+Eine Aggregation wird in \Cpp üblicherweise mit Zeigern implementiert.
+
+
+\section{Objektdiagramm}
+Bei einem \OviIndex{Objektdiagramm} wird die Momentaufnahme eines Systems zu einem bestimmten Zeitpunkt dargestellt. Man kann damit bestimmte Systemzustände oder Anwendungsfälle zeigen. Dabei werden alle im Moment existierenden oder interessierenden Objekte und ihre Beziehungen zueinander abgebildet, die Objekte haben dabei üblicherweise einen Namen. Ein Objektdiagramm muss immer seinem Klassendiagramm entsprechen, zu einem Klassendiagramm kann es beliebig viele Objektdiagramme geben.
+
+Das Klassendiagramm in Bild \ref{fig:Assoziation1a} ist die Ausgangslage für die folgenden Objektdiagramme.
+ 
+\begin{figure}[H]
+	  \centering
+		\includegraphics{Assoziation1}
+		\caption{Klassendiagramm}
+	\label{fig:Assoziation1a}
+\end{figure}
+
+
+Bild \ref{fig:Objektdiagramm2} zeigt \emph{ein} mögliches Objektdiagramm:
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics{Objektdiagramm2}
+		\caption{Ein mögliches Objektdiagramm}
+	\label{fig:Objektdiagramm2}
+\end{figure}
+ 
+
+Mueller hat 2 Autos und ein Fahrrad, Meier hat nur ein Fahrrad.
+Zu einem späteren Zeitpunkt könnte das Diagram in die Form von Bild \ref{fig:objektdiagram} übergegangen sein: (Mueller hat Meier seinen Zweitwagen verkauft)
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics{objektdiagram}
+		\caption{Objektdiagramm nach \"Anderung der Besitzverhältnisse}
+	\label{fig:objektdiagram}
+\end{figure}
+
+\section{Sequenz und Kollaborationsdiagramm}
+Mit Sequenz- und Kollaborationsdiagrammen wird der Ablauf einer bestimmten Aktion zu einem bestimmten Zeitpunkt dargestellt. Zu einem Klassendiagramm kann es beliebig viele mögliche Sequenz- oder Kollaborationsdiagramme geben, üblicherweise beschränkt man sich auf die wichtigsten Interaktionen innerhalb eines Systems. Sequenzdiagramm und Kollaborationsdiagramm können jeweils ineinander überführt werden. Dargestellt wird in jedem Fall, wie die Objekte untereinander mit Methodenaufrufen kommunizieren. Bei Bedarf werden auch die übergebenen Argumente in die Darstellung aufgenommen.
+
+Mit einem \OviIndex{Sequnzdiagramm} kann man die verschiedenen Aktionen durchspielen, die von einem System gefordert werden. Man kann damit einerseits das Modell überprüfen, andererseits dient es auch als Grundlage für die Implementation (Codierung). Man kann durch dieses Diagramm auch den Ablauf von Interaktionen mit Drittpersonen (Z. B. Auftraggeber oder externe Entwickler) demonstrieren.
+
+In den nachfolgenden Beispielen dient das Klassendiagramm in Bild \ref{fig:VerkaeuferKlasse} als Grundlage. Es handelt sich um eine Autohandlung mit Verkäufern und Kunden.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics{VerkaeuferKlasse}
+		\caption{Klassendiagramm einer Autohandlung}
+	\label{fig:VerkaeuferKlasse}
+\end{figure}
+
+\section{Sequenzdiagramm}
+Mit Sequenzdiagrammen stellt man den Ablauf einer bestimmten Aktion dar. Dieses Diagramm betont vor allem den zeitlichen Ablauf. Es dient einerseits der Kontrolle ob man alle möglichen (Anwendungs-) Fälle korrekt abgedeckt hat aber auch zur Demonstation wie man sich den Ablauf der Handlung vorstellt. Dies ist auch ein gutes Hilfsmittel, um anderen Personen einen Einblick in die Funktionalität des Modells zu geben.
+Bei diesem Diagramm läuft die Zeitachse von oben nach unten. Die rechteckigen Kästen entlang der Objektachse zeigen die Lebensdauer einer Funktion, gehen also vom Anfang bis zum Ende eines Funktionslaufes. Bei verschachtelten Funktionsaufrufen werden Kästen überlagert. Ein Objekt kann erst später in der Zeitachse erzeugt werden, und auch explizit zerstört werden (Durch ein schräges Kreuz symbolisiert). 
+
+In Bild \ref{fig:VerkaeuferSequenz} ist als Beispiel der Ablauf eines Vertragsabschlusses als Sequenzdiagramm dargestellt.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 0cm 0 0, clip, scale=0.8]{VerkaeuferSequenz}
+		\caption{Sequenzdiagramm eines Vertragsabschlusses}
+	\label{fig:VerkaeuferSequenz}
+\end{figure}
+
+\section{Kollaborationsdiagramm}
+Mit \OviIndex{Kollaborationsdiagrammen} kann man den gleichen Sachverhalt wie mit den Sequenzdiagrammen darstellen, aber die Betonung liegt nicht auf dem zeitlichen Ablauf, sondern auf der Zusammenarbeit der verschiedenen Objekten und deren Kommunikation.
+Die Reihenfolge der Methodenaufrufe wird hier durch Numerierung kenntlich gemacht.
+
+In Bild \ref{fig:VerkaeuferKolaboration} ist der gleiche Ablauf eines Vertragsabschlusses wie beim Sequenzdiagramm (Bild \ref{fig:VerkaeuferSequenz}) als Kollaborationsdiagramm dargestellt.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{VerkaeuferKolaboration}
+		\caption{Kollaborationsdiagramm eines Vertragsabschlusses}
+	\label{fig:VerkaeuferKolaboration}
+\end{figure}
+
+\chapter{Entwurfsmuster (Design Patterns)}
+
+In der Objektorientierten Programmierung stellen sich sehr oft immer wieder ähnliche Probleme. Erfahrene Programmierer können (und sollen!) deshalb häufig von diesen Ähnlichkeiten profitieren und auf bereits existierende Designs zurückgreifen. 
+
+Im Laufe der Zeit haben sich so immer wiederkehrende \OviIndex{Entwurfsmuster} herausgebildet, welche für bestimmte Probleme eine gute Lösung darstellen. Man spricht dabei von \OviIndex{Designpatterns} oder eben Entwurfsmuster. Viele dieser Muster wurden mit Namen versehen und sind in der OO-Welt unter diesen Namen bekannt. Wenn zum Beispiel ein Entwickler vorschlägt, für ein bestimmtes Problem ein Beobachter (Observer) Muster einzusetzen, wissen andere Entwickler genau, was gemeint ist. Es empfiehlt sich deshalb, sobald man mit der OOP etwas vertrauter ist, sich auch mit diesen Entwurfsmustern zu beschäftigen [Lit2].
+
+Stellvertretend für die über 20 bekannten Muster werden hier unter anderem das Beobachter (Observer), das Proxy, das Zustands und das Dekorierer (Decorator) Muster kurz vorgestellt.
+
+\section{Dekorator}
+Hin und wieder möchte man die Funktionalität eines Objektes erweitern, ohne bestehende Klassen zu ändern, oder die Funktionalität eines Objektes zur Laufzeit erweitern (Oder auch wieder reduzieren).
+
+Bei einem GUI könnte es zum Beispiel ein blankes Textfenster ohne Scrollbar und Rahmen geben. Wenn wir während des Programmablaufes dennoch plötzlich einen Rahmen oder einen Scrollbalken benötigen, können wir dazu das Dekorierermuster verwenden. Ein Objekt kann damit um beliebig viele neue Funktionen erweitert werden. Die Objektschnittstelle ändert sich dabei für den Anwender nicht, sie bleibt dieselbe. Der \OviIndex{Dekorator} wird auch als \OviIndex{Wrapper} bezeichnet, weil das dekorierte Objekt sozusagen von einem (oder mehreren) Dekorator(en) eingewickelt wird. (Zudem müssen deutlich weniger Klassen erzeugt werden, als wenn für jede mögliche Kombination von Erweiterungen eine neue Klasse erzeugt werden müsste)
+
+Bild \ref{fig:PaternDekoAllg} zeigt die Grundstruktur des Dekorierermusters.
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternDekoAllg}
+		\caption{Grundmuster des Dekorators}
+	\label{fig:PaternDekoAllg}
+\end{figure}
+
+Als Beispiel wird in Bild \ref{fig:PaternDekoBsp} das erwähnte Gui dargestellt, welches aus einem Textanzeigefeld, einem Rahmendekorierer und einem Scrollbalkendekorierer besteht.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternDekoBsp}
+		\caption{Klassendiagramm eines GUI mit Dekoratormuster}
+	\label{fig:PaternDekoBsp}
+\end{figure}
+
+Ein Zeichenbefehl würde das Sequenzdiagramm in Bild \ref{fig:PaternDekoBspSeq} zur Folge haben: Jedes Dekoratorobjekt ruft zuerst Zeichne() für das dekorierte Objekt auf (welches seinerseits auch ein Dekorator sein kann) bevor es sich selbst zeichnet
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternDekoBspSeq}
+		\caption{Sequenzdiagramm des GUI mit Dekoratormuster}
+	\label{fig:PaternDekoBspSeq}
+\end{figure}
+%Bild EinFenster fehlt Klassenbezeichner !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+\NextPagePlease
+\section{Zustand}
+Manchmal soll sich ein Objekt je nach seinem \OviIndex{Zustand} anders verhalten, fast wie wenn es in eine andere Klasse wechseln würde. 
+
+Als Beispiel könnte eine Netzwerkverbindung dienen. Je nach dem ob eine Verbindung besteht oder nicht, soll das Objekt unterschiedlich auf Befehle reagieren. (Senden geht nur, wenn die Verbindung über das Netzwerk steht, Verbindung erstellen nur, wenn noch keine Verbindung existiert). Auch eine \OviIndex{Statemachine} lässt sich so implementieren.
+
+Die Struktur des \OviIndex{Zustandsmuster} ist in Bild \ref{fig:PaternZustandAllg} zu sehen, sie besteht aus einem Hauptobjekt (Kontext) und einer Menge von Zuständen. Es ist aber jeweils nur ein Zustandsobjekt aktiv. Wenn das Hauptobjekt den Zustand wechselt, tauscht es das aktive Zustandsobjekt aus. Das Hauptobjekt delegiert sämtliche Operationen an das aktuelle Zustandsobjekt (Und wechselt unter Umständen den Zustand).
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternZustandAllg}
+		\caption{Grundmuster des Zustands}
+	\label{fig:PaternZustandAllg}
+\end{figure}
+
+In Bild \ref{fig:PaternZustandBsp} ist das Beispiel für die Netzwerkverbindung dargestellt. Es gibt die Zustände Nichtverbunden, Verbunden und Fehler. Die Verbindung kennt die Befehle Verbinden, Senden und Beenden.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternZustandBsp}
+		\caption{Klassendiagramm einer Netzwerkverbindung mit Zustandsmuster}
+	\label{fig:PaternZustandBsp}
+\end{figure}
+
+Wenn eine Verbindung aufgebaut werden soll, ergibt sich das Sequenzdiagramm aus Bild \ref{fig:PaternZustandBspSeq1} (Nur falls der Zustand 'Nichtverbunden' ist). 
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.3cm 0 0, clip] {PaternZustandBspSeq1}
+		\caption{Sequenzdiagramm eines Verbindungsaufbaus}
+	\label{fig:PaternZustandBspSeq1}
+\end{figure}
+
+Das Verbinden führt zu einem Zustandswechsel nach 'Verbunden', und ein anschliessender Sendebefehl wird im Sequenzdiagramm in Bild \ref{fig:PaternZustandBspSeq2} dargestellt.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.3cm 0 0, clip] {PaternZustandBspSeq2}
+		\caption{Sequenzdiagramm eines Sendebefehls}
+	\label{fig:PaternZustandBspSeq2}
+\end{figure}
+
+Wenn ein Zustand mit einem unpassenden Befehl konfrontiert wird (Z.B. Senden() im Zustand Nichtverbunden() ) sorgt er für eine passende Fehlerbehandlung.
+
+\section{Beobachter (Observer)}
+
+Es ergibt sich häufig das Problem, dass mehrere Objekte vom Zustand eines anderen Objektes abhängen. 
+
+Es könnte zum Beispiel bei einem CAD-System mehrere Fenster geben, die das gleiche Werkstück in verschiedenen Ansichten darstellen. Die Daten des Werkstückes sind dabei Zentral in einer Datenbank abgelegt, und die Fenster holen sich beim Neuzeichnen jeweils die benötigten Daten aus der Datenbank. Wenn der Zeichner jetzt das Werkstück verändert, müssen alle Fenster darüber informiert werden, damit sie ihre Darstellung aktualisieren können. Die Fenster müssen grundsätzlich jedes mal benachrichtigt werden, wenn sich die Zeichnungsdaten verändert haben. Dieses Problem kann mit dem \OviIndex{Beobachtermuster} \index{Observer} elegant gelöst werden. 
+
+Die Klasse mit den Daten wird als Subjekt bezeichnet, und die Klassen, die über Änderungen informiert werden wollen, werden als Beobachter bezeichnet, da sie das Subjekt quasi beobachten, um Veränderungen festzustellen.
+
+In Realität melden sich die Beobachter beim Subjekt an, und werden anschliessend vom Subjekt über Änderungen informiert. Es findet also keine wirkliche Beobachtung statt, aber der Effekt ist derselbe.
+Bei diesem Muster kann die Anzahl der Beobachter während der Laufzeit dynamisch verändert werden. (Der Benutzer kann Ansichten schliessen, oder weitere Ansichten öffnen).
+
+Die Struktur des Beobachtermuster ist in Bild \ref{fig:PaternObserverAllg} zu sehen.
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternObserverAllg}
+		\caption{Grundmuster des Beobachters}
+	\label{fig:PaternObserverAllg}
+\end{figure}
+
+Bild \ref{fig:PaternObserverAllgSeq} zeigt das Sequenzdiagramm für den Fall, das via Fenster 1 ein Eintrag in der Datenbank verändert wird:
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.4cm 0 0, clip, scale=0.8]{PaternObserverAllgSeq}
+		\caption{Sequenzdiagramm des Beobachters bei einer \"Anderung}
+	\label{fig:PaternObserverAllgSeq}
+\end{figure}
+
+Fenster 1 verändert einen Eintrag in der Datenbank, diese benachrichtigt über die Methode Benachrichtige() der Basisklasse (Botschaft an sich selber) alle angemeldeten Fenster über die Änderung, indem es die Methode Aktualisiere() der Fenster aufruft. Die Fenster holen den neuen Zustand der Datenbank mittels GibZustand() und zeichnen sich bei Bedarf neu.
+
+Jedes neue Fenster muss sich einfach bei der Datenbank als Beobachter anmelden (Und wird dort in eine Liste eingetragen), und jedes Fenster (Beobachter) das geschlossen wird, muss sich wieder beim Subjekt (Datenbank) abmelden (Damit es wieder aus der Liste ausgetragen wird).
+
+Mit diesem Ansatz kann das stark gekoppelte System auf einfache weise \OviIndex{entkoppelt} werden. \OviIndex{Stark gekoppelt} heisst, dass sonst jedes Fenster jedes andere kennen müsste, um jeweils Aktualisierungen der anderen Fenster veranlassen zu können, wenn es den Datenbestand verändert hat.
+
+Stark gekoppelte Systeme erkennt man im allgemeinen an den Assoziationen. Wenn praktisch jedes Objekt mit jedem anderen eine Assoziation eingeht, ist das System definitiv zu stark gekoppelt, es ist dann kaum mehr Wart- und Erweiterbar.
+
+\section{Proxy}
+Ein Proxy-Objekt ist im Prinzip ein Stellvertreter für ein anderes Objekt. Es wird zum Beispiel dann eingesetzt, wenn die Erstellung des eigentlichen Objektes teuer ist (Viel Zeit oder Speicher kostet), es verhält sich dann solange wie möglich wie das echte Objekt, und erst wenn es unumgänglich ist, das echte Objekt zu erzeugen, wird es vom \OviIndex{Proxy} erzeugt.
+
+Ein Proxy kann auch ein \OviIndex{Stellvertreter} für ein Objekt auf einem anderen Rechner sein, und die Kommunikation mit dem echten Objekt über ein Netzwerk aufrechterhalten, und zwar so, dass die anderen Objekte gar nicht merken, dass sie mit einem Stellvertreter sprechen und das eigentliche Objekt woanders ist.
+
+Die Struktur eines Proxymusters ist in Bild \ref{fig:PaternProxyAllg} dargestellt:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternProxyAllg}
+		\caption{Grundmuster des Proxy}
+	\label{fig:PaternProxyAllg}
+\end{figure}
+
+Ein Beispiel könnte ein Dokumenteneditor sein, der auch Graphiken in Dokumenten erlaubt. Anstatt beim Laden des Dokumentes auch gleich alle Bilder zu laden, werden vorerst nur Proxy-Objekte für die Bilder erzeugt, die sich wie Bilder verhalten (Sie haben eine Grösse, können gezeichnet, gespeichert und geladen werden. Sie kennen zudem den Namen der echten Bilddatei. Solange das Bild nicht wirklich gezeichnet werden muss (Weil es zum Beispiel auf dem Bildschirm nicht sichtbar ist), reicht das Proxy völlig aus. Erst wenn das Bild tatsächlich gezeichnet werden muss erzeugt das Proxy das echte Bildobjekt und zeichnet es. Damit kann Ladezeit und Speicherplatz gespart werden.
+
+Ein weiteres Beispiel könnten grosse Matrizen in einem Simulationsprogramm sein. Das Proxy verhält sich hier wie die Matrix, aber der grösste Teil der Matrix bleibt in einer Datei auf der Harddisk, es werden nur gerade die jeweils benötigten Elemente geladen. Möglicherweise hätte die ganze Matrix gar keinen Platz im Speicher.
+
+Ein ebenfalls oft auftretendes Beispiel ist eine verteilte Applikation, das bedeutet, dass die Objekte auf verschiedenen Rechnern liegen, und über ein Netzwerk miteinander in Kontakt treten. Hier werden Proxys zur Kommunikation über das Netzwerk eingesetzt. Wann immer ein Objekt sich auf einem anderen Rechner aufhält, wird lokal ein Proxy erzeugt, (und auf dem fernen Rechner ein passendes Gegenstück) der die Befehle via Netzwerk an das echte Objekt übermittelt, und anschliessend die Ergebnisse via Netzwerk empfängt und an den Aufrufer zurückliefert. Der Aufrufer selbst merkt gar nicht, dass er nicht direkt mit dem echten Objekt in Kontakt steht. Das Proxyobjekt wird in diesem Fall eigentlich zweigeteilt, ein Teil ist auf dem lokalen Rechner, der andere auf dem fernen, und die beiden Teile kommunizieren über das Netzwerk miteinander.
+ 
+Das Proxymuster für das Dokument sähe wie in Bild \ref{fig:PaternProxyBsp} aus:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternProxyBsp}
+		\caption{Klassendiagramm des Dokumenteneditors}
+	\label{fig:PaternProxyBsp}
+\end{figure}
+
+Im Dokument kann eine Graphik entweder ein echtes Bild oder ein BildProxy sein. Falls es ein BildProxy ist, erzeugt dieses erst bei Bedarf das echte Bild.
+
+Bild \ref{fig:PaternProxyBspSeq} zeigt anhand eines Sequenzdiagramms den Ablauf bei einem Proxy.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.4cm 0 0, clip]{PaternProxyBspSeq}
+		\caption{Sequenzdiagramm des Dokumenteneditors}
+	\label{fig:PaternProxyBspSeq}
+\end{figure}
+
+Solange es geht, behandelt das Proxy alle Botschaften selbst. Das echte Bild wird erst erzeugt, wenn es gezeichnet werden muss. Sobald das echte Bild erzeugt ist, werden die Methoden des echten Bildes verwendet. (Das Proxy leitet alle Botschaften an das echte Bild weiter)
+
+%\NextPagePlease
+
+\section{Singleton}
+Ein \OviIndex{Singleton}-Objekt ist ein Objekt, welches in einer Applikation während der gesamten Laufzeit nur einmal existieren soll.
+Beispiele dazu wären Objekte, welche Systemresourcen verwalten  wie Dateisysteme, Fenster auf dem Bildschirm, Schnittstellen und Peripheriegeräte (Eine Resource kann nicht von mehreren Objekten verwaltet werden, sondern es darf nur einen zuständigen Verwalter geben).
+
+
+Die Struktur des Singletonmusters ist in Bild \ref{fig:PaternSingletonAllg} dargestellt:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternSingletonAllg}
+		\caption{Grundmuster des Singleton}
+	\label{fig:PaternSingletonAllg}
+\end{figure}
+
+Ein Beispiel könnte eine Benutzerverwaltung in einem Sicherheitssystem sein. Innerhalb des Systems darf es nur eine Instanz geben, welche die Benutzer verwaltet, sonst würde das System inkonsistent.
+
+Das Singletonmuster für die Benutzerverwaltung könnte wie in Bild \ref{fig:PaternSingletonBsp} aussehen:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternSingletonBsp}
+		\caption{Klassendiagramm der Benutzerverwaltung}
+	\label{fig:PaternSingletonBsp}
+\end{figure}
+
+Wer die Benutzerverwaltung benutzen möchte, muss immer über die Klassenmethode GibVerwaltung() das einzige Objekt der Verwaltung anfordern (Welches bei der allerersten Anforderung unter umständen erzeugt werden muss).
+
+Bild \ref{fig:PaternSingletonBspSeq} zeigt anhand eines Sequenzdiagramms den Ablauf bei einem Singleton.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.4cm 0 0, clip]{PaternSingletonBspSeq}
+		\caption{Sequenzdiagramm der Benutzerverwaltung}
+	\label{fig:PaternSingletonBspSeq}
+\end{figure}
+
+Das \OviIndex{Singletonmuster} ist nicht geeignet für Parallele und Multitasking/Multithreading-Systeme in \Cpp, weil es
+mit den vorhandenen Sprachmitteln in \Cpp nicht \OviIndex{threadsicher} ist, respektive nur mit viel Laufzeitaufwand Threadsicher zu machen ist. Ausser das Objekt wird beim Programmstart erzeugt, solange noch nur ein Thread läuft, und weitere Threads erst danach gestartet werden.
+
+In \Cpp erhält man das Singleton Pattern, indem man alle Konstruktoren als private deklariert, und den Zugriff und die Erzeugung des einzigen Objektes kontrolliert in einer öffentlichen Klassenmethode erledigt. 
+
+\section{Command}
+Mit dem \OviIndex{Commandmuster} können Befehle innerhalb einer Applikation gekapselt werden. Damit können \OviIndex{Logdateien}, \OviIndex{Undo} und Redo Verhalten und \OviIndex{Skripts} oder \OviIndex{Makros} innerhalb einer Applikation verwaltet werden.
+
+Das Objekt trennt die Benutzerschnittstelle von den Anwendungsobjekten, d.h. die Benutzerschnittstelle sendet Befehlsobjekte an die Anwendungsobjekte, ohne etwas über die Anwendungsobjekte wissen zu müssen. Die GUI-Objekte (Menu und Buttons) werden beim Start der Applikation einfach mit den passenden Befehlsobjekten initialisiert, und diese Befehlsobjekte werden fortan bei der Auswahl der entsprechenden Gui-Elementen von diesen an die Anwendungsobjekte weitergereicht.
+
+Die Befehlsobjekte können zudem bei ihrer Ausführung die nötigen Daten speichern, die zum Rückgängigmachen des Befehls nötig sind. Damit ist es auf einfache Art möglich, ein Undo/Redo-Verhalten zu erreichen.
+
+
+Die Struktur des Commandmusters ist in Bild \ref{fig:PaternCommandAllg} dargestellt:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternCommandAllg}
+		\caption{Grundmuster des Commandmusters}
+	\label{fig:PaternCommandAllg}
+\end{figure}
+
+Ein Beispiel könnte eine Textverarbeitung mit Undo() sein.
+
+Das Commandmuster für die Textverarbeitung könnte wie in Bild \ref{fig:PaternCommandBsp} aussehen:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternCommandBsp}
+		\caption{Klassendiagramm der Textverarbeitung}
+	\label{fig:PaternCommandBsp}
+\end{figure}
+
+Durch das Einkapseln der Befehle ist es auf einfache Weise möglich, zur Laufzeit einem Menu Befehle (Einträge) hinzuzufügen oder zu entfernen. Das kann programmgesteuert oder durch Benutzerkonfiguration erfolgen.
+
+Das Aufzeichnen von Makros (Befehlsfolgen) ist auch sehr einfach, es müssen nur alle ausgeführten Befehlsobjekte (Oder Kopien dieser Objekte) in eine Liste aufgenommen werden. Zum Ausführen des Makros müssen nur alle in der Liste enthaltenen Befehlsobjekte der Reihe nach ausgeführt werden.
+ 
+Bild \ref{fig:PaternCommandBspSeq} zeigt anhand eines Sequenzdiagramms den Ablauf bei einem Commandmuster.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.4cm 0 0, clip]{PaternCommandBspSeq}
+		\caption{Sequenzdiagramm der Textverarbeitung}
+	\label{fig:PaternCommandBspSeq}
+\end{figure}
+
+\NextPagePlease
+\section{Iterator}
+Mit dem \OviIndex{Iteratormuster} können zusammengesetzte Objekte (Listen, Bäume, Arrays...) durchwandert werden, ohne dass der Anwender Kenntnis der internen Struktur des zusammengesetzten Objektes haben muss.
+Für jedes zusammengesetzte Objekt gibt es einen eigenen Iterator, aber alle Iteratoren besitzen dieselbe Schnittstelle. Damit kann die Art der Iteration vom zusammengesetzten Objekt und von der Anwendung getrennt werden.
+
+Zudem können verschiedene Iteratoren definiert werden. Wie filternde Iteratoren (Nur Elemente beachten, welche bestimmte Bedingungen erfüllen) oder reverse Iteratoren (Sammlung rückwärts durchwandern). Die STL von \Cpp benutzt zum Beispiel Iteratoren als Schnittstelle zwischen Containern und Algorithmen.
+
+Die Struktur des Iteratormusters ist in Bild \ref{fig:PaternIteratorAllg} dargestellt:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternIteratorAllg}
+		\caption{Grundmuster des Iterators}
+	\label{fig:PaternIteratorAllg}
+\end{figure}
+
+Ein Beispiel könnte eine Datenverwaltung mit einer Liste sein. Je nach Auswahl des Benutzers sollen einmal alle Daten, und einmal nur Daten welche bestimmten Kriterien genügen dargestellt werden.
+
+Das Iteratormuster für die Datenverwaltung könnte wie in Bild \ref{fig:PaternIteratorBsp} aussehen:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{PaternIteratorBsp}
+		\caption{Klassendiagramm der Datenverwaltung}
+	\label{fig:PaternIteratorBsp}
+\end{figure}
+
+Bild \ref{fig:PaternIteratorBspSeq} zeigt das Sequenzdiagramm für das Durchwandern der Liste mit einem Iterator.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[trim=0 1.4cm 0 0, clip]{PaternIteratorBspSeq}
+		\caption{Sequenzdiagramm des Datenverwaltung}
+	\label{fig:PaternIteratorBspSeq}
+\end{figure}
+
+
+
+
+%\chapter{Einführung in die UML}
+\chapter{Weitere UML-Diagrammarten}
+%\section{Das Klassendiagramm}
+%\section{Das Objektdiagramm}
+%\section{Kollaborations- und Sequenzdiagramm}
+
+\section{Anwendungsfall Diagramm}
+Im \OviIndex{Anwendungsfalldiagramm} werden die Anwendungen des Systems
+mit den entsprechenden Anwendern dargestellt. Aus diesem Diagramm lassen
+sich die \OviIndex{Anforderungen} an das System entnehmen. Ein Anwendungsfall sollte eine in sich geschlossene \OviIndex{Interaktion} eines Anwenders mit dem System darstellen. Wobei Anwender nicht nur Personen, sondern auch andere Systeme sein können.
+Die Anwender (Akteure) werden als 'Strichmännchen' gezeichnet, müssen aber nicht
+zwingend Personen sein.
+
+In Bild \ref{fig:UsecaseBilletautomaten} ist das Usecase-Diagramm für einen Billetverkaufsautomaten dargestellt.
+
+
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5]{Usecase}
+		\caption{Usecasediagramm eines Billetautomaten}
+	\label{fig:UsecaseBilletautomaten}
+\end{figure}
+
+Die Ovale stellen dabei die Anwendungsfälle dar. Ihre Beschreibung sollte kurz, aber aussagekräftig sein, und aus der Sicht des Anwenders geschrieben sein. Der Name muss eine Tätigkeit anzeigen.
+
+Die Linien verbinden die beteiligten Akteure mit dem oder den Anwendungsfällen.
+
+Anwendungsfälle können nur durch Akteure ausgelöst werden, somit muss jeder Fall mit mindestens einem Akteur in Beziehung stehen.
+
+Akteure können auch in Vererbungsbeziehungen stehen (Auch ein Techniker kann ein Kunde sein und ein Billet lösen).
+Die Anwendungsfälle können ebenfalls in Beziehung zueinander stehen. Sie können erben, dann ist ein Fall ein spezieller Fall eines anderen. Bei der Beziehung ''"<Include">'' wird ein Fall von einem anderen benutzt. So können Teile, welche in mehreren Anwendungsfällen vorkommen 'ausgelagert' werden. Wenn eine Beziehung nicht näher beschriftet ist, gilt sie als "<Include">.
+Bei der Beziehung ''"<extends">'' \emph{kann} ein Fall von einem anderen erweitert werden. Der zweite Fall wird also nur bei Bedarf ausgeführt. (Achtung, Pfeilrichtung ist gerade umgekehrt zu "<Include">.
+
+Die einzelnen Anwendungsfälle müssen anschliessend noch dokumentiert werden. Es wird wie bei einem Drehbuch geschrieben, was in diesem Fall genau abläuft. Die Beschreibung kann locker sein, oder aber genau noch Norm:
+
+Ein Anwendungsfall muss folgende Elemente in seiner Beschreibung enthalten:
+\begin{enumerate}
+\item Eine eindeutige Nummer, um ihn von überallher eindeutig referenzieren zu können.
+\item Einen Titel, der seine Funktion zum Ausdruck bringt.
+\item Eine Kurzbeschreibung (Zusammenfassung der Kundenanforderung)
+\item Vorbedingungen für diesen Fall. (Was muss erfüllt sein, damit dieser Fall überhaupt abgearbeitet werden kann)
+\item Den genauen Ablauf der Ereignisse und die Reaktionen des Systems darauf. Jedes Ereignis erhält wieder eine eindeutige Nummer mit einem vorangestellten 'E' und jede Aktion des Systems eine eindeutige Nummer mit einem Vorangestellten 'A'. Gibt es Alternativereignisse (Benutzer drück OK oder Abbruch), werden ihnen (und den darauffolgenden Aktionen) ein 'A' vor- oder nachgestellt (Ev. mit Unternummerierung). Alternativereignisse beenden im Normalfall den aktuellen Anwendungsfall (Können aber in einen anderen Anwendungsfall verzweigen)
+\item Die Auswirkungen des Anwendungsfalles auf das System (Nicht auf die Akteure!)
+\item Weitere Informationen. (Z. B. Darstellung oder Skizzen von Bildschirmmasken und Bedienungselementen, offene Fragen, konkrete Beispiele für einen Ablauf, usw.
+\item Diagramme. Sequenz und Kollaborationsdiagramme, Klassendiagramme und Aktivitätsdiagramme, die sich aus diesem Anwendungsfall ergeben. 
+\end{enumerate}
+
+Die Anwendungsfälle werden zu Beginn eines Projektes, meist zusammen mit dem Kunden erarbeitet. Ausgehend von den Anwendungsfällen wird der Rest des Designs entworfen, und am Schluss kann das ganze System basierend auf den Anwendungsfällen getestet werden. Anwendungsfälle sollten nicht zu detailiert sein, sondern einen groben Überblick über die (von aussen sichtbare) Funktionalität des Systems geben.
+Es ist aber theoretisch möglich, ein System bis ins letzte Detail mit Anwendungsfällen zu beschreiben.
+
+\NextPagePlease 
+
+Beispiel für einen Anwendungsfall:
+
+\begin{tabular}{llp{0.7\textwidth}}
+Fall Nr& 1& 'Fahrkarte erwerben'\\
+\multicolumn{2}{l}{Beschreibung:}& Der Kunde wählt einen Zielort, erfährt den Preis und erhält nach Bezahlung die entsprechende Fahrkarte.\\
+\multicolumn{2}{l}{Vorbedingung:}& Das System ist eingeschaltet, die Verbindung zur zentralen Datenbank ist in Ordnung, der Billetdrucker funktioniert.\\
+\multicolumn{3}{l}{Beschreibung des Ablaufs}\\
+&E1) &Der Kunde wählt einen Zielbahnhof\\
+&A1) &Das System holt bei der Datenbank die Preisinfo und zeigt sie an\\
+&E2) &Der Kunde wirft eine Münze ein\\
+&A2) &Münze prüfen\\
+&E2A1)&Der Kunde schiebt eine Kreditkarte ein\\
+&A2A1)&Zu Fall 2 'Mit Kreditkarte zahlen' gehen\\
+&E2A2)&Der Kunde drückt auf 'Abbruch'\\
+&A2A2)&Eingeworfene Münzen zurückgeben, Anzeige löschen, fertig\\
+&E2A3)&Der Kunde hat seit 5 Minuten nichts mehr gemacht\\
+&A2A3)&Eingeworfene Münzen zurückgeben, Anzeige löschen, fertig\\
+&E3) &Die Münze ist gültig\\
+&A3) &Betrag um Münzenwert reduzieren\\
+&E3A1)& Die Münze ist ungültig\\
+&A3A1)& Münze auswerfen, zurück zu E2\\
+&E4) &Preis ist bezahlt\\
+&A4) &Billet ausdrucken, Wechselgeld zurückgeben, Preisanzeige löschen, fertig\\
+&E4A1)& Preis noch nicht bezahlt\\
+&A4A1)& Zurück zu E2\\
+\multicolumn{2}{l}{Auswirkungen:}& Die Transaktion ist in den Logdaten abgelegt\\
+\multicolumn{2}{l}{Weitere Informationen:}& Die Transaktion soll von dem Benutzer jederzeit abgebrochen werden können\\
+\multicolumn{2}{l}{Diagramme:}& Mit diesem Anwendungsfall sind keine weiteren Diagramme verbunden\\
+\end{tabular}
+
+
+\section{Zustandsdiagramm}
+Mit \OviIndex{Zustandsdiagrammen} kann das Verhalten eines Systems dargestellt werden.
+Dabei werden die verschiedenen Zustände des Systems aufgeführt, und wie diese Zustände aufgrund von Ereignissen ineinander übergehen können.
+
+In Bild  \ref{fig:Zustandsdiagramm} ist ein mögliches Zustandsdiagramm für einen Billetautomaten zu sehen.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.7]{Statechart}
+		\caption{Zustandsdiagramm eines Billetautomaten}
+	\label{fig:Zustandsdiagramm}
+\end{figure}
+
+Die Zustände werden durch abgerundete Rechtecke, und die Übergänge durch Pfeile dargestellt. 
+
+Die Übergänge werden mit drei Teilen in der Form \emph{Ereignis[Bedingung]/Aktion}  beschriftet, alle drei Teile sind dabei optional. Das Ereignis ist das auslösende Ereignis. Dies kann ein externes, oder ein selbst erzeugtes Ereignis sein. Die Bedingung muss erfüllt sein, damit das Ereignis den Übergang auslöst, und die Aktion schliesslich wird ausgeführt, wenn der Übergang stattfindet. Wenn ein Übergang mit keinem Ereignis verknüpft ist, wird er automatisch ausgeführt, wenn der Zustand alle seine Aktivitäten beendet hat (Wäre in Diagramm \ref{fig:Zustandsdiagramm} beim Übergang von Billetausgabe nach Bereit eine Alternative).
+
+Ein Zustand wird (zwingend) mit einem Namen, und (fakultativ) mit Aktivitäten beschriftet. Der Name sollte dabei den Zustand so prägnant wie möglich beschreiben.
+Aktivitäten werden in der Form \emph{do/Aktivität} oder \emph{Ereignis/Aktivität} beschrieben. Die Aktivität nach Do wird solange ausgeführt, wie das System in diesem Zustand ist. In der Form der \emph{Ereignis/Aktivität} wird auf bestimmte Ereignisse gleich im Zustand, ohne Übergang reagiert. Es gibt einige bestimmte, vordefinierte Ereignisse:
+\begin{labeling}{myheadings}
+\item[entry]
+Die Aktivität wird beim Eintritt in diesen Zustand ausgeführt
+\item[exit]
+Die Aktivität wird beim Verlassen dieses Zustands ausgeführt
+\item[when]
+Die Aktivität wird beim Eintreten einer Bedingung ausgeführt\\ (Z. B. when(Betrag > Preis)/Einkassieren Beenden) 
+\item[after]
+Die Aktivität wird nach Ablauf einer bestimmten Zeit ausgeführt\\ (Z.B. after(3 Minuten)/Einkassieren Beenden) 
+\item[do]
+Die Aktivität wird solange ausgeführt, wie das System in diesem Zustand ist.
+\end{labeling}
+
+Der Startzustand (Startpunkt) des Systems wird mit einem grossen schwarzen Punkt dargestellt, an dieser Stelle beginnt das System nach einem Start.
+
+Es sind noch nebenläufige Zustände und Oberzustände möglich, welche hier aber nicht weiter behandelt werden. 
+
+\section{Aktivitätsdiagramm}
+Ein \OviIndex{Aktivitätsdiagramm} sieht einem Zustandsdiagramm sehr ähnlich, bringt aber etwas anderes zum Ausdruck. Hier wird ein Ablauf dargestellt, wobei sich ein Ablauf auch in mehrere, parallel ablaufende Zweige aufteilen kann. Ein Aktivitätsdiagramm sieht ähnlich aus wie ein \OviIndex{Flussdiagramm}, unterliegt aber der Einschränkunge dass ein Aktivitätsdiagramm immer einem Objekt, einer Klasse oder einem Anwendungsfall untergeordnet sein muss. Der grösste Unterschied zu einem Flussdiagramm aber ist, dass auch parallele Aktivitäten modelliert werden können. 
+
+In Bild  \ref{fig:Activitydiagramm} ist ein mögliches Aktivitätsdiagramm für einen Billetautomaten zu sehen.
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.7]{Activitydiagramm}
+		\caption{Aktivitätsdiagramm eines Billetautomaten}
+	\label{fig:Activitydiagramm}
+\end{figure}
+Die einzelnen Aktivitäten werden durch abgerundete Rechtecke dargestellt,
+der Aktivitätsfluss durch Pfeile. Der Startpunkt wird durch einen
+schwarzen Punkt, das Ende der Aktivität durch einen schwarzen Punkt
+mit Kreis dargestellt.
+
+Bedingtes Verhalten kann durch eine Verzweigung (Rautensymbol) erreicht werden.
+Die Bedingungen werden zu den Ausgangstransitionen der Verzweigung geschrieben. (in gleicher Notation wie beim Zustangsdiagramm). Die Bedingungen einer Verzweigung sollten sich dabei wechselseitig ausschliessen. Die Zusammenführung von zwei bedingten Zweigen erfolgt ebenfalls über das Rautensymbol. Es können aber auch direkt von einer Aktivität mehrere bedingte Transitionen (Pfeile) ausgehen (Wie beim Zustandsdiagramm), in diesem Fall kann auf das Rautensymbol verzichtet werden.
+
+Paralleles Verhalten erreicht man durch aufspalten. Mit einem breiten Strich wird die Aufspaltung (Fork) in mehrere Pfade eingeleitet. Diese Pfade können (müssen aber nicht) gleichzeitig abgearbeitet werden. Mehrere Pfade werden ebenfalls wieder durch einen breiten Strich (Join) zusammengeführt. Von diesem Punkt wird erst weitergefahren, wenn alle darauf einlaufenden Pfade ihre Aktivitäten beendet haben (Synchronisation).
+
+Mit \OviIndex{Verantwortlichkeitsbereichen} (\OviIndex{Swimlanes}) kann zudem dargestellt werden, welche Klassen (Oder Einheit) für welche Aktivität zuständig ist. Dazu in Bild \ref{fig:Swimmlanes} nochmals unser Billetautomat. Nun sieht man, das für die Billetausgabe der Drucker zuständig ist.
+
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5, clip]{Swimmlanes}
+		\caption{Aktivitätsdiagramm des Billetautomaten mit Verantwortlichkeitsbereichen}
+	\label{fig:Swimmlanes}
+\end{figure}
+
+
+\section{Paketdiagramm}
+Mit \OviIndex{Paketdiagrammen} werden die Klassen zu Paketen zusammengefasst. Das Ziel dabei ist,
+logisch zusammengehörende Klassen in grössere Einheiten zusammenzufassen. Zudem werden die Abhängigkeiten der Pakete untereinander dargestellt. Wenn irgendeine Klasse in einem Paket von einer Klasse in einem anderen Paket abhängt, dann ist auch die Pakete voneinander abhängig. Abhängig bedeutet, dass Änderungen an der Definition einer Klasse auch Änderungen an der Abhängigen Klasse verursachen \emph{können}.
+Dabei sollte eine möglichst geringe Abhängigkeit der Pakete untereinander angestrebt werden. Wenn zuviele Abhängigkeiten bestehen, sollten die Pakete anders zusammengestellt werden, oder der Design muss überarbeitet werden.
+
+In Bild \ref{fig:Paketdiagramm} ist ein Paketdiagramm für unseren Billetautomaten zu sehen.
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5, clip]{paketdiagramm}
+		\caption{Paketdiagramm des Billetautomaten}
+	\label{fig:Paketdiagramm}
+\end{figure}
+
+
+\chapter{Übungen}
+\section*{Übung 1}
+Es soll ein Netzwerkverwaltungssystem entwickelt werden. Bei einer Besichtigung vor Ort ergibt sich folgende Beschreibung: 
+
+Das Netzwerk besteht aus den Gruppen Forschung, Verwaltung und Unterricht. In jeder Gruppe sind mehrere Computer enthalten. Dabei gibt es verschiedene Modelle (SparcStation, Intel-PC, PowerPC, Macintosh). An einigen Rechnern sind ein oder zwei Drucker angeschlossen. Im Netzwerk bekommt jeder Rechner einen Namen (Newton, Einstein, Dirac, DaVinci, Renken, Kopernikus, Gallilei, Archimedes, ...). Ein Rechner besteht aus einer CPU (mit eindeutiger Seriennummer), einer Festplatte (SCSI oder IDE) bestimmter Kapazität und RAM in einer gewisser Grösse. Ausserdem gehören noch Tastatur und Maus zu jedem Rechner... 
+
+\begin{enumerate}
+\item Welche Objekte kann man aus dieser Beschreibung ableiten?
+\item Welche Klassen kann man daraus gewinnen? 
+\item Welche Beziehungen gibt es zwischen diesen Klassen? 
+\end{enumerate}
+
+Hinweis: 	Objekte, resp. Klassen lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Objekte haben oft einen Namen. 
+
+
+\section*{Übung 2}
+Die Beschreibung der Rechnergruppen geht wie folgt weiter: 
+
+...Jede Gruppe verwaltet eine Liste über die darin installierten Rechner. Es können Rechner entfernt und hinzugefügt werden. Von jedem Rechner-Typ gibt es eine bestimmte Anzahl, die ermittelt werden kann. Ein Rechner hat einen Namen, der abgefragt und geändert werden kann. Von jeder Komponente kann Hersteller und Produktnummer abgefragt werden. 
+
+\begin{enumerate}
+\item Für die Klassen aus Übung 2 sollen Attribute und Methoden identifiziert werden. 
+\end{enumerate}
+
+Hinweis: 	In einer Spezifikation kann man Attribute oft an Adjektiven ausmachen. Verben deuten auf eine Methode hin.
+ 
+\NextPagePlease 
+\section*{Übung 3}
+Eine Fahrzeugverleihfirma besitzt Sportwagen, Limousinen, Caravans und Camper. Die Fahrzeuge können ausgeliehen, gefahren und zurückgebracht werden. Kunden können jeweils höchstens ein Fahrzeug ausleihen. Es gibt Stammkunden und Neukunden. Neukunden müssen ein Depot hinterlegen. Von jedem Kunden müssen Adresse und Alter bekannt sein. Bei jedem Fahrzeug sind Farbe, Alter, Marke und Anzahl Sitzplätze, sowie der Mietpreis abgelegt. Bei Sportwagen wird auch die Spitzengeschwindigkeit angegeben, Bei Caravans der Laderaum, beim Camper die nutzbare Wohnfläche. Bei Stammkunden wird das Umsatztotal vermerkt, um Rabatte geben zu können. Für jeden Mitarbeiter der Firma wird das durch ihn erzielte Umsatztotal festgehalten. Die Mitarbeiter werden mit Namen und Adresse erfasst. Einige Mitarbeiter werden als Kundenbetreuer eingesetzt, sie sind zusätzlich für Grosskunden zuständig. Grosskunden sind Kunden mit besonders hohem Umsatz. Für jede Fahrzeugausleihe wird ein Mietvertrag erstellt.
+
+\begin{enumerate}
+\item Überlegen Sie sich ein paar Anwendungsfälle für dieses Umfeld.
+\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
+\end{enumerate}
+
+
+\section*{Übung 4}
+In einem Graphikprogramm können Zeichnungen erstellt werden. Die Zeichnung kann Figuren wie Linien, Rechtecke, Ellipsen und Texte enthalten. Bei allen Figuren kann die Strichdicke, die Strichfarbe und die Füllfarbe eingestellt werden. Mehrere Figuren können zu einer Gruppe zusammengefasst werden, welche anschliessend wie eine Figur behandelt werden kann. Figuren können gezeichnet, verschoben, kopiert, gespeichert, geladen und gelöscht werden. Die Eigenschaften der Figuren (Farbe, Strichdicke) können jederzeit verändert werden. Die Zeichnung wird auf dem Bildschirm dargestellt, kann aber auch auf einem Drucker ausgegeben werden. Eine Zeichnung kann abgespeichert und wieder geladen werden. Das Ausgabegerät (Bildschirm, Drucker) stellt Funktionen zum Zeichnen der Grundfiguren (Linie, Rechteck, Ellipse) zur Verfügung. Texte können in verschiedenen Zeichensätzen und Schriftgraden (Kursiv, Fett, Unterstrichen...) dargestellt werden.
+Es können mehrere Zeichnungen gleichzeitig geladen sein. Jede Zeichnung hat einen eindeutigen Namen, unter dem sie auch abgespeichert wird. 
+
+\begin{enumerate}
+\item Überlegen Sie sich ein paar Anwendungsfälle für dieses Programm und dokumentieren Sie sie.
+\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
+\item Entwerfen Sie ein Objektdiagramm für eine Zeichnung, bestehend aus zwei Rechtecken, einer Linie und einer Gruppe aus einem Rechteck und einer Ellipse.
+\item Zeichnen Sie ein Kollaborationsdiagramm für den Fall, dass das Programm die Zeichnung neu auf den Bildschirm zeichnet (Z.B. weil sich die Fenstergrösse geändert hat).
+\end{enumerate}
+ 
+\NextPagePlease
+\section*{Übung 5}
+Es soll ein Bibliotheksverwaltungssystem entwickelt werden. Bei einer Befragung des Auftraggebers ergibt sich folgende Beschreibung:
+
+In der Bibliothek werden Bücher, Tonbandkassetten, Videokassetten und DVD-Roms ausgeliehen. Ein Bibliotheksbenützer darf maximal 5 Medien ausleihen. Von jedem Benutzer wird Name, Adresse und Alter registriert. Jedes Medium hat einen bestimmten Standort und wird für maximal 4 Wochen ausgeliehen. Falls ein Medium nicht verfügbar ist, kann es durch den Benutzer reserviert werden. Von allen Medien werden Zusatzinformationen wie Kaufdatum, Anzahl Ausleihungen, Datum der letzten Ausleihe, Inhaltsbeschreibung und Titel abgelegt. Bei Büchern wird auch der Autor, der Verlag sowie das Erscheinungsjahr abgelegt. Von jedem Medium muss bekannt sein, wer es ausgeliehen hat (Falls es ausgeliehen ist), und von jedem Benutzer muss bekannt sein, welche Medien er ausgeliehen hat. Über einige Verlage und Autoren gibt es kurze Informationen. Wenn ein Benutzer die Ausleihfrist für eine Medium überschritten hat, wird er gemahnt. Die Ausleihfrist kann vor Ablauf durch den Benutzer verlängert werden, solange das Medium nicht reserviert ist. Alle Medien sind in einem Katalog abgelegt, der vom Benutzer nach Stichworten durchsucht werden kann.
+
+\begin{enumerate}
+\item Überlegen Sie sich ein paar Anwendungsfälle für dieses Programm und dokumentieren Sie sie.
+\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
+\item Entwerfen Sie ein Objektdiagramm nach eigenem Ermessen.
+\item Zeichnen Sie ein Kollaborationsdiagramm für eine Handlung Ihrer Wahl.
+\end{enumerate}
+	
+	
+\section*{Übung 6}
+Es soll ein Tabellenkalkulationsprogramm entworfen werden. Das Programm kann gleichzeitig beliebig viele Tabellen enthalten. Tabellen können gespeichert und geladen, sowie neu berechnet werden. Eine Tabelle besteht aus beliebig vielen, orthogonal angeordneten Zellen. Jede Zelle hat 4 Nachbarzellen (Ausser Randzellen). Jede Zelle hat vier Ränder, jeweils zwei Zellen teilen sich einen Rand. Ein Rand kann verschiedene Formen aufweisen (Strichdicke, Farbe, Transparent). Eine Zelle kann eine Zahl, eine Formel oder einen Text enthalten. Jede Zelle kann ihren Inhalt neu berechnen. Eine Formel kann auf beliebig viele andere Zellen Bezug nehmen. Für jede Zelle kann festgelegt werden, wie sie ihren Inhalt darstellt (Zahlenformat, Zeichensatz, Schriftgrad und Farbe). Jede Zelle kann mit einem Kommentar (Notiz) versehen werden. Von jeder Zelle kann ihr Inhalt gelesen werden (Als Text oder als Wert).
+
+\begin{enumerate}
+\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
+\item Entwerfen sie ein Objektdiagramm für eine 1*3 Tabelle (3 Felder in einer Reihe), in den ersten beiden Feldern ist eine Zahl abgelegt, im dritten Feld ist eine Formel, die Bezug auf die beiden ersten Felder nimmt. (Z. B. Feld3 = Feld1 + Feld2)
+\item Zeichnen sie ein Kollaborationsdiagramm für den Fall, dass die Tabelle neu berechnet werden soll. (Die Tabelle erhält den Befehl 'NeuBerechnen() vom Programm)
+\end{enumerate}
+
+\NextPagePlease 
+\section*{Übung 7}
+Wir verfeinern die Klasse Formel aus der Übung 6. Eine Formel ist die Repräsentation eines mathematischen Ausdrucks. Ein Ausdruck kann eine einfache Zahl sein, er kann eine Referenz auf eine Zelle sein, oder er kann eine Funktion sein. Eine Funktion verknüpft je nach Art eine unterschiedliche Anzahl von Ausdrücken miteinander. Es sollen die zweistelligen Funktionen Addition, Subtraktion, Division und Multiplikation, sowie die einstellige Negation möglich sein. Von jedem Ausdruck kann der Wert abgefragt werden.
+
+\begin{enumerate}
+\item Entwerfen Sie ein Klassendiagramm für Formeln.
+\item Zeichnen Sie das Objektdiagramm für die Formel '-((13+Feld1) / 25)'.
+\item Zeichnen sie ein Kollaborationsdiagramm für den Fall, dass der Wert der Formel abgefragt wird.
+\end{enumerate}
+
+
+
+\section*{Übung 8}
+Es soll ein Schachspiel implementiert werden. Ein Schachspiel besteht aus einem Quadratischen Spielfeld mit 8*8 Feldern, es gibt 32 weisse und 32 schwarze Felder. Direkt benachbarte Felder sind unterschiedlich gefärbt. Ausser den Randfeldern hat jedes Feld 4 direkte Nachbarfelder. An einem Schachspiel nehmen 2 Spieler teil (Weiss und Schwarz) wobei einer davon der Computer ist. Jeder Spieler hat 16 Spielfiguren seiner Farbe, nämlich 8 Bauern, 2 Türme, 2 Läufer, 2 Springer, eine Dame und einen König. Jede Spielfigur kann auf einem Feld auf dem Spiel, oder nachdem sie geschlagen wurde ausserhalb des Spiels sein. Jedes Feld kann von höchstens einer Figur besetzt sein. Jede Figur hat für sie typische Zugmöglichkeiten. Jede Figur hat einen Bestimmten Wert, der unter Umständen von ihrer Position auf dem Spielfeld abhängt. Bauern können bei erreichen der gegnerischen Grundlinie in eine beliebige andere Spielfigur umgewandelt werden. Wenn der König geschlagen wird, ist das Spiel für den schlagenden Spieler gewonnen. Für jeden Spieler kann zu jedem Zeitpunkt für seine Spielstellung ein Wert berechnet werden. Der Zuggenerator des Computerspieler sucht jeweils denjenigen Zug, der für den Computerspieler den höchsten Wert ergibt. Die Spielsteuerung lässt abwechslungsweise den Computergenerator und den menschlichen Spieler einen Spielzug ausführen.
+
+\begin{enumerate}
+\item Erstellen  Sie ein Klassendiagramm für das Schachspielprogramm.
+\item Finden Sie sinnvolle Attribute und Methoden für alle Klassen (Versuchen Sie sich vorzustellen, was die einzelnen Objekte, resp. Klassen können sollten, und wie Sie zusammenarbeiten.)
+\item Zeichnen Sie ein Objektdiagramm für eine bestimmte Spielstellung.
+\end{enumerate}
+ 
+\section*{Übung 9}
+Es soll ein Taschenrechner implementiert werden. Auf der Tastatur können Ziffern 1-9 sowie die Operatoren +-*/ benutzt werden. Sie können wählen zwischen einem Rechner mit UPN-Logik (HP) und einem gewöhnlichen Rechner. Je nach dem müssen zusätzlich eine Entertaste oder die Taste = verarbeitet werden. Ziffern werden solange einer Zahl hinzugefügt, bis die Zahl durch drücken einer Operationstaste beendet wird. In einer erweiterten Form sollte der gewöhnliche Rechner auch Klammerausdrücke verarbeiten können und einen Speicher besitzen.
+
+\begin{enumerate}
+\item Erstellen  Sie ein Klassendiagramm für den Rechner. Beachten Sie, dass in der Aufgabe bei weitem nicht alle Klassen erwähnt sind, weitere Klassen ergeben sich aus der Funktion eines Taschenrechners und müssen selbst erarbeitet werden.
+\item Zeichnen Sie ein Sequenzdiagramm, wenn folgende Zeichensequenz eingegeben wird:\\
+	UPN: 		5 <Enter> 1 2 <Enter> 3 4 + *\\	
+ 	Normal:	5 + 1 2 * 3 4 =
+\end{enumerate}
+
+
+
+\section*{Übung 10}
+Es soll ein Programm zur Verwaltung von Studenten geschrieben werden. Es soll ein kleines Menu geben, bei dem folgende Auswahlen zur Verfügung stehen: Datensatz einlesen, Datensätze anzeigen, Datensatz löschen, Datensatz suchen (Wahlweise nach Namen, Alter, Vornamen), Datensätze sortieren, wahlweise nach Namen, Vornamen oder Alter, Datensätze abspeichern und Datensätze laden. Die Datensätze sind durchnumeriert, die Nummer wird zur Auswahl eines bestimmten Satzes verwendet. Ein Datensatz besteht aus Namen, Vornamen, Alter und Adresse.
+
+\begin{enumerate}
+\item Überlegen Sie sich kurz, wie Sie das Problem auf althergebrachte Art anpacken würden (Prozedural/Modular)
+\item Versuchen Sie jetzt, das Problem objektorientiert zu lösen. (Klassendiagramm, Bestimmen der Eigenschaften der Klassen, Objektdiagramm und Sequenzdiagramm, falls erforderlich)
+\item Implementieren Sie das Programm in \Cpp. (Implementieren Sie nicht alles auf einmal, gehen Sie schrittweise vor, lassen Sie das Sortieren vorläufig beiseite)
+\end{enumerate}
+ 
+\section*{Übung 11}
+Es soll eine Steuerung für einen Billetautomaten entworfen werden. Der Automat wird über einen Touchscreen bedient. Der Automat kennt alle Bahnhöfe, die Distanzen zwischen den Bahnhöfen und die aktuellen Tarife. Die Bahnhofsliste und die Tarife können jederzeit via Schnittstelle neu geladen werden. 
+
+Der Automat besitzt einen Fahrscheindrucker, einen Wechselgeldspeicher und einen Geldtresor sowie eine Alarmanlage (Einbruchsicherung). Der Zustand des Fahrscheindruckers (Papier, Farbband, Funktion) kann abgefragt werden. Der Wechselgeldspeicher hat Platz für 200 (unterschiedliche) Münzen. Es muss dafür gesorgt werden, dass von jeder Münzsorte eine möglichst optimale Reserve im Wechselgeldspeicher vorrätig ist. Eingeworfene Münzen werden im Wechselgeldspeicher abgelegt, überzählige Münzen werden vom Wechselgeldspeicher in den Geldtresor transportiert. Münzen aus dem Tresor sind nicht mehr zugängig. Wenn der Benutzer den Bezahlvorgang abbricht, werden ihm seine bisher eingeworfenen Münzen aus dem Wechselgeldspeicher zurückbezahlt. Im Wechselgeldspeicher muss immer ausreichend Platz für neueingeworfene Münzen sein. Wenn im Wechselgeldspeicher nicht genügen Münzen vorrätig sind, soll angezeigt werden, dass der Automat kein Rückgeld gibt.
+Falschgeld oder unbekannte Münzen werden direkt wieder zurückgegeben. Es werden alle Transaktionen aufgezeichnet, der Totalbestand des eingenommen Geldes wird laufend nachgeführt. Störungen, voller Geldtresor und Einbruchsversuche werden sofort an eine Zentrale weitergemeldet.
+Wenn der Geldtresor voll ist, werden keine Billettverkäufe mehr getätigt.
+
+
+
+
+
+
+\section*{Übung 12}
+Es soll die Steuerungssoftware für einen autonomen Roboter entwickelt werden. Der Roboter besitzt mehrere Achsen, welche durch Servomotoren angetrieben werden und deren Position durch einen Sensor überwacht wird. Des weiteren gibt es Näherungssensoren, sowie Ultraschallsensoren, die die Entfernung zu Hindernissen messen. Alle Sensoren können kalibriert werden. Achsen sollen auf Befehl einen bestimmte Strecke mit einem Definierten Geschwindigkeitsprofil zurücklegen, aber auch jederzeit gestoppt werden können. Die Steuerung soll einfache Befehle wie Drehung nach links oder rechts, Vorwärtsfahren, Rückwärtsfahren, langsam und schnell verstehen, und selbständig anhalten wenn Hindernisse erkannt werden. Die Zustände der Sensoren und der Achse sollen von einer übergeordneten, noch zu entwickelnden Regelungssoftware abgefragt werden können.
+
+
+
+\chapter{Systematisches Testen von Software}
+Bevor ein Softwaresystem seinem Verwendungszweck übergeben werden kann, muss verifiziert werden, ob das System seinen Spezifikationen entspricht.
+
+Ein System sollte aber nicht erst am Ende der Entwicklungphase getestet werden, 
+sonst sind viele Fehler nur sehr kostspielig zu beheben.
+
+Es ist also anzustreben, Fehler möglichst frühzeitig zu finden.
+Konzeptionelle Fehler sollten dabei schon in der Analyse/Designphase
+erkannt und behoben werden, da sonst das gesamte Projekt in Frage gestellt wird.
+
+Auch bereits getestete Module sollten wieder überprüft werden, wenn sie in einem neuen Kontext verwendet werden. Auf jeden Fall müssen die Spezifikationen der Module mit den jeweiligen Anforderungen verglichen werden.
+
+Der Absturz der ersten ARIANE 5 im Jahre 1996 ist auf ein ungeprüftes übernehmen von Software der Ariane 4 zurückzuführen. Es wurde Das Trägheitsnavigationssystem der ARIANE 4 übernommen, dabei wurde auf ausführliche Tests verzichtet, da sich das System in der ARIANE 4 jahrelang bewährt hatte. Leider hatte die ARIANE 5 aber eine höhere horizontale Geschwindigkeit, was zu einem 
+Zahlenüberlauf führte, und dies wiederum ziemlich schnell zum Absturz (Resp. kontrollierten Sprengung) der Rakete. Schadensumme: 1.7 Miliarden DM. Wenn das System nicht einfach unbesehen übernommen worden wäre, hätte man das Problem mit grosser Sicherheit erkannt. (Weitere Informationen dazu unter http://www.esa.int/export/esaCP/Pr\_33\_1996\_p\_EN.html)
+
+Viele Fehler äussern sich nicht so spektakulär, aber die Gesamtschadenssumme die jährlich durch nicht sorgfältig durchgeführte \OviIndex{Tests} entsteht dürfte enorm hoch sein. 
+
+Grundsätzlich unterscheidet man zwei Arten von Tests: Statische Tests und
+Funktionstests. 
+
+\section{Statische Tests (Reviews)}
+Zu den \OviIndex{statischen Tests} gehört die \OviIndex{Reviewtechnik}, dabei werden in jeder Phase alle Dokumente kritisch auf Fehler und Inkonsistenzen untersucht. Diese Technik kann auf Diagramme, Spezifikationen, Pflichtenhefte und effektiven Code (Listings) angewendet werden. Dabei wird kein Code ausgeführt, sondern es findet eine reine visuelle Kontrolle statt. 
+
+Ein \OviIndex{Review} wird dabei nach vorher festgelegten Richtlinien (Checklisten) durchgeführt. Es kann genauso auf Einhaltung des Codierungstandards (Komentare, Namensgebung, Verschachtelungstiefe, Funktionsgrösse) wie auf die Codierung selbst geprüft werden.
+
+In einem Review werden gefundene Fehler oder Unstimmigkeiten nicht behoben, sondern nur
+in einem Bericht festgehalten. Anschliessend an das Review können zusammen mit dem Autor Lösungsvorschläge diskutiert werden.
+
+Das Review kann zusammen mit dem Autor, oder auch ohne den Autor des jeweiligen Dokumentes stattfinden. Wichtig, bei einem Review sind weder Schuldzuweisungen noch Verteidigungen angebracht, es werden einfach Erkentnisse sachlich festgehalten.
+In einem Projekt sollte jedes Dokument nach seiner Fertigstellung einem Review
+unterzogen werden.
+
+Ein positiver Seiteneffekt der Reviewtechnik ist zudem die breitere Streuung
+des \OviIndex{Projektwissens} über die Projektmitglieder. Da die Projektmitglieder sich jeweils gegenseitig reviewen, weiss jedes Mitglied ungefähr was das andere macht, dadurch wird es leichter, Aufgaben umzuverteilen und neue Mitarbeiter einzubinden. Zudem wird über das ganze Projekt der Programmierstil einheitlicher, weil man sieht wie andere ihre Arbeit erledigen. 
+
+Wichtig, die Ergebnisse der Reviews dürfen nicht zur Qualifikation der Mitarbeiter verwendet werden, sie dienen nur der Qualitätssicherung innerhalb der Projekte. Sobald sie für Mitarbeiterqualifikation missbraucht werden, verlieren sie ihr Effizienz ('Gefälligkeitsgutachten').
+
+\section{Funktionstests}
+Beim \OviIndex{Funktionstest} wird geprüft, ob ein System oder Teilsystem korrekt funktioniert und seinen Spezifikationen entspricht, also das tut was von ihm gefordert wird. Das Ziel des Tests ist es \emph{Fehler zu finden}.
+
+Es ist wissenschaftlich belegt, das es unmöglich ist, die Fehlerfreiheit eines Programmes zu beweisen. Daraus folgt auch, das vollständiges Testen unmöglich ist. Aber durch systematisches Vorgehen kann man ein optimales Ergebnis erreichen.
+
+\emph{Planloses Ausprobieren ist keine brauchbare und zuverlässige Testmethode}
+
+Testen ist eine kreative und Anspruchsvolle Tätigkeit. Der Tester muss das Produkt gut kennen, und sein Ziel muss sein, Fehler zu finden, nicht die Korrektheit zu bestätigen. Das Testen ist selbst ein Projekt, welches geplantes Vorgehen erfordert. Der Tester muss sich überlegen was getestet werden soll, und wie es getestet werden kann. Er muss sich zudem überlegen, was alles schiefgehen kann.
+
+Für jeden \OviIndex{Testfall} muss definiert werden, in welchem Ausgangszustand das System sein soll, welche Eingabedaten an das System erfolgen, und was die erwartete Reaktion des Systems ist. Tests müssen reproduzierbar sein, d.h. dass der gleiche Test wiederholt ausgeführt werden kann (Nur so kann eine Fehlerbehebung verifiziert werden). Tests können oft automatisiert werden, so dass der Tester von Fleissarbeit entlastet wird. Für Tests muss oft eigene Hard- und Software entwickelt werden.
+
+Wichtig: \OviIndex{Testen} und \OviIndex{Fehlerbehebung} sind zwei verschiedene und getrennte Tätigkeiten. Das Ergebnis eines Tests ist ein \OviIndex{Fehlerprotokoll}, die Fehlerkorrektur erfolgt anschliessend durch den(die) Programmierer aufgrund des Protokolls. Sämtliche Fehlerprotokolle sollten mit der Projektdokumentation archiviert werden.
+
+Für das Amt des Testers eignen sich besonders Leute, die ein grosses Interesse daran haben, möglichst viele Fehler zu finden. Deshalb sind im Allgemeinen die Entwickler des Systems ungeeignet. Besser eignen sich Leute, die das System später Warten oder in Betrieb nehmen müssen, zukünftige Anwender oder Leute aus der Qualitätssicherung.
+
+Es gibt grundsätzlich zwei Methoden für den Funktionstest:
+Whiteboxtest und Blackboxtest.
+
+\subsection{Blackboxtest}
+Beim \OviIndex{Blackboxtest} sind die Interna des Systems unbekannt, das System wird als Blackbox angesehen, und die Tests werden aus den Anforderungen (\OviIndex{Use Cases}) an das System gewonnen. Blackbox Tests werden meistens gegen Ende des Projektes zum Test von \OviIndex{Teilsystemen} und des \OviIndex{Gesamtsystems} eingesetzt. Da Blackboxtests auf den Anforderungen an das System basieren, können die Testfälle parallel zur Entwicklung des Gesamtsystems entworfen werden. Das Testteam muss nicht bis zum Projektende mit der Ausarbeitung der Tests warten. Auch die Abnahme des Systems durch den Auftraggeber erfolgt in der Regel durch Blackbox-Tests.
+
+\subsection{Whiteboxtest}
+Beim \OviIndex{Whitebox} Test sind die Interna das Systems (Programmcode) bekannt. Beim Erstellen der Testfälle wird versucht, möglichst alle \OviIndex{Programmflusspfade} abzudecken, also die Testfälle so zu wählen, dass alle Fälle eines Cases oder einer Verzweigung mindestens einmal durchlaufen werden,
+und dass Schlaufen an ihren Grenzfällen betrieben werden (Einmal, keinmal, maximal). Diese Art von Tests werden vor allem bei \OviIndex{Modultests} eingesetzt.
+
+\subsection{Systematisches erzeugen von Testfällen}
+Da die Anzahl der möglichen Kombinationen von Eingabedaten meist nahezu unendlich ist, muss beim Entwurf von Testfällen systematisch vorgegangen werden um möglichst alle Fälle abzudecken. Ein zufälliges Auswählen von Werten ergibt keinen zuverlässigen Test.
+
+Eine gute Möglichkeit ist die Bildung von \OviIndex{Äquivalenzklassen}. Dabei werden Gruppen von Werten gebildet, von denen man ähnliches Verhalten und ähnliche Ergebnisse erwartet.
+
+Mögliche Klassen wären: 
+
+\begin{itemize}
+	\item Alle positiven Werte
+	\item Alle negativen Werte
+	\item Alle Werte oberhalb/unterhalb des spezifizierten Wertebereichs, 
+	\item Alle Kombinationen wo Wert A grösser als Wert B ist (Bargeldbezug wenn Kontostand kleiner als gewünschter Wert ist) 
+	\item Rückgeld grösser als Geldreservoir ist 
+	\item usw
+\end{itemize}
+
+Anschliessend wählt man die Testfälle so, das Werte aus allen Äquivalenzklassen zum Zuge kommen. Meist werden einige Werte zufällig irgendwo aus der Mitte der jeweiligen Äquivalenzklassen, sowie
+Grenzwerte (Um eins daneben, gehört gerade noch dazu/nicht mehr dazu) der Klassen gewählt.
+
+Damit lässt sich die Menge der Testfälle drastisch reduzieren, ohne die Qualität des Tests massiv zu vermindern. Es ist aber wichtig, gute Äquivalenzklassen zu bilden.
+
+ 
+\subsection{Testabbruch}
+
+Die schwierigste Entscheidung beim Testen ist immer, wann die Testphase beendet wird.
+Es gibt im allgemeinen keine Möglichkeit mit Sicherheit zu wissen, wann alle
+Fehler beseitigt sind, also müssen andere Kriterien herangezogen werden.
+
+Einfach eine bestimmte Zeitdauer festzulegen ist sicherlich das schlechteste
+Kriterium.
+
+Bessere Möglichkeiten basieren auf einer \OviIndex{Restfehler-Abschätzung}, d.h.
+versuchen zu schätzen, wieviele Fehler noch übrig sind.
+
+Dazu bietet sich zum einen die Fehlerfinderate an. (Gefundene Fehler pro Zeiteinheit,
+ev. noch nach Schweregrad gewichtet). Der Test wird abgebrochen, wenn die
+Fehlerfinderate eine gewisse Grenze unterschreitet. Diese Grenze wird vor dem
+Testbeginn festgelegt.
+
+Eine anderer Ansatz ist die Kostenrechnung, der Test wird abgebrochen, wenn
+der durchschnittliche Aufwand (Die Kosten) um einen Fehler zu finden,
+eine vorbestimmte Grenze überschreitet.
+
+Eine Möglichkeit, die Restfehler zu schätzen besteht daran, mehrere Gruppen
+unabhängig voneinander dasselbe System testen zu lassen. Aus den Ergebnissen der
+unterschiedlichen Gruppen lassen sich Rückschlüse auf die nicht gefundenen
+Fehler ziehen.
+
+Beispiel:
+
+\begin{center}
+      \begin{tabular}{ll}
+      Von beiden Gruppen gefundene Fehler:&80 \\
+      Nur von Gruppe A gefundene Fehler:  &10   \\
+      Nur von Gruppe B gefundene Fehler:  &8  \\
+      Von keiner Gruppe gefundene Fehler: &??   \\
+      \end{tabular}
+\end{center}
+
+Aus diesen Werten kann man schliessen, dass noch ein unentdeckter Fehler im System steckt.
+
+Idee: Gruppe B hat von den 90 Fehlern der Gruppe A 80 gefunden, die Erfolgsquote von B ist also
+8:9. Wenn man die selbe Erfolgsquote auf die nur von Gruppe B gefundenen Fehler anwendet, ergibt
+sich, dass noch ein Fehler unentdeckt ist.
+
+Diese Methode funktioniert aber nur, wenn beide Gruppen völlig unabhängig voneinander testen (Keine Kommunikation, auch nicht in der Kaffeepause oder nach Feierabend).
+Damit solche Abschätzungen wirklich aussagekraftig sind, muss statistisch korrekt vorgegangen und ausgewertet werden, also die Wahrscheinlichkeitsrechnung herangezogen werden.
+
+
+
+
+\chapter{Der Unified Process}
+Dieses Kapitel gibt einen kurzen Überblick über den Unified Process. Eine detailliertere Beschreibung
+findet man in der entsprechenden Fachliteratur (Z. B. Lit\ref{UnifiedSoftwareDevelopmentProcess}). Der Unified Process ist eine Möglichkeit, einen Projektablauf zu organisieren. Dabei stellen die UML und Objektorientiertheit wichtige Elemente dar. 
+
+
+\section{Einleitung}
+Der 'Unified Software Development Process' beschreibt den Projektablauf vom
+Start bis zum Ende, unter Benutzung der UML.
+
+Der Unified Process ist ein Use-Case gesteuerter, Architektur-zentrierter iterativer und inkrementeller
+Prozess.
+
+\emph{Use-Case} gesteuert bedeutet, dass der ganze Prozess durch die Anwendungsfälle gesteuert wird, also 
+dass alle im Laufe des Prozesses entstehenden Modelle sich auf die Anwendungsfälle abstützen,
+und sich somit jedes Element eines jeden Modelles auf einen oder mehrere Anwendungsfälle zurückführen 
+lässt.
+
+\emph{Architekturzentriert} heisst, dass die Architektur die Grundlage des gesamten Systems bildet,
+dass also zuerst eine Architektur definiert wird, bevor das ganze System realisiert wird. Die
+Architektur definiert die grundlegende Struktur des Systems auf Hardware- wie auf Softwaremässiger
+Ebene. Zur Definition der Architektur werden die wichtigsten Anwendungsfälle herangezogen, und
+aus diesen die Struktur für das System festgelegt. Sie soll ein stabiles, erweiterbares Gerüst für das restliche System bilden. Es werden die dafür benötigten Klassen und Schnittstellen definiert, es kann auch bereits erster, rudimentärer Code erzeugt werden.
+
+\emph{Iterativ und inkrementell} sagt, dass nicht das ganze System auf einmal entworfen und implementiert wird, sondern dass über mehrere Iterationen jeweils ein weiterer Teil des Systems implementiert wird. Am Ende jeder Iteration steht ein funktionierendes, konsistentes und getestetes System oder Modell, welches ein
+Stück Funktionalität des Zielsystems beinhaltet. Jede weitere Iteration fügt weitere Funktionalität hinzu, bis mit der letzten Iteration das System fertiggestellt ist. Die Anzahl der Iterationen, und welcher Teil des Systems in welcher Iteration zu bearbeiten ist, wird bereits zu Beginn des Projektes in einer der ersten Iterationen festgelegt. Um das Projektrisiko zu minimieren werden Teile mit hohen Risiken möglichst früh angepackt, so kann früh auf ernsthafte Probleme reagiert werden (Z. B. Projektabruch, weil etwas grundsätzlich nicht realisierbar ist.)
+
+% Rolle Aktivität, Artifakt, Vorgehen
+\section{Der Prozessablauf}
+Im Unified Process gibt es die fünf Arbeitsschritte \emph{Anforderungen erfassen}, \emph{Analyse}, \emph{Design}, \emph{Implementation} und \emph{Test}. Es wird aber nicht die ganze Projektzeit in diese Arbeitsschritte unterteilt, sondern jede Iteration beinhaltet grundsätzlich diese 5 Arbeitsschritte. Wobei aber nicht in jeder Iteration auf jeden Arbeitsschritt gleich viel Gewicht gelegt wird. Zu Beginn werden sicher Anforderungen und Analyse stärker gewichtet, später vor allem die Implementation. Tests finden üblicherweise in jeder Iteration statt.  
+
+Das gesamte Projekt wird in 4 Phasen unterteilt, wobei jede Phase aus mehreren Iterationen bestehen kann:
+
+\begin{labeling}{Implementationn}
+\item[Konzeption]
+Hier wird das Projekt initiert. Meist ist nur ein kleines Kern-Team mit dieser Arbeit beschäftigt. Die ganze Projektinfrastruktur wird vorbereitet, und ein erster grober Projektplan erstellt. Es werden auch die wesentlichen Anforderungen an das System zusammengetragen und erste Anwendungsfälle erstellt. Auch ein erster Entwurf der Systemarchitektur entsteht hier. Dabei wird das Schwergewicht auf die Schnittstellen und die Unterteilung in Subsysteme gelegt. Am Ende der Konzeptionsphase sollte die Architekturbeschreibung fertig sein, und ein grösserer Teil der Anwendungsfälle aufgelistet sein.
+Die detailierte Beschreibung für die Anwendungsfälle wurde begonnen. In dieser Phase wird auch eine erste Kostenabschätzung erfolgen. Eventuell wurden schon erste Versuche mit der Architektur durchgeführt (Leeres Codegerüst compiliert).
+
+\item[Entwurf]
+Das Team wird nach Bedarf vergrössert. Die Anwendungsfälle werden soweit möglich fertiggestellt und dokumentiert. Das Analysemodell (Grobes Klassendiagramm) wird erstellt und ausgebaut. Anwendungsfälle und Architektur werden einander angeglichen, falls notwendig. Erste wichtige Klassen werden implementiert, um den grundlegenden Systemaufbau zu Testen, zudem werden Schnittstellen innerhalb des Systems festgelegt. Es wird ein Projektplan für den weiteren Ablauf des Projektes erstellt, auch kann bereits mit der Erzeugung von Testfällen begonnen werden.
+Am Ende dieser Phase sollten die Anwendungsfälle fast fertig Dokumentiert sein, Das Analysemodell, der Analyseprototyp, die Architekturbeschreibung, der Testplan und der Projektplan sollten fertig sein. Mit der Implementation der Architektur und dem Entwurf der Klassen sollte begonnen worden sein.
+
+\item[Konstruktion]
+Das Team erreicht seine maximale Grösse. Die Klassen werden fertig entworfen und das ganze System wird Schritt für Schritt implementiert,
+wobei nach jeder Iteration ein Test erfolgt. Am Ende dieser Phase sollte das System gemäss seinen
+Spezifikationen fertiggestellt und getestet sein.
+
+\item[Übergang]
+Es findet der letzte Feinschliff sowie abschliessende Tests und Qualitätskontrollen statt. Das System wird beim Kunden in Betrieb genommen, und die Anwender werden geschult. Alle Projektdaten werden archiviert, es wird nichts neues mehr erstellt, es finden nur noch Verbesserungen statt. 
+\end{labeling}
+  
+
+Der grundsätzliche zeitliche Ablauf des Unified Software Development Process  ist in Bild \ref{fig:UnifiedProcess} dargestellt:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcess}
+		\caption{Der Unified Software Development Process}
+	\label{fig:UnifiedProcess}
+\end{figure}
+
+Die Entwicklung der UML-Modelle und weiterer Artefakte im zeitlichen Ablauf des Unified Software Development Process ist in Bild \ref{fig:UnifiedProcessModellentwicklung} dargestellt. Die Balkenhöhe entspricht jeweils der ungefähren prozentualen Fertigstellung des jeweiligen Modelles. Das Diagramm soll nur eine ungefähre Idee vom Projektfortschritt geben, die absolute Höhe der Balken ist nicht wörtlich zu nehmen.
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.7]{UnifiedProcessModellentwicklung}
+		\caption{Die zeitliche Entwicklung der Modelle U = Use-Case, A = Analysis, D = Design, D = Deployment, I = Implementation, T = Test}
+	\label{fig:UnifiedProcessModellentwicklung}
+\end{figure}
+
+Das Use-Case Modell setzt sich aus allen Use-Case-Diagrammen, den detaillierten Beschreibungen der Use-Cases, sowie ergänzenden Dokumenten zu den Use-Cases zusammen. 
+
+Das Analysemodell beinhaltet grobe Klassen-, Sequenz und Kollaborationsdiagramme, welche den grundsätzlichen Aufbau des Systems zeigen, und helfen sollen, die Anforderungen an das System besser verstehen zu können.
+
+Das Designmodell ist ein detailierteres Modell, welches aus dem Analysemodell entsteht und die Grundlage für die Implementation liefert.
+
+Das Deployment-Modell zeigt, wie das System (Design) auf Teilsysteme verteilt wird, also welche Komponenten wohin gehören.
+
+Die Implementation ist schlicht das Erbauen des Systems (Hardware und Software).
+
+Das Testmodell setzt sich aus allen Testfällen, sowie den gesamten testbezogenen Dokumenten zusammen.
+
+\NextPagePlease
+
+\section{Beispiel}
+Als kleines Beispiel soll die Entwicklung eines Bankomaten dienen.
+
+\subsection{Das Anwendungsfallmodell}
+Zuerst tragen wir die Anwendungsfälle zusammen und erhalten das Anwendungsfalldiagramm gemäss Bild  \ref{fig:UnifiedProcessUseCase}:
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessUseCase}
+		\caption{Das Anwendungsfalldiagramm für den Bankomaten}
+	\label{fig:UnifiedProcessUseCase}
+\end{figure}
+
+Wir haben die Anwendungsfälle 'Geld abheben', 'Geld überweisen' und 'Geld Einzahlen'. Stellvertretend beschreiben wir hier den Fall 'Geld abheben':
+
+\begin{quotation}
+	\begin{minipage}{0.8\textwidth}
+		
+	\subparagraph{Anwendungsfall 'Geld Abheben'}
+	\begin{enumerate}
+		\item Der Kunde Identifiziert sich am Terminal.
+		\item Der Kunde bestimmt, von welchem Konto er welchen Betrag abheben möchte.
+		\item Das System zieht den Betrag von seinem Konto ab und händigt dem Kunden das Geld aus
+	\end{enumerate}
+	
+	Als zusätzliche Information könnte noch die Anforderung \emph{'Die Antwortzeit des Systems vom Eingeben des
+	Betrags bis zur Ausgabe des Geldes sollte in 95\% der Fälle weniger als 15 Sekunden betragen'} gegeben werden.
+	\end{minipage}
+\end{quotation}
+
+\NextPagePlease
+
+\subsection{Die Realisierung der Anwendungsfälle im Analyse-Modell}
+
+Im Analysemodell wird jeder Anwendungsfall realisiert, d.h. es werden für jeden Anwendungsfall die grundsätzlich benötigten Klassen gesucht, und die erforderliche Zusammenarbeit der Klassen zur Realisation des Anwendungsfalles (Kollaborations- und Sequenzdiagramme) dargestellt. 
+  
+In Bild \ref{fig:UnifiedProcessUseCaseAnalysis} sieht man, welche Klassen den Anwendungsfall 'Geld Abheben' realisieren:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessUseCase_Analysis}
+		\caption{Realisation des Anwendungsfalles 'Geld abheben'}
+	\label{fig:UnifiedProcessUseCaseAnalysis}
+\end{figure}
+
+Es können aber durchaus mehrere Anwendungsfälle auf die gleichen Klassen bezug nehmen. Für unseren Fall ist in Bild \ref{fig:UnifiedProcessAnalysis} gezeigt, welche Klassen von welchen Anwendungsfällen betroffen sind. Es ist wichtig, diese Abhängigkeiten zu kennen, dadurch lässt sich jederzeit herausfinden, welche Teile des Modells von Änderungen in Teilen anderer Modelle betroffen sind.
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.6]{UnifiedProcessAnalysis}
+		\caption{Zuordnung der Anwendungsfälle zu den Klassen des Analysemodells}
+	\label{fig:UnifiedProcessAnalysis}
+\end{figure}
+
+\NextPagePlease
+
+Ebenfalls im Analysemodell wird mit Kollaborations- oder Sequenzdiagrammen dargestellt, wie
+die Anwendungsfälle ablaufen, wie in Bild \ref{fig:UnifiedProcessCollaboration} dargestellt:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessCollaboration}
+		\caption{Kollaborationsdiagramm für den Anwendungsfall 'Geld abheben'}
+	\label{fig:UnifiedProcessCollaboration}
+\end{figure}
+
+\begin{enumerate}
+\item Ein Kunde entscheidet sich zum Geld abheben, und aktiviert das Schnittstellen-Objekt. Der Kunde identifiziert sich selbst und gibt an, welchen Betrag er von welchem Konto abheben möchte.
+\item Das Schnittstellenobjekt überprüft die Identität des Kunden und beauftragt das Auszahlungsobjekt die Transaktion durchzuführen.
+\item Wenn die Identität des Kunden gültig ist, kontrolliert das Schnittstellenobjekt, ob der Kunde zum Bezug berechtigt ist, dies geschieht mit einer Anfrage an das Konto-Objekt
+\item Wenn alles in Ordnung ist, erhält das Geldausgeber-Objekt den Auftrag, das Geld auszugeben
+\item Der Kunde erhält den angeforderten Betrag
+\end{enumerate}
+
+Für einen vollständigen Ablauf müssten natürlich die Sonderfälle (Konto leer, Geldkasette leer, falsche Identität usw.) integriert, oder in weiteren Diagrammen behandelt werden.
+ 
+ \NextPagePlease
+
+\subsection{Entwickeln des Designmodelles aus dem Analysemodell}
+ 
+Aus dem Analysemodell schliesslich entsteht das Designmodell, dabei werden die Aufgaben der Klassen im Analysemodell auf Klassen im Designmodell übertragen. Auch hier gibt es keine eins zu eins Übertragung, sondern eine Klasse aus dem Analysemodell führt üblicherweise zu mehreren Klassen im Designmodell, wobei eine Klasse im Designmodell auch zu mehreren Klassen im Analysemodell gehören kann, wie in Bild \ref{fig:UnifiedProcessAnalysisDesign} zu sehen ist:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessAnalysisDesign}
+		\caption{Übergang vom Analysemodell zum Designmodell}
+	\label{fig:UnifiedProcessAnalysisDesign}
+\end{figure}
+
+Das Klassendiagramm im Designmodell könnte gemäss Bild \ref{fig:UnifiedProcessClassdiagram} aussehen:
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessClassdiagram}
+		\caption{Klassendiagramm des Designmodells}
+	\label{fig:UnifiedProcessClassdiagram}
+\end{figure}
+
+
+Entstprechend ergibt sich auch ein detaillierteres Sequenzdiagramm im Designmodell, wie in Bild \ref{fig:UnifiedProcessSequence} zu sehen ist (Das Diagramm ist nicht fertig gezeichnet)
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessSequence}
+		\caption{Teil des Sequenzdiagramms für den Anwendungsfall 'Geld abheben' im Design-Modell}
+	\label{fig:UnifiedProcessSequence}
+\end{figure}
+
+Im Packagediagramm wie in Bild \ref{fig:UnifiedProcessPackages} wird schliesslich eine Gruppierung von zusammengehörigen Klassen vorgenommen, und die Schnittstellen zwischen den Paketen definiert. Ein Paket könnte unter Umständen in einem eigenen Teilsystem realisiert werden.  
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessPackages}
+		\caption{Ein Paketdiagram}
+	\label{fig:UnifiedProcessPackages}
+\end{figure}
+
+\subsection{Erzeugen des Implementationsmodels aus dem Designmodell}
+
+Und im Implementationsmodell (Bild \ref{fig:UnifiedProcessImplementationMapping})schliesslich wird gezeigt, welche Klassen mit welchen Dateien realisiert werden, und auch die Abhängigkeit der Dateien untereinander wird dargestellt.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.8]{UnifiedProcessImplementationMapping}
+		\caption{Die Zuordnung von Klassen zu Implementationsdateien}
+	\label{fig:UnifiedProcessImplementationMapping}
+\end{figure}
+
+\subsection{Erzeugen des Testmodells aus den Use-Cases}
+Das letzte Modell schliesslich sind die Testfälle, also die Beschreibung wie das System getestet wird, auch diese entstehen aus den Use-Cases. Es fliessen aber auch Erkenntnisse aus den anderen Modellen in das Testmodell ein.
+
+\appendix
+\chapter{Anhang}
+
+
+\section{Der Entwicklungsprozess}
+
+Der Software-Entwicklungsprozess sollte grundsätzlich immer nach folgendem Muster verlaufen:
+\begin{quote}
+\begin{description}
+\item[Softwarespezifikation] Die Funktion der Software und ihr Umfeld werden definiert.
+\item[Softwareentwurf und Imlementation] Die Software, welche obige Anforderungen erfüllen soll wird erstellt.
+\item[Softwarevalidierung] Die Software wird daraufhin überprüft, ob sie das tut was der Kunde will.
+\item[Weiterentwicklung] Die Software entwickelt sich weiter, um sich den ändernden Bedüfnissen des Kunden anzupassen.
+
+\end{description}
+\end{quote}
+
+\section{Abstrakter Datentyp}
+
+Als kleines Beispiel für einen abstrakten Datentypen hier die Definition
+eines Stacks. Wobei hier nur die
+Operationen definiert werden:
+
+\begin{framed}
+
+$new() \in Stack$
+
+$\forall s \forall i (s \in Stack \wedge i \in  Item \longrightarrow push(s, i) \in Stack \} $
+
+$\forall s (s \in Stack \wedge  s \neq   new() \longrightarrow pop(s) \in Stack \}$
+
+$\forall s (s \in Stack \wedge  s \neq  new() \longrightarrow top(s) \in Item \}$
+
+$\forall s (s \in Stack \longrightarrow empty(s) \in \{false, true\} \}$
+
+$\forall s\forall i (s \in Stack \wedge  i \in Item \longrightarrow push(s, i) \neq  new() \}$
+
+$\forall s\forall i\forall j (s \in Stack \wedge  i, j \in Item \longrightarrow (push(s, i) = push(s ,i) \to_{.} i = j) \}$
+
+$\forall s\forall t\forall i (s, t \in Stack \wedge  i \in Item \longrightarrow (push(s ,i) = push(t, i) \dot{\to} s = t) \}$
+
+$\forall s\forall i (s \in Stack \wedge  i \in Item \longrightarrow top(push(s ,i)) = x \wedge  pop(push(s, i)) = s \}$
+
+$\forall s\forall i (s \in Stack \wedge i \in Item \longrightarrow empty(push(s, i)) = false \}$
+
+$empty(new()) = true$
+
+\end{framed}
+
+Oder etwas vereinfacht:
+
+\begin{framed}
+
+	 %\stackrel{\rightarrow}{.}	  
+	 %\stackrel{\rightarrow}{.}	
+$	empty(new()) = true        $   
+     
+$	empty(push(s,x)) = false  $     
+
+$	top(new()) = undefiniert    $   
+
+$	top(push(s,x)) = x           $   
+
+$	pop(new()) = undefiniert     $  
+
+$	pop(push(s,x)) = s           $  
+\end{framed}
+
+
+\section{Glossar}
+{
+\setlength{\extrarowheight}{0.8ex}
+\begin{tabular}{lp{0.8\textwidth}}
+OOP&	Objekt Orientierte Programmierung\\
+OOD&	Objekt Orientierter Design\\
+OOA&	Objekt Orientierte Analyse\\
+UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
+ADT&	Abstrakter Daten Typ. Ein Datentyp, von dem genau beschrieben ist, was er macht und was er für Eigenschaften hat, es ist jedoch nicht festgelegt, wie er das macht. Das heisst seine Funktion und seine Schnittstelle ist genau definiert, aber sonst nichts. Häufig werden ATD mathematisch beschrieben.\\
+K'tor&	Kurzform für Konstruktor\\
+C'tor&	Kurzform für Constructor\\
+D'tor&	Kurzform für Destruktor\\
+STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, Mengen) und Algorithmen (Suchen, Sortieren, Ersetzen), die auf Templates basiert.\\
+GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
+RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
+POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
+\end{tabular}
+}
+
+\NextPagePlease
+\section{Literaturverzeichnis}
+
+
+
+{
+
+%\setlength{\extrarowheight}{0.8ex}
+%\small
+%\begin{tabular}{lp{0.83\textwidth}}
+%
+%Lit1&\textbf{Software Engineering},\newline 
+%Ian Sommerville Verlag Pearson Studium (Addison Wesley), 6. Auflage\newline 
+%ISBN 3-8273-7001-9\newline 
+%Umfassendes Buch zum Thema
+%SW-Engineering. Sehr empfehlenswert
+%wenn man in die SWEntwicklung
+%einsteigen will.\\
+%
+%Lit2&	\textbf{\Cpp-Einführung und professionelle Programmierung},\newline Ulrich Breymann, Hanser Verlag, 7. Auflage 2003,\newline ISBN 3-446-22330-4.\newline
+%Gutes Einsteiger und Lehrbuch, behandelt den vollen Sprachumfang und ist
+%auch für Fortgeschrittene und als Nachschlagewerk geeignet. \\
+%
+%Lit3&	\textbf{Die \Cpp Programmiersprache},\newline Bjarne Stroustrup, Addison Wesley, 4. Auflage,\newline ISBN 3-8273-1660-X\newline
+%Gilt allgemein als \emph{'Die Referenz'} da Bjarne Stroustrup massgeblich an der Entwicklung von \Cpp beteiligt war. Umfasst den ganzen Sprachumfang und ist ein gutes Nachschlagewerk.\\ 
+%
+%Lit2&	\textbf{Entwurfsmuster},\newline Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides, Addison Wesley 2004,\newline ISBN 3-8273-2199-9\newline
+%Gute Einführung in Entwurfsmuster, setzt Kenntnisse in der OOP voraus.\\
+%
+%Lit3&	\textbf{UML Konzentriert},\newline Martin Fowler, Kendall Scott, Addison Wesley 2003, 3. Auflage,\newline ISBN 3-8273-2126-3.\newline
+%Kurze Einführung in die UML. Gibt einen Überblick über die verschiedenen Modelle der UML.\\ 
+%
+%Lit4&\textbf{Objektorientierte Softwareentwicklung, Analyse und Design mit der UML 2.0},\newline Bernd Oestereich, R. Oldenbourg Verlag 2004, 6. völlig überarbeitete Auflage,\newline ISBN 3-486-27266-7\newline	
+%Eine Einführung in die Objektorientierte Softwareentwicklung.\\	
+%
+%Lit5&\textbf{Objektorientierte Analyse und Design}\newline Grady Booch, Addison Wesley 1996\newline ISBN 3-89319-673-0\newline	
+%Eine gute Einführung in die Objektorientierte Softwareentwicklung, leider vergriffen.\\	
+%
+%Lit6&\textbf{The Unified Modeling Language Reference Manual},\newline James Rumbaugh,   Ivar Jacobson, Grady	 Booch, Addison Wesley 2004,
+%Second Edition,\newline ISBN  	0-3212-4562-8\newline
+%Referenzhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dises Buch ist eher für Profis und ernsthafte Anwender\\
+%
+%Lit7&\textbf{The Unified Modeling Language User Guide},\newline Grady Booch,  /  James Rumbaugh, / Ivar Jacobson, Addison Wesley 1998,\newline ISBN 		0-2015-7168-4\newline
+%Benutzerhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dieses Buch beschriebt die UML und die Anwendung der UML. Es richtet sich an Leute, welche die Anwendung der UML lernen wollen und ist mit vielen Beispielen ausgestattet.\\
+%
+%Lit8&\textbf{The Unified Software Development Process},\newline Ivar Jacobson, Grady Booch, James Rumbaugh, Addison Wesley 1999,\newline ISBN 		0-2015-7169-2\newline
+%Dieses Buch beschreibt den Softwareentwicklungsprozess unter Verwendung der UML 2.0. Geschrieben von den Entwicklern der UML. 
+%Das Buch beschreibt nicht die UML selbst, sondern wie die UML in den Entwicklungsprozess von Projekten eingebunden werden kann.
+%
+%\end{tabular}
+%
+\small
+\newcounter{Literatur}
+\begin{list}{Lit\theLiteratur}
+{
+  \usecounter{Literatur}
+  \setlength{\labelwidth}{1cm}
+  \setlength{\labelsep}{0cm}
+  \setlength{\itemsep}{1mm}
+  \renewcommand{\makelabel}[1]{{#1}}}
+\item\textbf{Software Engineering},\newline 
+Ian Sommerville Verlag Pearson Studium (Addison Wesley), 6. Auflage\newline 
+ISBN 3-8273-7001-9\newline 
+Umfassendes Buch zum Thema
+SW-Engineering. Sehr empfehlenswert
+wenn man in die SWEntwicklung
+einsteigen will.
+
+\item	\textbf{\Cpp-Einführung und professionelle Programmierung},\newline Ulrich Breymann, Hanser Verlag, 7. Auflage 2003,\newline ISBN 3-446-22330-4.\newline
+Gutes Einsteiger und Lehrbuch, behandelt den vollen Sprachumfang und ist
+auch für Fortgeschrittene und als Nachschlagewerk geeignet. 
+
+\item	\textbf{Die \Cpp Programmiersprache},\newline Bjarne Stroustrup, Addison Wesley, 4. Auflage,\newline ISBN 3-8273-1660-X\newline
+Gilt allgemein als \emph{'Die Referenz'} da Bjarne Stroustrup massgeblich an der Entwicklung von \Cpp beteiligt war. Umfasst den ganzen Sprachumfang und ist ein gutes Nachschlagewerk. 
+
+\item	\textbf{Entwurfsmuster},\newline Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides, Addison Wesley 2004,\newline ISBN 3-8273-2199-9\newline
+Gute Einführung in Entwurfsmuster, setzt Kenntnisse in der OOP voraus.
+
+\item	\textbf{UML Konzentriert},\newline Martin Fowler, Kendall Scott, Addison Wesley 2003, 3. Auflage,\newline ISBN 3-8273-2126-3.\newline
+Kurze Einführung in die UML. Gibt einen Überblick über die verschiedenen Modelle der UML.
+
+\item \textbf{Objektorientierte Softwareentwicklung, Analyse und Design mit der UML 2.0},\newline Bernd Oestereich, R. Oldenbourg Verlag 2004, 6. völlig überarbeitete Auflage,\newline ISBN 3-486-27266-7\newline	
+Eine Einführung in die Objektorientierte Softwareentwicklung.	
+
+\item \textbf{Objektorientierte Analyse und Design}\newline Grady Booch, Addison Wesley 1996\newline ISBN 3-89319-673-0\newline	
+Eine gute Einführung in die Objektorientierte Softwareentwicklung, leider vergriffen.	
+
+\item \textbf{The Unified Modeling Language Reference Manual},\newline James Rumbaugh,   Ivar Jacobson, Grady	 Booch, Addison Wesley 2004,
+Second Edition,\newline ISBN  	0-3212-4562-8\newline
+Referenzhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dises Buch ist eher für Profis und ernsthafte Anwender.\label{UnifiedModelingLanguageReferenceManual}
+
+\item \textbf{The Unified Modeling Language User Guide},\newline Grady Booch,  /  James Rumbaugh, / Ivar Jacobson, Addison Wesley 1998,\newline ISBN 		0-2015-7168-4\newline
+Benutzerhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dieses Buch beschriebt die UML und die Anwendung der UML. Es richtet sich an Leute, welche die Anwendung der UML lernen wollen und ist mit vielen Beispielen ausgestattet.
+
+\item \textbf{The Unified Software Development Process},\newline Ivar Jacobson, Grady Booch, James Rumbaugh, Addison Wesley 1999,\newline ISBN 		0-2015-7169-2\newline
+Dieses Buch beschreibt den Softwareentwicklungsprozess unter Verwendung der UML 2.0. Geschrieben von den Entwicklern der UML. % Lit \theLiteratur
+Das Buch beschreibt nicht die UML selbst, sondern wie die UML in den Entwicklungsprozess von Projekten eingebunden werden kann. \label{UnifiedSoftwareDevelopmentProcess}
+
+\end{list}
+
+
+
+Lit\ref{UnifiedModelingLanguageReferenceManual}-Lit\ref{UnifiedSoftwareDevelopmentProcess} sind zur Zeit nur in englisch erhältlich, es kann aber durchaus sein dass diese Bücher in Zukunft auch in deutsch erhältlich sein werden.
+}
+ 
+\section{Die verschiedenen Diagramme und ihr Einsatz}
+
+Nachfolgend eine Übersicht über verschiedene Diagrammarten und ihr Einsatz. In diesem Skript werden nicht alle davon behandelt.
+\begin{labeling}{Kollaborationsdiagramm}
+\item[Aktivitätsdiagramm]
+Zeigt das Verhalten mit Kontrollstrukturen. Kann viele Objekte in vielen Anwendungsfällen, viele Objekte in einem Anwendungsfall oder die Implementierung einer Methode zeigen. Zeigt zudem parallele Prozesse auf.
+\item[Anwendungsfälle]
+Zeigt die Anforderungen der Benutzer an das System in sinnvollen Einheiten. In der Projektplanung werden anschliessend in jeder Iteration eine bestimmte Anzahl dieser Fälle realisiert. Sind zudem die Grundlage für den Systemtest.
+\item[Entwurf durch Verträge]
+Eine exakte Definition der Operation, sowie Zusicherungen über den Zustand vor und nach der Operation. Sollte als Kommentar im Code stehen, um das Testen zu erleichtern.
+\item[Klassendiagramm]
+Zeigt die Struktur des Systems, die Beziehungen der einzelnen Klassen untereinender sowie den Aufbau der Klassen.
+\item[CRC-Karten]
+Hilft bei der definition des Zwecks einer Klasse, zeigt die Aufgaben (Verantwortlichkeiten) und die Abhängigkeiten von Klassen.
+\item[Muster (Patterns)]
+Designpatterns bieten eine gute Grundlage zum Lösen von Problemen, und auch als Beispiele zum Lernen. 
+\item[Paketdiagramm]
+Zeigt die Gruppierung von Klassen, und die daraus entstehenden Abhängigkeiten
+\item[Umstrukturierung]
+Umstrukturierung (Refactoring) ist eine Programmiertechnik, bei der (kleine) Teile des Codes umgeschrieben werden, um einfacheren und besseren Code zu erhalten. Kann die Grundlage zur Erweiterung von bestehender Funktionalität sein. Umstrukturierung darf nie gleichzeitig mit dem Einbau neuer Funktionalität erfolgen.
+\item[Zustandsdiagramm]
+Zeigt das Verhalten eines Objektes in vielen Anwendungsfällen. Zeigt wie sich der Zustand eines Objektes/Systems in Abhängikeiten von Ereignissen Andert, und welche Aktivitäten damit verbunden sind.
+\item[Interaktionsdiagramme]
+Zeigen die Zusammenarbeit mehrerer Objekte in einem einzelnen Anwendungsfall.
+Es gibt zwei Arten von Interaktionsdiagrammen: Das Sequenzdiagramm und das Kollaborationsdiagramm.
+\item[Sequenzdiagramm]
+Zeigt einen bestimmten Ablauf detailliert an, welche Botschaften in welcher Reihenfolge an welche Objekte geschickt werden.
+\item[Kollaborationsdiagramm]
+Zeigt einen bestimmten Ablauf detailliert an, welche Botschaften in welcher Reihenfolge an welche Objekte geschickt werden.
+\item[Verteilungsdiagramm]
+Zeigt die reale Verteilung der Komponenten auf die beteiligte Hardware.
+\end{labeling}
+
+
+
+
+\pagebreak[4]
+\section{UML-Checkliste}
+
+{
+\setlength{\parindent}{0pt}
+\subsubsection{Klassen:}
+
+Entspricht jede Klasse einem realen Objekt, einem Ereignis oder einem Konzept?\\
+Wenn nein, ist die Klasse vielleicht nur für die technische Umsetzung des Problems nötig und sollte daher erst in der Phase des Programmdesigns oder der Implementation auftauchen
+
+Beschreibt die Klasse einen Hauptaspekt des Systems, oder nur ein untergeordnetes Detail?\\
+Möglicherweise sollte diese Klasse erst in der Designphase eingeführt werden.
+
+Ist mehr als ein Attribut zur Beschreibung der Klasse nötig?\\
+Wenn nein, kann die Klasse direkt als Attribut einer anderen Klasse zugeordnet werden. (Ausnahme: Die Klasse dient als Oberklasse bei Vererbung)
+
+Enthält die Klasse nur Operationen?\\
+Wenn Ja ist die Klasse wahrscheinlich erst in der Designphase Sinnvoll. (Ausnahme: Die Klasse dient als Oberklasse bei Vererbung, z. B. als Interface)
+
+Hat jedes Attribut für jedes Objekt der Klasse einen Sinn, ist es anwendbar?\\
+Wenn nein ist wahrscheinlich ein Vererbungsstruktur mit mehreren Klassen nötig
+
+Ist der Name der Klasse ein einfacher Begriff (Wort in der Einzahl), welcher ein Objekt korrekt und prägnant bezeichnet und seine Hauptcharakteristik und Hauptfunktion hervorhebt?\\
+Wenn kein solcher Begriff gefunden werden kann, ist die Klasse wahrscheinlich nicht sinnvoll
+
+\subsubsection{Attribute}
+
+Sind die Attribute einfach?\\
+Wenn nein, könnte der spätere Gebrauch von Teilen des Attributes schwierig werden.
+
+Ist der Attributwert aus anderen Attributwerten derselben oder anderen Klassen berechenbar?\\
+Wenn ja, als Methode definieren.
+
+Ist das Attribut für jedes Element der Menge sinnvoll und anwendbar?\\
+Wenn nein, drängt sich eine Generalisierungs/Spezialisierungsstruktur auf (Vererbung)
+
+Sind genügend Schlüsselattribute definiert? Wie können Objekte aus Benutzersicht aufgefunden werden?\\
+
+Beschreibt jedes Attribut wirklich ein Objekt der eigenen Klasse?\\
+Unpassende Attribute führen häufig zu redundanten Daten, die schwer zu unterhalten sind.
+
+Beschreibt das Attribut eine Eigenschaft der realen Objekte, oder bloss ein Implementationsdetail?\\
+ 
+\subsubsection{Vererbung}
+
+Kann für jedes Element der Spezialisierung (Ableitung) der Satz ''A ist ein B'' gebildet werden (B = Basisklasse)?\\
+Ergibt jedes Attribut der Oberklasse für jedes Objekt der Unterklasse einen Sinn?\\
+Wenn nein, liegt keine gute Vererbungshierarchie vor.
+
+\subsubsection{Operationen}
+
+Haben alle Methoden denselben Abstraktionsgrad?\\
+Komplexe Operationen in kleinere aufteilen; zu Triviale gehören evtl. zu einer anderen Klasse oder zur Implementation.
+
+Gibt es nur Funktionsprimitiven, d.h. Funktionen die auf interne Datenstruktur zugreifen müssen, um ihre Aufgabe zu erfüllen?\\
+
+Beschreibt der Funktionsname das Resultat, nicht das Vorgehen?\\
+
+Viele Parameter weisen auf eine zu komplizierte Funktion hin!
+
+Auswahlparameter vermeiden.\\
+(Schlecht:  Select = 1 für lesen, select = 2 für schreiben, ...-> Besser mehrere Methoden schreiben)
+
+Sind auf der Stufe Analyse die wichtigsten, und auf Stufe Design alle Methoden aus den Gruppen Konstruktor, Destruktor, Modifikator und Iterator definiert?\\
+
+\subsubsection{Assoziation, Typ Komposition}
+
+Gilt für jedes Komponentenobjekt k der Satz ''k ist Teil von W'' oder ''W hat ein k''?
+
+Haben Komponentenobjekte nur einen Sinn, wenn auch das übergeordnete Objekt exisitiert?\\
+Wenn nein, liegt ev, eine Aggregation vor.
+
+Ist ein Komponentenobjekt zu jedem Zeitpunkt ein Teil des übergeordneten Objektes?\\
+Wenn nein, liegt ev, eine Aggregation vor.
+
+Kann das Komponentenobjekt zu mehreren übergeordneten Objekten gehören?\\
+Wenn ja, liegt ev, eine Aggregation vor.
+
+\subsubsection{Assoziation, Typ Aggregation}
+
+Verknüpft eine Aggregation zwei sonst völlig unabhängige Objekte miteinander?
+
+Kann die Assoziation zwischen den Objekten der beteiligten Klassen gelöscht werden, ohne dass dadurch die beteiligten Objekte ihre Existenzberechtigung verlieren, oder sich deren Attributwerte ändern?\\
+Wenn nein, liegt ev, eine Komposition vor.
+
+Ist die Beziehung zwischen assoziierten Objekten vorübergehender (Temporärer) Natur?
+}
+\pagebreak[4]
+\section{Übersetzungtabelle UML}
+(Quelle http://www.jeckle.de/uml.de/index.html) 
+%\begin{multicols}{2}
+\small
+\setlongtables
+\begin{longtable}{lp{0.7\textwidth}}
+%\begin{tabular}{lp{0.3\textwidth}}
+englisch & deutsch\\
+(association) role & (Assoziations-)Rolle\\
+action & Aktion\\
+action state & Aktionszustand\\
+activity & Aktivität\\
+activity diagram & Aktivitätsdiagramm\\
+activity edge & Kante\\
+activity final node & Endknoten\\
+activity node & Aktivitätsknoten oder Schritt\\
+activity partition & Partition\\
+actor & Akteur\\
+aggregation & Aggregation, Teile/Ganzes-Beziehung\\
+artifact & (das) Artefakt (oft auch gut als \emph{Ergebnis} oder \emph{Produkt} zu übersetzen)\\
+assembly connector & Schnittstellenverbund (VORSCHLAG)\\
+assembly connector & Kompositionskonnektor\\
+association & Assoziation (ungerichtet)\\
+association class & Assoziationsklasse\\
+attribute & Attribut\\
+behavior & Verhalten\\
+behavior diagram & Verhaltensdiagramm\\
+behaviored classifier & Verhaltensspezifischer Classifier\\
+bidirectional association & bidirektionale Assoziation, beidseitig gerichtete Assoziation\\
+bound element & gebundenes Element\\
+cardinality & Kardinalität\\
+class & Klasse\\
+class diagram & Klassendiagramm\\
+collaboration diagram & Kollaborationsdiagramm\\
+combined fragment & Interaktionsausdruck\\
+communication diagram & Kommunikationsdiagramm\\
+communication path & Kommunikationspfad \\
+compartment & Bereich, Abschnitt;
+                    manchmal auch \emph{Rechteckselement} wenn die graphische Repräsentation gemeint ist\\
+component & Komponente\\
+component diagram & Komponentendiagramm\\
+composite structure diagram & Kompositionsstrukturdiagramm\\
+composition & Komposition\\
+concurrent & nebenläufig\\
+constraint & Einschränkung\\
+control edge & Ablaufkante\\
+CRC-Card & CRC-Karte, Klassenkarte\\
+decision & Entscheidung\\
+dependency & Abhängigkeit\\
+deployment diagram & Verteilungsdiagramm\\
+design model & Entwurfsmodell\\
+Device & Gerät\\
+discriminator & Diskriminator, Unterscheidungsmerkmal\\
+domain model & Problembereichsmodell\\
+encapsulated classifier & Gekapselter Classifier\\
+end point &  Endpunkt\\
+entry action & Eintrittsaktion\\
+event & Ereignis\\
+execution environment & Ausführungsumgebung\\
+execution occurrence & Ausführungsfocus\\
+exit action & Austrittsaktion\\
+feature & Merkmal \\
+final state & Endzustand\\
+flow final node & Ablaufende\\
+focus of control & Steuerungsfokus\\
+generalization & Generalisierung\\
+guard & Bedingung\\
+implementation dependency & Implementierungsbeziehung\\
+information item & Informationseinheit\\
+initial node & Startknoten\\
+initial state & Anfangszustand\\
+initial value & Anfangswert, Vorbelegung\\
+instance & Exemplar, Instanz (eigentlich nur unter Verweis auf den im Umfeld der philosophischen Terminologie gängigen Instanzbegriff korrekt); Beispiel, Ausprägung (selten)\\
+instance diagram & Ausprägungsdiagramm\\
+instantiated class & instantiierte Klasse\\
+interaction & Interaktion\\
+interaction diagram & Interaktionsdiagramm\\
+interaction overview diagram & Interaktionsübersicht\\
+interface & Schnittstelle\\
+interruptible activity region & Unterbrechbarer Aktivitätsbereich\\
+lifeline & Lebenslinie\\
+link & Objektbeziehung\\
+marker &  Markierung\\
+message & Nachricht, Botschaft\\
+method & Methode\\
+modifier & Modifizierer\\
+multiplicity & Multiplizität\\
+navigability & Navigierbarkeit\\
+node & Knoten\\
+node diagram & Knotendiagramm\\
+note & Notiz, Anmerkung\\
+object & Objekt\\
+object diagram & Objektdiagramm\\
+object edge & Objektkante\\
+object node & Objektknoten\\
+operation & Operation\\
+package & Paket\\
+package diagram & Paketdiagramm\\
+packet diagram & Paketdiagramm\\
+parameterized class & parametrisierte Klasse\\
+pattern & Muster\\
+port & Port\\
+predecessor & Vorgänger, Voraussetzung\\
+problem domain & Problembereich\\
+property & Eigenschaft\\
+property string & Eigenschaftswert\\
+protocol state machine & Protokoll-Zustandsautomat\\
+qualified association & qualifizierte Assoziation\\
+qualifier & Qualifizierung\\
+realization dependency & Realisierungsbeziehung\\
+refinement & Verfeinerung\\
+relationship & Beziehung\\
+restriction & Restriktion\\
+scenario & Szenario\\
+sequence diagram & Sequenzdiagramm\\
+state & Zustand\\
+statechart diagram & Zustandsdiagramm\\
+state machine & Zustandsautomat\\
+stereotype & (das) Stereotyp\\
+structured classifier & Strukturierter Classifier\\
+structure diagram & Strukturdiagramm\\
+subclass & Unterklasse\\
+substate & Teilzustand\\
+superclass & Oberklasse\\
+swimlane & Verantwortlichkeitsbereich, Schwimmbahn\\
+synchronization bar & Synchronisationsbalken\\
+tagged value & Eigenschaftswert\\
+template class & Template-Klasse, parametrisierbare Klasse\\
+timing diagram & Zeitverlaufsdiagramm\\
+timing diagram & Zeitdiagramm\\
+token & Token\\
+transition & Transition, Übergang\\
+type & Typ\\
+UML & (die) UML\\
+UML profile & UML-Profil\\
+unidirectional association & (einseitig) gerichtete Assoziation\\
+Unified Modeling Language & Unified Modeling Language\\
+usage dependency & Verwendungsbeziehung\\
+use case & Use-Case, Anwendungsfall\\
+use case diagram & Use-Case-Diagramm, Anwendungsfalldiagramm\\
+view & Sicht\\
+visibility & Sichtbarkeit\\
+wait state & Wartezustand\\
+\end{longtable}
+%\end{multicols}
+%-----------------------------------------------------------------------------
+
+%\chapter{Index}
+
+
+\printindex
+
+
+
+\end{document}
+
+
+

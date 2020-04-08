@@ -1,5 +1,5 @@
 %/*****************************************************************************/
-%/*  Module     : Sudokusolver                                   Version 1.0  */
+%/*  Module     : OOP-Skript                                     Version 1.1  */
 %/*****************************************************************************/
 %/*                                                                           */
 %/*  Function   : Solves Sudoku problems                                      */
@@ -17,10 +17,34 @@
 %/*                                                                           */
 %/*  To DO:                                                                   */
 %/*                                                                           */
+%/*  Besser Durchstrukturieren, logische Reihenfolge                          */
+%/*  Zuerst alles UML, dann C++                                               */
 %/*  Codebeispiele feur Designpatterns                                        */
 %/*  Crash-Kurs   Praeprocessor predefined Makros                             */
 %/*  Crash-Kurs   Statische Member (Beispiel)                                 */
 %/*  Crash-Kurs   Rein virtuelle Metoden/Abstrakte Klasse                     */
+%/*  Crash-Kurs   Stereotypen                                                 */
+%/*  Crash-Kurs   UML Sprachelemente                                          */
+%/*                                                                           */
+%/*  Kap 6.1 Ev bessere Notation fuer Alternativereignisse/Events             */
+%/*                                                                           */
+%/*                                                                           */
+%/*  Fehler in Bilder:                                                        */  
+%/*   5.3 EinFenster Klassenname fehlt                                        */
+%/*   5.8 Undruckbares Zeichen in Notiz                                       */
+%/*   5.12 Punktierte Linien                                                  */
+%/*   5.13 Machwas Machauchwas Reihenfolge drehen                             */
+%/*   5.14 <<Static>> fehlt vor EinzigesExemplar                              */
+%/*   5.17 CMDPaste auch assoziiert mit Dokument                              */
+%/*   5.20/5.21 Klient/Client                                                 */
+%/*   6.2 Versuchen Abgerundetet Rechtecke hinzubekommen                      */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
@@ -233,7 +257,7 @@ Ivo Oesch
 \normalsize
 \begin{quote}
 Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden. Es enthält Auszüge aus dem Skript OOP mit Java von Chris Hübsch. 
-Es beinhaltet eine Einführung in die objektorientierte Denkweise, stellt eine eine objektorientierte Analyse und Designmethode (UML) vor und gibt eine Kurzeinführung in eine objektorientierte Programmiersprache (C++).
+Es beinhaltet eine Einführung in die objektorientierte Denkweise, stellt eine objektorientierte Analyse und Designmethode (UML) vor und gibt eine Kurzeinführung in eine objektorientierte Programmiersprache (C++).
 \end{quote}
 
 \vspace{\fill}
@@ -264,7 +288,7 @@ Dieses Skript ist eine Einführung in die Objekt Orientierte Programmierung (OOP)
 
 Im ersten Teil werden die zugrundeliegenden Ideen der Objektorientierung behandelt. Hier werden das Konzept und die Grundlagen der objektorientierten Denkweise und der Unterschied zu den herkömmlichen Methoden erläutert. 
 
-Der zweite Teil stellt die dazugehörigen Analyse und Design Methoden vor. Bekannte Designmethoden wie Struktogramme oder Flussdiagramme sind für OOP nicht einsetzbar, es müssen andere Methoden verwendet werden. Es wird eine Einführung in die UML (Unified Modeling Language) gegeben, wobei aber nur einige der verschiedenen Modelle betrachtet werden
+Der zweite Teil stellt die dazugehörigen Analyse- und Design-Methoden vor. Bekannte Designmethoden wie Struktogramme oder Flussdiagramme sind für OOP nicht einsetzbar, es müssen andere Methoden verwendet werden. Es wird eine Einführung in die UML (Unified Modeling Language) gegeben, wobei aber nur einige der verschiedenen Modelle betrachtet werden
 
 Im dritten Teil schliesslich geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. In diesem Kurs wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Unbehandelt bleibt die Standard-Bibliothek.
 
@@ -293,12 +317,12 @@ Häufig hört oder liest man, dass eine Klasse ein \OviIndex{Abstrakter Datentyp} 
 (Ein ADT ist eine mathematisch genaue Beschreibung der Eigenschaften und der Funktion eines Datentyps, aber es wird nichts darüber gesagt, wie der ADT realisiert wird, es handelt sich nur um eine präzise Beschreibung, die es einem erlaubt, den Datentyp zu nutzen, ohne seine Realisierung zu kennen. Mit der Beschreibung eines ADT ist es andererseits auch möglich, einen Typ zu implementieren, der genau diesen Vorgaben entspricht, und überall dort eingesetzt werden kann, wo ein solcher ADT vorgesehen ist).
 
 \chapter{OOP Einführung}
-Objekt orientierter Design (OOD) und Objekt orientierte Programmierung (OOP) sind andere Herangehensweisen an die Lösung von Problemen. 
-OOD ist eine Modellierungsmethode, die sich im Laufe der Zeit entwickelt hat. Eine ihrer Grundlage war die strukturierte Programmierung. Deshalb wird auch das Wort ''orientiert'' verwendet. In vielen dieser ''orientierten'' Sprachen gibt es noch sehr viele Elemente aus der strukturierten Programmierung (z.B. \Cpp mit struct oder Pascal mit record). Selbst die verschiedenen Methoden zum Festlegen des Programmablaufes oder primitive Datentypen stammen aus der strukturierten Programmierung. Reine Objekt-Sprachen (z.B. SmallTalk) realisieren diese Funktionalität nur mit Methoden und es gibt nur noch Objekte.
+Objekt orientiertes\r Design (OOD) und Objekt orientierte Programmierung (OOP) sind andere Herangehensweisen an die Lösung von Problemen. 
+OOD ist eine Modellierungsmethode, die sich im Laufe der Zeit entwickelt hat. Eine ihrer Grundlagen war die strukturierte Programmierung. Deshalb wird auch das Wort ''orientiert'' verwendet. In vielen dieser ''orientierten'' Sprachen gibt es noch sehr viele Elemente aus der strukturierten Programmierung (z.B. \Cpp mit struct oder Pascal mit record). Selbst die verschiedenen Methoden zum Festlegen des Programmablaufes oder primitive Datentypen stammen aus der strukturierten Programmierung. Reine Objekt-Sprachen (z.B. SmallTalk) realisieren diese Funktionalität nur mit Methoden und es gibt nur noch Objekte.
 
 Da sich die OOP aus der strukturierten Programmierung entwickelt hat, stellt sich die Frage, warum es dann die strukturierte Programmierung überhaupt noch gibt. Darauf lässt sich antworten, dass jede Methode ihre Einsatzgebiete hat, für die sie besser geeignet ist als die andere.
 
-In den Nachfolgenden Kapitel sind die wichtigsten Prinzipien der OOP kurz aufgeführt
+In den Nachfolgenden Kapitel sind die wichtigsten Prinzipien der OOP kurz aufgeführt.
 
 \section{Abstraktion}
 Durch \OviIndex{Abstraktion} werden die wesentlichen Eigenschaften eines Objektes erfasst. Die unwesentlichen
@@ -319,7 +343,7 @@ Die Attribute und Methoden der neuen Klasse können anschliessend um weitere ergä
 
 Damit wird eine Beziehung wie z.B. 'ein Apfel ist eine Frucht' realisiert, durch zusätzliche Elemente und Methoden wird die neue Klasse genauer spezifiziert, dieser Vorgang wird als '\OviIndex{Spezialisieren}' bezeichnet. Die alte Klasse wird dabei als \OviIndex{Basisklasse} bezeichnet, die neue als abgeleitete Klasse und die Beziehungsstruktur, die durch die Vererbung entsteht, als \OviIndex{Klassenhierarchie}. 
 
-Man kann auch den umgekehrten Weg gehen, indem man \OviIndex{Gemeinsamkeiten} von Klassen in einer \OviIndex{Oberklasse} (Basisklasse) zusammenfasst (Und anschliessend von dieser erbt). Man spricht in diesem Fall von \OviIndex{Generalisierung}.
+Man kann auch den umgekehrten Weg gehen, indem man \OviIndex{Gemeinsamkeiten} von Klassen in einer \OviIndex{Oberklasse} (Basisklasse) zusammenfasst (und anschliessend von dieser erbt). Man spricht in diesem Fall von \OviIndex{Generalisierung}.
 
 \section{Polymorphismus}
 Der dritte grundlegende Aspekt ist der des \OviIndex{Polymorphismus}. Wie erwähnt kann man in einer abgeleiteten Klasse Methoden der Basisklasse überschreiben. Dadurch hat die abgeleitete Klasse eine neue Methode, die aber immer noch den gleichen Namen trägt wie die Methode der Basisklasse. Polymorphismus bedeutet, dass nun überall, wo ein Objekt der Basisklasse erwartet wird, auch ein davon abgeleitetes Objekt eingesetzt werden kann. Beim Aufruf von Methoden werden aber die Methoden des tatsächlichen Objektes, und nicht die der Basisklasse benutzt. Es wird somit nicht wie sonst üblich zur Compilezeit bestimmt, welche Methode aufgerufen wird, sondern erst zur Laufzeit. (Es ist zur Compilezeit ja nicht bekannt, welches Objekt später einmal bearbeitet wird, da sowohl ein Objekt der Basisklasse oder ein davon abgeleitetes zum Einsatz kommen kann). Diesen Vorgang bezeichnet man auch als späte oder \OviIndex{dynamische Bindung}, im Gegensatz zur herkömmlichen \OviIndex{statischen Bindung}.
@@ -327,7 +351,7 @@ Der dritte grundlegende Aspekt ist der des \OviIndex{Polymorphismus}. Wie erwähn
 Nehmen wir folgendes Beispiel aus der Tierwelt:
 
 \begin{quote}
-Amseln, Spechte und Adler sind Vögel, alle legen Eier und müssen einen Brutplatz vorbereiten. Somit gib es für die drei Arten die Oberklasse Vogel. Für die Klasse Vogel gibt es die Methoden EierLegen() und BrutplatzVorbereiten(). Die Methode BrutplatzVorbereiten() heisst zwar für jede Vogelart gleich, doch jede besitzt ihre eigene Art von Brutplatz. Die (Klasse) Amsel baut sich ein Nest in einem Strauch, einem Baum oder einem anderen geschützten Platz. Die (Klasse) Specht sucht sich eine Höhle in einem Baum oder meisselt sich selber einen neue Höhle. Ein Adler wiederum baut sich einen Horst an einer unzugänglichen Stelle. Aber dennoch lassen sich alle von der Klasse Vogel ableiten, da sie eine Menge Gemeinsamkeiten aufweisen.
+Amseln, Spechte und Adler sind Vögel, alle legen Eier und müssen einen Brutplatz vorbereiten. Somit gibt es für die drei Arten die Oberklasse Vogel. Für die Klasse Vogel gibt es die Methoden EierLegen() und BrutplatzVorbereiten(). Die Methode BrutplatzVorbereiten() heisst zwar für jede Vogelart gleich, doch jede besitzt ihre eigene Art von Brutplatz. Die (Klasse) Amsel baut sich ein Nest in einem Strauch, einem Baum oder einem anderen geschützten Platz. Der (Die Klasse) Specht sucht sich eine Höhle in einem Baum oder meisselt sich selber eine neue Höhle. Ein Adler wiederum baut sich einen Horst an einer unzugänglichen Stelle. Aber dennoch lassen sich alle von der Klasse Vogel ableiten, da sie eine Menge Gemeinsamkeiten aufweisen.
 \end{quote}
 
 Wenn wir nun einem Vogel die Botschaft senden, dass er einen Brutplatz vorbereiten soll, erwarten wir, dass er es seiner Art entsprechend tut, auch wenn wir nicht wissen, zu welcher Art der Vogel gehört (Es könnte ja sein dass wir die Vogelart nicht erkennen und einfach einen Vogel sehen. Wir erwarten dennoch von ihm, dass er weiss was zu tun ist, auch wenn wir selbst es nicht wissen).
@@ -443,9 +467,9 @@ int main(int argc, char *argv[])
 
 
 \chapter {OOP Vertiefung}
-In diesem Kapitel wird vertieft auf wichtige Eigenschaften der OOP eingegangen
+In diesem Kapitel wird vertieft auf wichtige Eigenschaften der OOP eingegangen.
 \section	{Objekt und Klasse} 
-Eine oo-Welt ist durch eine Menge von Objekten gekennzeichnet, die miteinander in Beziehung stehen. Ein \OviIndex{Objekt} ist durch Fähigkeiten bzw. Verhalten und einen Zustand gekennzeichnet. Die Fähigkeiten werden als \OviIndex{Methoden} implementiert, und der Zustand wird in den \OviIndex{Attributen} aufbewahrt. 
+Eine OO-Welt ist durch eine Menge von Objekten gekennzeichnet, die miteinander in Beziehung stehen. Ein \OviIndex{Objekt} ist durch Fähigkeiten bzw. Verhalten und einen Zustand gekennzeichnet. Die Fähigkeiten werden als \OviIndex{Methoden} implementiert, und der Zustand wird in den \OviIndex{Attributen} aufbewahrt. 
 
 Zwei Beispiele für Objekte:
 \begin{quote}
@@ -476,7 +500,7 @@ Diese Fähigkeiten werden als \emph{Methoden} des Objektes / der Klasse Feuerzeug
 
 Eine Klasse ist die Beschreibung solcher Objekte. Bestimmte Objekte gehören somit zu einer bestimmten Klasse. Zu einer Klasse können beliebig viele Objekte gehören. Bei unserem Beispiel könnten wir ein rotes, ein grünes und ein blaues Feuerzeug besitzen.
 
-Unter UML (Unified Modeling Language) könnte diese Klasse wie folgt aussehen
+Unter UML (Unified Modeling Language) könnte diese Klasse wie folgt aussehen:
 
 \begin{center}
 \begin{tabular}{|l|l}
@@ -529,7 +553,7 @@ Ein Objekt tritt mit einem andern in Kontakt, indem es diesem eine \OviIndex{Bot
 
 Methoden sind zumeist öffentlich bekannt und können von anderen Objekten aufgerufen werden. Durch diesen Aufruf wird eine Botschaft übermittelt. Die Implementation der Methoden ist dem Sender der Botschaft nicht bekannt. Eine Botschaft (Methode) kann auch Parameter besitzen. Bezeichner und Reihenfolge sowie Typ der Parameter bilden die \OviIndex{Signatur} der Methode (Signatur = Eindeutige Kennzeichnung). 
 
-Die \OviIndex{Attribute} eines Objektes sind im allgemeinen nicht von aussen zugänglich. (Dafür sind die Methoden da!) Ein Attribut entspricht einer Variablen in der strukturierten Programmierung, jedoch sind Attribute ebenfalls an Objekte gebunden (Mit Ausnahme von Klassenattributen). Weil Attribute nicht öffentlich sind, hat das einzelne Objekt eine bessere Kontrolle über die Werte, die in den Attributen abgelegt werden, zudem kann die Art, wie die Attribute abgelegt werden verändert werden, ohne das andere Klassen davon betroffen sind, es sind nur Änderungen an der eigenen Klasse nötig. Dies führt zu sicherem und gleichzeitig flexiblem Code.  
+Die \OviIndex{Attribute} eines Objektes sind im allgemeinen nicht von aussen zugänglich (dafür sind die Methoden da!). Ein Attribut entspricht einer Variablen in der strukturierten Programmierung, jedoch sind Attribute ebenfalls an Objekte gebunden (mit Ausnahme von Klassenattributen). Weil Attribute nicht öffentlich sind, hat das einzelne Objekt eine bessere Kontrolle über die Werte, die in den Attributen abgelegt werden, zudem kann die Art, wie die Attribute abgelegt werden verändert werden, ohne das andere Klassen davon betroffen sind, es sind nur Änderungen an der eigenen Klasse nötig. Dies führt zu sicherem und gleichzeitig flexiblem Code.  
 
 \begin{framedquote}
 \OviIndex{Attribute} speichern den Zustand von Objekten und sind verborgen.\\ 
@@ -632,7 +656,7 @@ Unter UML wird die \OviIndex{Vererbung} wie in Bild \ref{fig:Vererbung1} dargest
 
 
 
-Aus dem Diagramm erkennt man, dass ein Fahrzeug ein Gewicht hat und die Methode Fahren() Besitzt. Sowohl Fahrad als auch Auto sind Fahrzeuge, haben also grundsätzlich alle Eigenschaften eines Fahrzeuges. Ein Auto hat noch zusätzlich eine Polsterfarbe und die Methode Auftanken, das Fahrad ist um die Sattelfarbe und die Methode Treten() erweitert worden.
+Aus dem Diagramm erkennt man, dass ein Fahrzeug ein Gewicht hat und die Methode Fahren() Besitzt. Sowohl Fahrrad als auch Auto sind Fahrzeuge, haben also grundsätzlich alle Eigenschaften eines Fahrzeuges. Ein Auto hat noch zusätzlich eine Polsterfarbe und die Methode Auftanken, das Fahrad ist um die Sattelfarbe und die Methode Treten() erweitert worden.
 
 Unter \Cpp könnte man diese Klassen wie folgt Deklarieren:
 \begin{CCode}
@@ -684,7 +708,7 @@ Ein Tisch und vier Stühle bilden eine Sitzgruppe. Ein Tisch kann aber auch eigen
 Die Komposition ist ein Spezialfall der Aggregation, und die Aggregation ein Spezialfall der Assoziation. Eine Komposition ist also auch eine Assoziation.
 
 \subsubsection{Assoziation und Kardinalität}
-Mit der \OviIndex{Kardinalität} wird angegeben, wie viel Objekte einer Klasse mit wievielen aeiner Anderen Klasse in Beziehung stehen. Im Klassendiagramm der UML wird eine Assoziation mit einer einfachen Verbindungslinie zwischen den beiden Klassen dargestellt. Die Zahlen an den Verbindungsenden werden als Kardinalität bezeichnet. Ein * steht für beliebig viel. Für das Diagramm in Bild \ref{fig:Assoziation2} bedeuten sie, dass ein Besitzer 0 bis beliebig viele Fahrzeuge besitzen kann, dass aber ein Fahrzeug jeweils genau einen Besitzer hat. Bei den Kardinalitäten ist es immer angebracht, sich noch einmal kurz zu überlegen, ob sie wirklich in jedem Fall sinn machen (Kann es nicht sein dass ein Fahrzeug niemandem gehört? Kann ein Fahrzeug mehreren Personen gehören. Und falls wir bei Fahrzeug 1..* gewählt hätten: Besitzen wirklich alle Leute mindestens 1 Fahrzeug? Eine Faustregel sagt, das 0 als untere Grenze meist die bessere Wahl ist)
+Mit der \OviIndex{Kardinalität} wird angegeben, wie viel Objekte einer Klasse mit wievielen einer anderen Klasse in Beziehung stehen. Im Klassendiagramm der UML wird eine Assoziation mit einer einfachen Verbindungslinie zwischen den beiden Klassen dargestellt. Die Zahlen an den Verbindungsenden werden als Kardinalität bezeichnet. Ein * steht für beliebig viel. Für das Diagramm in Bild \ref{fig:Assoziation2} bedeuten sie, dass ein Besitzer 0 bis beliebig viele Fahrzeuge besitzen kann, dass aber ein Fahrzeug jeweils genau einen Besitzer hat. Bei den Kardinalitäten ist es immer angebracht, sich noch einmal kurz zu überlegen, ob sie wirklich in jedem Fall sinn machen (Kann es nicht sein dass ein Fahrzeug niemandem gehört? Kann ein Fahrzeug mehreren Personen gehören. Und falls wir bei Fahrzeug 1..* gewählt hätten: Besitzen wirklich alle Leute mindestens 1 Fahrzeug? Eine Faustregel sagt, das 0 als untere Grenze meist die bessere Wahl ist)
 
 \begin{figure}[H]
 	  \centering
@@ -696,7 +720,7 @@ Mit der \OviIndex{Kardinalität} wird angegeben, wie viel Objekte einer Klasse mi
 
 \subsubsection{Gerichtete Assoziation (Navigation)}
  
-Falls eine Assoziation nur in eine Richtung \OviIndex{navigierbar} ist, das heisst nur einer der Teilnehmer den anderen kennt, kann dies durch einen Pfeil ausgedrückt werden. Wenn zum Beispiel der Besitzer sein Fahrzeug kennt, aber das Fahrzeug nicht seinen Besitzer würde das wie in Bild \ref{fig:Assoziation1} aussehen:
+Falls eine Assoziation nur in eine Richtung \OviIndex{navigierbar} ist, das heisst nur einer der Teilnehmer den anderen kennt, kann dies durch einen Pfeil ausgedrückt werden. Wenn zum Beispiel der Besitzer sein Fahrzeug kennt, aber das Fahrzeug nicht seinen Besitzer, würde das wie in Bild \ref{fig:Assoziation1} aussehen:
  
 \begin{figure}[H]
 	  \centering
@@ -856,9 +880,9 @@ Zu einem späteren Zeitpunkt könnte das Diagram in die Form von Bild \ref{fig:obj
 \end{figure}
 
 \section{Sequenz und Kollaborationsdiagramm}
-Mit Sequenz und Kollaborationsdiagrammen wird der Ablauf einer bestimmten Aktion zu einem bestimmten Zeitpunkt dargestellt. Zu einem Klassendiagramm kann es beliebig viele mögliche Sequenz oder Kollaborationsdiagramme geben, üblicherweise beschränkt man sich auf die wichtigsten Interaktionen innerhalb eines Systems. Sequenzdiagramm und Kollaborationsdiagramm können jeweils ineinander überführt werden. Dargestellt wird in jedem Fall, wie die Objekte untereinander mit Methodenaufrufen kommunizieren. Bei Bedarf werden auch die übergebenen Argumente in die Darstellung aufgenommen.
+Mit Sequenz- und Kollaborationsdiagrammen wird der Ablauf einer bestimmten Aktion zu einem bestimmten Zeitpunkt dargestellt. Zu einem Klassendiagramm kann es beliebig viele mögliche Sequenz- oder Kollaborationsdiagramme geben, üblicherweise beschränkt man sich auf die wichtigsten Interaktionen innerhalb eines Systems. Sequenzdiagramm und Kollaborationsdiagramm können jeweils ineinander überführt werden. Dargestellt wird in jedem Fall, wie die Objekte untereinander mit Methodenaufrufen kommunizieren. Bei Bedarf werden auch die übergebenen Argumente in die Darstellung aufgenommen.
 
-Mit einem \OviIndex{Sequnzdiagramm} kann man die verschiedenen Aktionen durchspielen, die von einem System gefordert werden. Man kann damit einerseits das Modell überprüfen, andererseits dient es auch als Grundlage für die Implementation (Codierung). Man kann mit diesem Diagram auch den Ablauf von Interaktionen Drittpersonen (Z. B. Auftraggeber oder externe Entwickler) demonstrieren.
+Mit einem \OviIndex{Sequnzdiagramm} kann man die verschiedenen Aktionen durchspielen, die von einem System gefordert werden. Man kann damit einerseits das Modell überprüfen, andererseits dient es auch als Grundlage für die Implementation (Codierung). Man kann durch dieses Diagramm auch den Ablauf von Interaktionen mit Drittpersonen (Z. B. Auftraggeber oder externe Entwickler) demonstrieren.
 
 In den nachfolgenden Beispielen dient das Klassendiagramm in Bild \ref{fig:VerkaeuferKlasse} als Grundlage. Es handelt sich um eine Autohandlung mit Verkäufern und Kunden.
 
@@ -933,6 +957,7 @@ Ein Zeichenbefehl würde das Sequenzdiagramm in Bild \ref{fig:PaternDekoBspSeq} z
 		\caption{Sequenzdiagramm des GUI mit Dekroatormuster}
 	\label{fig:PaternDekoBspSeq}
 \end{figure}
+%Bild EinFenster fehlt Klassenbezeichner !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 \NextPagePlease
 \section{Zustand}
@@ -1051,7 +1076,7 @@ Bild \ref{fig:PaternProxyBspSeq} zeigt anhand eines Sequenzdiagramms den Ablauf 
 	\label{fig:PaternProxyBspSeq}
 \end{figure}
 
-Solange es geht, behandelt das Proxy alle Botschaften selbst. Das echte Bild wird erst erzeugt, wenn es gezeichnet werden muss, Sobald das echte Bild erzeugt ist, werden die Methoden des echten Bildes verwendet. (Das Proxy leitet alle Botschaften an das echte Bild weiter)
+Solange es geht, behandelt das Proxy alle Botschaften selbst. Das echte Bild wird erst erzeugt, wenn es gezeichnet werden muss. Sobald das echte Bild erzeugt ist, werden die Methoden des echten Bildes verwendet. (Das Proxy leitet alle Botschaften an das echte Bild weiter)
 
 %\NextPagePlease
 
@@ -1129,7 +1154,7 @@ Bild \ref{fig:PaternCommandBspSeq} zeigt anhand eines Sequenzdiagramms den Ablau
 \begin{figure}[H]
 	  \centering
 		\includegraphics[trim=0 1.4cm 0 0, clip]{PaternCommandBspSeq}
-		\caption{Sequenzdiagramm des Textverarbeitung}
+		\caption{Sequenzdiagramm der Textverarbeitung}
 	\label{fig:PaternCommandBspSeq}
 \end{figure}
 
@@ -1213,7 +1238,7 @@ Ein Anwendungsfall muss folgende Elemente in seiner Beschreibung enthalten:
 \item Eine Kurzbeschreibung (Zusammenfassung der Kundenanforderung)
 \item Vorbedingungen für diesen Fall. (Was muss erfüllt sein, damit dieser Fall überhaupt abgearbeitet werden kann)
 \item Den genauen Ablauf der Ereignisse und die Reaktionen des Systems darauf. Jedes Ereignis erhält wieder eine eindeutige Nummer mit einem vorangestellten 'E' und jede Aktion des Systems eine eindeutige Nummer mit einem Vorangestellten 'A'. Gibt es Alternativereignisse (Benutzer drück OK oder Abbruch), werden ihnen (und den darauffolgenden Aktionen) ein 'A' vorangestellt. Alternativereignisse beenden im Normalfall den aktuellen Anwendungsfall (Können aber in einen anderen Anwendungsfall verzweigen)
-\item Die Auswirkungen des Anwendungsfall auf das System (Nicht auf die Akteure!)
+\item Die Auswirkungen des Anwendungsfalles auf das System (Nicht auf die Akteure!)
 \item Weitere Informationen. (Z. B. Darstellung oder Skizzen von Bildschirmmasken und Bedienungselementen, offene Fragen, konkrete Beispiele für einen Ablauf, usw.
 \item Diagramme. Sequenz und Kollaborationsdiagramme, Klassendiagramme und Aktivitätsdiagramme, die sich aus diesem Anwendungsfall ergeben. 
 \end{enumerate}
@@ -4877,7 +4902,7 @@ Sind auf der Stufe Analyse die wichtigsten, und auf Stufe Design alle Methoden a
 
 \subsubsection{Assoziation, Typ Komposition}
 
-Gilt für jedes Komponentenobjekt k der Satz ''k ist Teil von W'' oder ''W hat ein p''?
+Gilt für jedes Komponentenobjekt k der Satz ''k ist Teil von W'' oder ''W hat ein k''?
 
 Haben Komponentenobjekte nur einen Sinn, wenn auch das übergeordnete Objekt exisitiert?\\
 Wenn nein, liegt ev, eine Aggregation vor.

@@ -1,0 +1,3398 @@
+%/*****************************************************************************/
+%/*  Module     : OOP-Skript                                     Version 1.1  */
+%/*****************************************************************************/
+%/*                                                                           */
+%/*  Function   : Solves Sudoku problems                                      */
+%/*                                                                           */
+%/*  Procedures : main                                                        */
+%/*                                                                           */
+%/*  Author     : I. Oesch                                                    */
+%/*                                                                           */
+%/*  History    : 17.11.2004  IO Created                                      */
+%/*               01.01.2006  IO Unified Process added                        */
+%/*                                                                           */
+%/*                                                                           */
+%/*  File       : ScriptOOPLatexv0_1.tex                                      */
+%/*                                                                           */
+%/*                                                                           */
+%/*  To DO:                                                                   */
+%/*                                                                           */
+%/*  Besser Durchstrukturieren, logische Reihenfolge                          */
+%/*  Zuerst alles UML, dann C++                                               */
+%/*  Codebeispiele feur Designpatterns                                        */
+%/*  Crash-Kurs   Praeprocessor predefined Makros                             */
+%/*  Crash-Kurs   Statische Member (Beispiel)                                 */
+%/*  Crash-Kurs   Rein virtuelle Metoden/Abstrakte Klasse                     */
+%/*  Crash-Kurs   Stereotypen                                                 */
+%/*  Crash-Kurs   UML Sprachelemente                                          */
+%/*                                                                           */
+%/*  Kap 6.1 Ev bessere Notation fuer Alternativereignisse/Events             */
+%/*                                                                           */
+%/*                                                                           */
+%/*  Fehler in Bilder:                                                        */  
+%/*   5.3 EinFenster Klassenname fehlt                                        */
+%/*   5.8 Undruckbares Zeichen in Notiz                                       */
+%/*   5.12 Punktierte Linien                                                  */
+%/*   5.13 Machwas Machauchwas Reihenfolge drehen                             */
+%/*   5.14 <<Static>> fehlt vor EinzigesExemplar                              */
+%/*   5.17 CMDPaste auch assoziiert mit Dokument                              */
+%/*   5.20/5.21 Klient/Client                                                 */
+%/*   6.2 Versuchen Abgerundetet Rechtecke hinzubekommen                      */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*                                                                           */
+%/*****************************************************************************/
+%/* MagicSoft                                                                 */
+%/*****************************************************************************/
+
+%/* imports */
+
+%/* module constant declaration */
+
+%/* module type declaration */
+
+%/* module data declaration */
+
+
+%Schriftgröße, Layout, Papierformat, Art des Dokumentes
+\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+%\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+%\documentclass[10pt,a4paper]{report}
+%\usepackage{bookman}
+%\typearea[current]{calc}
+
+
+
+
+
+%Einstellungen der Seitenränder
+%\usepackage[left=2.5cm,right=2.5cm,top=1cm,bottom=1cm,includeheadfoot]{geometry}
+
+%alte Rechtschreibung
+\usepackage{german}
+\usepackage{color}
+\usepackage{color,listings}
+\usepackage{framed}
+\usepackage{hhline}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{longtable}
+%\usepackage{html,makeidx}
+
+\usepackage{graphicx}
+
+%Umlaute ermöglichen
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{makeidx}
+
+%Kopf- und Fußzeile
+\usepackage{fancyhdr}
+
+\lstloadlanguages{[ISO]C++}
+
+\pagestyle{fancy}
+\fancyhf{}
+
+\makeindex
+
+%Kopfzeile links bzw. innen
+\fancyhead[L]{\MyTitle}
+%Kopfzeile rechts bzw. außen
+\fancyhead[R]{\nouppercase{\leftmark}}
+%Linie oben
+\renewcommand{\headrulewidth}{0.5pt}
+
+%Fußzeile links bzw. innen
+\fancyfoot[L]{Version 1.3\hspace{2ex} I. Oesch}
+%Fußzeile mittig
+\fancyfoot[C]{\today}
+%Fußzeile rechts bzw. außen
+\fancyfoot[R]{\thepage}
+%Linie unten
+\renewcommand{\footrulewidth}{0.5pt}
+
+\setlength{\parskip}{1ex plus0.5ex minus0.3ex} 
+\newcommand{\Cpp}{C{\tt ++} }
+
+\newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
+
+\newcommand{\NextPagePlease}{\pagebreak[4]}
+
+\newcommand{\MyTitle}{Einführung in \Cpp}
+
+\raggedbottom
+
+\definecolor{Mygray}{gray}{0.8}
+%\fcolorbox{black}{Mygray}{
+% \definecolor{myspecialcolor}{colscale}{val}
+% 
+% \newcommand{\mylistinginput}[1]{%
+% \lstset{%
+%  basicstyle=\ttfamily,%
+%  backgroundcolor=\color{myspecialcolor},%
+%%if you want a coloured frame around the code:
+%  framesep=0.5em,fillcolor=\color{myspecialcolor},%
+%  rulecolor=\color{myspecialcolor},%
+%  xleftmargin=1.75em,xrightmargin=1.5em,%
+%  frame=tlrb%
+% }% 
+% \lstinputlisting{../examples/#1}%
+% }
+%% for an environment, just use the \lstset command as init (2nd to
+%% last) argument of the \lstnewenvironment{}[][]{}{} command
+\lstnewenvironment{CCode}{
+\pagebreak[3]
+\lstset{showspaces=false,
+showtabs=false,
+language={[ISO]C++},
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+backgroundcolor=\color{Mygray},
+%frame=single,
+tab=\rightarrowfill}
+%\begin{framed} 
+}
+{
+%\end{framed}
+}
+
+\lstset{showspaces=false,
+showtabs=false,
+language={[ISO]C++},
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+%backgroundcolor=\color{Mygray},
+%frame=single,
+tab=\rightarrowfill}
+
+
+
+\makeatletter
+
+\def\newverbatim{\let\@NVtempa\newcommand\@newverbatim}
+\def\renewverbatim{\let\@NVtempa\renewcommand\@newverbatim}
+\def\@newverbatim#1{\@ifnextchar[%]
+     {\@inewverbatim{#1}}{\@inewverbatim{#1}[0]}}
+\long\def\@inewverbatim#1[#2]#3#4#5#6{%
+ \expandafter\@NVtempa\csname #1\endcsname[#2]%
+  {#3\@verbatim\frenchspacing\@vobeyspaces#4\@defxverbatim{#1}%
+\@xverbatim}%
+ \@namedef{end#1}{#5\endverbatim#6}}
+
+\begingroup \catcode `|=0 \catcode `[= 1
+\catcode`]=2 \catcode `\{=12 \catcode `\}=12
+\catcode`\\=12 
+|gdef|@defxverbatim#1[|def|@xverbatim##1\end{#1}[##1|end[#1]]]
+|endgroup
+
+%\newverbatim{CCode}{}{}{}{}
+
+\restylefloat{figure}
+
+%\newenvironment{CCode}
+%{
+%\begin{verbatim}   
+%}
+%{
+%\end{verbatim}   
+%}
+
+
+\newenvironment{framedquote}{
+\begin{framed}
+\begin{quote}
+}
+{
+\end{quote}
+\end{framed}
+}
+
+\newenvironment{CodeTable}{
+\noindent
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{>{\columncolor[gray]{0.8}[0.9\tabcolsep]}p{0.45\textwidth}p{0.5\textwidth}}
+}
+{
+\end{tabular}
+}
+
+\setcounter{tocdepth}{1}
+
+
+\begin{document}
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+{
+\fontsize{200pt}{240pt}\selectfont
+\textbf{
+\MyTitle
+}
+}
+
+\vspace{3\parskip}
+
+\Large
+Ivo Oesch
+
+\vspace{\fill}
+
+\begin{figure}[h]
+   \includegraphics[width=\textwidth]{Titelbild}
+%   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
+\end{figure}
+
+\vspace{\fill}
+
+\normalsize
+\begin{quote}
+Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden. Es gibt eine Kurzeinführung in die objektorientierte Programmiersprache \Cpp.
+\end{quote}
+
+\vspace{\fill}
+
+\today
+%8. Januar 2007
+
+20. Oktober 2005
+
+17. Oktober 2004 
+
+12. Dezember 2001
+
+5. 	März 2001
+
+
+
+\end{center}
+\end{titlepage}
+%\maketitle
+
+%\begin{figure}
+%   \includegraphics[width=\textwidth]{Titelbild}
+%   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
+%\end{figure}
+\cleardoublepage
+\tableofcontents
+\chapter{Zu diesem Skript}
+Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
+In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Unbehandelt bleibt insbesondere die Standard-Bibliothek.
+
+
+
+\chapter{Grundlegendes}
+In diesem Dokument werden die wichtigsten Sprachkonstrukte von \Cpp kurz vorgestellt. Weitergehende und ausführliche Sprachbeschreibungen finden sich in gängiger Literatur oder im Internet. Die Sprache C wird in den nachfolgenden Kapiteln als bekannt vorausgesetzt, und Sprachmittel von \Cpp welche identisch zu C sind werden
+nur knapp abgehandelt.
+
+\emph{Achtung,} viele in \OviIndex{C99} neu eingeführte Features werden vom offiziellen \Cpp98 Standard nicht
+unterstützt! (Sind aber in vielen Compilern trotzdem zum Teil verfügbar) 
+
+\section{Ein einfaches \Cpp Programm}
+\begin{CCode}
+#include <iostream>
+
+using namespace std; // Bei aelteren Compilern ev. nicht noetig
+
+int main(int argc, char *argv[])
+{
+   cout << "Hallo Welt";
+   return 0;
+}
+\end{CCode}
+
+\section{Grundsätzliches}
+
+In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
+Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
+ein Modul zu beschränken, muss diese als static deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich.  
+
+\section{Module}
+Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
+
+In der Headerdatei sind alle \OviIndex{Deklarationen} von Funktionen, Variablen, Konstanten, Datentypen und Klassen enthalten, die vom Modul zur Verfügung gestellt werden. Im Implementationsteil sind die entsprechenden \OviIndex{Definitionen} (Code und Speicherreservationen) enthalten, plus eventuell weitere lokale Variablen, Funktionen und Hilfsklassen.
+
+In \Cpp wird üblicherweise jede Klasse in einem eigenen Modul implementiert, eventuell zusammen mit Hilfsklassen, die nur von diesem Modul verwendet werden.
+Wenn ein Modul Dienste von einem anderen Modul in Anspruch nimmt, muss es dessen Headerdatei mit dem \#include-Befehl einbinden.
+
+Jedes Modul (.cpp) wird vom Compiler selbständig und unabhängig von anderen Modulen (.cpp) Compiliert. Aus jedem Modul wird somit eine Objektdatei (Maschinencodedatei) erzeugt, welche erst vom Linker zum lauffähigen Programm zusammengefügt werden.
+
+Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen werden deshalb meist erst vom Linker erkannt, und mit nicht sehr aufschlussreichen Fehlermeldungen geahndet ('Symbol xyz not found' oder 'Symbol xyz allready defined in Module qwert.cpp').
+
+ 
+
+\subsection{Beispiel eines kleinen C++-Projektes}
+
+Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse SayHello vom Modul sayhello.cpp und muss deshalb die Headerdatei sayhello.h mit '\#include' einbinden. In dieser Headerdatei sind die Schnittstellen der gleichnamigen Klasse deklariert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als static deklariert.
+
+\begin{center}
+{ \footnotesize
+\parbox[t]{6cm}{sayhello.hpp}
+
+\fbox{\parbox[t]{6cm}{
+\tt
+\begin{flushleft}
+\#ifndef SAYHELLO\_HPP                     \linebreak[4]
+\#define SAYHELLO\_HPP                     \linebreak[4]
+                                           \linebreak[4]
+class SayHello \{                          \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}private:                    \linebreak[4]
+\hspace*{0.9cm}char *Greeting;             \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}public:                     \linebreak[4]
+\hspace*{0.9cm}     SayHello(void);        \linebreak[4]
+\hspace*{0.9cm}void SaySomething(void);    \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}private:                    \linebreak[4]
+\hspace*{0.9cm}void SayGreeting(void);     \linebreak[4]
+\hspace*{0.9cm}void SayWorld(void);        \linebreak[4]
+\}                                         \linebreak[4]
+\#endif                                   
+\end{flushleft}
+}}
+
+\vspace{5ex}
+
+\parbox[t]{6cm}{main.cpp}
+\hfill
+\parbox[t]{6cm}{sayhello.cpp}
+
+\fbox{\parbox[t]{6cm}{
+\tt
+\begin{flushleft}
+\colorbox{Mygray}{\#include ''sayhello.hpp''   \linebreak[4]}
+                                               \linebreak[4]
+int main(int argc, char *argv[])               \linebreak[4] 
+\{                                             \linebreak[4]
+\hspace*{0.5cm}  SayHello AnObject;            \linebreak[4]
+\hspace*{0.5cm}  AnObject.SaySomething();      \linebreak[4]
+\hspace*{0.5cm}  return 0;                     \linebreak[4]
+\}
+\end{flushleft}
+}}
+\hfill
+\fbox{\parbox[t]{6cm}{
+\tt
+\begin{flushleft}
+\#include <iostream>                           \linebreak[4]
+\colorbox{Mygray}{\#include ''sayhello.hpp''   \linebreak[4]}
+                                               \linebreak[4]
+static char TheGreeting = ''Hello'';           \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayHello()                      \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   Greeting = TheGreeting;      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SaySomething()                  \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   SayGreeting();               \linebreak[4]
+\hspace*{0.5cm}   cout << '' '';               \linebreak[4]
+\hspace*{0.5cm}   SayWorld();                  \linebreak[4]
+\hspace*{0.5cm}   cout << endl;                \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayWorld()                      \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   cout << ''World'';           \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayGreeting()                   \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   cout << Greeting;            \linebreak[4]
+\}
+\end{flushleft}
+}}
+}
+\end{center}
+ 
+%\fbox{\parbox[t]{5cm}{
+%\lstinline$#include "sayhello.h"$\linebreak[4]
+%\lstinline$#$\linebreak[4]
+%\lstinline$#int main(int argc, char *argv[])$\linebreak[4]
+%\lstinline$#{$\linebreak[4]
+%\lstinline$#    SayHelloWorld();$\linebreak[4]
+%\lstinline$#    return 0;$\linebreak[4]
+%\lstinline$#}$\linebreak[4]
+%}}
+
+
+\section{Kommentare}
+\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge //, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit /* eingeleitet und endet mit */. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
+\begin{CCode}
+// Ein Zeilenkommentar
+/* dieser Kommentar
+   geht ueber mehrere
+   Zeilen */
+\end{CCode}
+
+\section{Präprozessorbefehle}
+Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
+
+\begin{CCode}
+#include "test.h"   // der wohl wichtigste Befehl, fuegt die angegebene Datei an 
+                    // dieser Stelle in den Code ein.
+#if 0               // Bedingte Kompilierung
+...                 // Der Teil dessen Bedingung nicht zutrifft wird als
+#else               // Kommentar behandelt, also vom Compiler ignoriert
+...
+#endif
+
+#define pi 3.14     // Makro (definition einer Konstanten)
+
+#ifdef DEBUG        // Bedingte Kompilierung
+... // Wird nur compiliert wenn Makro Debug definiert ist
+#endif
+\end{CCode}
+Speziell beim Einbinden von Headerdateien kann es geschehen, dass die selbe Datei über verschiedene Wege mehrfach eingebunden wird. Das kann zu Problemen führen, besonders bei Klassen, weil diese nur einmal definiert werden dürfen. Das Problem lässt sich umgehen, wenn der Inhalt jeder Headerdatei mit folgenden Befehlen eingeschlossen wird:
+\begin{CCode}
+
+#ifndef HEADER_DATEI_NAME_HPP // ifndef -> if not defined, Gegenteil von ifdef
+#define HEADER_DATEI_NAME_HPP
+
+// Inhalt der Headerdatei,    wird nur Compiliert wenn HEADER_DATEI_NAME_HPP noch
+                           // nicht definiert war, also nur beim ersten Mal
+#endif
+\end{CCode}
+
+Damit wird garantiert, dass der Inhalt der Headerdatei nur einmal berücksichtigt wird. Diese Methode ist beinahe Standard, man findet sie bei allen Systemdateien und Bibliotheken, und die meisten Programmierer wenden sie grundsätzlich an, um eventuellen Problemen vorzubeugen.
+Es gibt zwei Formen für den Includebefehl:
+\#include <......> sucht die Datei im Systemverzeichnis des Compilers und allfälligen weiteren vom Benutzer angegebenen Verzeichnissen. Diese Form wird für Bibliotheksfunktionen verwendet.
+\#include ''.....'' sucht zuerst im gleichen Verzeichnis in welchem die cpp Datei liegt, und dann in denselben Verzeichnissen wie \#include <...>. Diese Form wird für Projektbezogene Dateien (Vom Benutzer selbst geschriebene Dateien) eingesetzt. 
+
+Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \_\_FILE\_\_, \_\_LINE\_\_, \_\_DATE\_\_, \_\_TIME\_\_, \_\_cplusplus und weitere. \_\_cplusplus ist definiert, wenn ein C++ Compiler compiliert.
+ 
+
+\section{Operatoren}
+Unter \Cpp sind die gängigen mathematischen Operatoren wie gewohnt vorhanden:
+
+%\begin {tabular}{|l|l|l|}
+\begin {tabular}{|p{0.23\textwidth}|l|l|}
+\hline
+Operator&	Beschreibung&	Beispiel\\
+\hline
+\lstinline$+ - * /$&	Addition, Subtraktion, Multiplikation, Division&\lstinline$a = b + c;$\\
+\hline
+\lstinline$%$	&Modulo-Operator , liefert den Rest einer Division&	\lstinline$a = b % c;$\\
+\hline
+\lstinline$++$&	Variable inkrementieren (Um 1 erhöhen)&	\lstinline$a++; // a = a + 1$\\
+\hline
+\lstinline$--$&	Variable dekrementieren (Um 1 erniedrigen)&\lstinline$a--; // a = a - 1$\\
+\hline
+\lstinline$&&	$&Logisches AND&\lstinline$if ((a > b) && ( b < c))$\\
+\hline
+\lstinline$||$&	Logisches OR&\lstinline$if ((a > b) || ( b < c))$\\
+\hline
+\lstinline$!$	&Logisches NOT&\lstinline$if (!(a > b))$\\
+\hline
+\lstinline$&$	&Binäres AND (Bitweise)	&\lstinline$a = b & c;$\\
+\hline
+\lstinline$|$	&Binäres OR (Bitweise)	&\lstinline$a = b | c;$\\
+\hline
+\lstinline$^$	&Binäres XOR (Bitweise)	&\lstinline$a = b ^ c;$\\
+\hline
+\lstinline$~$	&Binäres NOT (Bitweise) (Einerkomplement)	&\lstinline$a = ~c;$\\
+\hline
+\lstinline$<<$&	Binäres Linksschieben	&\lstinline$a = b << c; // = b * 2$$^c$\\
+\hline
+\lstinline$>>$&	Binäres Rechtsschieben&\lstinline$a = b >> c; // = b / 2$$^c$\\
+\hline
+\lstinline$>  <  >=  <=  == !=$	&Relationale Operatoren != ist Ungleich	&\lstinline$if (a != b)$\\
+\hline
+\lstinline$=$	&Zuweisungsoperator	&\lstinline$a = 18;$\\
+\hline
+\lstinline$+= -= *= /= %=$\linebreak[4]
+\lstinline$&= |= ^= <<= >>=$	&Kombinierte Zuweisungsoperatoren	&\lstinline$a += 18; // a = a + 18$\\
+\hline
+\end{tabular}
+
+Daneben gibt es noch weitere Operatoren, diese sind hier der Vollständigkeit halber auch aufgelistet, werden aber in den jeweiligen Kapiteln näher erläutert.
+
+\begin {tabular}{|p{0.23\textwidth}|p{0.4\textwidth}|l|}%p{0.29\textwidth}|}
+\hline
+Operator&	Beschreibung&	Beispiel\\
+\hline
+\lstinline$::$&	Scoperesolution ('Bereichsauflösung')&\lstinline$ApfelKlasse::GetTotal();$\\
+\hline
+\lstinline$.$	&Elementauswahl bei Klassen/Strukturen&	\lstinline$Apfel.Farbe = Rot;$\\
+\hline
+\lstinline$->$&	Elementauswahl via Zeiger (Pointer)&	\lstinline$p->Farbe = Rot;$\\
+\hline
+\lstinline$[]$&	Indizierung, Arrayelement auswählen)&\lstinline$Tabelle[i] = a;$\\
+\hline
+\lstinline$()$&Funktionsaufruf&\lstinline$f(); oder f(a,b,c)$\\
+\hline
+\lstinline$Typ()$&Objekterzeugung&\lstinline$ApfelKlasse(Rot)$\\
+\hline
+\lstinline$typeid(Typ)$&Typidentifikation&\lstinline$cout << typeid(ApfelKlasse).Name();$\\
+\hline
+\lstinline$typeid(Ausdruck)$&Objektidentifikation&\lstinline$cout << typeid(*p).Name();$\\
+\hline
+\lstinline$dynamic_cast<Typ>()$&Typumwandlung, mit Laufzeitprüfung&\lstinline$a = dynamic_cast<int>(b);$\\
+\hline
+\lstinline$static_cast<Typ>()$&Typumwandlung, zur \"Ubersetzungszeit geprüft&\lstinline$a = static_cast<int>(b);$\\
+\hline
+\lstinline$reinterpret_cast<Typ>()$&Typumwandlung, ungeprüft&\lstinline$a = reinterpret_cast<int>(b);$\\
+\hline
+\lstinline$const_cast<Typ>()$&Entfernen der Konstantheit&\lstinline$a = const_cast<int>(b);$\\
+\hline
+\lstinline$(Typ)$&Typumwandlung (Cast), ungeprüft&\lstinline$a = (int)b;$\\
+\hline
+\lstinline$sizeof()$	&Speicherplatzbedarf eines Objektes oder Typs bestimmen&\lstinline$n = sizeof(int);$\\
+\hline
+\lstinline$&$	&Adresse eines Objektes bestimmen&\lstinline$p = &b;$\\
+\hline
+\lstinline$*$	&Dereferenzierung, Zeiger dereferenzieren&\lstinline$a = *p;$\\
+\hline
+\lstinline$new Typ$&Neues Objekt dynamisch erzeugen&\lstinline$p = new int;$\\
+\hline
+\lstinline$delete$&Dynamisches Objekt zerstören&\lstinline$delete p;$\\
+\hline
+\lstinline$delete[]$&Ein Feld dynamischer Objekte zerstören&\lstinline$delete[] p;$\\
+\hline
+\lstinline$.*$&Memberpointer dereferenzieren&\lstinline$a = b.*p$\\
+\hline
+\lstinline$->*$&Zeiger auf Memberpointer dereferenzieren&\lstinline$a = p1->*p2$\\
+\hline
+\lstinline$?:$&Auswahloperator&\lstinline$a>b?a:b;$\\
+\hline
+\lstinline$throw$&Ausnahme werfen (Exceptionshandling)&\lstinline$throw a;$\\
+\hline
+\lstinline$,$&Kommaoperator&\lstinline$a = (b,c);$\\
+\hline
+\end{tabular}
+
+\section{Blöcke}
+Mit den geschweiften Klammern { } werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
+\begin{CCode}
+{
+  int a, b, c;
+  cout << "Bitte 2 Zahlen eingeben" << endl;
+  cin >> a;
+  cin >> b;
+  c = a + b;
+  cout << a << " + " << b << " = " << c << endl;
+} // Variablen a b c ab hier nicht mehr gueltig
+\end{CCode}
+ 
+\section{Dynamische Speicherverwaltung}
+Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. 
+
+\begin{CCode}
+int *Memory;            // Ein Zeiger auf int definieren
+
+Memory = new int[200];  // Speicher fuer ein Array von 200 ints reservieren und 
+                        // Zeiger darauf zeigen lassen
+
+Memory[4] = 17;         // Ein Element im Feld beschreiben
+
+delete[] Memory;        // Speicher wieder freigeben
+
+Memory = new int;       // Platz fuer einen einzelnen int reservieren und 
+                        // Zeiger darauf zeigen lassen
+
+*Memory = 55;           // den int veraendern
+
+delete Memory;          // und Speicher wieder freigeben
+
+\end{CCode}
+\section{Ein- und Ausgabe}
+Bildschirmausgaben laufen über (das Objekt) \OviIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \OviIndex{cin} gelesen werden. Um cin oder cout benutzen zu können muss das entsprechende Headerfile mittels \#include <iostream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
+Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich std abgelegt sind, müssen Bibliotheksfunktionen
+und Objekte mit dem prefix std:: (z. B. std::cin) oder 'using namespace std' zugänglich gemacht werden.
+
+\begin{CCode}
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char *argv[]) 
+{
+  int a, b, c;
+  cout << "Bitte 2 Zahlen eingeben" << endl;  // endl gibt Zeilenumbruch aus
+  cin >> a;
+  cin >> b;
+  c = a + b;
+  cout << a << " + " << b << " = " << c << endl;
+  return 0
+} 
+\end{CCode}
+
+\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren.
+
+\section{Datei Ein- und Ausgabe}
+\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
+
+Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
+
+\begin{CCode}
+#include <fstream>
+
+using namespace std;
+
+int main(int argc, char *argv[]) 
+{
+  int a = 4, b = 5;
+  ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
+  if (AusgabeDatei) {
+    AusgabeDatei << "Mein erstes File" << endl;
+    AusgabeDatei << "a + b ist " << (a + b) << endl;
+  } else {
+    cout << "Fehler, konnte Datei nicht oeffnen" << endl;
+  }
+  return 0
+} 
+\end{CCode}
+
+
+
+Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
+Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden.
+ios\_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben.
+ios\_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+
+Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
+\begin{CCode}
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
+                                                          // anhaengen erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
+                                                          // Binaere Datei zum 
+                                                          // anhaengen erzeugen
+
+  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
+                                                          // modus zum Lesen oeffnen
+
+  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus zum Lesen oeffnen
+
+\end{CCode}
+
+Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
+die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
+zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
+wenn die Operatoren << und >> nicht die gewünschte Funktionalität liefern. 
+
+ 
+\section{Hauptprogramm}
+Jedes lauffähige \Cpp Programm muss eine Funktion main() enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente argc und argv enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
+
+\begin{CCode}
+#include <iostream>
+
+int main(int argc, char *argv[]) 
+{
+  std::cout << "Hallo Welt" << std::endl;
+  return 0;
+} 
+\end{CCode}
+
+\chapter{Variablen}
+\section{Definition von Variablen}
+Eine Variablendefinition muss immer die Form
+Datentyp Variablenname; 
+aufweisen. Es ist möglich (und guter Stil), eine Variable bei der Definition gleich zu initialisieren:
+Datentyp Variablenname = Wert; 
+Für Variablennamen dürfen Klein- und Grossbuchstaben sowie der Unterstrich '\_' und die Ziffern 0-9 verwendet werden. Sonderzeichen und Umlaute sind nicht erlaubt. Namen dürfen nicht mit Ziffern beginnen.
+
+\begin{CCode}
+int a;           // Eine Ganzahlige Variable definieren (meist 32 Bit)
+float b;         // Eine Fliesskommazahl Variable definieren
+float b = 3.14;  // Eine Ganzahlige Variable definieren
+char c;          // Eine Zeichenvariable definieren (8 Bit)
+\end{CCode}
+
+\section{Felder (Arrays)}
+Felder sehen so aus wie bei den meisten anderen Programmiersprachen. Achtung, die Zählung der Elemente beginnt bei 0! Zudem werden die Bereichsgrenzen nicht überprüft, man kann also ohne Probleme über die Grenzen eines Arrays hinaus zugreifen, was aber über kurz oder lang zu Systemabstürzen oder unvorhersehbarem Verhalten führt (Negative Indices sind auch möglich). Arrays sind eigentlich nichts anders als konstante Zeiger die auf einen für das Array reservierten Speicherblock zeigen.
+
+Die Arraygrösse muss ein zur Compilezeit berechenbarar Wert sein. Variable Length Arrays sind im
+offiziellen \Cpp Standard (\Cpp 98) nicht enthalten (Wurden in C99 neu eingeführt).
+
+\begin{CCode}
+char s[100];
+
+s[0] = 'e';  // Erstes Element 
+s[13] = 'f';
+s[99] = 'z'; // Letztes Element (!)
+\end{CCode}
+
+\section{Zeiger und Referenzen}
+\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}.
+Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
+Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
+
+\begin{CCode}
+int j, k, l;    // Drei Integer Variablen definieren
+int &r = j;     // Eine Referenz auf j definieren
+int *ptr;       // Ein Zeiger auf int definieren
+
+j = 100;        // Werte an j, k und l Zuweisen
+k = 200;
+l = 300;
+
+cout << r;      // Wert ausgeben der von r referenziert wird (j)
+
+ptr = &k;       // Addresse von k an Ptr zuweisen
+cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+
+ptr = &l;       // Addresse von l an Ptr zuweisen
+cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+
+void DoSomething(int &a, const int &b) 
+{
+   a = b + 3; // b ist const Referenz, also nur lesbar
+              // a ist auch schreibbar
+}
+
+DoSomething(j, k); // j wird von DoSomething veraendert
+
+\end{CCode}
+
+\section{Konstantheit (const)}
+Variablen und Objekte, die nur gelesen werden dürfen, kann man als \OviIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
+
+\begin{CCode}
+int a;
+const int ci = 4;   // Konstante, kann nicht geaendert werden
+a = ci + 3;         // OK, nur lesen
+ci = 19;            // Error, aendern nicht erlaubt
+\end{CCode}
+
+Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übergeben werden, sonst wäre es ja möglich, die Konstantheit zu umgehen. Nichtkonstante Objekte dürfen jederzeit an Zeiger oder Referenzen auf konstante Objekte zugewiesen werden.
+\begin{CCode}
+int a;
+const int ci = 4;     // Konstante, kann nicht geaendert werden
+const int &cr = ci;   // Referenz auf konstantes int, zeigt auf ci, alles OK
+const int *cptr;      // Zeiger auf konstantes int
+int * const ccp = &a; // Konstanter Zeiger auf int (const muss nach * sein)
+int *ptr;             // Zeiger auf int
+int &r = ci;          // Error, ci koennte sonst via r geaendert werden
+const int &cra = a;   // Referenz auf konstantes int, zeigt auf a, alles OK
+cr = 19;              // Error, aendern nicht erlaubt
+cra = 17;             // Error, aendern nicht erlaubt (cra ist konstante Referenz)
+ptr = &ci;            // Error, ci ist konstant, *ptr nicht
+cptr = &ci;           // Ok (Zeiger selbst ist nicht konstant)
+*cptr = 4;            // Error, Zeiger zeigt auf Konstant
+cptr++;               // Ok (Zeiger selbst ist nicht konstant)
+*ccp = 4;             // Ok, Zeiger zeigt auf nicht konstant)
+ccp++;                // Error Zeiger ist konstant
+
+void f1(int &i) 
+{ 
+   i++; 
+}
+
+void f2(const int &i) 
+{ 
+   i++; // Error, i ist Referenz auf konstantes int
+}
+
+f1(ci); // Error, Argument von f1 ist nich konstant, koennte i aendern
+f2(ci); // Ok f2 kann i nicht aendern
+\end{CCode}
+
+Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als const deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit const kann man eine Methode also überladen.
+\begin{CCode}
+class MyClass {
+
+int i;
+
+  public:
+    int  Test(void);         // Nur-Lese Methode, aber nicht als const deklariert
+    int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
+    void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
+};
+
+int MyClass::Test(void) 
+{ 
+   return (i == 0);
+}
+
+int MyClass::Read(void) const
+{ 
+   i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
+   return i;   // Ok, i wird nur gelesen
+}
+
+void MyClass::Write(int n) 
+{ 
+   i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
+}
+
+void f1(const MyClass& mc)    // f1 veraendert Argument nicht 
+{
+   int i = mc.Read();  //Ok, Read() ist Konstant, nur lesen
+   int j = mc.Test();  //Error, Test() ist nicht Konstant
+   mc.Write();         //Error, Write() ist nicht Konstant 
+}
+\end{CCode}
+
+\section{Umgehung der Konstantheit (Mutable)}
+Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
+aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
+(z. B. ein statischer Zugriffszähler) modifiziert.
+
+Für diese Fälle kann ein Attribut als \OviIndex{mutable} gekennzeichnet werden. 
+Attribute mit dem Qualifizierer dürfen, im Gegensatz zu 'normalen'
+Attributen, von const Methoden verändert werden.
+
+
+\begin{CCode}
+class MyClass {
+
+mutable int NumberOfReadAccesses;
+int i;
+
+  public:
+    int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
+    void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
+};
+
+int MyClass::Read(void) const
+{ 
+   NumberOfReadAccesses++;  // OK, mutable darf von const-Methode geaendert werden 
+   i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
+   return i;   // Ok, i wird nur gelesen
+}
+
+void MyClass::Write(int n) 
+{ 
+   i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
+}
+
+\end{CCode}
+ 
+Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
+alles konstant ist. Mutable sollte nur in gut begründeten Ausnahmefällen
+eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
+nicht ändert, aber interne Verwaltungsinformation geändert werden
+muss. 
+
+Eine mögliche Anwendung wäre ein Proxy-Objekt, das beim Lesen
+effektiv Daten von einer Datei in einen lokalen Cache lädt, oder die
+Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
+ändert seinen Wert schliesslich nicht.
+ 
+
+
+\chapter{Kontrollstrukturen}
+C/\Cpp besitzt alle gängigen Kontrollstrukturen, wobei einige etwas anders als bei anderen Sprachen (Pascal) funktionieren.
+
+\section{if() then else}
+Verzweigung
+\begin{CCode}
+if (a > b) {
+  c = b;
+} else {
+  c = a;
+}
+\end{CCode}
+
+Der else-Zweig kann bei nichtgebrauch weggelassen werden:
+\begin{CCode}
+if (c > 0) {
+  c = -c;
+}
+\end{CCode}
+\section{while(), do while()}
+Die Schlaufe wird solange ausgeführt wie die while-Bedingung wahr ist.
+\begin{CCode}
+// Vorabpruefung (while)
+
+c = 0;
+while (c < 10) {
+  c = c + 1;
+}
+\end{CCode}
+
+\begin{CCode}
+// Endepruefung (do ... while)
+
+c = 0;
+do {
+  c = c + 1;
+} while (c < 10);
+\end{CCode}
+
+ 
+\section{for()}
+Die For-Schlaufe ist etwas komplizierter, sie besteht aus 3 Teilen:
+	for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)
+Die Initialisierungsbefehle werden vor Beginn der Schlaufe einmal ausgeführt. Die Schlaufe wird solange ausgeführt wie die Eintrittsbedingung wahr ist, die Prüfung wird zu Beginn der Schlaufe ausgeführt. Die Repetitionsanweisung wird jeweils am Schlaufenende durchgeführt.
+\begin{CCode}
+c = 0;
+for (int i = 0; i < 10; i++) {
+  c = c + i;
+}
+\end{CCode}
+
+\begin{CCode}
+for (int j = 6; j < 19; j = j + 3) {
+  c = c + j;
+}
+\end{CCode}
+
+\begin{CCode}
+for (int j = 6; j < 19;  ) {
+  c = c + j;
+  j = j + 7;
+}
+\end{CCode}
+
+\begin{CCode}
+int k;
+for (k = 100; k > 1; k = k / 2) {
+  c = c + k;
+}
+\end{CCode}
+Die for-Schlaufe
+\begin{CCode}
+for (int j = 6; j < 19; j = j + 3) {
+  c = c + j;
+}
+\end{CCode}
+kann als
+\begin{CCode}
+int j = 6;
+while (j < 19) {
+  c = c + j;
+
+  j = j + 3;
+}
+\end{CCode}
+Geschrieben werden
+
+\section{switch()}
+Auswahlanweisung, der Programmfluss wird bei dem case - statement weitergeführt, das mit dem Wert der switch-Anweisung übereinstimmt. Es können nur Konstanten bei den Case Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein break oder das Ende der Struktur trifft. Wenn nach einem case Statement kein break steht, fährt das Programm mit den Anweisungen des nächsten case weiter. (Sollte vermieden werden). Der Defaultfall kann weggelassen werden.
+\begin{CCode}
+switch (i) {
+  case 1: cout << "Eins" << endl;
+      break;
+  case 2: cout << "Zwei" << endl;
+      break;
+  case 3: cout << "Drei" << endl;
+      break;
+  default: cout << "Was anderes" << endl;
+      break;
+}
+\end{CCode}
+
+\section{Funktionen}
+Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als void deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (const).
+
+Mit 'return x' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit 'return' oder 'return x' kann eine Funktion auch vor ihrem Ende verlassen werden.
+
+
+\begin{CCode}
+int Mittelwert(int a, int b) 
+{
+  int m;
+  m = (a + b) / 2;
+  return (m)
+}
+\end{CCode}
+
+\begin{CCode}
+void Sort(int & a, int & b) 
+{
+  int t;
+  if (a > b) {
+     t = a;  // Tauscht die Originalvariablen
+     a = b;  // vom aufrufenden Programm
+     b = t
+  }   
+}
+\end{CCode}
+
+\begin{CCode}
+int Maximum(int a, int b)
+{
+  if (a > b) {
+   return (a);
+  } else {
+   return (b);
+  }
+}
+\end{CCode}
+
+\begin{CCode}
+void Print( const int &a) // Referenzen waeren bei Objekten sinnvoller als hier
+{
+  cout << a;
+}
+\end{CCode}
+
+Lokale Variablen von Funktionen besitzen zufälligen Inhalt, sie müssen vor erstmaligem Gebrauch initialisiert werden. 
+
+Rekursion ist in \Cpp ohne Einschränkungen möglich (Solange der Speicher ausreicht).
+
+\subsection{Prototypen}
+Bevor eine Funktion verwendet wird, muss sie bekannt sein. Entweder man definiert die Funktion vor ihrer Verwendung, oder man deklariert sie mit einem \OviIndex{Prototyp}. Prototypen von globalen Funktionen werden normalerweise im Headerfile des entsprechenden Modules deklariert, lokale Funktionen am Anfang des Modules. Ein Prototyp ist nichts anderes als ein Funktionskopf, abgeschlossen mit einem Semikolon; der Funktionsrumpf fehlt. Derselbe Prototyp kann beliebig oft deklariert werden, solange sich die verschiedenen Deklarationen nicht widersprechen.
+
+Ein Prototyp wird wie folgt deklariert:
+\begin{CCode}
+void Afunction(int a, char *b, int c);  // Prototyp
+int Bfunction(void);                    // Prototyp
+extern void PrintIt(int a);             // Prototyp, extern zeigt an dass die 
+                                        // Funktion in anderem Modul definiert wird.
+                                        // Uebliche Form in Headerdateien, obwohl 
+                                        // extern in diesem Fall optional ist
+\end{CCode}
+
+\subsection{Defaultargumente}
+Funktionen können mit \OviIndex{Defaultargumenten} ausgestattet werden. Beim Aufruf
+der Funktion können diese Argumente weggelassen werden, der Kompiler setzt dann
+automatisch die angegebenen Defaultwerte ein. Die Defaultargumente müssen bei der
+Funktionsdeklaration (Prototyp) angegeben werden, nicht aber bei der Definition.
+
+Die Defaultargumente müssen zwingend von hinten nach vorne angegeben werden.
+(D.h. es darf nur das hinterste, das hinterste und das zweithinterste, 
+das hinterste, das zweithinterste und das dritthinterste, [und so fort] Argument
+weggelassen werden.)
+
+
+Defaultargumente werden wie folgt deklariert:
+\begin{CCode}
+
+void Afunction(int a, char *b = NULL, int c = 17);  // Prototyp
+
+   AFunction(1, "w", 39);  // Normaler Aufruf 
+
+   AFunction(1, "X");      // Fuer c wird 17 benutzt 
+
+   AFunction(1);           // Fuer b wird NULL und fuer c wird 17 benutzt 
+
+\end{CCode}
+
+\subsection{Inline-Funktionen}
+Kurze und oft benutzte Funktionen können als \OviIndex{inline} definiert werden (Üblicherweise
+wird die ganze Funktion samt Code in diesem Fall in der Headerdatei definiert). Solche Funktionen
+werden (Soweit möglich) vom Compiler an der Aufrufstelle in den Code eingefügt, und nicht
+aufgerufen. Dies führt zu effizienterem und schnellerem Code, kann dafür mehr
+Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei langen
+Funktionen ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
+der Speicherverbrauch gross ist.
+
+
+\chapter{Klassen}
+\section{Was sind Klassen}
+Eine \OviIndex{Klasse} unter \Cpp  entspricht im wesentlichen einer Struktur in C oder einem Record in Pascal. Nur dass auch die Funktionen (Methoden), die mit den Daten (Attribute) der Klasse arbeiten zu der Klasse hinzugefügt werden und nicht davon separiert sind.
+
+Also wird aus folgendem Code unter C:
+\begin{CCode}
+// h-File
+struct Datum {
+   int Tag;
+   int Monat; 
+   int Jahr;
+};
+
+void InitDate(Datum *Date, int NewTag, int NewMonat, int NewJahr);
+void PrintDate(Datum *Date);
+void AddDayToDate(Datum *Date, int Day);
+\end{CCode}
+
+\begin{CCode}
+//c-Datei
+void InitDate(Datum *Date, int NewTag, int NewMonat, int NewJahr)
+{
+   Datum->Tag   = NewTag;
+   Datum->Monat = NewMonat;
+   Datum->Jahr  = NewJahr;
+}
+
+int main(int argc, char *argv[]) {
+
+   Datum DasDatum;                    // Erzeugen des Objektes
+   InitDate(&DasDatum, 24, 12, 2002); // Initialisieren des Objektes
+   PrintDate(&DasDatum);              // Ausgeben des Objektes
+}
+\end{CCode}
+
+
+folgender Code in \Cpp:
+\begin{CCode}
+// h-File
+class Datum {
+   int Tag;
+   int Monat; 
+   int Jahr;
+
+   void Init(int NewTag, int NewMonat, int NewJahr);
+   void Print();
+   void AddDay(int Day);
+};
+\end{CCode}
+
+\begin{CCode}
+//cpp-Datei
+void Datum::Init(int NewTag, int NewMonat, int NewJahr)  // Init von Datum
+{
+   Tag   = NewTag;
+   Monat = NewMonat;
+   Jahr  = NewJahr;
+}
+
+int main(int argc, char *argv[]) {
+
+   Datum DasDatum;                  // Erzeugen des Objektes
+   DasDatum.Init(24, 12, 2002);     // Initialisieren des Objektes
+   DasDatum.Print();                // Ausgeben des Objektes
+}
+\end{CCode}
+
+
+\section{Konstruktoren / Destruktoren}
+Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
+Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
+
+\begin{CCode}
+// h-File
+class Datum {
+   int Tag;
+   int Monat; 
+   int Jahr;
+
+        Datum(int NewTag, int NewMonat, int NewJahr); // Konstruktor
+   void Print();
+   void AddDay(int Day);
+};
+\end{CCode}
+
+\begin{CCode}
+//cpp-Datei
+Datum::Datum(int NewTag, int NewMonat, int NewJahr)
+{
+   Tag   = NewTag;
+   Monat = NewMonat;
+   Jahr  = NewJahr;
+}
+
+int main(int argc, char *argv[]) {
+
+   Datum DasDatum(24, 12, 2002);    // Erzeugen und Initialisieren des Objektes
+   DasDatum.Print();                // Ausgeben des Objektes
+}
+\end{CCode}
+
+Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird.
+
+Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, dann kann er einfach weggelassen werden
+
+
+\subsection{Konstruktoren}
+\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach alle Attribute auf 0 setzt. Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
+\begin{CCode}
+class MyClass {
+  int k, j;
+  public:
+                MyClass(void);         // Argumentloser Konstruktor
+                MyClass(int new_k);    // Ueberladen fuer int
+                MyClass(float new_k);  // Ueberladen fuer float
+   ...
+};
+\end{CCode}
+
+Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerweise über die \OviIndex{Initialisiererliste}. Die Initialisiererliste wird durch ein ':' eingeleitet, die Attribute werden mit der Konstruktorsyntax initialisiert (Attributname(Wert1, Wert2, ....) ). Basisklassen und eingebettete Klassen ohne Defaultkonstruktor sowie Referenzen können \emph{nur} über die Initialisiererliste initialisiert werden.
+\begin{CCode}
+   MyClass::MyClass(void) : k(13), j(2)
+   {
+     ....    // Weiterer Code
+   }
+
+   MyClass::MyClass(int new_k) : k(new_k), j(2)
+   {
+     ....    // Weiterer Code
+   }
+\end{CCode}
+
+
+\subsection{Copy-Construktor}
+Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
+\begin{CCode}
+class MyClass {
+  int k, j;
+  public:
+   ...
+                MyClass(const MyClass &Source);  // Copy-Konstruktor
+   ...
+};
+\end{CCode}
+
+\subsection{Zuweisungsoperator}
+In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (operator =()), dieser wird jedesmal aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (*this) zurückliefern. Der Zuweisungsoperator kann
+für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes geloescht (Ueberschrieben) und durch neue Werte ersetzt wird.
+
+\begin{CCode}
+class MyClass {
+  int k, j;
+  public:
+   ...
+                MyClass &operator =(const MyClass &Source);  // Zuweisungs-Operator
+   ...
+   ...
+};
+
+MyClass &MyClass::operator =(const MyClass &Source)
+{
+   if (this != &Source) {
+      k = Source.k;
+   }
+   return *this;
+}
+
+\end{CCode}
+
+\subsection{Destruktor}
+Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse aufweist, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden.
+\begin{CCode}
+class MyClass {
+  int k, j;
+  public:
+   ...
+               ~MyClass(void);         // Destruktor
+   ...
+   ...
+};
+\end{CCode}
+
+\subsection{Umwandlungsoperator}
+\OviIndex{Umwandlungsoperatoren} gehören eigentlich ins Kapitel Operatoren überladen, werden aber hier erwähnt. Wenn ein Objekt in ein anderes umgewandelt werden soll, ist dies entweder mit Konstruktoren oder Umwandlungsoperatoren möglich.
+Wenn man eine automatische Umwandlung einer Klasse A in einen int haben möchte, wenn ein Objekt dieser Klasse einem int zugewiesen wird, müsste folgender Umwandlungsoperator definiert werden:
+\begin{CCode}
+class A {
+   private:
+   int i;
+   int j;
+   
+   public:
+   A(int _i, int _j) : i(_i), j(_j) {};
+   operator int ();  //Beachten: Keinen Rueckgabetyp angeben!!!
+};
+
+A::operator int() //Beachten: Keinen Rueckgabetyp angeben!!!
+{
+   return i+j;
+}
+
+int main(int argc, char *argv[]) 
+{
+   A x(1, 2);
+   int q;
+   q = x;
+   cout << q;
+}
+\end{CCode}
+
+Achtung: Umwandlungsoperatoren sollten sehr zurückhaltend eingesetzt werden, da sonst viele inkompatible Zuweisungen plötzlich erlaubt werden, und viele Flüchtigkeitsfehler vom Compiler nicht mehr erkannt werden können.
+Es kann auch passieren, dass unerwartete Umwandlungen geschehen und man den Überblick über die möglichen Umwandlungen verliert. 
+
+
+\section{Zugriffsrechte}
+In Klassen kann unter \Cpp der Zugriff auf Member (Attribute und Methoden) eingeschränkt werden. Es gibt folgende \OviIndex{Zugriffsrechte}\index{public}\index{protected}\index{private}:
+\paragraph{public:} 
+Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubute vermieden werden (Default bei Strukturen).
+\paragraph{protected:}	Auf dieses Element kann nur von Methoden dieser Klasse und davon abgeleiteten Klassen (sowie von Friendfunktionen) zugegriffen werden.
+\paragraph{private:}	Auf dieses Element kann nur von Methoden dieser Klasse (sowie von Friendfunktionen) zugegriffen werden (Default bei Klassen).
+
+Eine Zugriffsberechtigung ist solange gültig bis eine andere eingestellt wird.
+
+\section{Friendfunktionen}
+\index{Friendfunktionen}Wenn man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben will, ohne diese Member als public zu definieren, kann man die Funktion oder Klasse als \OviIndex{friend} deklarieren:
+
+\begin{CCode}
+class MyClass {
+
+friend void AccessMe(MyClass *mc);  // Globale Funktion AccesMe darf auf private
+                                    // Member zugreifen 
+friend void OtherClass::Intrude(MyClass *mc);  // Methode intrude der Klasse 
+                                               // OtherClass darf auf auf private 
+                                               // Member zugreifen 
+friend class BigBrother;            // Alle Methoden der Klasse BigBrother
+                                    // duerfen auf private Member zugreifen 
+  int i;
+  int k;
+
+  public:
+    MyClass();
+    MyClass(int new_i, int new_k);
+   ~MyClass();
+  
+  int Getk();
+};
+\end{CCode}
+
+Achtung, die Klasse gibt anderen das Recht auf sie zuzugreifen, und nicht umgekehrt. Die friend Deklaration muss deshalb immer in der betroffenen Klasse stehen. Mit friend kann man den Zugriffsschutz für eine bestimmte Funktion oder Klasse ausschalten. Eine Klasse kann beliebig viele Friends deklarieren.
+Man sollte damit aber zurückhaltend umgehen, da damit das Prinzip der Kapselung verletzt wird.
+In vielen Fällen ist es jedoch sinnvoller, ein bestimmtes Element als Friend zu deklarieren
+als eine Menge von Set- und Get-Methoden einzubauen, da mit unnötigen Set- und Get-Methoden
+die Kapselung erst recht durchbrochen wird.
+
+\section{Vorwärts Deklarationen} 
+\index{Vorwärts Deklarationen}Wenn man Zeiger oder Referenzen auf Objekte definieren/deklarieren will, muss die Klasse nicht vollständig bekannt sein. Solange man nicht auf Attribute oder Methoden der Klasse zugreift, reicht eine einfache Klassendeklaration der Form
+\begin{CCode}
+class SomeClass;
+
+void f1(SomeClass &r);
+\end{CCode}
+
+Sobald man auf Member zugreift, muss die Klasse vollständig bekannt sein.
+
+\section{Inline Methoden}
+\index{Inline Methoden} 
+Kurze und oft benutzte Methoden können als \OviIndex{inline} definiert werden. (Üblicherweise
+wird die ganze Funktion samt Code in diesem Fall in der Headerdatei innerhalb der Klassendeklaration definiert). Solche Methoden
+werden (Soweit möglich) vom Compiler an der Aufrufstelle in den Code eingefügt, und nicht
+aufgerufen. Dies führt zu effizienterem und schnellerem Code, kann dafür mehr
+Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei langen
+Methoden ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
+der Speicherverbrauch gross ist.
+
+\begin{CCode}
+class A {
+   
+   private:
+   int i;
+   
+   public:
+   A(int _i) : i(_i) {};      //Konstruktor, macht nichts (Leerer Funktionsrumpf)
+  ~A() {};                    //Destruktor, macht nichts (Leerer Funktionsrumpf)
+   
+   int GetI() { return i; };  // Inline Code
+   void SetI(int ni) { if (i > 0) {i = ni;};};  // Inline Code
+   void SetX(int ni) { 
+                       if (i > 0) {   // Inline Code darf auch
+                          i = ni;     // strukturiert geschrieben
+                       };             // werden...
+                     };  
+   void DoSomething();                  
+};
+
+
+inline void A::DoSomething()  // Inline Methoden können auch
+{                             // ausserhalb der Klasse definiert
+   if (i > 2) {               // werden. (Sollten aber innerhalb 
+      i = i * 2;              // der selben Datei definiert werden)
+   }
+}
+\end{CCode}
+
+
+ 
+\section{Statische Member}
+\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Auf statische Member wird über die Klasse mit dem Scope-Resolutions-Operator ('::') zugegriffen.
+
+\begin{CCode}
+class A {
+   private:
+   int i;
+   static int Count;   // Zaehlt anzahl Objekte
+   
+   public:
+   A(int _i) : i(_i) { Count++; };      //Konstruktor, zaehlt Objekte
+   A(const A &r) : i(r.i) { Count++; }; //Copy-Konstruktor, zaehlt Objekte
+  ~A() { Count--; };                    //Destruktor, zaehlt Objekte
+   
+   static int GetNumberOfObjects() { return Count; };
+};
+
+int A::Count = 0;   // Definiere und initialisiere statische Member-Variable 
+                    // Nur an einem Platz im ganzen Programm, normalerweise
+                    // im .cpp-Modul der Klasse
+
+A a1(1), a2(2), a3(3);   // Einige Objekte erzeugen
+int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
+\end{CCode}
+
+
+\section{Der this-Pointer}
+Jede Methode (Auch Kostruktoren, Destruktor und Operatorfunktionen) haben implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf die Attribute zugreifen.
+
+\begin{CCode}
+class Auto {
+   
+     int Gewicht;
+   
+   public:
+     void SetGewicht(int Gewicht);
+}
+
+void Auto::SetGewicht(int Gewicht)
+{
+   Gewicht = Gewicht;       //  Aehm, welches Gewicht jetzt????  (beide mal 
+                            //  der selbe Name!)
+   this->Gewicht = Gewicht; //  Ah nun ist alles klar. Es sollte aber 
+                            //  dennoch vermieden werden Attributnamen bei 
+                            //  Funktionsparametern zu verwenden, da der
+                            //  Parameter das Attribut verdeckt
+}
+\end{CCode}
+ 
+\section{Zeiger auf Elemente (Memberpointer)}
+In \Cpp gibt es die Möglichkeit, \OviIndex{Memberpointer} zu verwenden. Das sind Zeiger
+auf die einzelnen Elemente einer Klasse. Ein Memberpointer enthält in dem Sinne
+eigentlich nicht eine Adresse, sondern mehr ein Offset oder die Identifikation 
+eines Klassenmembers. Ein \OviIndex{Elementzeiger} kann nur für die Klasse verwendet werden, für
+die er definiert wurde. Ein Memberzeiger ist also an eine bestimmte Klasse gebunden.
+\begin{CCode}
+class Demo {
+   public:
+   
+   int  a;
+   int  b;
+   int  c;
+   char z;
+   
+   void f1();
+   void f2();
+   void f3();
+};
+
+Demo   x;
+Demo   y;
+Demo *dp = &y;
+
+int    Demo::*MemberPointer;
+
+MemberPointer = &Demo::a;       // Zeigt nun auf a der Klasse Demo 
+  
+x.*MemberPointer   = 5;         // Weist x.a 5 zu;
+dp->*MemberPointer = 5;         // Weist y.a 5 zu;
+
+MemberPointer = &Demo::b;       // Zeigt nun auf b der Klasse Demo 
+
+x.*MemberPointer   = 6;         // Weist x.b 6 zu;
+dp->*MemberPointer = 6;         // Weist y.b 6 zu;
+
+MemberPointer = &Demo::z;       // Fehler, z ist nicht int
+
+void (Demo::*MemberfPointer)(); // Zeiger auf Memberfunktion
+
+MemberfPointer = &Demo::f1;     // Zeigt nun auf f1() der Klasse Demo 
+
+(x.*MemberfPointer)();          // Ruft die Methode f1() fuer x auf;
+(dp->*MemberfPointer)();        // Ruft die Methode f1() fuer y auf;
+
+MemberfPointer = &Demo::f2;     // Zeigt nun auf f2() der Klasse Demo 
+
+(x.*MemberfPointer)();          // Ruft die Methode f2() fuer x auf;
+(dp->*MemberfPointer)();        // Ruft die Methode f2() fuer y auf;
+\end{CCode}
+Wie schon bei den 'normalen' Funktionszeigern wird dringend der Gebrauch von
+typedef empfohlen, um den Code lesbarer zu halten. 
+
+\section{Erzeugen von Objekten}
+Unter \Cpp werden Objekte wie gewöhnliche Variablen erzeugt. Ein Objekt ist somit nichts anders als eine Variable vom Typ seiner Klasse.
+
+Eine int Variable kann wie folgt erzeugt werden:
+
+\begin{CCode}
+  int i;       // Erzeugen einer Integervariablen mit dem Namen i
+  int *p;      // Erzeugen eines Zeigers auf einen Integer
+  p = new int; // Dynamisches Erzeugen einer namenlosen Integervariablen und
+                  den Zeiger p darauf zeigen lassen
+\end{CCode}
+
+Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
+
+\begin{CCode}
+  Student s;       // Erzeugen eines Studentenobjektes mit dem Namen s
+  Student *sp;     // Erzeugen eines Zeigers auf einen Studenten
+  sp = new Student; // Dynamisches Erzeugen eines namenlosen Studenten-
+                    //  objektes und den Zeiger sp darauf zeigen lassen
+                      
+  Student s2("Hans", 27);         // Mit Argumenten fuer Konstruktor                    
+  sp = new Student("Fritz", 28);                      
+\end{CCode}
+
+Wenn Variablen und Objekte normal erzeugt werden (Also nicht dynamisch mit new), dann werden sie automatisch gelöscht wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
+Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp des Programms. 
+
+Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen.
+
+Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt wird.
+Beispiel:
+
+\begin{CCode}
+class StudentClass {
+   int Alter;
+   AdressClass Adresse; // Eingebettetes Objekt, ist Attribut 
+                        // der Klasse StudentClass
+};
+\end{CCode}
+
+Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch den Konstruktor erledigt werden, und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde.
+Beispiel:
+\begin{CCode}
+class StudentClass {
+   int Alter;
+   AdressClass *Adresse; // Eingebettetes Objekt, wird via Zeiger referenziert und 
+                         // muss deshalb dynamisch erzeugt werden (Normalerweise
+                         // im Konstruktor) und geloescht werden (Im Destruktor).                        
+};
+\end{CCode}
+
+
+\section{Beispiel einer Klasse}
+\paragraph{MyClass.hpp} (Klassendeklaration)
+\begin{CCode}
+class MyClass {
+  int i;
+  int k;
+
+  public:
+    MyClass();
+    MyClass(int new_i, int new_k);
+    ~MyClass();
+  
+  void Print();
+  void Seti(int new_i) {i = new_i; }; //Inline Methode, Sinnvoll fuer kurze Methoden
+  void Setk(int new_k);
+  int Geti() { return (i); };         //Inline Methode, Sinnvoll fuer kurze Methoden
+  int Getk();
+};
+\end{CCode}
+
+\paragraph{MyClass.cpp} (Klassendefinition)
+
+\begin{CCode}
+#include "MyClass.hpp"
+#include <iostream>
+
+MyClass::MyClass() : i(0), k(0) // Konstruktor mit Initialisiererliste (:)
+{
+  cout << "MyClass created" << endl;
+}
+
+MyClass::MyClass(int new_i, int new_k) : i(new_i), k(new_k) 
+{
+  cout << "MyClass created" << endl;
+}
+
+MyClass:: ~MyClass()
+{
+  cout << "MyClass destroyed" << endl;
+}
+
+void MyClass::Print();
+{
+  cout << "MyClass : i = " << i << "; k = " << k << endl;
+}
+
+void MyClass::Setk(int new_k);
+{
+  k = new_k;
+}
+
+int MyClass::Getk();
+{
+  return (k)
+}
+\end{CCode}
+\paragraph{Main.c} (Klassenbenutzung)
+\begin{CCode}
+#include "MyClass.hpp"
+#include <iostream>
+
+int main (int argc, char *argv[]) 
+{
+  MyClass Object1(12, 30);
+  MyClass Object2;
+  MyClass *Ptr;
+
+  Object1.Print();
+  Object1.Seti(33);
+  Object1.Print();
+
+  cout << "Object2 " << Object2.Geti() << ":" << Object2.Getk() << endl;
+
+  Ptr = new MyClass(10, 20);
+  Ptr->Print();
+  delete Ptr;
+
+  Ptr = new MyClass(6, 12);
+  Ptr->Print();
+  delete Ptr;
+  
+  return 0;
+}
+\end{CCode}
+
+\NextPagePlease 
+\subsection{Vererbung}
+Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden, die von der existierenden Klasse erbt. 
+
+Bei der \OviIndex{Vererbung} übernimmt die neue Klasse zuerst einmal alle Attribute und Methoden der bereits bestehenden Klasse, und fügt eventuell neue Attribute und Methoden hinzu, oder ändert die geerbten Methoden ab (Überschreibt Sie).
+
+Wenn eine Klasse von einer bestehenden Klasse (Basisklasse) erben soll, wird nach dem Klassennahmen ein Doppelpunk gesetzt, anschliessend folgt ein Zugriffspefizierer und danach der Namen der Basisklasse. Der Zugriffsspezifizierer legt die Zugriffsrechte für die Basisklasse fest, genau so wie wenn sie ein Attribut der neuen Klasse wäre. Normalerweise wird hier public verwendet, da sonst Probleme mit \OviIndex{Polymorphismus} auftreten. (Die Methoden der Basisklasse sind via abgeleitete Klasse nicht zugänglich)
+
+Unter \Cpp sieht eine \OviIndex{Vererbung} wie folgt aus:
+
+\paragraph{ExtendedClass.hpp} (Klassendeklaration)
+\begin{CCode}
+#include "MyClass.hpp"
+
+class ExtendedClass : public MyClass {  // erben von MyClass
+  int Additional;                       // Zusaetzliches Attribut
+
+  public:
+    ExtendedClass ();                   // Jede Klasse hat eigene Kon- und 
+    ExtendedClass (int new_i, int new_k, int new_Addit);   // Destruktoren
+    ~ExtendedClass ();
+  
+  void Print();                   // Methode uberschreiben, muss erweitert werden
+  void SetAdditional(int new_a) {Additional= new_a; };  // Zusaetzlich
+  int GetAdditional() { return (Additional); };         // Zusaetzlich
+};
+\end{CCode}
+
+\paragraph{ExtendedClass.cpp} (Klassendefinition)
+\begin{CCode}
+#include "ExtendedClass.hpp"
+#include <iostream>
+
+ExtendedClass::ExtendedClass() : Additional(0) // Benutzt Defaultkonstruktor 
+{                                              //                       MyClass()
+  cout << "ExtendedClass created" << endl;
+}
+                                                    // MyClass initiaisieren (K'tor)
+ExtendedClass::ExtendedClass(int n_i,int n_k,int n_a): MyClass(n_i, n_k),Additional(n_a)
+{
+  cout << "ExtendedClass created" << endl;
+}
+
+ExtendedClass:: ~ExtendedClass()
+{
+  cout << "ExtendedClass destroyed" << endl;
+}
+
+void ExtendedClass::Print();
+{
+  MyClass::Print();   // Print Baseclass MyClass
+  cout << "ExtendedClass : Additional = " << Additional << endl;
+}
+\end{CCode}
+\NextPagePlease
+
+\paragraph{Main.c} (Klassenbenutzung)
+\begin{CCode}
+#include "ExtendedClass.hpp"
+#include <iostream>
+
+int main (int argc, char *argv[]) 
+{
+  ExtendedClass Object1(12, 30, 7);
+  ExtendedClass Object2;
+  MyClass *Ptr = &Object1;
+
+  Object1.Print();
+  Object2.SetiAdditional(33);
+  Object2.Print();
+
+  Ptr->Print();    // Achtung, benutzt MyClass::Print() da Pointer auf Typ MyClass
+                   // und Print() nicht virtuell ist
+  Ptr = &Object2;
+  Ptr->Print();    // Achtung, benutzt MyClass::Print() da Pointer auf Typ MyClass
+                   // und Print() nicht virtuell ist
+  return 0;
+}
+\end{CCode}
+
+\subsection{Mehrfachvererbung}
+In \Cpp ist auch \OviIndex{Mehrfachvererbung} möglich, das heisst, dass eine Klasse nicht nur von einer Klasse, sondern von mehreren erben kann.
+\begin{CCode}
+#include "MyClass.hpp"
+#include "AnotherClass.hpp"
+
+class ExtendedClass : public MyClass, public AnotherClass{  // Mehrfachvererbung
+  int Additional;                       // Zusaetzliches Attribut
+
+  public:
+    ExtendedClass ();                   // Jede Klasse hat eigene Kon- und 
+    ExtendedClass (int new_i, int new_k, int new_Addit);   // Destruktoren
+    ~ExtendedClass ();
+  
+  void Print();                   // Methode uberschreiben, muss erweitert werden
+  void SetAdditional(int new_a) {Additional= new_a; };  // Zusaetzlich
+  int GetAdditional() { return (Additional); };         // Zusaetzlich
+};
+\end{CCode}
+Mehrfachvererbung sollte soweit wie möglich vermieden werden, da sie oft Probleme verursacht. Speziell wenn von beiden Seiten Attribute geerbt werden (Wenn z.B. zwei
+Attribute den selben Namen besitzen ist ohne Scoperesolution nie klar, welches gemeint ist). Wenn nur eine Basisklasse Attribute aufweist, und alle anderen nur virtuelle Methoden entspricht dies im Prinzip den \OviIndex{Interfaces} in Java und kann in dieser Form zur Implementation von \OviIndex{Schnittstellen} eingesetzt werden. 
+
+In Bild \ref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu sehen.
+
+
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5]{Mehrfacherb}
+		\caption{Problematische Mehrfachvererbung}
+	\label{fig:Mehrfachvererbung}
+\end{figure}
+
+Einerseits ist mit D::y nicht klar, ob jetzt das y aus B oder das y aus C gemeint ist. Aber noch viel schwerwiegender ist, dass das Element x aus der Klasse A in D effektiv doppelt vorhanden ist (Also auch \emph{zwei} Speicherplätze belegt). Und je nach Zugriff auf D wird einmal das x von der B-Seite, und einmal dasjenige von der C-Seite benutzt. 
+
+Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden. Grundsätzlich besser ist aber die Vermeidung
+von Mehrfachvererbung wenn mehr als nur Schnittstellen implementiert werden sollen.
+ 
+
+\subsection{Polymorphismus}
+Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \OviIndex{virtual}, aber nicht bei der Definition (Implementation).
+\emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil unter Umständen sonst der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht der der Basisklasse benutzt werden.
+
+Wenn es keinen Sinn macht, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit = 0 in der Deklaration: 'virtual void f(void) = 0'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen.
+\NextPagePlease
+\paragraph{MyClass.h} (Klassendeklaration)
+\begin{CCode}
+class MyClass {
+  int k;
+  public:
+                MyClass(int new_k);
+  virtual      ~MyClass();
+  virtual  void Print();
+};
+\end{CCode}
+
+\paragraph{ExtendedClass.h} (Klassendeklaration)
+\begin{CCode}
+#include "MyClass.hpp"
+
+class ExtendedClass : public MyClass {  // erben von MyClass
+  int Additional;                       // Zusaetzliches Attribut
+  public:
+             ExtendedClass (int new_k, int new_Addit);
+  virtual   ~ExtendedClass ();     // virtual eigentlich nur noetig wenn von dieser 
+                                   // Klasse weiter abgeleitet wird   
+  virtual void Print();            // dito
+};
+\end{CCode}
+
+\paragraph{MyClass.c} (Klassendefinition)
+\begin{CCode}
+#include "MyClass.hpp"
+#include <iostream>
+
+MyClass::MyClass(int new_k) : k(new_k) 
+{
+  cout << "MyClass created" << endl;
+}
+
+MyClass:: ~MyClass()
+{
+  cout << "MyClass destroyed" << endl;
+}
+
+void MyClass::Print();
+{
+  cout << "MyClass : k = " << k << endl;
+}
+\end{CCode}
+
+\paragraph{ExtendedClass.c} (Klassendefinition)
+\begin{CCode}
+#include "ExtendedClass.hpp"
+#include <iostream>
+
+ExtendedClass::ExtendedClass(int n_k, int n_a): MyClass(n_k), Additional(n_a)
+{
+  cout << "ExtendedClass created" << endl;
+}
+ExtendedClass:: ~ExtendedClass()
+{
+  cout << "ExtendedClass destroyed" << endl;
+}
+void ExtendedClass::Print();
+{
+  MyClass::Print();   // Print Baseclass MyClass
+  cout << "ExtendedClass : Additional = " << Additional << endl;
+}
+\end{CCode}
+
+ 
+\NextPagePlease
+\paragraph{Main.c} (Klassenbenutzung)
+\begin{CCode}
+#include "ExtendedClass.hpp"
+#include <iostream>
+
+int main (int argc, char *argv[]) 
+{
+  ExtendedClass Object1(11, 7);
+  ExtendedClass Object2(12, 9);
+  MyClass       Object3(33);
+  MyClass *Ptr = &Object1;
+
+  Object1.Print();
+  Object2.Print();
+
+  Ptr->Print();    // Achtung, benutzt korrektes Print() da MyClass::Print()
+                   // virtuell ist und Aufruf via Pointer laeuft
+  Ptr = &Object2;
+  Ptr->Print();    // Achtung, benutzt korrektes Print() da MyClass::Print()
+                   // virtuell ist und Aufruf via Pointer laeuft
+  Ptr = &Object3;
+  Ptr->Print();    // Achtung, benutzt korrektes Print() da MyClass::Print()
+                   // virtuell ist und Aufruf via Pointer laeuft
+  return 0;
+}
+\end{CCode}
+
+
+\NextPagePlease
+
+\subsubsection{Beispiel für Polymorphismus}
+\paragraph{Deklaration} Vogel.hpp
+
+\begin{CodeTable}
+\lstinline$   class Vogel {$&\\
+\lstinline$     int Alter;$&\\
+\lstinline$     public:$&\\
+\lstinline$     void EierLegen();	$&\\
+\lstinline$     virtual void BrutplatzVorbereiten() = 0;$&	Rein virtuelle Funktion, es gibt keine allgemeine Vögel, Vögel gehören immer einer bestimmten Art an. \\
+\lstinline$   };	$&\\
+\end{CodeTable}
+
+\paragraph{Implementation} Vogel.cpp
+
+\begin{CodeTable}
+\lstinline$   #include "Vogel.hpp"$&\\
+\lstinline$   #include <iostream>$&\\
+	
+\lstinline$   void Vogel::EierLegen()$\linebreak[4]
+\lstinline$   {$\linebreak[4]
+\lstinline$      cout << "Ei gelegt" << endl;$\linebreak[4]
+\lstinline$   }	$&Keine Implementation von BrutplatzVorbereiten für Klasse Vogel notwendig, da rein virtuell.\\
+\end{CodeTable}
+
+\paragraph{Deklaration} Amsel.hpp
+
+\begin{CodeTable}
+\lstinline$   #include "Vogel.hpp"$&\\
+
+\lstinline$   class Amsel : public Vogel {$&\\
+\lstinline$     public:$&\\
+\lstinline$     void BrutplatzVorbereiten();$&Die Funktion BrutplatzVorbereiten für diese Klasse neu definieren. Die Funktion ist virtuell, da in der Basisklasse als solche deklariert (virtual muss hier nicht wiederholt werden, ausser man wolle auch von dieser Klasse ableiten)\\
+\lstinline$   }	$&\\
+\end{CodeTable}
+
+
+\paragraph{Implementation} Amsel.cpp
+
+\begin{CodeTable}
+\lstinline$   #include "Amsel.hpp"$&\\
+\lstinline$   #include <iostream>$&\\
+	
+\lstinline$   void Amsel::BrutplatzVorbereiten()$\linebreak[4]
+\lstinline$   {$\linebreak[4]
+\lstinline$      cout << "Baue Nest auf Baum oder Strauch"$\linebreak[4]
+\lstinline$                                        << endl;$\linebreak[4]
+\lstinline$   }$&	Implementation der Funktion für die Klasse Amsel\\
+\end{CodeTable}
+
+\NextPagePlease
+\paragraph{Deklaration} Specht.hpp
+
+\begin{CodeTable}
+\lstinline$   #include "Vogel.hpp"$&\\
+
+\lstinline$   class Specht : public Vogel {$&\\
+\lstinline$     public:$&\\
+\lstinline$     void BrutplatzVorbereiten();$&Die Funktion BrutplatzVorbereiten für diese Klasse neu definieren. Die Funktion ist virtuell, da in der Basisklasse als solche deklariert. (virtual muss hier nicht wiederholt werden, ausser man wolle auch von dieser Klasse ableiten)\\
+\lstinline$   }$&	\\
+\end{CodeTable}
+
+\paragraph{Implementation} Specht.cpp
+
+\begin{CodeTable}
+\lstinline$   #include "Specht.hpp"$&\\
+\lstinline$   #include <iostream>$&\\
+	
+\lstinline$   void Specht::BrutplatzVorbereiten()$\linebreak[4]
+\lstinline$   {$\linebreak[4]
+\lstinline$      cout << "Meissle Hoehle in einen Baum"$\linebreak[4]
+\lstinline$                                     << endl;$\linebreak[4]
+\lstinline$   }	$&Implementation der Funktion für die Klasse Specht
+\end{CodeTable}
+
+
+\paragraph{Benutzung der Klassen} test.cpp
+
+\begin{CodeTable}
+\lstinline$   #include "Specht.hpp"$&\\
+\lstinline$   #include "Amsel.hpp"$&\\
+\lstinline$   #include <iostream>$&
+	Wir wollen Objekte vom Typ Specht und vom Typ Amsel erzeugen.\\
+\lstinline$   int main(int argc, char *argv[]) $&	\\
+\lstinline$   {	$&\\
+\lstinline$      Vogel *EinVogel;	$&Zeiger auf einen Vogel (oder was davon abgeleitetes)\\
+\lstinline$      EinVogel = new Amsel();$&	Erzeuge eine Amsel\\
+\lstinline$      EinVogel->BrutplatzVorbereiten();$&	Ausgabe Nest bauen\\
+\lstinline$      delete EinVogel;	$&Objekt wieder loeschen\\
+\lstinline$      EinVogel = new Specht();	$&Erzeuge einen Specht\\
+\lstinline$      EinVogel->BrutplatzVorbereiten();	$&Ausgabe: Hoehle meisseln \\
+\lstinline$      delete EinVogel;	$&Objekt wieder loeschen\\
+\lstinline$      return 0;$&	\\
+\lstinline$   }	$&\\
+\end{CodeTable}
+
+
+\chapter{Weitere Sprachelemente}
+
+\section{Überladen von Funktionen}
+Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden.
+\begin{CCode}
+int max(int a, int b)
+{
+   if (a > b) {
+      return a;
+   } else {
+      return b;
+   }
+}
+
+float max(float a, float b)
+{
+   if (a > b) {
+      return a;
+   } else {
+      return b;
+   }
+}
+
+int main (int argc, char *argv[])
+{
+   int x, y;
+   float q, r;
+   q = max(x, y) // Ruft max() fuer int auf (Rueckgabewert hat keinen Einfluss 
+                 // auf Auswahl)
+   x = max(q, r) // Ruft max() fuer float auf (Rueckgabewert hat keinen Einfluss 
+                 // auf Auswahl)
+}
+\end{CCode}
+
+ 
+\section{Überladen von Operatoren}
+\index{Überladen von Operatoren}\OviIndex{Operatoren} ( + - * / etc.) gelten in \Cpp als normale Funktionen mit dem Namen operator x, wobei für x jeweils der gewünschte Operator eingesetzt wird. Im speziellen können diese Operatoren für eigene Typen (Also Klassen, resp. Objekte überladen werden)
+
+\begin{CCode}
+class Complex {
+   float r, i;
+   public:
+   Complex (int n_r, int n_i) : r(n_r), i(n_i) {};
+   Complex & Operator += (Complex &b) {r += b.r; i += b.i; return *this; };
+   Complex & Operator -= (Complex &b) {r -= b.r; i -= b.i; return *this; };
+   friend Complex operator +(Complex &a, Complex &b)
+   friend Complex operator -(Complex &a, Complex &b)
+   // To Do: A lot of other operands
+};
+
+inline Complex operator +(Complex &a, Complex &b) 
+{
+   return Complex(a.r + b.r, a.i + b.i);
+}
+
+inline Complex operator -(Complex &a, Complex &b) 
+{
+   return Complex(a.r - b.r, a.i - b.i);
+}
+
+
+int main(int argc, char *argv[]) 
+{
+   // Create some Complex Objects
+   Complex x(1, 0);
+   Complex y(0, 1);
+   Complex z(0, 0);
+   Complex q(0, 0);
+
+   // Do some Complex Operations 
+   z = x + y;   // is same as z = operator +(x, y)
+   q = z - y;   // is same as q = operator -(x, y)
+   z += x;      // is same as z.operator +=(x)
+   q = z - x + y;  // is same as q = operator -(z, operator +(x, y))
+ 
+   return 0;
+}
+\end{CCode}
+
+\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (friend-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, muss man beachten, dass der erste Operand immer ein Objekt sein muss.
+Der Ausdruck a + b enspricht somit den Ausdrücken a.operator +(b) oder operator +(a, b), man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
+
+Mann muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
+Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialitaet. Um Post (i++) und Pre (++i)
+auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
+
+{
+	\centering
+		\begin{tabular}{ll}
+      prefix (++i): &operator++()\\
+      postfix (i++):&operator++(int)\\
+      prefix (--i): &operator--()\\
+      postfix (i--):&operator--(int)\\
+		\end{tabular}
+   
+   Das int Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
+}   
+ 
+Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn wann immer möglich konstante Referenzen benutzt werden)
+ 
+\section{Ausnahmebehandlung (Exceptions)}
+Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
+
+Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Fehler auftritt, der an dieser Stelle nicht behandelt werden kann, wirft man mit throw() eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
+
+Mit \OviIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch int, char, ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
+Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler catch(...) fängt jede beliebige Exception. Nach jedem \OviIndex{try}-Block folgt eine Liste von Handlern (catch()). Die Handler werden in der Reihenfolge ihrer Definition durchsucht,  der erste passende Handler wird benutzt, und alle weiteren Handler
+dieser Liste ignoriert. Somit werden alle Handler nach \OviIndex{catch}(...) ignoriert. 
+
+Beispiel:
+\begin{CCode}
+class ErrorClass {
+};
+
+class NegativeSquareRootErrorClass : public ErrorClass{
+};
+
+class DivideByZerroErrorClass : public ErrorClass{
+};
+
+int SquareRoot(int x) {
+   if (x < 0) {
+      throw (NegativeSquareRootErrorClass());
+   }
+   int result = x / 2;
+   // some clever square root algorithm
+   return (result);
+}
+
+int Inverse(int x) {
+   if (x == 0) {
+      throw(DivideByZerroErrorClass());
+   }
+   return (1/x);
+}
+
+int f(int x1, int x2) {
+   int Result;
+   try {
+      int r1 = Inverse(x1);
+      int r2 = Inverse(x2);
+      Result = SquareRoot(r1) + SquareRoot(r2);
+      Result = Inverse(Result);
+   }
+   catch (DivideByZerroErrorClass &e) {
+      Result = 0;
+   }
+   return Result;
+}
+
+int main (int argc, char *argv[]) {
+   int a, b;
+   cin >> a;
+   cin >> b;
+   
+   try {
+      cout << f(a,b);
+   }
+   catch (DivideByZerroErrorClass &e) {
+      cout << "Division durch Null";
+   }
+   catch (NegativeSquareRootErrorClass &e) {
+      cout << "Wurzel aus negativer Zahl";
+   }
+   catch (...) {
+      cout << "Unerwartete Exception";
+   }
+}
+\end{CCode}
+
+
+Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (new) ist der Benutzer hingegen selbst zuständig (Durch entsprechende catch throw Anweisungen).
+
+Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit new), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen. Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit throw() einfach erneut geworfen:
+
+\begin{CCode}
+void f(int y) {
+
+   int *ptr;
+   // Speicher reservieren
+   ptr = new int [100];
+   try {
+      // Aufruf einer Funktion, die eine Exception werfen könnte
+      PossibleThrowingFunction(y, ptr);
+   }
+   catch (...) {
+      // jede Exception auffangen
+      // Speicher freigeben
+      delete[] ptr;
+      // und exception erneut werfen, wir wollen sie nicht hier behandeln,
+      // wir haben sie nur gefangen, um den Speicher im Fehlerfall auch
+      // freizugeben
+      throw;
+   }
+   
+   // Aufruf einer Funktion, die keine Exception werfen kann
+   NoThrowing(ptr);
+   
+   // Speicher wieder freigeben
+   delete[] ptr;
+}
+\end{CCode}
+
+\section{Laufzeit Typinformation (RTTI run-time type information)}
+\index{RTTI}
+\index{run-time type information}
+\index{Laufzeit Typinformation}
+Mit dem Operator \OviIndex{typeid}() ist es möglich, zur Laufzeit Informationen
+über den Typ eines Objektes zu erhalten. Der Operator typeid liefert eine Referenz auf ein Objekt der Klasse \OviIndex{type\_info}, welche in \mbox{<typeinfo>} deklariert ist.
+Type\_info-Objekte können nicht kopiert werden, es kann höchstens
+ihre Adresse in einem Zeiger abgespeichert werden. Man muss aber beachten, dass für denselben Typen durchaus mehrere Objekte im System existieren können. 
+Man muss also immer die Objekte direkt miteinander vergleichen, nie
+ihre Adressen. Ein sinnvoller Einsatz ist vorallem bei Vererbung und
+Polymorphismus möglich, funktioniert aber nur, wenn die beteiligten Klassen
+virtuelle Funktionen enthalten.
+\begin{CCode}
+#include <typeinfo>
+
+class A {...};
+class B : public A {...}
+
+void f(A *p) {
+   if (typeid(*p) == typeid(B) {
+      ...
+   }
+}
+\end{CCode}
+
+In diesem type\_info-Objekt sind alle verfügbaren Informationen über die betroffene
+Klasse abgelegt. Im System gibt es für jeden Datentyp und jede Klasse (Auch Benutzerdefinierte) ein (oder mehrere) entsprechende type\_info-Objekte.  
+
+Der implementierungsunabhängige Teil der Klasse type\_info sieht wie folgt aus.
+\begin{CCode}
+class type_info 
+   {
+   public:
+     virtual ~type_info();
+ 
+     
+     // Liefert einen Implememntationsabhaengigen String zurueck
+     // (Ist meistens der Name der Klasse)
+     const char* name() const;
+ 
+     // Zum Sortieren von type_info-Objekten
+     bool before(const type_info& __arg) const;
+     
+     // Pruefen, ob zwei type_info-Objekte gleich sind
+     bool operator==(const type_info& __arg) const;
+     bool operator!=(const type_info& __arg) const;
+     
+   private:
+     // Kopieren und Zuweisen ist nicht erlaubt
+     type_info& operator=(const type_info&);
+     type_info(const type_info&);
+   };
+\end{CCode}
+ 
+Zu Debug- und Testzwecken ist vorallem die Methode name() interessant.
+Was genau die Funktion zurückliefert ist implementationsabhängig,
+aber es muss in jedem Fall ein String sein, und man darf erwarten
+das er in irgendeiner Form den Typen des betroffenen Objektes
+enthält. Nachfolgend ein entsprechendes Beispiel: 
+\begin{CCode}
+#include <typeinfo>
+
+class A {...};
+class B : public A {...}
+
+void f(A *p) {
+   cout << "Objekt vom Typ <" << typeid(*p).name() << "> erhalten" << endl;
+   ...
+}
+\end{CCode}
+Man sollte aber typeid nicht dazu verwenden, objektabhängigen
+Code zu erzeugen, dazu sind die virtuellen Funktionen da. In gewissen
+speziellen Notfällen ist es manchmal notwendig, auf typeid
+zurückzugreifen.
+
+\section{Typumwandlungen (Casts)}
+In \Cpp gibt es mehrere Möglichkeiten, um Typen ineinander umzuwandeln. Einerseits
+der aus C 'geerbte' \OviIndex{Castoperator} (Z. B. (int) ), der aber nicht mehr benutzt
+werden sollte, andererseits die neuen, flexibleren Castoperatoren dynamic\_cast<>(), static\_cast<>(), const\_cast<>() und reinterpret\_cast<>(). 
+
+
+\paragraph*{reinterpret\_cast<>() und (cast)}
+Mit dem Castoperator \OviIndex{reinterpret\_cast<>()} kann wie mit dem aus C bekannten (cast) eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht aus dem Schlüsselwort reinterpret\_cast und einem in spitzen Klammern eingeschlossenen gültigen Datentyp. Der Castoperator wird wie ein Funktionsaufruf benutzt und hat eine entsprechend hohe Priorität. Bei der Umwandlung wird versucht, denn Wert
+der Daten soweit wie möglich zu erhalten, was aber oft nicht möglich ist, wenn ein grösserer Datentyp in einen kleineren gezwängt wird. Grundsätzlich kann aber mit dem Castoperator jeder skalare Typ (Zeiger und arithmetische Typen) in jeden anderen skalaren Typen umgewandelt werden.
+\begin{CCode}
+class D {...};
+
+int a,    *ip;
+float f,  *fp;
+D     d,  *dp;
+
+// Mit dem neuen reinterpret_cast<>()
+a = reinterpret_cast<int>(f);     // OK
+f = reinterpret_cast<float>(a);   // OK
+d = reinterpret_cast<D>(a);       // Fehler, D ist nicht skalar
+ 
+f  = reinterpret_cast<float>(pi); // OK, aber sinnlos, wandelt Adresse in float um
+pi = reinterpret_cast<int *>(f);  // OK, aber sinnlos, wandelt float in Adresse um
+dp = reinterpret_cast<D*>(ip);    // OK, Zeiger duerfen ineinander umgewandelt
+                                  //     werden
+dp = reinterpret_cast<D*>(f);     // OK, aber sinnlos, wandelt float in Adresse um
+
+// Dasselbe mit dem (cast) aus C
+a = (int)   f;  // OK
+f = (float) a;  // OK
+d = (D)     a;  // Fehler, D ist nicht skalar
+
+f  = (float) pi; // OK, aber sinnlos, wandelt Adresse in float um
+pi = (int *) f;  // OK, aber sinnlos, wandelt float in Adresse um
+dp = (D*)    ip; // OK, Zeiger duerfen ineinander umgewandelt werden
+dp = (D*)    f;  // OK, aber sinnlos, wandelt float in Adresse um
+\end{CCode}
+
+\paragraph*{static\_cast<>()}Mit dem Castoperator \OviIndex{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie int und float, oder zwischen verschiedenen Zeigertypen. Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt ist nicht möglich. Diese Variante ist sicherer, und
+dem reinterpret\_cast<>() wann immer möglich vorzuziehen.
+\begin{CCode}
+class D {...};
+
+int a,    *ip;
+float f,  *fp;
+D     d,  *dp;
+
+a = static_cast<int>(f);      // OK
+f = static_cast<float>(a);   // OK
+d = static_cast<D>(a);       // Fehler, D ist nicht skalar
+ 
+f  = static_cast<float>(pi);  // Fehler, Zeiger nach Numerisch ist nicht moeglich
+pi = static_cast<int *>(f);   // Fehler, Numerisch nach Zeiger ist nicht moeglich
+dp = static_cast<D*>(ip);     // OK, Zeiger dürfen ineinander umgewandelt werden
+dp = reinterpret_cast<D*>(f); // Fehler, Numerisch nach Zeiger ist nicht moeglich
+\end{CCode}
+
+\paragraph*{const\_cast<>()}Mit dem \OviIndex{Castoperator const\_cast<>()} kann die Konstantheit (const) und die Volatilität (volatile) entfernt werden. Weitergehende Umwandlungen sind nicht möglich.
+\begin{CCode}
+class D {...};
+
+const int   ca;
+      int   a;
+const float cf;
+      float f;
+const D    *cdp;    // Zeiger auf konstantes D
+      D    *dp;     // Zeiger auf D
+
+dp = cdp;                     // Fehler, const-Zeiger an normalen Zeiger 
+                              // zuzuweisen ist verboten
+a  = const_cast<int>(f);      // Fehler, unterschiedliche Datentypen
+f  = const_cast<float>(cf);   // OK, nur const entfernt
+dp = const_cast<D*>(cdp);     // OK, nur const entfernt
+\end{CCode}
+
+\paragraph*{dynamic\_cast<>()}Mit dem Castoperator \OviIndex{dynamic\_cast<>()} können Zeiger und Referenzen auf Objekte innerhalb der Vererbungshierarchie ineinander umgewandelt werden. Dabei wird aber zu Laufzeit geprüft, ab das betroffene Objekt zum neuen Typ passt, sonst wird eine Exception geworfen (Referenzen) oder ein Nullzeiger geliefert (Zeiger). Das heisst für eine erfolgreiche Umwandlung muss das betroffene Objekt tatsächlich der gewünschten Klasse angehören, oder davon abgeleitet sein.
+\begin{CCode}
+class Y {...};
+class A {...};
+class B : public A {...};
+class C : public A {...};
+class D : public C {...};
+
+A a;
+B b;
+C c;
+D d;
+Y y;
+
+A *pa = &a;
+B *pb = &b;
+C *pc = &c;
+D *pd = &d;
+Y *py = &y;
+
+A *p = &c;
+pc = p;                     // Compiler-Fehler, Zeiger passen nicht
+pc = dynamic_cast<C *>(p)   // OK, p zeigt tatsaechlich auf ein C
+p  = &d;
+pc = dynamic_cast<C *>(p)   // OK, p zeigt auf etwas von C abgeleitetes
+p  = &b;
+pc = dynamic_cast<C *>(p)   // Runtime-Fehler, p zeigt auf nichts C-aehnliches
+                            // pc wird auf NULL gesetzt
+pc = dynamic_cast<C *>(py); // Runtime-Fehler, p zeigt auf nichts C-aehnliches
+                            // pc wird auf NULL gesetzt
+\end{CCode}
+
+dynamic\_cast<>() setzt Polymorphismus voraus, d.h. mindestens eine Funktion
+von beiden beteiligten Klassen muss virtuell sein.
+ 
+\section{Namensbereiche (Namespaces)}
+\OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit kann man eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen.
+Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
+
+In Bibliothek 1
+\begin{CCode}
+namespace graphic {
+   void print(void);
+   class A {
+       int i;
+   }
+}
+
+void graphic::print(void) {
+   cout << "Hallo";
+}
+\end{CCode}
+
+In Bibliothek 2
+\begin{CCode}
+namespace network {
+   void print(void);
+   class A {
+       int i;
+   }
+}
+
+void network ::print(void) {
+   cout << "Hallo";
+}
+\end{CCode}
+
+Beim Benutzer
+\begin{CCode}
+network::A AnObjectOfClassAfromLibraryNetwork;
+graphic::A AnObjectOfClassAfromLibraryGraphic;
+
+graphic::print();   // Call of print from graphic
+print();  // Illegal, do not know which print to use
+\end{CCode}
+
+Wenn man nicht jedes mal den Namensbereich angeben will, kann die using Direktive verwendet werden:
+\begin{CCode}
+using graphic::print;  // Benutze print aus graphic wenn nichts anderes gesagt wird
+
+print();               // print aus graphic wird benutzt
+network::print();      // print aus network wird benutzt
+\end{CCode}
+
+ 
+Um alle Funktionen eines Namensbereichs sichtbar zu machen, verwendet man folgendes using:
+\begin{CCode}
+using namespace graphic;
+\end{CCode}
+Achtung, dadurch geht die ganze Trennung verloren und der Vorteil der Namespaces verschwindet.
+In den Standardbibliotheken sind alle Member im Namensbereich std definiert, also muss man ohne using-Direktive 
+\begin{CCode}
+std::cout << "Hallo" << std::endl; 
+\end{CCode}
+
+schreiben. Dies ist unumgänglich wenn man die neuen Headerfiles einbindet (<iostream>) anstelle der veralteten <iostream.h>.
+
+ 
+
+\chapter{Templates (Schablonen)}
+Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
+mächtiges Werkzeug zur verfügung gestellt, welches fast wie eine eigene Sprache wirkt und
+sehr komplexe, veralgemeinerte und typunabhängige Programmierung erlaubt. Mit Templates kann parametrisierbarer Code geschrieben werden, das heisst Code, der unabhängig von Datentypen ist. 
+
+Der Benutzer eines Templates kann selbst angeben, für welchen Datentyp das Template Code erzeugen soll, er kann dabei auch Datentypen angeben, die bei der Erstellung eines Templates nicht bekannt waren.
+Es können \OviIndex{Funktionstemplate} und \OviIndex{Klassentemplates} erzeugt werden. Achtung, Templates werden normalerweise vollständig in einer Headerdatei definiert, welche vom Anwender des Templates mittels \#include eingebunden werden muss.
+
+In diesem Kapitel werden Templates nur kurz vorgestellt, eine umfassende Beschreibung von Templates kann in entsprechender Fachliteratur nachgeschlagen werden. Wer schon mal einen Blick in einen der Standardheader der STL (Z. B. vector) geworfen hat, weiss das Template-Programmierung sehr schnell zu schwer nachvollziehbarem Code führt. (Die Anwendung dagegen ist meist sehr einfach). Template-Parameter und Template-Spezialisierungen werden hier nur am Rande gestreift.
+
+\section{Funktionstemplates}
+Mit dem nachfolgenden Template wird eine generische Funktion zur
+Bestimmung des Maximums von zwei Argumenten gleichen Typs definiert.
+Dies funktioniert aber nur für Typen, welche den Operator > definiert haben.
+\begin{CCode}
+template <class T> 
+T Maximum (T a, T b) 
+{
+   T Resultat;
+   if (a > b) {
+      Resultat = a;
+   } else {
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+
+T ist ein frei wählbarer Name, der als Platzhalter für einen vom Benutzer anzugebenden Datentyp steht. Wenn der Benutzer zum Beispiel folgende Codezeile schreibt:
+\begin{CCode}
+int a;
+int b;
+
+b = Maximum< int > (a, 12);
+\end{CCode}
+
+Wird vom Compiler automatisch folgende Funktion erzeugt:
+\begin{CCode}
+int Maximum (int a, int b) 
+{
+   int Resultat;
+   if (a > b) {
+      Resultat = a;
+   } else {
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+
+Überall wo im Template vorher der Parameter T stand, wird dieser durch den angegebenen Typ ersetzt. Möchte man nun auch das Maximum von zwei Fliesskommawerten bestimmen will, erledigt man das wie folgt:
+\begin{CCode}
+float x;
+float y;
+
+x = Maximum< float > (x, 12.0);
+\end{CCode}
+
+ 
+Es ist nicht einmal nötig, dem Compiler zu sagen, welches Template erzeugt werden soll, solange er es durch die Argumente selbst eindeutig ausfindig machen kann, wie z. B. hier:
+\begin{CCode}
+long x;
+long y;
+
+x = Maximum (x, y);  // Compiler erkennt selbst, dass hier long verwendet werden soll
+\end{CCode}
+Anstelle des Schlüsselwortes class kann übrigens auch das Schlüsselwort \OviIndex{typename} verwendet werden.
+
+\subsection{\"Uberladen von Funktionstemplates}
+Das Funktionstemplate Maximum aus dem vorherigen Kapitel kann noch
+verbessert werden. Wenn man es auf Zeiger anwendet werden die
+ Zeiger verglichen, was meist nicht das gewünschte
+Verhalten ist. Besser wäre es, die Objekte zu vergleichen, auf die von den Zeigern verwiesen wird. Dies erreicht man durch \OviIndex{\"Uberladen des Templates}:
+
+\begin{CCode}
+template <class T>        
+T *Maximum (T *a, T *b)  // gilt fuer alle Zeiger
+{
+   T* Resultat;
+   if (*a > *b) {         // Zeiger dereferenzieren, also Objekte vergleichen 
+      Resultat = a;
+   } else {
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+Dieses Template wird jetzt immer aufgerufen, wenn zwei Zeiger
+miteinander verglichen werden sollen. Natürlich gibt es immer noch ein
+Problem, wenn Doppelzeiger (T**) oder Mehrfachzeiger (T**...**) im Spiel sind, dann müsste dieses Spiel weitergetrieben werden.
+Oder man kann das ganze elegant mit rekursivem Templateeinsatz erledigen. Das Nachfolgende Template kann für beliebig verschachtelte Pointer benutzt werden
+da es sich selbst rekursiv benutzt. Diese Anwendung ist sicher nicht sinnvoll,
+soll aber das Prinzip zeigen. 
+\begin{CCode}
+template <class T>      
+T *Maximum(T *a, T *b)  // gilt fuer alle Zeiger
+{
+   T *Resultat;
+   if (Maximum(*a, *b) == *a) {  // Trick, wieder Maximum verwenden
+      Resultat = a;              // Code noetig weil Maximum T zurueckliefert
+   } else {                      // Wir aber T* zurueckliefern muessen
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+Für Strings (char *) ist eine weitere \"Uberladung erforderlich.
+\begin{CCode}
+const char* Maximum(const char *a, const char *b)  // gilt fuer alle Strings
+{
+   const char* Resultat;
+   if (strcmp(a, b) > 0) {  // Normales Stringcompare verwenden
+      Resultat = a;
+   } else {
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+
+\section{Klassentemplates}
+\index{Klassentemplates}
+Es kann auch eine ganze Klasse parametrisiert werden:
+\begin{CCode}
+template<class T>
+class Complex {
+   T Real;
+   T Imaginaer;
+
+   public:
+
+   Complex(T r, T i) : Real( r ), Imaginaer( i ) {};
+   Complex(T r)        : Real( r ), Imaginaer( 0 ) {};
+   Complex()             : Real( 0 ), Imaginaer( 0 ) {};
+
+   Complex operator +(const Complex &s) {return Complex (Real+s.Real, 
+                                                         Imaginaer+s.Imaginaer); };
+   Complex operator -(const Complex &s) {return Complex(Real-s.Real, 
+                                                         Imaginaer-s.Imaginaer); };
+   T GetReal() {return Real;};
+   T GetImaginaer() {return Imaginaer;};
+};
+\end{CCode}
+
+Benutzung des Templates
+\begin{CCode}
+   int b;
+
+   Complex<int> ca(1, 4);   // Variable ca und cb sind komplex mit Integerwerten
+   Complex<int> cb(0, 0);
+
+   cb = ca + cb;
+   b = cb.GetReal();
+
+   Complex<double> cda(1, 4); // Variable cda, cdb sind komplex mit Doublewerten
+   Complex<double> cdb(0, 0);
+
+   cdb = cda + cdb;
+\end{CCode}
+
+Falls die Klasse Complex auch den > operator definiert hätte, könnte das Maximum Template auch auf Complex Template Objekte angewendet werden:
+\begin{CCode}
+cb = Maximum< Complex<int>  > (ca, cb);
+\end{CCode}
+
+(Auf das Leerzeichen zwischen den beiden > > achten, sonst wäre es der Schiebeoperator !)
+
+Es sind auch Templates mit mehreren verschiedenen Typen möglich:
+
+\begin{CCode}
+template< class T1, class T2>
+class SpeziellKomplizierteKlasse {
+   T1 Wert1;
+   T2 Wert2;
+   ...
+   ...
+   ...
+};
+\end{CCode}
+
+\subsection{Parametrisierung von Templates mit Konstanten}
+Templates können in ihrer Parameterliste auch konstante
+Werte (int, float, Adressen, ...) enthalten, welche 
+innerhalb des Templates benutzt werden können.
+(Z. B. Arraygrenzen, Adressen von Funktionen,
+ Abbruchkriterium für Iterationen)
+ 
+Beispiel:
+\begin{CCode}
+template< class T1, int SIZE>
+class SpeziellKomplizierteKlasse {
+   T1 Wert1[SIZE]; /* Array vom Typ T und der Grösse SIZE */
+   ...
+   ...
+   ...
+};
+\end{CCode}
+
+\subsection{Default Templateparameter}
+\index{Default Templateparameter}
+Wenn ein Template oft für einen bestimmten Typ
+benutzt wird, kann eine Defaultwert für diesen Parameter
+vorgegeben werden:
+
+\begin{CCode}
+template< class T1, class T2 = int>
+class SpeziellKomplizierteKlasse {
+   T1 Wert1;
+   T2 Wert2;
+   ...
+   ...
+   ...
+};
+
+
+SpeziellKomplizierteKlasse<char>  C1;       // fuer T2 wird int genommen
+
+SpeziellKomplizierteKlasse<char, float> C2; // fuer T2 wird float vorgegeben
+
+\end{CCode}
+
+Der Defaulttyp wird oft von den anderen Parametern des
+Templates abhängig gemacht, was zu folgendem Code führt:
+
+\begin{CCode}
+template< class T1, class T2 = HelperClass<T1> >
+class SpeziellKomplizierteKlasse {
+   T1 Wert1;
+   T2 Wert2;
+   ...
+   ...
+   ...
+};
+
+\end{CCode}
+HelperClass ist hier selbst ein Template, welches mit T1
+parametrisiert wird.
+
+
+\subsection{Spezialisierung von Templates}
+Wenn bei einem Template für einen bestimmten Datentypen,
+oder eine Gruppe von Typen anderer Code erzeugt werden
+soll, erreicht man dies durch Spezialisierung des Templates.
+Dabei gibt es zwei Arten der Spezialisierung: Komplette und
+Partielle Spezialisierung. 
+
+Die Spezialisierungen von Templates dürfen im Code erst
+nach der Deklaration/Definition des generellen Templates
+erfolgen. 
+
+\subsection{Komplette Spezialisierung von Templates}
+Bei der \OviIndex{kompletten Spezialisierung} wird das Template 
+für einen ganz bestimmten Datentypen spezialisiert,
+zum Bespiel fuer den Fall das Komplex mit int
+erzeugt wird, und wir besonders schnelle Algorithmen
+für diesen Fall kennen und auch anwenden wollen:
+
+\begin{CCode}
+template<>      // Diese Spezialisierung braucht keine
+                // weiteren Parameter mehr
+class Complex <int> {  // Dies ist die Spezialisierung fuer int
+   int Real;
+   int Imaginaer;
+
+   public:
+
+   Complex(int r, int i) : Real( r ), Imaginaer( i ) {};
+   Complex(int r)        : Real( r ), Imaginaer( 0 ) {};
+   Complex()             : Real( 0 ), Imaginaer( 0 ) {};
+
+   Complex operator +(const Complex &s) {... besonders effiziente ... ; };
+   Complex operator -(const Complex &s) {... Implementation fuer int Werte ... ; };
+   int GetReal() {return Real;};
+   int GetImaginaer() {return Imaginaer;};
+};
+\end{CCode}
+
+
+Benutzung des Templates
+\begin{CCode}
+   int b;
+
+   Complex<int> ca(1, 4);   // Variable ca und cb sind komplex mit Integerwerten
+   Complex<int> cb(0, 0);   // hier wird die spezialisierte Version benutzt
+
+   cb = ca + cb;
+   b = cb.GetReal();
+
+   Complex<double> cda(1, 4); // Variable cda, cdb sind komplex mit Doublewerten
+   Complex<double> cdb(0, 0); // hier wird die allgemeine Version benutzt
+
+   cdb = cda + cdb;
+\end{CCode}
+
+
+\subsection{Partielle Spezialisierung von Templates}
+
+Bei der \OviIndex{partiellen Spezialisierung} wird das Template 
+für eine Gruppe von Datentypen spezialisiert,
+zum Beispiel für den Fall das Komplex mit Zeigern
+erzeugt wird, und wir angemessenen Code für
+diesen Fall erzeugen wollen:
+(Achtung, soll nur als einfaches Beispiel dienen, hat keine
+ sinnvolle Anwendung)
+\begin{CCode}
+template<class T>      
+class Complex <T*> {  // Dies ist die Spezialisierung fuer Zeiger
+   T *Real;           // Achtung T ist nicht Zeiger, T* ist Zeiger
+   T *Imaginaer;
+
+   public:
+
+   Complex(T* r, T* i) : Real( r ), Imaginaer( i ) {};
+
+   // Liefert normale Complex<T> zurueck, nicht Complex <T*>
+   // also ohne Zeiger (Geht sonst nicht...)
+   Complex<T> operator +(const Complex &s) {return Complex (*Real+*(s.Real), *Imaginaer+*(s.Imaginaer)); };
+   Complex<T> operator -(const Complex &s) {return Complex (*Real-*(s.Real), *Imaginaer-*(s.Imaginaer)); };
+   
+   int GetReal() {return *Real;};
+   int GetImaginaer() {return *Imaginaer;};
+};
+\end{CCode}
+
+Benutzung des Templates
+\begin{CCode}
+   int a, b;
+
+   Complex<int *> ca(&a, &b);  // Variable ca ist komplex mit Zeigern
+   
+   Complex<int>   cb(0, 0);    // hier wird die normale Version benutzt
+
+   cb = ca + ca;              
+   b = ca.GetReal();
+
+\end{CCode}
+
+Partielle Spezialisierungen werden im allgemeinen erst bei komplexeren
+Anwendung zur Verhinderung von Codeduplikation benutzt. So kann jede
+Liste aus Zeigern gleich behandelt werden, es muss nicht für jeden
+Zeigertyp neuer Code erzeugt werden. Dies lässt sich durch eine
+komplette Spezialisierung mit void-Zeiger, und partieller Spezialisierung für
+alle anderen Zeigern erreichen, wobei die partielle Spezialisierung
+auf die void-Spezialisierung zurückgreift. Damit wird nur Code 
+für die void-Variante erzeugt. Sonst würde für jeden neuen Zeigertyp
+erneut Code produziert.
+
+Bei der Instantiierung eines Templates wird immer die am meisten
+spezialisierte, noch passende Version verwendet.
+Detailliertere Informationen zur \OviIndex{Templatespezialisierung} findet man in der entsprechenden
+Fachliteratur.
+
+\subsection{Template-Metaprogrammierung}
+Hier noch ein kleines (einfaches) Beispiel, was mit "`Template-Magie"'
+alles möglich ist.
+
+Das nachfolgende Beispiel kann Binärzahlen in Dezimalzahlen
+umwandeln, und das zu Compilezeit, d.h. die Binärzahl wird
+zu Compilezeit umgewandelt. Es wird also \emph{kein} zusätzlicher
+Code erzeugt oder Speicherplatz benötigt!
+
+\begin{CCode}
+/* Binary-to-Decimal as Template Metaprogram */
+
+/* Allgemeiner Fall, rekursive Auflösung */
+template< unsigned long N > struct Bin
+  {
+  enum { value = (N % 10) +                /* Hier ist die Magie:                 */
+           2 * Bin< N / 10 > :: value } ;  /* Wert Einerstelle plus den           */
+                                           /* doppelten Wert der hoeherwertigen   */
+                                           /* Stellen, diese werden durch         */
+                                           /* rekusive Templateinstantiation      */
+                                           /* gewonnen (Rekusion endet bei N = 0) */           
+  } ;
+
+/* Spezialisierung fuer den Fall N = 0 */
+struct Bin< 0 >
+  {
+  enum { value = 0 } ;   /* Einfach, wenn N = 0 ist auch Binaerwert 0 */
+  } ;
+\end{CCode}
+
+Dieses Template könnte wie folgt angewendet werden:
+
+\begin{CCode}
+int a = Bin<1010110>::value;
+cout << Bin<1101010>::value << endl;
+int Array x[Bin<1001>::value][13];       /* Definiert 9*13 Array! */
+\end{CCode}
+Man beachte, das Ergebnis dieses Templates ist eine gewöhnliche
+numerische Konstante, die überall im Code eingesetzt werden
+kann, wo eine solche erwartet wird.
+
+
+Das Template soll nur das Prinzip zeigen, es fehlen hier noch
+Kontrollen und Fehlerhandling für illegale Binärzahlen wie
+101037012 oder zu lange Zahlen. Aber auch diese Probleme
+lassen sich mit entsprechenden Template-Tricks lösen.
+
+\subsection{Templates und Vererbung}
+Von Templateklassen kann wie von normalen Klassen abgeleitet werden,
+und Templateklassen können von normalen Klassen oder Templateklassen
+erben. Templateklassen verhalten sich bei der Vererbung
+wie 'gewöhnliche' Klassen.
+
+
+
+
+
+\section{Die STL (Standard Template Library)}
+Die \OviIndex{STL} (\OviIndex{Standard Template Library}) ist eine der ersten Anwendungen, die umfassend von Templates gebrauch machte, und zudem die Erweiterung und Verbesserung der Templatesyntax zur Folge hatte.
+
+Die STL abstrahiert viele oft gebrauchte Elemente und Baublöcke der SW-Implementation, sie stellt universelle Templates für \OviIndex{Container}, \OviIndex{Iteratoren} und \OviIndex{Algorithmen} zur Verfügung.
+
+\OviIndex{Container} sind eine Art universelle Behälter für Daten. Dazu gehören Listen, Vektoren und Mengen. Bei den Containern ist nicht vorgeschrieben wie sie implementiert sind, sondern nur welche Eigenschaften sie besitzen müssen. Ein Vektor muss z.B. effizienten wahlfreien (direkten) Zugriff auf seine Elemente erlauben, eine Liste hingegen muss effizientes Einfügen und Entfernen von Objekten ermöglichen. Eine Map wiederum ordnet zwei Elemente einander zu. Dabei dient eines als Schlüssel und das andere als Wert. Mit einem Schlüssel kann man jederzeit den dazugehörigen Wert aus der Map holen. Eine Map ist somit ein assoziativer Container und kann als kleine Datenbank betrachtet werden.
+
+\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende einer Sequenz). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
+
+\OviIndex{Algorithmen} wiederum können auf Sequenzen und Container angewendet werden. Es gibt unter anderem folgende Algorithmen: Suchen, Sortieren, Doppelte oder mehrfache Einträge entfernen, Zufällig Mischen, Suchen und entfernen, Eine Operation auf alle Elemente anwenden, Alle Elemente zählen die eine Bedingung erfüllen, ...
+
+In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map vorgestellt:
+ 
+
+\subsection{Kurzübersicht zu Container list<> aus STL}
+Als Beispiel erstellen wir eine \OviIndex{Liste} von int's
+\begin{CCode}
+#include<list>
+#include<algorithm>
+
+std::list<int> MyList;   //Erstellen einer Liste von Integerwerten
+  
+MyList.push_back(123);   //Element am Ende der Liste einfuegen
+MyList.push_front(456);  //Element am Anfang der Liste einfuegen
+MyList.pop_back();       //Letztes Element am Ende der Liste entfernen
+MyList.pop_front();      //Erstes Element am Anfang der Liste entfernen
+len = MyList.size();     //Liefert die Anzahl Elemente der Liste zurueck
+if (MyList.empty());     //Liefert TRUE wenn die Liste leer ist
+Val = MyList.front();    //Liefert den Wert des ersten Elementes zurueck
+Val = MyList.back();     //Liefert den Wert des letzten Elementes zurueck
+
+std::list<int>::iterator ptr; //Definieren eines Iterators (Zeigers) fuer 
+                              //eine Liste aus int's
+
+ptr = MyList.begin();    //Iterator auf erstes Element der Liste zeigen lassen;
+std::cout << *ptr;       //Element, auf das ptr zeigt ausgeben
+int Value = *ptr;        //Value den Wert auf den ptr zeigt zuweisen
+ptr++;                   //Iterator auf das naechste Listenelement zeigen lassen;
+if (ptr == MyList.end()) //Pruefen ob der Iterator das Listenende erreicht hat
+
+MyList.sort();           //Sortieren der Liste, optimiert fuer Liste
+\end{CCode}
+
+Ein einfaches Beispiel, diesmal aber mit einer Liste von unsigned long Werten (Es können Listen von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
+
+\begin{CCode}
+std::list<unsigned long>Liste;     /* Liste fuer unsigned long erstellen */
+
+Liste.push_back(12);               /* Einige Werte in die Liste einfuegen */
+Liste.push_back(23);
+Liste.push_back(34);
+Liste.push_back(45);
+
+std::list<unsigned long>::iterator ptr; /* Iterator fuer Liste */
+
+/* Alle Elemente der Liste ausgeben */
+for(ptr = Liste.begin(); ptr != Liste.end(); ptr++) {   
+   std::cout << *ptr;
+}
+
+while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
+   std::cout << Liste.front();     /* Erstes Element ausgeben */
+   Liste.pop_front();              /* Erstes Element entfernen */
+}
+\end{CCode}
+
+ 
+
+\subsection{Kurzübersicht zu Container vector<> aus STL}
+Als Beispiel erstellen wir ein Array von double's. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit [] (Ohne Bereichsüberprüfung) und der Methode at() (Mit Bereichsüberprüfung) möglich. 
+\begin{CCode}
+#include<vector>
+#include<algorithm>
+
+std::vector<double> MyVector; //Erstellen einer Liste von Integerwerten
+  
+MyVector.push_back(123);      //Element am Ende des Vektors anhaengen
+MyVector.pop_back();          //Letztes Element am Ende des Vektors entfernen
+len = MyVector.size();        //Liefert die Anzahl Elemente des Vektors zurueck
+if (MyVector.empty());        //Liefert TRUE wenn der Vektor leer ist
+Val = MyVector.front();       //Liefert den Wert des ersten Elementes zurueck
+Val = MyVector.back();        //Liefert den Wert des letzten Elementes zurueck
+Val = MyVector[21];           //Liefert den Wert des 22. Elementes
+Val = MyVector.at(21);        //Liefert den Wert des 22. Elementes (fehlt bei alten Vers)
+MyVector[21] = 66.4;          //ueberschreibt den Wert des 22.ten Elementes
+
+std::vector<double>::iterator ptr; //Definieren eines Iterators (Zeigers) in einen Vektor
+                                   //aus double's
+
+ptr = MyVector.begin();       //Iterator auf erstes Element der Liste zeigen lassen;
+std::cout << *ptr;            //Element, auf das ptr zeigt ausgeben
+double Value = *ptr;          //Value den Wert auf den ptr zeigt zuweisen
+ptr++;                        //Iterator auf das naechste Listenelement zeigen lassen;
+if (ptr == MyVector.end())    //Pruefen ob der Iterator das Listenende erreicht hat
+
+sort(MyVector.begin(), MyVector.end()) //Universeller Sortieralgorythmus, funktioniert
+                              // mit beliebigen Sequenzen oder auch mit Bereichen von
+                              // Listen oder anderen Sequenzen, solange ein Iterator 
+                              // mit wahlfreiem Zugriff existiert
+\end{CCode}
+
+Ein einfaches Beispiel, diesmal aber mit einem Vektor von char* Werten (Es können Vektoren von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
+\begin{CCode}
+std::vector<char *> Vektor;  /* Vektor fuer char * erstellen */
+
+Vektor.push_back("Hallo");   /* Einige Werte in den Vektor einfuegen */
+Vektor.push_back("liebe");
+Vektor.push_back("Welt");
+Vektor.push_back("!");
+
+std::vector<char *>::iterator ptr; /* Iterator fuer Vektor */
+
+/* Alle Elemente des Vektors ausgeben */
+for(ptr = Vektor.begin(); ptr != Vektor.end(); ptr++) {   
+   std::cout << *ptr;
+}
+/* Alle Elemente des Vektors ausgeben */
+for(int i = 0; i < != Vektor.size(); i++) {   
+   std::cout << Vektor[i];
+}
+
+while(!Vektor.empty()) {       /* Solange Vektor nicht leer ist */
+   std::cout << Vektor.back(); /* Letztes Element ausgeben */
+   Vektor.pop_back();          /* Letztes Element entfernen */
+}
+\end{CCode}
+
+\subsection{Kurzübersicht zu Container map<> aus STL}
+Die \OviIndex{map} ist ein \OviIndex{assozitiver Container}, das heisst er verwaltet Wertepaare.
+Ein Wert ist der \OviIndex{Schlüssel} des Paares, und der andere Wert beinhaltet die
+Daten, welche unter diesem Schlüssel abgelegt sind. Der Schlüssel kann wie
+der Index bei einem gewöhnlichen Array betrachtet werden, mit dem
+Schlüssel erhält man Zugriff auf die dazugehörigen Daten. Deshalb muss
+jeder Schlüssel innerhalb einer map einmalig sein. Die Daten werden innerhalb der
+map nach dem Schlüssel in aufsteigender Reihenfolge sortiert, und beim
+Iterieren in dieser Reihenfolge abgearbeitet. Zur einfachen Benutzung
+der map wurde der Indexoperator [] überladen, so dass der Schlüssel direkt als
+Index verwendet werden kann. Wird ein nicht existierender Schlüssel
+benutzt, erzeugt die map automatisch einen leeren Eintrag für diesen
+Schlüssel und liefert eine Referenz darauf zurück.
+
+Der Schlüssel muss ein Datentyp mit einer eindeutigen Ordnung sein, d. H.
+die Relation '<' muss definiert und eindeutig sein. (Sonst könnten die
+Schlüssel nicht sortiert werden).
+
+Der Wert kann ein beliebiger Datentyp sein (Im Extremfall eine Liste
+oder eine weitere map). 
+
+Als Beispiel erstellen wir eine map mit Studenten und ihren Noten.
+
+\begin{CCode}
+#include<map>
+#include<algorithm>
+#include<string>
+
+using namespace std;          // Um std::map, std::cout... usw zu vereinfachen 
+
+map<string, double> MyMap;    //Erstellen einer Map von Studenten und Noten
+  
+void f(void) 
+{  
+   MyMap["Hans"]   = 5.5;        //Ein paar Eintraege...
+   MyMap["Fritz"]  = 5.0;        
+   MyMap["Franz"]  = 5.5;
+   MyMap["Max"]    = 4.5;
+   MyMap["Moritz"] = 4.5;
+   MyMap["Max"]    = 5.5;        // Vorheriger Wert von Max wird ueberschrieben
+
+   float Note = MyMap["Fritz"];        // Lesen ist auch moeglich
+
+   map<string, double>::iterator ptr; //Definieren eines Iterators (Zeigers) in die Map
+
+   ptr = MyMap.begin();          //Iterator auf erstes Element der Map zeigen lassen;
+
+   while(ptr != MyMap.end()) {   // Fuer alle Elemente in der Map
+    
+      // Name und Note ausgeben (first und second sind durch map vorgegeben)
+      cout << ptr->first << " hat die Note " << ptr->second << endl;   
+      ptr++;
+   }
+}
+
+\end{CCode}
+
+Mit einer map ist es sehr einfach, Daten zu verwalten. Für einen bestimmten Schlüssel kann es aber nur einen Eintrag geben. Falls mehrere Einträge mit demselben Schlüssel möglich sein sollen,
+muss eine Multimap verwendet werden.
+
+Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Suchen von
+Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator [] Sucht \emph{und} fügt hinzu, falls nicht gefunden)
+
+
+\appendix
+\chapter{Anhang}
+
+\section{Beispiel einer Klassenhierarchie} 
+\subsection{Die Basisklasse Auto}
+
+\subsubsection{Deklaration der Klasse Auto}
+Datei Auto.hpp
+
+\begin{CodeTable}
+\lstinline$class Rad;$&Vorwärtsdeklaration von Rad (Es gibt eine Klasse Rad), ab jetzt können Zeiger und Referenzen auf Räder deklariert werden\\
+\lstinline$class Auto {$	&Beginn der Deklaration der Klasse Auto\\
+\end{CodeTable}
+
+
+\paragraph{Zugriffsrechte} \ \\
+\begin{CodeTable}
+\lstinline$   private:$	&Zugriffsrecht auf private einschränken, nur Klassenmember habe Zugriff auf die nachfolgenden Klassenelemente. Ist hier redundant, da Klassenmember automatisch private sind, wenn nichts anderes angegeben ist.
+%Es gibt noch die Zugriffsrechte protected und public. Public heisst Zugriff für jederman und protected erlaubt Zugriffe nur für abgeleitete Klassen.\\ 
+\end{CodeTable}
+
+\paragraph{Attribute} \ \\
+\begin{CodeTable}
+\lstinline$      int Gewicht;$	&Attrtibut vom Typ int (Integer = ganze Zahl) mit dem Namen Gewicht\\
+\lstinline$      Rad *Raeder[4];$	&Attribut von Typ Array mit 4 Einträgen von Pointern (Zeiger) auf Objekte vom Typ Rad\\
+\end{CodeTable}
+
+\paragraph{Konstruktoren} \ \\
+\begin{CodeTable}
+\lstinline$   public:	$&Zugriff ab hier für alle.\\
+\lstinline$            Auto(int NewGewicht);	$&Konstruktor (Methode), wird automatisch aufgerufen wenn ein Objekt dieser Klasse erzeugt wird. Erwartet als Argument das Gewicht mit dem das neue Objekt initialisiert wird.\\ 
+\lstinline$            Auto(const Auto &Original);	$&Kopierkonstruktor, wird automatisch aufgerufen, wenn ein Objekt vom Typ Auto kopiert wird. Muss sich selbst als Kopie von Original initialisieren.\\
+\end{CodeTable}
+
+\paragraph{Destruktor ('Es kann nur einen geben')} \ \\
+\begin{CodeTable}
+\lstinline$           ~Auto();	$&Wird aufgerufen, sobald das Objekt aufhört zu existieren. Darf keine Argumente haben. Die Definition eines Destruktors ist nicht zwingend. Wenn es nichts zum Aufräumen gibt kann er weggelassen werden. (Ausser es gibt virtuelle Funktionen in dieser Klasse) \\
+\end{CodeTable}
+
+\paragraph{Zuweisungsoperator} \ \\
+\begin{CodeTable}
+\lstinline$    Auto &operator=(const Auto &Quelle);	$&Wird aufgerufen wenn diesem Objekt ein anderes zugewiesen wird. (Dieses = Neues). Hat als Argument eine Referenz auf das Quell-Objekt, muss eine Referenz auf sich selbst zurückliefern.\\
+\end{CodeTable}
+
+\paragraph{Methoden} \ \\
+\begin{CodeTable}
+\lstinline$     void SetGewicht(int NewGewicht);$&	Methode zum Setzen eines neuen Gewichts, hat keinen Rückgabewert (void) und erwartet als Argument das neue Gewicht.\\
+\lstinline$     int GetGewicht(void);$&	Methode zum Lesen des Gewichts, diese Methode liefert das Gewicht zurück und hat keine Argumente.\\
+\lstinline$};$&	Ende der Deklaration der Klasse Auto\\
+\hhline{-}
+\end{CodeTable}
+
+
+\subsubsection{Implementation der Klassen-Methoden}
+Datei Auto.cpp
+\paragraph{Einbinden des eigenen Headerfile (Deklaration)} \ \\
+\begin{CodeTable}
+\lstinline$#include "Auto.hpp"	$&Einbinden der eigenen Header-Datei (Klassen Deklaration). mit '''' eingegrenzte Dateien werden zuerst im lokalen Projektverzeichnis gesucht.\\
+\lstinline$#include "Rad.hpp"	$&Einbinden der Header-Datei (Klassen Deklaration) der Klasse Rad. Ist notwendig, damit Räder erzeugt und benutzt werden können..\\
+\end{CodeTable}
+
+\paragraph{Konstruktoren} \ \\
+Konstruktoren werden automatisch beim Erzeugen eines Objektes aufgerufen. Sie sind für die ordnungsgemässe Initialisierung der Objekte verantwortlich.
+
+\begin{CodeTable}
+\lstinline$Auto::Auto(int NewGewicht)$&	Definition der Methode Auto(int) der Klasse Auto\\
+\lstinline$: Gewicht(NewGewicht)$&
+	: leitet die Initialisierungsliste ein, Gewicht mit NewGewicht initialisieren.\\
+\lstinline${	$&Beginn des Funktionsrumpfes\\
+\lstinline$   Raeder[0] = new Rad();$\linebreak[4]
+\lstinline$   Raeder[1] = new Rad();$\linebreak[4]
+\lstinline$   Raeder[2] = new Rad();$\linebreak[4]
+\lstinline$   Raeder[3] = new Rad();$&	Vier neue Raeder erzeugen und darauf verweisen (new erzeugt ein neues Objekt und liefert einen Zeiger darauf zurück)\\
+\lstinline$}$&	Ende des Funktionsrumpfes\\
+
+\lstinline$Auto::Auto(const Auto &Original)$&	Definition der Methode Auto(const Auto \&) der Klasse Auto, also des Kopierkonstruktors\\
+\lstinline$: Gewicht(Original.Gewicht)$&
+	: leitet die Initialisierungsliste ein, Gewicht mit Gewicht vom Original initialisieren.\\
+\lstinline${	$&Beginn des Funktionsrumpfes\\
+\lstinline$   Raeder[0] = new Rad(*Original.Raeder[0]);$\linebreak[4]
+\lstinline$   Raeder[1] = new Rad(*Original.Raeder[1]);$\linebreak[4]
+\lstinline$   Raeder[2] = new Rad(*Original.Raeder[2]);$\linebreak[4]
+\lstinline$   Raeder[3] = new Rad(*Original.Raeder[3]);$&	Vier neue Raeder erzeugen, welche Kopien der Raeder des Originals sind, und darauf verweisen. Mit * wird auf das Objekt zugegriffen, auf welches ein Zeiger zeigt\\
+\lstinline$}	$&Ende des Funktionsrumpfes\\
+\end{CodeTable}
+
+\paragraph{Destruktor} \ \\
+Der Destruktor wird automatisch beim Löschen eines Objektes aufgerufen.
+
+\begin{CodeTable}
+\lstinline$Auto::~Auto()$&	Definition der Methode \verb$~$Auto() der Klasse Auto, also den Destruktor\\
+\lstinline${$&	Beginn des Funktionsrumpfes\\
+\lstinline$   delete Raeder[0];$\linebreak[4]
+\lstinline$   delete Raeder[1];$\linebreak[4]
+\lstinline$   delete Raeder[2];$\linebreak[4]
+\lstinline$   delete Raeder[3];$&	Unsere Raeder auch löschen, werden nicht mehr gebraucht. Wenn sie hier nicht gelöscht würden, gäbe es ab jetzt vier Raeder in unserem System die niemand kennt und die niemand braucht. Sie würden nur unnötig Speicherplatz belegen und Ressourcen verschwenden.\\
+\lstinline$}$&	Ende des Funktionsrumpfes\\
+\end{CodeTable}
+
+\paragraph{Zuweisungsoperator}\ \\
+Der \OviIndex{Zuweisungsoperator} wird immer dann aufgerufen, wenn eine Zuweisung eines Objektes an ein anderes durchgeführt wird (objekt1 = objekt2). Falls der Programmierer keinen eigenen Zuweisungsoperator zur Verfügung stellt, wird vom Compiler automatisch einer erzeugt (Dieser kopiert einfach alle Attribute).
+
+\begin{CodeTable}
+\lstinline$Auto &Auto::operator=(const Auto &Quelle)$&	Definition der Methode operator=(const Auto\&) der Klasse Auto, also einen Zuweisungsoperator\\
+\lstinline${$&	Beginn des Funktionsrumpfes\\
+\lstinline$  if (this != &Quelle) {$&	Mache nichts bei Zuweisung an sich selbst (a = a)\\
+\lstinline$    delete Raeder[0];$\linebreak[4]
+\lstinline$    delete Raeder[1];$\linebreak[4]
+\lstinline$    delete Raeder[2];$\linebreak[4]
+\lstinline$    delete Raeder[3];$&	Zuerst unsere alten Raeder löschen, werden nicht mehr gebraucht.\\
+\lstinline$    Raeder[0] = new Rad(*Quelle.Raeder[0]);$\linebreak[4]
+\lstinline$    Raeder[1] = new Rad(*Quelle.Raeder[1]);$\linebreak[4]
+\lstinline$    Raeder[2] = new Rad(*Quelle.Raeder[2]);$\linebreak[4]
+\lstinline$    Raeder[3] = new Rad(*Quelle.Raeder[3]);$&	Vier neue Raeder, welche Kopien der Raeder der Zuweisungsquelle sind, erzeugen und darauf verweisen.\\
+\lstinline$    Gewicht = Quelle.Gewicht;$&	Das Gewicht der Quelle übernehmen\\
+\lstinline$  }$&\\	
+\lstinline$  return (*this)	$&Referenz auf sich selbst zurückgeben (Gehört sich so)\\
+\lstinline$}$&	Ende des Funktionsrumpfes
+\end{CodeTable}\\
+
+Der Unterschied zwischen Kopierkonstruktor und Zuweisungsoperator ist, dass beim Kopierkonstruktor ein neues Objekt erzeugt wird, beim Zuweisungsoperator hingegen wird ein bestehendes Objekt auf einen neuen Wert/Zustand gesetzt. (Einem anderen gleichgesetzt).
+
+\paragraph{Methoden} \ \\
+\begin{CodeTable}
+\lstinline$void Auto::SetGewicht(int NewGewicht)$&	Definition der Methode SetGewicht(int) der Klasse Auto\\
+\lstinline${$&	Beginn des Funktionsrumpfes.\\
+\lstinline$   Gewicht = NewGewicht;$&	Gewicht auf neuen Wert setzen\\
+\lstinline$}$&	Ende des Funktionsrumpfes\\
+
+\lstinline$int Auto::GetGewicht(void)$&	Definition der Methode GetGewicht() der Klasse Auto\\
+\lstinline${$&	Beginn des Funktionsrumpfes.\\
+\lstinline$   return (Gewicht);$&	Wert des Gewichts zurückliefern\\
+\lstinline$}$&	Ende des Funktionsrumpfes\\
+\end{CodeTable}
+
+\NextPagePlease
+ 
+\subsubsection{Benutzung der Klasse}
+Datei Test.cpp
+
+\begin{CodeTable}
+\lstinline$#include "Auto.hpp"$&	Einbinden der Header-Datei (Klassen Deklaration) Auto.hpp. Wir wollen Objekte vom Typ Auto verwenden. Mit '''' eingegrenzte Dateien werden zuerst im lokalen Projektverzeichnis gesucht.\\
+\lstinline$#include <iostream>$&	Einbinden der Header-Datei iostream. Dabei handelt es sich um eine Systembibliothek, die Ein- und Ausgabefunktionen über die Konsole (Tastatur/Bildschirm) zur Verfügung stellt (cin und cout).\\
+\lstinline$int main(int argc, char *argv[])$&	Hauptprogramm eines jeden C/C++ Projektes. (Jede C/C++ Programm muss eine Funktion main() besitzen, diese wird automatisch beim Start des Programms aufgerufen.\\
+\lstinline${$&\\
+\lstinline$   Auto MeinAuto(100);$&	Erzeugen eines lokalen Auto Objektes mit dem Namen MeinAuto, und dem Initialisierungswert 100 (Gewicht)\\
+\lstinline$   Auto *DeinAuto;	$&Definieren eines Zeigers auf ein Auto Objekt\\
+\lstinline$   DeinAuto = new Auto(300);	$&Erzeugen eines neuen Autoobjektes und Zeiger darauf setzen\\
+\lstinline$   MeinAuto.SetGewicht(150);	$&Gewicht von MeinAuto auf 150 ändern (Mit . werden Membervariablen und Funktionen von Objekten ausgewählt\\
+\lstinline$   DeinAuto->SetGewicht(250);$&	Gewicht von Objekt, auf das DeinAuto zeigt, auf 250 setzen. Mit -> wird auf Member via 'Zeiger auf Objekt' zugegriffen\\ 
+\lstinline$   cout << "Gewicht von MeinAuto ist ";$&	Text auf Konsole ausgeben\\
+\lstinline$   cout << MeinAuto.GetGewicht();$&	und Gewicht von MeinAuto ausgeben\\
+\lstinline$   Auto &AuchMeinAuto = MeinAuto;$&	AuchMeinAuto ist eine Referenz auf MeinAuto, eine Referenz ist ein Stellvertreter für ein Objekt. Wann immer die Referenz verwendet wird, wird effektiv auf das referierte Objekt zugegriffen. (Also eine Art automatischer Zeiger).\\ 
+\lstinline$   AuchMeinAuto.SetGewicht(50);$&	Das Gewicht von MeinAuto wird auf 50 gesetzt\\
+\lstinline$   delete DeinAuto;$&	Das Objekt, auf das DeinAuto zeigt, wieder löschen\\
+\lstinline$};$&	Ende der Funktion main, alle lokalen Objekte werde hier automatisch gelöscht (MeinAuto)\\
+\end{CodeTable}
+
+\subsection{Die abgeleitete Klasse Luxusauto}
+
+\subsubsection{Deklaration}
+
+Datei Luxusauto.hpp
+
+\begin{CodeTable}
+\lstinline$#include "Auto.hpp";$&	Wir wollen die Klasse Auto spezialisieren, also von ihr erben, deshalb müssen wir ihre Deklaration kennen (Und darum mit \#include einbinden).\\
+\lstinline$Class LuxusAuto : public Auto {	$&Beginn der Deklaration der Klasse LuxusAuto, mit ': public Auto' bringen wir zum Ausdruck, dass wir von Auto erben wollen.\\
+\lstinline$   private:$&\\	
+\lstinline$   int Temperatur;	$&Neues Attribut, gewünschte Innenraumtemperatur, Sollwert für die Klimaanlage. (Zusätzlich zu den bereits vorhandenen Attributen von Auto)\\
+\lstinline$   public:	$&Ab jetzt öffentlich zugänglich\\
+\lstinline$          LuxusAuto(int NewGewicht, int Temp);	$&Konstruktor (Methode), wird automatisch aufgerufen wenn ein Objekt dieser Klasse erzeugt wird. Erwartet als Argument das Gewicht und die Temperatur mit dem das neue Objekt initialisiert wird.\\ 
+\lstinline$          LuxusAuto(const LuxusAuto &Original);	$&Kopierkonstruktor, wird automatisch aufgerufen, wenn ein Objekt vom Typ LuxusAuto kopiert wird. Muss sich selbst als Kopie von Original initialisieren.\\
+\lstinline$ LuxusAuto &operator=(const LuxusAuto &Quelle);	$&Wird aufgerufen wenn diesem Objekt ein anderes zugewiesen wird. (Dieses = Neues). Hat als Argument eine Referenz auf das Quell-Objekt.\\
+\lstinline$   void SetTemperatur(int NewTemp);	$&Methode zum Setzen der Temperatur\\
+\lstinline$   int  GetTemperatur(void);	$&Methode zum Lesen der Temperatur\\
+\lstinline$};$&	\\
+\end{CodeTable}
+
+\NextPagePlease
+
+\subsubsection{Implementation}
+Datei Luxusauto.cpp
+
+\begin{CodeTable}
+\lstinline$   LuxusAuto::LuxusAuto(int NewGewicht, int Temp)$&	Definition des Konstruktors LuxusAuto(int, int)\\
+\lstinline$   : Auto(NewGewicht),$&
+	: leitet die Initialisierungsliste ein, Basisklasse Auto mit NewGewicht initialisieren.\\
+\lstinline$     Temperatur(Temp)$&	Temperatur initialisieren\\
+\lstinline$   {	$&Beginn des Funktionsrumpfes\\
+	&Kein Code nötig (Leerer Rumpf)\\
+\lstinline$   }	$&Ende des Funktionsrumpfes\\
+
+\lstinline$   LuxusAuto::LuxusAuto(const LuxusAuto &Original)	$&Definition des Kopierkonstruktors\\
+\lstinline$   : Auto(Original),$&
+	: leitet die Initialisierungsliste ein, Basisklasse Auto mit Original initialisieren. (Geht, da Original zwar vom Typ LuxusAuto ist, aber dieser ist von Auto abgeleitet (LuxusAuto ist ein Auto)\\
+\lstinline$     Temperatur(Original.Temp)	$&Temperatur initialisieren\\
+\lstinline$   {	$&Beginn des Funktionsrumpfes\\
+&	Kein Code nötig (Leerer Rumpf)\\
+\lstinline$   }$&	Ende des Funktionsrumpfes\\
+
+\lstinline$   LuxusAuto &LuxusAuto::operator=(const LuxusAuto &Quelle)$&	Definition des Zuweisungsoperators\\
+\lstinline$   {$&	Beginn des Funktionsrumpfes\\
+\lstinline$     if (this != &Quelle) {	$&Mache nichts bei Zuweisung an sich selbst (a = a)\\
+\lstinline$      Auto::operator=(Quelle);	$&Zuweisen des Basisklassen Teils\\
+\lstinline$      Temperatur = Quelle.Temperatur;$&	Das Gewicht der Quelle übernehmen\\
+\lstinline$     }	$&\\
+\lstinline$     return (*this);	$&Referenz auf sich selbst zurückgeben (Gehört sich so)\\
+\lstinline$   }	$&Ende des Funktionsrumpfes\\
+
+\lstinline$   void LuxusAuto::SetTemperatur(int NewTemp)$&	Definition der Methode SetTemp(int)\\
+\lstinline$   {	$&Beginn des Funktionsrumpfes.\\
+\lstinline$      Temperatur = NewTemp;$&	Temperatur auf neuen Wert setzen\\
+\lstinline$   }	$&Ende des Funktionsrumpfes\\
+
+\lstinline$   int LuxusAuto::GetTemperatur(void)$&	Definition der Methode GetTemperatur()\\
+\lstinline$   {	$&Beginn des Funktionsrumpfes.\\
+\lstinline$      return (Temperatur);	$&Wert der Temperatur zurückliefern\\
+\lstinline$   }	$&Ende des Funktionsrumpfes\\
+\end{CodeTable}
+
+\NextPagePlease 
+ 
+\subsubsection{Benutzung der Klasse}
+Datei Testerb.cpp
+
+\begin{CodeTable}
+\lstinline$   #include "LuxusAuto.hpp"	$&Einbinden der Header-Datei LuxusAuto.hpp. Wir wollen Objekte vom Typ LuxusAuto verwenden. .\\
+\lstinline$   #include <iostream>	$&Einbinden der Header-Datei iostream. \\
+\lstinline$   int main(int argc, char *argv[])	$&Hauptprogramm eines jeden C/C++ Projektes\\
+\lstinline$   {$&\\
+\lstinline$      LuxusAuto MeinAuto(100, 20);	$&Erzeugen eines lokalen LuxusAuto Objektes mit dem Namen MeinAuto, und dem Initialisierungswert 100 (Gewicht) und 20 (Temperatur)\\
+\lstinline$      Auto *DeinAuto;	$&Definieren eines Zeigers auf ein Auto Objekt\\
+\lstinline$      DeinAuto = new LuxusAuto(300, 24);	$&Erzeugen eines neuen LuxusAutoobjektes und Zeiger darauf setzen (Beachte, Zeiger ist vom Typ Auto *)\\ 
+\lstinline$      MeinAuto.SetTemperatur(22);	$&Temperatur von MeinAuto auf 22 ändern\\
+\lstinline$      DeinAuto->SetGewicht(250);	$&Gewicht von Objekt, auf das DeinAuto zeigt, auf 250 setzen. \\
+\lstinline$      DeinAuto->SetTemperatur(25); // Error !!$&	Nicht möglich, Da Zeiger auf Auto, SetTemperatur ist bei Auto nicht bekannt. \\
+\lstinline$      cout << "Gewicht von MeinAuto ist ";$&Text auf Konsole Ausgeben\\
+\lstinline$      cout << MeinAuto.GetGewicht();	$&und Gewicht von MeinAuto ausgeben\\
+\lstinline$      Auto &AuchMeinAuto = MeinAuto;	$&AuchMeinAuto ist eine Referenz auf MeinAuto, eine Referenz ist ein Stellvertreter für ein Objekt. Wann immer die Referenz verwendet wird, wird effektiv auf das referierte Objekt zugegriffen. \\
+\lstinline$      AuchMeinAuto.SetGewicht(50);$&	Das Gewicht von MeinAuto wird auf 50 gesetzt\\
+\lstinline$      delete DeinAuto;	$&Das Objekt, auf das DeinAuto zeigt, wieder löschen\\
+\lstinline$   }	$&Ende der Funktion main, alle lokalen Objekte werde hier automatisch gelöscht (MeinAuto)\\
+\end{CodeTable}
+ 
+
+
+\section{Glossar}
+{
+\setlength{\extrarowheight}{0.8ex}
+\begin{tabular}{lp{0.8\textwidth}}
+OOP&	Objekt Orientierte Programmierung\\
+OOD&	Objekt Orientierter Design\\
+OOA&	Objekt Orientierte Analyse\\
+UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
+ADT&	Abstrakter Daten Typ. Ein Datentyp, von dem genau beschrieben ist, was er macht und was er für Eigenschaften hat, es ist jedoch nicht festgelegt, wie er das macht. Das heisst seine Funktion und seine Schnittstelle ist genau definiert, aber sonst nichts. Häufig werden ATD mathematisch beschrieben.\\
+K'tor&	Kurzform für Konstruktor\\
+C'tor&	Kurzform für Constructor\\
+D'tor&	Kurzform für Destruktor\\
+STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, Mengen) und Algorithmen (Suchen, Sortieren, Ersetzen), die auf Templates basiert.\\
+GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
+RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
+POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
+\end{tabular}
+}
+
+\NextPagePlease
+\section{Literaturverzeichnis}
+
+
+
+{
+
+%\setlength{\extrarowheight}{0.8ex}
+%\small
+%\begin{tabular}{lp{0.83\textwidth}}
+%
+%Lit1&\textbf{Software Engineering},\newline 
+%Ian Sommerville Verlag Pearson Studium (Addison Wesley), 6. Auflage\newline 
+%ISBN 3-8273-7001-9\newline 
+%Umfassendes Buch zum Thema
+%SW-Engineering. Sehr empfehlenswert
+%wenn man in die SWEntwicklung
+%einsteigen will.\\
+%
+%Lit2&	\textbf{\Cpp-Einführung und professionelle Programmierung},\newline Ulrich Breymann, Hanser Verlag, 7. Auflage 2003,\newline ISBN 3-446-22330-4.\newline
+%Gutes Einsteiger und Lehrbuch, behandelt den vollen Sprachumfang und ist
+%auch für Fortgeschrittene und als Nachschlagewerk geeignet. \\
+%
+%Lit3&	\textbf{Die \Cpp Programmiersprache},\newline Bjarne Stroustrup, Addison Wesley, 4. Auflage,\newline ISBN 3-8273-1660-X\newline
+%Gilt allgemein als \emph{'Die Referenz'} da Bjarne Stroustrup massgeblich an der Entwicklung von \Cpp beteiligt war. Umfasst den ganzen Sprachumfang und ist ein gutes Nachschlagewerk.\\ 
+%
+%Lit2&	\textbf{Entwurfsmuster},\newline Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides, Addison Wesley 2004,\newline ISBN 3-8273-2199-9\newline
+%Gute Einführung in Entwurfsmuster, setzt Kenntnisse in der OOP voraus.\\
+%
+%Lit3&	\textbf{UML Konzentriert},\newline Martin Fowler, Kendall Scott, Addison Wesley 2003, 3. Auflage,\newline ISBN 3-8273-2126-3.\newline
+%Kurze Einführung in die UML. Gibt einen Überblick über die verschiedenen Modelle der UML.\\ 
+%
+%Lit4&\textbf{Objektorientierte Softwareentwicklung, Analyse und Design mit der UML 2.0},\newline Bernd Oestereich, R. Oldenbourg Verlag 2004, 6. völlig überarbeitete Auflage,\newline ISBN 3-486-27266-7\newline	
+%Eine Einführung in die Objektorientierte Softwareentwicklung.\\	
+%
+%Lit5&\textbf{Objektorientierte Analyse und Design}\newline Grady Booch, Addison Wesley 1996\newline ISBN 3-89319-673-0\newline	
+%Eine gute Einführung in die Objektorientierte Softwareentwicklung, leider vergriffen.\\	
+%
+%Lit6&\textbf{The Unified Modeling Language Reference Manual},\newline James Rumbaugh,   Ivar Jacobson, Grady	 Booch, Addison Wesley 2004,
+%Second Edition,\newline ISBN  	0-3212-4562-8\newline
+%Referenzhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dises Buch ist eher für Profis und ernsthafte Anwender\\
+%
+%Lit7&\textbf{The Unified Modeling Language User Guide},\newline Grady Booch,  /  James Rumbaugh, / Ivar Jacobson, Addison Wesley 1998,\newline ISBN 		0-2015-7168-4\newline
+%Benutzerhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dieses Buch beschriebt die UML und die Anwendung der UML. Es richtet sich an Leute, welche die Anwendung der UML lernen wollen und ist mit vielen Beispielen ausgestattet.\\
+%
+%Lit8&\textbf{The Unified Software Development Process},\newline Ivar Jacobson, Grady Booch, James Rumbaugh, Addison Wesley 1999,\newline ISBN 		0-2015-7169-2\newline
+%Dieses Buch beschreibt den Softwareentwicklungsprozess unter Verwendung der UML 2.0. Geschrieben von den Entwicklern der UML. 
+%Das Buch beschreibt nicht die UML selbst, sondern wie die UML in den Entwicklungsprozess von Projekten eingebunden werden kann.
+%
+%\end{tabular}
+%
+\small
+\newcounter{Literatur}
+\begin{list}{Lit\theLiteratur}
+{
+  \usecounter{Literatur}
+  \setlength{\labelwidth}{1cm}
+  \setlength{\labelsep}{0cm}
+  \setlength{\itemsep}{1mm}
+  \renewcommand{\makelabel}[1]{{#1}}}
+\item\textbf{Software Engineering},\newline 
+Ian Sommerville Verlag Pearson Studium (Addison Wesley), 6. Auflage\newline 
+ISBN 3-8273-7001-9\newline 
+Umfassendes Buch zum Thema
+SW-Engineering. Sehr empfehlenswert
+wenn man in die SWEntwicklung
+einsteigen will.
+
+\item	\textbf{\Cpp-Einführung und professionelle Programmierung},\newline Ulrich Breymann, Hanser Verlag, 7. Auflage 2003,\newline ISBN 3-446-22330-4.\newline
+Gutes Einsteiger und Lehrbuch, behandelt den vollen Sprachumfang und ist
+auch für Fortgeschrittene und als Nachschlagewerk geeignet. 
+
+\item	\textbf{Die \Cpp Programmiersprache},\newline Bjarne Stroustrup, Addison Wesley, 4. Auflage,\newline ISBN 3-8273-1660-X\newline
+Gilt allgemein als \emph{'Die Referenz'} da Bjarne Stroustrup massgeblich an der Entwicklung von \Cpp beteiligt war. Umfasst den ganzen Sprachumfang und ist ein gutes Nachschlagewerk. 
+
+\item	\textbf{Entwurfsmuster},\newline Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides, Addison Wesley 2004,\newline ISBN 3-8273-2199-9\newline
+Gute Einführung in Entwurfsmuster, setzt Kenntnisse in der OOP voraus.
+
+\item	\textbf{UML Konzentriert},\newline Martin Fowler, Kendall Scott, Addison Wesley 2003, 3. Auflage,\newline ISBN 3-8273-2126-3.\newline
+Kurze Einführung in die UML. Gibt einen Überblick über die verschiedenen Modelle der UML.
+
+\item \textbf{Objektorientierte Softwareentwicklung, Analyse und Design mit der UML 2.0},\newline Bernd Oestereich, R. Oldenbourg Verlag 2004, 6. völlig überarbeitete Auflage,\newline ISBN 3-486-27266-7\newline	
+Eine Einführung in die Objektorientierte Softwareentwicklung.	
+
+\item \textbf{Objektorientierte Analyse und Design}\newline Grady Booch, Addison Wesley 1996\newline ISBN 3-89319-673-0\newline	
+Eine gute Einführung in die Objektorientierte Softwareentwicklung, leider vergriffen.	
+
+\item \textbf{The Unified Modeling Language Reference Manual},\newline James Rumbaugh,   Ivar Jacobson, Grady	 Booch, Addison Wesley 2004,
+Second Edition,\newline ISBN  	0-3212-4562-8\newline
+Referenzhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dises Buch ist eher für Profis und ernsthafte Anwender.\label{UnifiedModelingLanguageReferenceManual}
+
+\item \textbf{The Unified Modeling Language User Guide},\newline Grady Booch,  /  James Rumbaugh, / Ivar Jacobson, Addison Wesley 1998,\newline ISBN 		0-2015-7168-4\newline
+Benutzerhandbuch zur UML 2.0. Geschrieben von den Entwicklern der UML. Dieses Buch beschriebt die UML und die Anwendung der UML. Es richtet sich an Leute, welche die Anwendung der UML lernen wollen und ist mit vielen Beispielen ausgestattet.
+
+\item \textbf{The Unified Software Development Process},\newline Ivar Jacobson, Grady Booch, James Rumbaugh, Addison Wesley 1999,\newline ISBN 		0-2015-7169-2\newline
+Dieses Buch beschreibt den Softwareentwicklungsprozess unter Verwendung der UML 2.0. Geschrieben von den Entwicklern der UML. % Lit \theLiteratur
+Das Buch beschreibt nicht die UML selbst, sondern wie die UML in den Entwicklungsprozess von Projekten eingebunden werden kann. \label{UnifiedSoftwareDevelopmentProcess}
+
+\end{list}
+
+
+
+Lit\ref{UnifiedModelingLanguageReferenceManual}-Lit\ref{UnifiedSoftwareDevelopmentProcess} sind zur Zeit nur in englisch erhältlich, es kann aber durchaus sein dass diese Bücher in Zukunft auch in deutsch erhältlich sein werden.
+}
+ 
+
+\section{\Cpp-Checkliste}
+Sobald eine Funktion virtuell ist, sollte auch der Destruktor virtuell sein.
+
+Wenn eine Klasse einen Destruktor benötigt, sind im allgemeinen auch der
+Copykostruktor und der Zuweisungsoperator selbst zu schreiben, oder allenfalls
+als privat zu deklarieren.
+
+Für jede Klasse je eine eigene Deklarations- (Header-) und Implementationsdatei. (Ausnahme
+Hilfsklassen)
+
+
+
+
+
+\printindex
+
+
+
+\end{document}
+
+
+

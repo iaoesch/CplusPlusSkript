@@ -16,23 +16,23 @@ MinPos.x=-1
 MinPos.y=-1
 MaxPos.x=-1
 MaxPos.y=-1
-NormalPos.left=21
-NormalPos.top=31
-NormalPos.right=574
-NormalPos.bottom=339
+NormalPos.left=22
+NormalPos.top=22
+NormalPos.right=913
+NormalPos.bottom=456
 Class=CLatexEdit
 Document=Script_CPP_pure_LatexV0_1.tex
 
 [Frame0_Row0]
-cyCur=261
+cyCur=387
 cyMin=10
 
 [Frame0_Col0]
-cxCur=525
+cxCur=863
 cxMin=10
 
 [Frame0_View0,0]
-Cursor.row=0
+Cursor.row=2053
 Cursor.column=0
-TopSubLine=0
+TopSubLine=2394
 
