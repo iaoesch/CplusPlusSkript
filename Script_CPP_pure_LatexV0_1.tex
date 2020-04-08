@@ -267,9 +267,11 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 \today
 
-%18. Februar 2011
+%16. Februar 2013
 
 \tiny
+
+18. Februar 2011
 
 19. Februar 2010
 
@@ -3250,17 +3252,12 @@ Im Vergleich zu C muss der Startupcode von  \Cpp wesentlich mehr Arbeit leisten.
 C müssen nur alle globalen und statischen Variablen vor der ersten Benutzung initialisiert
 werden, dies wird meist durch ein kurzes Codestück vor dem Aufruf von main() erledigt.
 
-Bei  \Cpp müssen zusätzlich die Konstruktoren von allen globalen und statischen Objekte
+Bei  \Cpp müssen zusätzlich die Konstruktoren von allen globalen und statischen Objekten
 vor dem Aufruf von main() ausgeführt werden, und entsprechend deren Destruktoren wenn
-das Programm durch Aufruf von exit() oder beenden von main() sein Ende erreicht. Dabei
-darf nicht vwergessen werden, dass neben den vom Programmierer definierten globalen
-und statischen Objekte auch in der Standard-Library globale Objekte vorhanden sind
-(z.B. cin, cerr und cout).
+das Programm durch Aufruf von exit()\footnote{Ein \Cpp Programm sollte nie mit exit() beendet werden, da so die Destruktoren der automatischen (Auf dem Stack angelegten) Objekte nicht aufgerufen werden. Anstelle von exit() sollte das Exceptionhandling, oder allenfalls Rückgabewerte von Funktionen benutzt werden, so dass ein \Cpp Programm immer via Beenden von main() terminiert.}  oder beenden von main() sein Ende erreicht. Dabei darf nicht vergessen werden, dass neben den vom Programmierer definierten globalen und statischen Objekte auch in der Standard-Library globale und statische Objekte vorhanden sind (z.B. cin, cerr und cout).
 
-Dieser Initialisierungsablauf ist jedoch sehr Compilerabhängig, bei einigen muss nur eine
-Runtimefunktion (z.B. init()) aufgerufen werden, bei anderen wird eine Tabelle mit
-Funktionszeigern generiert, die Funktionen in dieser Tabelle müssen vor dem Aufruf von
-main() durch den Startupcode aufgerufen werden.
+
+Dieser Initialisierungsablauf von \Cpp  ist jedoch sehr Compilerabhängig, bei einigen Compilern muss nur eine Runtimefunktion (z.B. \_\_init()) aufgerufen werden, bei anderen wird vom Cpompiler eine Tabelle mit Funktionszeigern generiert, die in dieser Tabelle aufgeführten Funktionen müssen vor dem Aufruf von main() durch den Startupcode aufgerufen werden.
 
 Zudem muss normalerweise der Linker angewiesen werden, diese Initialisierungsdaten
 aus den einzelnen Modulen zusammenzutragen und am richtigen Ort im Speicher abzulegen.
@@ -3270,31 +3267,36 @@ Nachfolgend als Beispiel, wie es beim Carme-Kit gemacht werden muss:
 Initialisierungsfunktion (Muss vor Aufruf von main() aufgerufen werden)
 \begin{CCode}
 
-extern unsigned int _ctors_start, _ctors_end;
-   /* Linker provided symbols for constructor function table;
-    */
-/* Init_Constructors
- * initialize (call) all constructors of global objects
+extern unsigned int _ctors_start, _ctors_end; // Vom Linker definierte Symbole, beinhalten 
+                                              // die Startadresse und die Endadresse der
+                                              // Konstruktorentabelle
+
+/* _Init_Constructors
+ *
+ * Diese Funktion ruft alle in der Konstruktorentabelle enthaltenen Konstruktoren auf
  */
-extern "C" void _Init_Constructors( void );
+
+
+extern "C" void _Init_Constructors( void ); // Soll im C-Modus compiliert werden
 
 void _Init_Constructors( void ) {
-   extern unsigned int _ctors_start, _ctors_end;
-   unsigned int *ctor = &_ctors_start;
-   while (ctor < &_ctors_end) {
-      ((void (*)(void))*ctor)();
+
+   unsigned int *ctor = &_ctors_start;      // Zeiger auf Tabellenstart setzen
+  
+   while (ctor < &_ctors_end) {             // Über alle Einträge interieren
+      ((void (*)(void))*ctor)();            // Aktuelle Funktion aufrufen   
       ctor++;
    }
 }
 \end{CCode}
 
-Analog müsste das ganze für die Destruktoren gemacht werden, sofern die
-Applikation überhaupt einmal beendet wird. (Wenn das Programm durch
+Analog müsste das Ganze nach dem Ende von main() für die Destruktoren gemacht werden, sofern die
+Applikation überhaupt einmal beendet wird. (Wenn das Programm nur durch
 Ausschalten des Gerätes 'beendet' wird, ist der Aufruf der Destruktoren
 nicht notwendig).
 
 
-Zusätzlicher Inhalt des Linkerskripts:
+Zusätzlich muss im Linkerscript das zusammenführen der Konstruktoren/Destruktorentabellen codiert werden: 
 \begin{CCode}
 
 		. = ALIGN(4);	/* advance location counter to the next 32bit boundary*/
@@ -3315,7 +3317,7 @@ Zusätzlicher Inhalt des Linkerskripts:
 Bei der Entwicklung der Sprache \Cpp wurde Wert darauf gelegt, dass der generierte Code
 so effizient wie möglich wird, und zusätzlicher Aufwand nur entsteht, wenn die
 entsprechenden Features auch benutzt werden. Ein mit  \Cpp compiliertes C-Programm
-soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre. Nachfolgend eine Aufstellung der Kosten von \Cpp Features:
+soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden wäre. Nachfolgend eine Aufstellung der Kosten von \Cpp Features:
 
 
 \begin{center}
@@ -3326,8 +3328,8 @@ soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre. 
 	   Namensbereiche & Nein & Nein & Ja & Ja\\
 	   Klassen ohne virtuelle Funktionen & Nein & Nein & Ja & Ja\\
 		 Klassen mit virtuellen Funktionen & Ja & Nein & Ja & Ja\\
-		 Klassen mit virtueller Vererbung & Ja & Bedingt & Ja & Ja\\
-		 Klassen mit Mehrfachvererbung & Nein & Bedingt & Ja & Ja\\
+		 Klassen mit virtueller Vererbung & Ja & Ja & Ja & Ja\\
+		 Klassen mit Mehrfachvererbung & Ja & Bedingt & Ja & Ja\\
 		 Überladene Funktionen & Nein & Nein & Ja & Ja\\
 		 Klassenmethoden & Nein & Nein & Ja & Ja\\
 		 Nichtvirtuelle Methoden & Wenig & Wenig &  Ja & Ja\\
@@ -3336,6 +3338,9 @@ soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre. 
 		 Dynamic Cast & Ja & Ja & Bedingt & Bedingt\\
 		 New / Delete & Ja & Ja & Bedingt & Bedingt\\
 		 Exception Handling	 & Ja & Bedingt & Nein & Nein\\
+		 Inline Funktionen	 & Bedingt & Nein, sogar Zeitgewinn & Ja & Ja\\
+		 Templates	 & Je nach Template & Nein & Je nach Template & Je nach Template\\
+		 Temporäre Objekte & Nein & Ja & Ja & Ja\\
 		\hline
 		
 	\end{tabular}
@@ -3344,15 +3349,28 @@ soll genau so effizient wie wenn es mit einem C-Compiler übersetzt worden wäre. 
 		 
 
 \subsection{Member Funktionen}
-Jeder Memberfunktion wird beim Aufruf ein zusätzliches, vor dem Programmierer verstecktes Argument übergeben, nämlich ein Zeiger auf das Objekt für welches die Methode aufgerufen wird. Innerhalb der Methode kann auf diesen Zeiger mit dem Schlüsselwort this zugegriffen werden.
+Jeder Memberfunktion wird beim Aufruf ein zusätzliches, vor dem Programmierer verstecktes Argument übergeben, nämlich ein Zeiger auf das Objekt für welches die Methode aufgerufen wird. Innerhalb der Methode kann auf diesen Zeiger mit dem Schlüsselwort this zugegriffen werden. Für dieses zusätzliche Argument wird etwas mehr Code und Rechenzeit benötigt. (In C müsste man bei der Verwendung von Strukturen die Adresse der Struktur übergeben, somit eigentlich kein Unterschied zwischen C und \Cpp )
 \begin{CCode}
-	x->f(a, 12);
+	x.f(a, 12);
   // wird zu	
 	f(&x, a, 12);
+
+	p->f(a, 12);
+  // wird zu	
+	f(p, a, 12);
+
 \end{CCode}
  
+\subsection{Klassen}
+Klassen entsprechen im Wesentlichen den Strukturen in C und benötigen auch nicht mehr Speicherplatz. Sobald eine Klasse virtuelle Funktionen besitzt oder erbt, erhält jedes Objekt dieser Klasse eine zusätzliche Pointer-Membervariable, welche auf die Tabelle mit den virtuellen Funktionen verweist. Alle Objekte werden also um die Grösse eines Pointers vergrössert. Bei Klassen mit nur wenigen Membern kann dies die Objektgrösse bis vervierfachen (Z.B bei nur einem char-Member). Zudem muss für die Klasse eine Tabelle mit Zeigern auf die virtuellen Funktionen angelegt werden.
+
+Bei Mehrfachvererbung werden weitere versteckte Zeiger im Objekt angelegt, da es für jede Basisklasse eine eigene virtuelle Funktionstabelle benötigt. Zudem sind je nach Kontext Offsetkorrekturen des this-Pointers notwendig, welche zusätzliche Rechenzeit benötigen.
+
+Bei virtueller Vererbung werden entweder nochmals weitere versteckte Zeiger im Objekt angelegt, oder es sind weitere Einträge in der virtuellen Funktionstabelle notwendig. Zudem ergibt sich beim Zugriff auf Member der virtuellen Basisklasse eine weitere Indirektion, was etwas zusätzliche Rechenzeit kostet. Zudem sind je nach Kontext Offsetkorrekturen des this-Pointers notwendig, welche weitere zusätzliche Rechenzeit benötigen. 
+
+
 \subsection{Virtuelle Funktionen}
-Beim Aufruf einer virtuellen Funktion soll die Funktion, welche zum effektiven Objekt gehört, aufgerufen werden. 
+Beim Aufruf einer virtuellen Funktion soll die Funktion, welche zum effektiven Objekt gehört, aufgerufen werden. Das erfordert je nach Situation zusätzlichen Aufwand. 
 
 Wenn eine virtuelle Funktion direkt auf ein Objekt angewendet wird, kann der Compiler bereits zur Compilezeit bestimmen, welches Objekt vorliegt, und den Funktionsaufruf direkt codieren. In diesem Fall entsteht kein zusätzlicher Laufzeitaufwand.
 
@@ -3360,7 +3378,7 @@ Wenn eine virtuelle Funktion auf einen Pointer oder eine Referenz auf ein Objekt
 
 Das setzt voraus, dass in jedem Objekt eine Information über das Objekt selbst abgelegt ist. Üblicherweise wird dazu an erster Stelle im Objekt ein zusätzlicher Pointer auf eine Tabelle abgelegt. Dieser Pointer wird vtblptr (Pointer auf die Virtuelle Funktionstabelle) genannt. 
 
-Für jede Klasse mit virtuellen Funktionen wird einmal eine solche Tabelle angelegt, alle Objekte einer Klasse verweisen auf dieselbe Tabelle.
+Für jede Klasse mit virtuellen Funktionen wird einmal eine solche Tabelle angelegt, alle Objekte einer Klasse verweisen auf dieselbe Tabelle. (Bei Mehrfachvererbung sind mehrere Tabellen pro Klasse notwendig).
 
 Ausgehend von folgendem Codefragment 
 \begin{CCode}
@@ -3417,27 +3435,75 @@ p->f1(5);
 // Effektiv ausgeführter Code
 p->vtblptr->f1(p, 5)
 \end{CCode}
-Es wird also nicht direkt die Funktion f1() aufgerufen, sondern es wird über den vtblptr in der Tabelle der virtuellen Funktionen die Adresse der effektiven Funktion geholt, und diese wird ausgeführt. Der Aufruf einer virtuellen Funktion kostet also einen zusaetzlichen Zugriff auf die Tabelle der virtuellen Funktionen. Ausser bei sehr kurzen Funktionen ist dieser Zugriff meist vernachlässigbar. Es kann auch durchaus sinnvoll sein, in einem Interrupthandler virtuelle Funktionen zu benutzen, insbesondere wenn dadurch ein switch() oder ein Vektortabellenzugriff im Handler eingespart werden kann. 
+Es wird also nicht direkt die Funktion f1() aufgerufen, sondern es wird über den vtblptr in der Tabelle der virtuellen Funktionen die Adresse der effektiven Funktion geholt, und diese wird ausgeführt. Der Aufruf einer virtuellen Funktion kostet also einen zusätzlichen Zugriff auf die Tabelle der virtuellen Funktionen. Ausser bei sehr kurzen Funktionen ist dieser Zugriff meist vernachlässigbar. Es kann auch durchaus sinnvoll sein, in einem Interrupthandler virtuelle Funktionen zu benutzen, insbesondere wenn dadurch ein switch() oder ein Vektortabellenzugriff im Handler eingespart werden kann.
+
+Bei Mehrfachvererbung und bei virtueller Vererbung sind je nach Kontext weitere Indirektionen sowie Offsetkorrekturen des this-Pointers notwendig, welche zusätzliche Rechenzeit benötigen. 
+ 
  
 \subsection{RTTI (Runtime Type Information)}
-Für die Runtime-Type-Information werden zusätzliche Inforamtionen für polymorphe Klassen abgelegt. Diese Information kann in die virtuelle Funktionstabelle integriert werden, oder die virtuelle Funktionstabelle wird um einen Eintrag auf die Typeninformation erweitert. Auf jeden Fall wird für jede Klasse zusätzlicher Speicher für diese Informationen benötigt.
+Für die Runtime-Type-Information werden zusätzliche Inforamtionen für polymorphe Klassen abgelegt. Diese Information kann in die virtuelle Funktionstabelle integriert werden, oder die virtuelle Funktionstabelle wird um einen Eintrag auf die Typeninformation erweitert. Auf jeden Fall wird für jede Klasse zusätzlicher Speicher für diese Informationen benötigt. Insbesondere muss auch die ganze Vererbungshierarchie abgebildet werden.
 
-Ausser beim expliziten Zugriff auf die Typeninformation mit typeid() hat RTTI keinen Einfluss auf das Laufzeitverhalten.
+Ausser beim expliziten Zugriff auf die Typeninformation mit typeid() hat die RTTI keinen Einfluss auf das Laufzeitverhalten.
 
 \subsection{Dynamic Cast}
+Um einen Dynamic Cast durchführen zu können, muss zur Laufzeit überprüft werden, ab das betroffene Objekt tatsächlich vom gewünschten Typ, oder davon abgeleitet ist. Dazu müssen die RTTI-Informationen der Vererbungshierarchie entlang untersucht werden. Dies kann je nach Vererbungshierarchie unterschiedlich lange dauern. Somit sollte dieses Feature in zeitkritischen Bereichen oder bei strengen Anforderungen an den Determinismus (Vorhersagbares Zeitverhalten) nicht verwendet werden.
+
+Wenn ein Dynamic Cast auf Referenzen angewendet wird, können zudem Exceptions ausgelöst werden, somit gilt zusätzlich das unter Exceptionshandling gesagte.
+ 
+\subsection{Exceptionshandling}
+Beim Exceptionhandling müssen sämtliche Objekte, welche im normalen Programmlauf vom Punkt des Auftretens einer Exception bis zum Punkt der passenden catch-Anweisung gelöscht worden wären durch den Exception-Mechanismus gelöscht werden. (Das gilt nur für automatisch erzeugte Objekte, für Objekte die mit new erzeugt wurden ist der Programmierer selbst verantwortlich).
+
+Um dies zu erreichen, müsste zur Laufzeit ständig eine Liste nachgeführt werden, in welcher alle noch zu löschenden Objekte eingetragen sind. Da dies den normalen Programmlauf stark verlangsamen würde, gibt es andere Ansätze.
+
+Eine Lösung, welche den normalen Programmlauf nicht beeinträchtigt, ist das Konstruieren einer grossen Tabelle, in welcher für jede Codezeile abgelegt ist, welche Objekte an dieser Stelle bereits erzeugt worden sind. Diese Tabelle wird vom Compiler für jede Funktion während des Compilierens erzeugt, und vom Exceptionhandling beim Auftreten einer Exception konsultiert um festzustellen, welche Objekte noch zu löschen sind. Diese Tabellen belegen zusätzlichen Speicher, bei Speicherknappheit muss möglicherweise auf das Exceptionhandling verzichten.
+
+Das Behandeln einer Exception ist ein sehr aufwendiger Prozess, vom Auftreten der Exception ausgehend muss sich das Exceptionhandling durch die umschliessenden Try-Blocks nach aussen vorarbeiten, bis ein Try-Block mit passendem Catch gefunden wird, und dies über Funktionsaufrufe hinweg. Um einen passenden Catch zu finden, müssen zudem die RTTI Informationen durchsucht werden. Deshalb genügt das Exceptionhandling deterministischen Anforderungen normalerweise nicht.
+
+Zudem darf eine Interruptroutine auf keinen Fall mit einer Exception beendet werden (Der Interrupt kann den normalen Programmfluss ja irgendwo Unterbrechen), wegen des nicht derterministischen Verhalten sollte sogar ganz auf Exceptions in Interruptroutinen verzichtet werden.
+
+\subsection{Inline Funktionen}
+Bei Inlinefunktionen wird an der Stelle des Funktionsaufrufes der Code der Funktion eingefügt, und nicht die Funktion aufgerufen. Dies spart den Code für die Parameterübergabe und den Funktionsaufruf, und erlaubt weitergehende Optimierungen. 
+Grundsätzlich spart man sich die Zeit für den Funktionsaufruf, wenn jedoch die Funktionsdauer gegenüber der Zeit für den Funktionsaufruf dominiert ist der Gewinn klein.
+
+Auf der Gegenseite wird die Codegrösse beim Benutzen von Inlinefunktionen grösser. (Der Code für die Funktion wird bei jedem Funktionsaufruf erneut eingefügt. Wenn der Funktionscode mehr Platz belegt, als durch den Wegfall des Codes für den Funktionsaufruf eingespart wird, hat das mehr Platzbedarf für den Gesamtcode zur Folge). Bei Inlinefunktionen muss man also immer zwischen Geschwindigkeitsgewinn und Codezuwachs abwägen. Einzig bei ganz kurzen Funktionen (1-3 Zeilen) kann auch die Codegrösse abnehmen.
+
+Wenn Inlinefunktionen über Pointer oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei der die Funktion direkt aufgerufen wird) 
+
+\subsection{Templates}
+Ein gut geschriebenes Template sollte nicht mehr Code als handgeschriebener Code erzeugen. Man muss aber beachten, dass ein einfacher Templateaufruf möglicherweise im Hintergrund zum Instanzieren vieler Templates mit dem entsprechenden Code führt. Zudem sind noch nicht alle Linker in der Lage, redundanten Code wieder zu entfernen, wenn dasselbe Template in verschiedenenen Modulen verwendet wird. Grundsätzlich spricht ejdoch nichts gegen den Einsatz von gut geschriebenen Templates, man sollte einfach den Speicherverbrauch im Auge behalten.
+
+\subsection{Temporäre Objekte (Temporaries)}
+Temoräre Objekte werden vom Compiler automatisch erzeugt, um Zwischenergebnisse aufzunehmen. Es handelt sich um Objekte, welche bei der Auswertung eines Ausdruckes automatisch erzeugt und wieder gelöscht werden. Auch Parameter und Rückgabewerte von Funktionen erzeugen oft temporäre Objekte. Optimierende Compiler versuchen, Temporaries soweit wie möglich zu vermeiden. Als Programmierer kann man Temporaries vermeiden, wenn man Referenzen statt die Objekte selbst verwendet.
+
+
+Beispiel
+\begin{CCode}
+// Folgender Ausdruck
+x = a + b + c;
+
+// wird zu
+x.operator=(operator+(operator(a, b), c));
+
+// und dies zu
+t1 = operator(a, b);    // t1 ist temporaeres Objekt
+t2 = operator(t1, c);   // t2 ist temporaeres Objekt
+x.operator=(t2);
+\end{CCode}
+Nebst den beiden Temporaries t1 und t2 werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
+
+Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
 
 
 \chapter{\Cpp 11}
-Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschieded. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein.
-Nachfolgend werden einige Neurungen aufgeführt.
+Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
 
-\section{Sprachumfang}
+\section{Neuerungen}
 \subsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
 
-RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von parametern werden in \Cpp oft temporäre
+RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
 
-Mit RValue Referenzen können nun Temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang).
+Mit RValue Referenzen können nun Temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des Temporären Objektes die 'Entwendeten' Daten nicht löscht).
 
 Beispiel:
 \begin{CCode}
@@ -3455,7 +3521,7 @@ class Demo {
 
 \subsection{constexpr}
 Mit dem Schlüsselwort constexpr können Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, wo nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten.
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten.
 
 Beispiel
 \begin{CCode}
@@ -3479,12 +3545,10 @@ constexpr double Erdanziehung = 9.81;
 constexpr double MondAnziehung = Erdanziehung / 6.0;
 \end{CCode}
 
-Entsprechend können auch Konstruktoren als constexpr definiert werden,
-dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können
-auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
 
 \subsection{extern Templates}
-Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen variablen und Funktionen)
+Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
 
 
 \begin{CCode}
@@ -3510,7 +3574,7 @@ DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
 Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
 
 \subsection{Vereinheitlichte Initialisierung}
-Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels gescheiften Klammern initialisiert werden, sofern kein Initialisiererlisten-Konstruktor existiert, wird der
+Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels gescheiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
 passende Konstruktor aufgerufen (falls vorhanden).
 
 Beispiel:
@@ -3546,7 +3610,7 @@ f2({5, 1.23f});
 \end{CCode}
 
 \subsection{Automatische Typerkennung}
-Mit dem Schlüselwort auto wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle das Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort decltype kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+Mit dem Schlüselwort auto wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort decltype kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
 \begin{CCode}
 
 auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
@@ -3584,20 +3648,20 @@ Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wo
 
 \subsection{Anonyme Funktionen (Lambda Funktionen)}
 
-Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich als Vergleichsfunktionen und ähnliches.
+Lambda Funktionen sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 
 Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 \begin{CCode}
 [capture](parameters)->return_type{body}
 \end{CCode}
 
-Mit Capture kann der Funktion zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die Capture-Liste darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten variablen nicht mehr existieren.
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die Capture-Liste darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
 
-Parameter ist die parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
+\emph{Parameter} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
--\textgreater return\_type definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
+\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
 
-Body enthält den Code der Funktion.
+\emph{Body} enthält den Code der Funktion.
 
 Beispiele
 \begin{CCode}
@@ -3628,11 +3692,11 @@ std::for_each( begin(Liste), end(Liste), [&Total](int x) {
 						 );
 \end{CCode}
 Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
-Containern) abgespeichert werden. Dabei erleichtert die Automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
+Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
 
-\subsection{Anonyme Funktionen (Alternative Funktionsdefinition}
+\subsection{Alternative Funktionsdefinition}
 
-Der Rückgabetyo von Funktionen kann neu auch nach der Argumentenliste angegebenm werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
+Der Rückgabetyo von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
 
 \begin{CCode}
 
@@ -3690,10 +3754,9 @@ private:
 }\end{CCode}
 
 
-\subsection{Kontrolliertes überschreiben von Funktionen}
+\subsection{Kontrolliertes Überschreiben von Funktionen}
 
-Mit den Bezeichnern override und final kann das versehentliche überschreiben
-/ nicht-überschreiben von Methoden verhindert werden. diese Beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eien spezielle Bedeutung. 
+Mit den Bezeichnern override und final kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
 
 Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
 
@@ -3717,10 +3780,10 @@ class Abgeleitet : Basisklasse {
 
 \subsection{Nullpointer}
 Neu gibt es ein Schlüsselwort für den Nullpointer: nullptr
-Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden.
+Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei Überladenen Funktionen wichtig.
 
 \subsection{Typsicherere Enummerationen}
-Neu gibt es einen Typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp angegeben werden (Speicherbedarf fuer einen Enum-Wert).
+Neu gibt es einen typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
 
 Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
 mehrere Enums dieselben Bezeichner verwenden.   
@@ -3748,11 +3811,11 @@ enum class Enum2 : unsigned int {Item1, Item2};
 
 \end{CCode}
 
-\subsection{Template-Verschachtelung >>}
-Bei verschachtelten Templates wird >> als Schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
+\subsection{Template-Verschachtelung \textgreater\textgreater}
+Bei verschachtelten Templates wird \textgreater\textgreater als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
 
 \subsection{Explizite Umwandlungsoperatoren}
-Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch Aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als Expliziter Einsatz)
+Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
 
 \subsection{Template mit variabler Argumentenanzahl}
 
@@ -3777,9 +3840,7 @@ u"Ein spezielles UTF-16 Zeichen: \u2018"
 U"Ein spezielles UTF-32 Zeichen: \U00002018"  
 \end{CCode}
 
-
-
-Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "Begrenzung( und )Begrenzung" eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. 'Begrenzung kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
 
 Beispiel:
 \begin{CCode}
@@ -3788,13 +3849,13 @@ R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
 R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
 \end{CCode}
 
-R und U könne auch kombiniert werden.
+R und U können auch kombiniert werden.
 
 \subsection{Benutzerdefinierte Literale}
 
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen.
 
-Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche überladen werden muss:
+Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
 \begin{CCode}
 OutputType operator "" _Magic(const char * literal_string); // Erhaelt einen String mit der Zeichenkette vor dem Suffix
@@ -3802,7 +3863,7 @@ OutputType operator "" _kg(unsigned long long);    // Erhaelt den Integerwert de
 OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
 \end{CCode}
 
-Die Operatorfunktionen können dabe einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern.
+Die Operatorfunktionen können dabei einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern).
 
 Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
 
@@ -3813,12 +3874,7 @@ OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaeng
 OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
 \end{CCode}
 
-Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal.
-
-
-\subsection{Multithreading Unterstützung}
-Neu wird Multithreading unterstützt
-
+Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
 
 \subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen}
 Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
@@ -3837,7 +3893,7 @@ class Demo {
 \end{CCode}
 Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
 
-\subsection{Weitere Neuerungen}
+\section{Weitere Neuerungen}
 
 \begin{itemize}
 	 \item Geänderte Definiton von POD (plain old data)
@@ -3849,6 +3905,7 @@ Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würd
    \item Alignementkontrolle bei Objekten
    \item Einfacher Support für Garbagecollection
    \item Attribute
+   \item Unterstützung von Multithreading
    \item Standardlibrary um Tupletypen erweitert
    \item Standardlibrary um Hashtabellen erweitert
    \item Standardlibrary um Regular expressions erweitert
