@@ -5309,7 +5309,7 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 
 Nachfolgend werden einige wesentliche Komponenten aus dieser Bibliothek vorgestellt.
 
-\subsubsection{Thread}
+\subsection{Thread}
 \OviIndex{Thread} dient zum Erzeugen und Starten eines neuen Threads. (Je nach verwendetem Konstruktor kann Thread auch für andere Aufgaben genutzt werden.)
 
 Ein Beispiel:
@@ -5355,7 +5355,7 @@ int main()
 \end{CCode}
 
 
-\subsubsection{Futures}
+\subsection{Futures}
 \OviIndex{Futures} dienen zum übermitteln von Daten von einem Thread zum Anderen. Ein Future ist eine Variable, welche irgendwann in Zukunft einen Wert enthalten wird. Wenn ein Thread versucht, diese Variable mittels get() zu lesen wird er angehalten, bis diese Variable einen Wert enthält. Ein Thread kann auch mit wait() (ohne Timeout) oder wait\_until()/wait\_for() (Mit Timeout) auf das Verfügbar werden des Wertes warten.
  
 Ein gültiges Future ist immer mit einem \OviIndex{Promise} verbunden, sobald ein Thread in ein Promise schreibt, erhält das dazugehörende Future den übergebenen Wert. Sobald ein Future-Promise Paar einmal verwendet wurde, wird es ungültig und kann kein zweites mal benutzt werden. (Einmal verwendet heisst das ein Wert in das Promise geschrieben wurde, und aus dem Future gelesen wurde.).
@@ -5402,7 +5402,7 @@ int main()
 
 Mit Promise-Future können auch Exceptions übermittelt werden.
 
-\subsubsection{async}
+\subsection{async}
 Mit \OviIndex{async} kann eine Funktion auf einfache Weise parallel ausgeführt werden, und bei Bedarf auf ihren Rückgabewert gewartet werden. Es wird automatisch ein Thread und ein Future erzeugt, die Funktion aufgerufen und das Ergebnis dem Future zugewiesen. Der Aufrufer von async() erhält das entsprechende Future als Rückgabewert von Async().
 
 Ein Beispiel:
@@ -5438,9 +5438,11 @@ int main()
 
 Anstelle von std::launch::async kann async() auch std::launch::deferred übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald get() aufgerufen wird (get() ruft somit die übergebene Funktion auf). Wenn async() ohne eine dieser Policies aufgerufen wird (std::async(HardWorkingFunction, 1, 10000) ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von get() ausgeführt wird.
 
-\subsubsection{Mutex}
-Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex} zur Verfügung, sowie dazugehörende Manipulationsfunktionen.
+\subsection{Mutex und conditional Variables}
+Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex} und \OviIndex{Conditional Variables} zur Verfügung, sowie dazugehörende Manipulationsfunktionen.
 
+\subsection{Atomic}
+\OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt) durchgeführt werden, und damit Race Konditionen vermieden werden können.
 
 \chapter{C++ in Embedded Systemen}
 \section{Startup Code}
