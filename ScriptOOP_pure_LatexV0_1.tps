@@ -17,7 +17,7 @@ Class=LaTeXView
 Document=ScriptOOP_pure_LatexV0_1.tex
 
 [Frame0_View0,0]
-TopLine=93
+TopLine=92
 Cursor=12006
 
 [SessionInfo]
