@@ -10,6 +10,9 @@
 %/*                                                                           */
 %/*  History    : 17.11.2004  IO Created                                      */
 %/*               01.01.2006  IO Unified Process added                        */
+%/*               01.01.2010  IO UML / CPP separated                          */
+%/*               01.01.2013  IO C++11, Enbedded added                        */
+%/*               05.11.2015  IO new actualized                               */
 %/*                                                                           */
 %/*                                                                           */
 %/*  File       : ScriptOOPLatexv0_1.tex                                      */
@@ -32,19 +35,6 @@
 %/*  Crash-Kurs   Rein virtuelle Metoden/Abstrakte Klasse                     */
 %/*  Crash-Kurs   Stereotypen                                                 */
 %/*  Crash-Kurs   UML Sprachelemente                                          */
-%/*                                                                           */
-%/*  Kap 6.1 Ev bessere Notation fuer Alternativereignisse/Events             */
-%/*                                                                           */
-%/*                                                                           */
-%/*  Fehler in Bilder:                                                        */  
-%/*   5.3 EinFenster Klassenname fehlt                                        */
-%/*   5.8 Undruckbares Zeichen in Notiz                                       */
-%/*   5.12 Punktierte Linien                                                  */
-%/*   5.13 Machwas Machauchwas Reihenfolge drehen                             */
-%/*   5.14 <<Static>> fehlt vor EinzigesExemplar                              */
-%/*   5.17 CMDPaste auch assoziiert mit Dokument                              */
-%/*   5.20/5.21 Klient/Client                                                 */
-%/*   6.2 Versuchen Abgerundetet Rechtecke hinzubekommen                      */
 %/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
@@ -438,19 +428,19 @@ void SayHello::SayHello()                      \linebreak[4]
 void SayHello::SaySomething()                  \linebreak[4]   
 \{                                             \linebreak[4]
 \hspace*{0.5cm}   SayGreeting();               \linebreak[4]
-\hspace*{0.5cm}   cout << '' '';               \linebreak[4]
+\hspace*{0.5cm}   std::cout << '' '';          \linebreak[4]
 \hspace*{0.5cm}   SayWorld();                  \linebreak[4]
-\hspace*{0.5cm}   cout << endl;                \linebreak[4]
+\hspace*{0.5cm}   std::cout << std::endl;      \linebreak[4]
 \}                                             \linebreak[4]
                                                \linebreak[4]
 void SayHello::SayWorld()                      \linebreak[4]   
 \{                                             \linebreak[4]
-\hspace*{0.5cm}   cout << ''World'';           \linebreak[4]
+\hspace*{0.5cm}   std::cout << ''World'';      \linebreak[4]
 \}                                             \linebreak[4]
                                                \linebreak[4]
 void SayHello::SayGreeting()                   \linebreak[4]   
 \{                                             \linebreak[4]
-\hspace*{0.5cm}   cout << Greeting;            \linebreak[4]
+\hspace*{0.5cm}   std::cout << Greeting;       \linebreak[4]
 \}
 \end{flushleft}
 }}
@@ -575,9 +565,9 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$Typ()$&Objekterzeugung&\lstinline$ApfelKlasse(Rot)$\\
 \hline
-\lstinline$typeid(Typ)$&Typidentifikation&\lstinline$cout << typeid(ApfelKlasse).Name();$\\
+\lstinline$typeid(Typ)$&Typidentifikation&\lstinline$std::cout << typeid(ApfelKlasse).Name();$\\
 \hline
-\lstinline$typeid(Ausdruck)$&Objektidentifikation&\lstinline$cout << typeid(*p).Name();$\\
+\lstinline$typeid(Ausdruck)$&Objektidentifikation&\lstinline$std::cout << typeid(*p).Name();$\\
 \hline
 \lstinline$dynamic_cast<Typ>()$&Typumwandlung, mit Laufzeitprüfung&\lstinline$a = dynamic_cast<int>(b);$\\
 \hline
@@ -618,11 +608,11 @@ Mit den geschweiften Klammern { } werden in C/\Cpp mehrere Anweisungen zu einem 
 \begin{CCode}
 {
   int a, b, c;
-  cout << "Bitte 2 Zahlen eingeben" << endl;
-  cin >> a;
-  cin >> b;
+  std::cout << "Bitte 2 Zahlen eingeben" << std::endl;
+  std::cin >> a;
+  std::cin >> b;
   c = a + b;
-  cout << a << " + " << b << " = " << c << endl;
+  std::cout << a << " + " << b << " = " << c << std::endl;
 } // Variablen a b c ab hier nicht mehr gueltig
 \end{CCode}
  
@@ -647,6 +637,47 @@ Memory = new int;       // Platz fuer einen einzelnen int reservieren und
 delete Memory;          // und Speicher wieder freigeben
 
 \end{CCode}
+
+Der aktuelle C++ Standard schreibt 3 Varianten für new vor, wobei der Programmierer durch Überladen weitere Varianten hinzufügen, oder bestehende ersetzen kann. die Standardvarianten sind:
+
+\begin{enumerate}
+	\item das einfache new, dieses erzeugt ein Objekt oder wirft eine std::bad\_alloc Exception wenn der Speicher nicht reserviert werden konnte.
+	\item das new(std::nothrow), dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefaellen verwendet werden, das Exception werfende new führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
+	\item das placement new, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich.
+\end{enumerate}
+ 
+Beispiele:
+
+\begin{CCode}
+
+// Ein Zeiger auf ein Objekt der Klasse A definieren
+A *aptr;                 
+
+// Ein neues A-Objekt dynamisch erzeugen (Wirft Exception wenn nicht genug Speicher) 
+try { 
+   aptr = new A; 
+}           
+catch (std::bad_alloc) {    
+   // Error Handling
+}
+
+// Ein neues A-Objekt dynamisch erzeugen (Liefert NULL-Pointer wenn nicht genug Speicher)
+aptr = new(std::nothrow) A;
+ 
+if (aptr == 0) {
+   // Error Handling
+}
+
+// Ein neues A-Objekt in vorgegebenem Speicherbereich definieren
+char Memory[sizeof(A)];
+
+aptr = new(Memory) A;  // Memory kann beliebige Adresse sein, an welcher 
+                       // das Objekt erzeugt werden soll        
+
+
+
+\end{CCode}
+
 \section{Ein- und Ausgabe}
 Bildschirmausgaben laufen über (das Objekt) \OviIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \OviIndex{cin} gelesen werden. Um cin oder cout benutzen zu können muss das entsprechende Headerfile mittels \#include <iostream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
 Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich std abgelegt sind, müssen Bibliotheksfunktionen
@@ -746,19 +777,19 @@ Beispiel:
 \begin{CCode}
 
 
-  ios_base::fmtflags AlteFlags;
+  std::ios_base::fmtflags AlteFlags;
   
-  AlteFlags = cout.flags(); // Flag Zustand lesen
+  AlteFlags = std::cout.flags(); // Flag Zustand lesen
 
   // Ausgabeformat waehlen (Flags zusaetzlich setzen)
-  cout.setf(ios_base::left|ios_base::oct|ios_base::fixed);
+  std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed);
   
-  cout << 1.23; // Ausgabe im gewaehlten Format
+  std::cout << 1.23; // Ausgabe im gewaehlten Format
   
   // Alle Flags loeschen, nur Hex ist gesetzt
-  cout.flags(ios_base::hex);
+  std::cout.flags(std::ios_base::hex);
   
-  cout << 47;
+  std::cout << 47;
   
 
 \end{CCode} 
@@ -770,19 +801,19 @@ definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewä
 
   std::streamsize OldPrecision;
   
-  OldPrecision = cout.precision(); // Genauigkeit lesen
+  OldPrecision = std::cout.precision(); // Genauigkeit lesen
 
   // Genauigkeit waehlen
-  cout.precision(5);
+  std::cout.precision(5);
   
   // Feldbreite waehlen
-  cout.width(9);
+  std::cout.width(9);
   
   // Fuellzeichen waehlen
-  cout.fill('*');
+  std::cout.fill('*');
 
 
-  cout << 1.23; // Ausgabe im gewaehlten Format 
+  std::cout << 1.23; // Ausgabe im gewaehlten Format 
                 // gibt ****1.23000 aus
 
 \end{CCode} 
@@ -801,14 +832,14 @@ selbst neue Manipulatoren zu erzeugen.
 
 
   // Format waehlen und Ausgabe in der selben Zeile
-  cout <<  setprecision(5) << setw(9) << setfill('*') << 1.23;
+  std::cout <<  std::setprecision(5) << std::setw(9) << std::setfill('*') << 1.23;
 
   //  Zahl hexadezimal ausgeben (ersetzt setf())
-  cout << hex << 123545;
+  std::cout << std::hex << 123545;
 
 \end{CCode} 
 
-Einige Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
+Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
 
  
 \section{Hauptprogramm}
@@ -867,13 +898,13 @@ j = 100;        // Werte an j, k und l Zuweisen
 k = 200;
 l = 300;
 
-cout << r;      // Wert ausgeben der von r referenziert wird (j)
+std::cout << r;      // Wert ausgeben der von r referenziert wird (j)
 
 ptr = &k;       // Addresse von k an Ptr zuweisen
-cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
 
 ptr = &l;       // Addresse von l an Ptr zuweisen
-cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
 
 void DoSomething(int &a, const int &b) 
 {
@@ -1103,13 +1134,13 @@ Geschrieben werden
 Auswahlanweisung, der Programmfluss wird bei dem case - statement weitergeführt, das mit dem Wert der switch-Anweisung übereinstimmt. Es können nur Konstanten bei den Case Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein break oder das Ende der Struktur trifft. Wenn nach einem case Statement kein break steht, fährt das Programm mit den Anweisungen des nächsten case weiter. (Sollte vermieden werden). Der Defaultfall kann weggelassen werden.
 \begin{CCode}
 switch (i) {
-  case 1: cout << "Eins" << endl;
+  case 1: std::cout << "Eins" << std::endl;
       break;
-  case 2: cout << "Zwei" << endl;
+  case 2: std::cout << "Zwei" << std::endl;
       break;
-  case 3: cout << "Drei" << endl;
+  case 3: std::cout << "Drei" << std::endl;
       break;
-  default: cout << "Was anderes" << endl;
+  default: std::cout << "Was anderes" << std::endl;
       break;
 }
 \end{CCode}
@@ -1155,7 +1186,7 @@ int Maximum(int a, int b)
 \begin{CCode}
 void Print( const int &a) // Referenzen waeren bei Objekten sinnvoller als hier
 {
-  cout << a;
+  std::cout << a;
 }
 \end{CCode}
 
@@ -1323,18 +1354,19 @@ int main(int argc, char *argv[]) {
 }
 \end{CCode}
 
-Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird.
+Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, dann kann er einfach weggelassen werden
+Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden
 
 
 \subsection{Konstruktoren}
-\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach alle Attribute auf 0 setzt. Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
+\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
 \begin{CCode}
 class MyClass {
-  int k, j;
-  public:
-                MyClass(void);         // Argumentloser Konstruktor
+  int k, j;                            // POD's, wuerden durch den Compilererzeugten Defaultkonstruktor
+                                       // nicht initialisiert
+  public: 
+                MyClass();             // Argumentloser Konstruktor
                 MyClass(int new_k);    // Ueberladen fuer int
                 MyClass(float new_k);  // Ueberladen fuer float
    ...
@@ -1488,22 +1520,22 @@ int main(int argc, char *argv[])
    A x(1, 2);
    int q;
    q = x;
-   cout << q;
+   std::cout << q;
 }
 \end{CCode}
 
 Achtung: Umwandlungsoperatoren sollten sehr zurückhaltend eingesetzt werden, da sonst viele inkompatible Zuweisungen plötzlich erlaubt werden, und viele Flüchtigkeitsfehler vom Compiler nicht mehr erkannt werden können.
-Es kann auch passieren, dass unerwartete Umwandlungen geschehen und man den Überblick über die möglichen Umwandlungen verliert. 
+Es kann auch vorkommen, dass unerwartete Umwandlungen geschehen und man generell den Überblick über die möglichen Umwandlungen verliert. 
 
 
 \section{Zugriffsrechte}
 In Klassen kann unter \Cpp der Zugriff auf Member (Attribute und Methoden) eingeschränkt werden. Es gibt folgende \OviIndex{Zugriffsrechte}\index{public}\index{protected}\index{private}:
 \paragraph{public:} 
 Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubute vermieden werden (Default bei Strukturen).
-\paragraph{protected:}	Auf dieses Element kann nur von Methoden dieser Klasse und davon abgeleiteten Klassen (sowie von Friendfunktionen) zugegriffen werden.
+\paragraph{protected:}	Auf dieses Element kann nur von Methoden dieser Klasse und davon abgeleiteten Klassen (sowie von Friendfunktionen) zugegriffen werden. Es wird empfohlen, dieses Zugriffsrecht nur in Ausnahmefällen einzusetzen. Besser private mit Zugriffsmethoden einsetzen.
 \paragraph{private:}	Auf dieses Element kann nur von Methoden dieser Klasse (sowie von Friendfunktionen) zugegriffen werden (Default bei Klassen).
 
-Eine Zugriffsberechtigung ist solange gültig bis eine andere eingestellt wird.
+Eine Zugriffsberechtigung ist innerhalb der Klassendeklaration für alle Nachfolgenden Klassenmember gültig bis eine andere Zugriffsberechtigung eingestellt wird.
 
 \section{Friendfunktionen}
 \index{Friendfunktionen}Wenn man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben will, ohne diese Member als public zu definieren, kann man die Funktion oder Klasse als \OviIndex{friend} deklarieren:
@@ -1614,7 +1646,7 @@ int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
 
 
 \section{Der this-Pointer}
-Jede Methode (Auch Kostruktoren, Destruktor und Operatorfunktionen) haben implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf die Attribute zugreifen.
+Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) haben implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf die Attribute zugreifen.
 
 \begin{CCode}
 class Auto {
@@ -1716,7 +1748,7 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 Wenn Variablen und Objekte normal erzeugt werden (Also nicht dynamisch mit new), dann werden sie automatisch gelöscht wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
 Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp des Programms. 
 
-Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen.
+Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden.
 
 Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt wird.
 Beispiel:
@@ -1792,22 +1824,22 @@ class MyClass {
 
 MyClass::MyClass() : i(0), k(0) // Konstruktor mit Initialisiererliste (:)
 {
-  cout << "MyClass created" << endl;
+  std::cout << "MyClass created" << std::endl;
 }
 
 MyClass::MyClass(int new_i, int new_k) : i(new_i), k(new_k) 
 {
-  cout << "MyClass created" << endl;
+  std::cout << "MyClass created" << std::endl;
 }
 
 MyClass:: ~MyClass()
 {
-  cout << "MyClass destroyed" << endl;
+  std::cout << "MyClass destroyed" << std::endl;
 }
 
 void MyClass::Print();
 {
-  cout << "MyClass : i = " << i << "; k = " << k << endl;
+  std::cout << "MyClass : i = " << i << "; k = " << k << std::endl;
 }
 
 void MyClass::Setk(int new_k);
@@ -1835,7 +1867,7 @@ int main (int argc, char *argv[])
   Object1.Seti(33);
   Object1.Print();
 
-  cout << "Object2 " << Object2.Geti() << ":" << Object2.Getk() << endl;
+  std::cout << "Object2 " << Object2.Geti() << ":" << Object2.Getk() << std::endl;
 
   Ptr = new MyClass(10, 20);
   Ptr->Print();
@@ -1850,12 +1882,12 @@ int main (int argc, char *argv[])
 \end{CCode}
 
 \NextPagePlease 
-\subsection{Vererbung}
-Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden, die von der existierenden Klasse erbt. 
+\section{Vererbung}
+Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden, die von einer existierenden Klasse erbt. 
 
 Bei der \OviIndex{Vererbung} übernimmt die neue Klasse zuerst einmal alle Attribute und Methoden der bereits bestehenden Klasse, und fügt eventuell neue Attribute und Methoden hinzu, oder ändert die geerbten Methoden ab (Überschreibt Sie).
 
-Wenn eine Klasse von einer bestehenden Klasse (Basisklasse) erben soll, wird nach dem Klassennahmen ein Doppelpunk gesetzt, anschliessend folgt ein Zugriffspefizierer und danach der Namen der Basisklasse. Der Zugriffsspezifizierer legt die Zugriffsrechte für die Basisklasse fest, genau so wie wenn sie ein Attribut der neuen Klasse wäre. Normalerweise wird hier public verwendet, da sonst Probleme mit \OviIndex{Polymorphismus} auftreten. (Die Methoden der Basisklasse sind via abgeleitete Klasse nicht zugänglich)
+Wenn eine Klasse von einer bestehenden Klasse (Basisklasse) erben soll, wird nach dem Klassennamen ein Doppelpunk gesetzt, anschliessend folgt ein Zugriffspefizierer und danach der Namen der Basisklasse. Der Zugriffsspezifizierer legt die Zugriffsrechte für die Basisklasse fest, genau so wie wenn sie ein Attribut der neuen Klasse wäre. Normalerweise wird hier public verwendet, da sonst Probleme mit \OviIndex{Polymorphismus} auftreten. (Die Methoden der Basisklasse sind via abgeleitete Klasse nicht zugänglich)
 
 Unter \Cpp sieht eine \OviIndex{Vererbung} wie folgt aus:
 
@@ -1884,23 +1916,23 @@ class ExtendedClass : public MyClass {  // erben von MyClass
 
 ExtendedClass::ExtendedClass() : Additional(0) // Benutzt Defaultkonstruktor 
 {                                              //                       MyClass()
-  cout << "ExtendedClass created" << endl;
+  std::cout << "ExtendedClass created" << std::endl;
 }
                                                     // MyClass initiaisieren (K'tor)
 ExtendedClass::ExtendedClass(int n_i,int n_k,int n_a): MyClass(n_i, n_k),Additional(n_a)
 {
-  cout << "ExtendedClass created" << endl;
+  std::cout << "ExtendedClass created" << std::endl;
 }
 
 ExtendedClass:: ~ExtendedClass()
 {
-  cout << "ExtendedClass destroyed" << endl;
+  std::cout << "ExtendedClass destroyed" << std::endl;
 }
 
 void ExtendedClass::Print();
 {
   MyClass::Print();   // Print Baseclass MyClass
-  cout << "ExtendedClass : Additional = " << Additional << endl;
+  std::cout << "ExtendedClass : Additional = " << Additional << std::endl;
 }
 \end{CCode}
 \NextPagePlease
@@ -1929,7 +1961,7 @@ int main (int argc, char *argv[])
 }
 \end{CCode}
 
-\subsection{Mehrfachvererbung}
+\section{Mehrfachvererbung}
 In \Cpp ist auch \OviIndex{Mehrfachvererbung} möglich, das heisst, dass eine Klasse nicht nur von einer Klasse, sondern von mehreren erben kann.
 \begin{CCode}
 #include "MyClass.hpp"
@@ -1968,7 +2000,7 @@ Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden. Grundsä
 von Mehrfachvererbung wenn mehr als nur Schnittstellen implementiert werden sollen.
  
 
-\subsection{Polymorphismus}
+\section{Polymorphismus (Virtuelle Funktionen)}
 Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \OviIndex{virtual}, aber nicht bei der Definition (Implementation).
 \emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil unter Umständen sonst der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht der der Basisklasse benutzt werden.
 
@@ -2006,17 +2038,17 @@ class ExtendedClass : public MyClass {  // erben von MyClass
 
 MyClass::MyClass(int new_k) : k(new_k) 
 {
-  cout << "MyClass created" << endl;
+  std::cout << "MyClass created" << std::endl;
 }
 
 MyClass:: ~MyClass()
 {
-  cout << "MyClass destroyed" << endl;
+  std::cout << "MyClass destroyed" << std::endl;
 }
 
 void MyClass::Print();
 {
-  cout << "MyClass : k = " << k << endl;
+  std::cout << "MyClass : k = " << k << std::endl;
 }
 \end{CCode}
 
@@ -2027,16 +2059,16 @@ void MyClass::Print();
 
 ExtendedClass::ExtendedClass(int n_k, int n_a): MyClass(n_k), Additional(n_a)
 {
-  cout << "ExtendedClass created" << endl;
+  std::cout << "ExtendedClass created" << std::endl;
 }
 ExtendedClass:: ~ExtendedClass()
 {
-  cout << "ExtendedClass destroyed" << endl;
+  std::cout << "ExtendedClass destroyed" << std::endl;
 }
 void ExtendedClass::Print();
 {
   MyClass::Print();   // Print Baseclass MyClass
-  cout << "ExtendedClass : Additional = " << Additional << endl;
+  std::cout << "ExtendedClass : Additional = " << Additional << std::endl;
 }
 \end{CCode}
 
@@ -2057,13 +2089,13 @@ int main (int argc, char *argv[])
   Object1.Print();
   Object2.Print();
 
-  Ptr->Print();    // Achtung, benutzt korrektes Print() da MyClass::Print()
+  Ptr->Print();    // Achtung, benutzt ExtendedClass::Print() da MyClass::Print()
                    // virtuell ist und Aufruf via Pointer laeuft
   Ptr = &Object2;
-  Ptr->Print();    // Achtung, benutzt korrektes Print() da MyClass::Print()
+  Ptr->Print();    // Achtung, benutzt ExtendedClass::Print() da MyClass::Print()
                    // virtuell ist und Aufruf via Pointer laeuft
   Ptr = &Object3;
-  Ptr->Print();    // Achtung, benutzt korrektes Print() da MyClass::Print()
+  Ptr->Print();    // Achtung, benutzt MyClass::Print() da MyClass::Print()
                    // virtuell ist und Aufruf via Pointer laeuft
   return 0;
 }
@@ -2092,7 +2124,7 @@ int main (int argc, char *argv[])
 	
 \lstinline$   void Vogel::EierLegen()$\linebreak[4]
 \lstinline$   {$\linebreak[4]
-\lstinline$      cout << "Ei gelegt" << endl;$\linebreak[4]
+\lstinline$      std::cout << "Ei gelegt" << std::endl;$\linebreak[4]
 \lstinline$   }	$&Keine Implementation von BrutplatzVorbereiten für Klasse Vogel notwendig, da rein virtuell.\\
 \end{CodeTable}
 
@@ -2116,8 +2148,8 @@ int main (int argc, char *argv[])
 	
 \lstinline$   void Amsel::BrutplatzVorbereiten()$\linebreak[4]
 \lstinline$   {$\linebreak[4]
-\lstinline$      cout << "Baue Nest auf Baum oder Strauch"$\linebreak[4]
-\lstinline$                                        << endl;$\linebreak[4]
+\lstinline$      std::cout << "Baue Nest auf Baum oder Strauch"$\linebreak[4]
+\lstinline$                                        << std::endl;$\linebreak[4]
 \lstinline$   }$&	Implementation der Funktion für die Klasse Amsel\\
 \end{CodeTable}
 
@@ -2141,8 +2173,8 @@ int main (int argc, char *argv[])
 	
 \lstinline$   void Specht::BrutplatzVorbereiten()$\linebreak[4]
 \lstinline$   {$\linebreak[4]
-\lstinline$      cout << "Meissle Hoehle in einen Baum"$\linebreak[4]
-\lstinline$                                     << endl;$\linebreak[4]
+\lstinline$      std::cout << "Meissle Hoehle in einen Baum"$\linebreak[4]
+\lstinline$                                     << std::endl;$\linebreak[4]
 \lstinline$   }	$&Implementation der Funktion für die Klasse Specht
 \end{CodeTable}
 
@@ -2268,7 +2300,7 @@ auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
  
 Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn wann immer möglich konstante Referenzen benutzt werden)
  
-Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale new/delete, oder der operator new/delete für eine bestimmte Klasse überladen werden:
+Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale new/delete, oder der Operator new/delete für eine bestimmte Klasse überladen werden:
 
 \begin{CCode}
 class SpecialMemory {
@@ -2305,6 +2337,9 @@ class SpecialMemory {
 };
 
 \end{CCode}
+
+Dabei muss beachtet werden, dass sämtliche globalen Varianten von new für eine Klasse verdeckt werden, sobald auch nur eine Variante
+von new in dieser Klasse neu definiert wird.
 
 Eine eigene Speicherverwaltung wird nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
 
@@ -2384,20 +2419,20 @@ int f(int x1, int x2) throw(NegativeSquareRootErrorClass){
 
 int main (int argc, char *argv[]) {
    int a, b;
-   cin >> a;
-   cin >> b;
+   std::cin >> a;
+   std::cin >> b;
    
    try {
-      cout << f(a,b);
+      std::cout << f(a,b);
    }
    catch (DivideByZerroErrorClass &e) {
-      cout << "Division durch Null";
+      std::cout << "Division durch Null";
    }
    catch (NegativeSquareRootErrorClass &e) {
-      cout << "Wurzel aus negativer Zahl";
+      std::cout << "Wurzel aus negativer Zahl";
    }
    catch (...) {
-      cout << "Unerwartete Exception";
+      std::cout << "Unerwartete Exception";
    }
 }
 \end{CCode}
@@ -2405,7 +2440,9 @@ int main (int argc, char *argv[]) {
 
 Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (new) ist der Benutzer hingegen selbst zuständig (Durch entsprechende catch throw Anweisungen).
 
-Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit new), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen. Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit throw() einfach erneut geworfen:
+Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden.
+
+Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit new), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen (Oder Smart/Unique/Shared Pointer nutzen). Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit throw() einfach erneut geworfen:
 
 \begin{CCode}
 void f(int y) {
@@ -2501,7 +2538,7 @@ class A {...};
 class B : public A {...}
 
 void f(A *p) {
-   cout << "Objekt vom Typ <" << typeid(*p).name() << "> erhalten" << endl;
+   std::cout << "Objekt vom Typ <" << typeid(*p).name() << "> erhalten" << std::endl;
    ...
 }
 \end{CCode}
@@ -2634,7 +2671,7 @@ namespace graphic {
 }
 
 void graphic::print(void) {
-   cout << "Hallo";
+   std::cout << "Hallo";
 }
 \end{CCode}
 
@@ -2648,7 +2685,7 @@ namespace network {
 }
 
 void network ::print(void) {
-   cout << "Hallo";
+   std::cout << "Hallo";
 }
 \end{CCode}
 
@@ -3141,7 +3178,7 @@ Dieses Template könnte wie folgt angewendet werden:
 
 \begin{CCode}
 int a = Bin<1010110>::value;
-cout << Bin<1101010>::value << endl;
+std::cout << Bin<1101010>::value << std::endl;
 int Array x[Bin<1001>::value][13];       /* Definiert 9*13 Array! */
 \end{CCode}
 Man beachte, das Ergebnis dieses Templates ist eine gewöhnliche
@@ -3153,6 +3190,38 @@ Das Template soll nur das Prinzip zeigen, es fehlen hier noch
 Kontrollen und Fehlerhandling für illegale Binärzahlen wie
 101037012 oder zu lange Zahlen. Aber auch diese Probleme
 lassen sich mit entsprechenden Template-Tricks lösen.
+
+Ein weiteres Beispiel, welches zur Compilezeit die Fakultät berechnet:
+\begin{CCode}
+
+#include <iostream>
+ 
+template <int N> struct Factorial {
+ static const int result = N * Factorial<N-1>::result;
+};
+ 
+template <> struct Factorial<0> {
+ static const int result = 1;
+};
+ 
+int main() {
+ std::cout << Factorial<5>::result << "\n";
+ return 0;
+}
+\end{CCode}
+
+Und ein Beispiel zum Berechnen des grössten gemeinsamen Teilers (GGT) zur Compilezeit mit
+dem Algorithmus von Euklid:
+\begin{CCode}
+
+template <int X, int Y>   struct GGT {
+        static const long result = GGT<Y, X % Y>::result;
+};
+ 
+template <int X> struct GGT<X, 0> {
+        static const long result = X;
+};
+\end{CCode}
 
 \subsection{Templates und Vererbung}
 Von Templateklassen kann wie von normalen Klassen abgeleitet werden,
@@ -3337,7 +3406,7 @@ void f(void)
 
    map<string, double>::iterator ptr; //Definieren eines Iterators (Zeigers) in die Map
 
-   ptr = MyMap.begin();          //Iterator auf erstes Element der Map zeigen lassen;
+   ptr = MyMap.begin();          //Iterator auf erstes Element der Map zeigen lassen
 
    while(ptr != MyMap.end()) {   // Fuer alle Elemente in der Map
     
@@ -3674,8 +3743,8 @@ x = a + b + c;
 x.operator=(operator+(operator+(a, b), c));
 
 // und dies zu
-t1 = operator(a, b);    // t1 ist temporaeres Objekt
-t2 = operator(t1, c);   // t2 ist temporaeres Objekt
+t1 = operator+(a, b);    // t1 ist temporaeres Objekt
+t2 = operator+(t1, c);   // t2 ist temporaeres Objekt
 x.operator=(t2);
 \end{CCode}
 Nebst den beiden Temporaries t1 und t2 werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
@@ -3686,20 +3755,37 @@ Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporär
 
 Wenn Interrupts oder Multithreading ins Spiel kommen, sind einige Punkte zu beachten:
 
-Innerhalb von interruptroutinen sollte grundsätzlich auf Exceptions verzichtet werden, und sonst auf jeden Fall sicherstellen dass \emph{jede} Exception aufgefangen wird, befor das Ende der Interruptroutine erreicht wird, ansonsten wird der Code unweigerlich abstürzen.
+Innerhalb von interruptroutinen sollte grundsätzlich auf Exceptions verzichtet werden, und sonst auf jeden Fall sicherstellen dass \emph{jede} Exception aufgefangen wird, bevor das Ende der Interruptroutine erreicht wird, ansonsten wird der Code unweigerlich abstürzen.
 
 Auch das Erzeugen von Objekten sollte innerhalb von Interrupts unterlassen werden, da auf jeden Fall die Konstruktoren (Rechenzeit) ausgeführt werden, und bei dynamischer Speicherverwaltung zusätzlich noch Speicher alloziert werden muss. Ebenso ist das Löschen von Objekten zu vermeiden.
 
 Virtuelle Funktionen können innerhalb von Interruptreoutinen verwendet werden, man muss sich einfach bewusst sein, dass diese zusätzliche Indirektion Rechenzeit kostet. (Aber möglicherweise einen Switch() oder einen Callback erspart. Um virtuelle Funktionen einsetzen zu können, muss aber zuerst von der (statischen) Interuptfunktion eine Methode von einem Objekt aufgerufen werden.
 (Eine Interuptfunktion kann nur eine globale Funktion oder eine statische Methode sein, da diese von der Hardware, ohne Kenntnisse eines Objektes, aufgerufen wird.) 
 
-In Multithreadingumgebungen muss Sichergestellt werden, dass Konstruktoren, Destruktoren und Memorymanagement Threadsafe sind, ansonsten dürfen innerhalb von Threads keine neuen Objekte erzeugt werden. Ein Thread darf zudem \emph{nie} mit einer Exception beendet werden (ausser das verwendete OS kann mit Exceptions umgehen). Vor dem Threadende müssen somit immer alle Exceptions aufgefangen werden (Den gesammten Thread-Code in Try-Catch einschliessen.). 
+In Multithreadingumgebungen muss Sichergestellt werden, dass Konstruktoren, Destruktoren und Memorymanagement Threadsafe sind, ansonsten dürfen innerhalb von Threads keine neuen Objekte erzeugt werden. Ein Thread darf zudem \emph{nie} mit einer Exception beendet werden (ausser das verwendete OS kann mit Exceptions umgehen). Vor dem Threadende müssen somit immer alle Exceptions aufgefangen werden (Dazu den gesammten Thread-Code in Try-Catch einschliessen.). 
 
 \section{Persistenz}
 Wenn Objekte ihren Zustand bei einem Stromausfall (Ausschalten) behalten sollen, spricht man von Persistenz. Dazu kann man Konstruktoren entwerfen, welche ihre Daten aus einem Dateisystem, FLASH-Speicher oder Akku-gepuffertem RAM holen, und entsprechende Funktionen, welche dieses Daten bei Bedarf auf diese nichtflüchtigen Medien speichern. Placement new() oder eigene new/delete Operatoren können auch benutzt werden, um Objekte in persistentem Speicher zu erzeugen, wobei bei jedem Systemstart geprüft werden muss, ob der Speicherinhalt noch gültig ist, bevor er wieder verwendet wird.  
 
+\section{Embedded C++}
+Im Jahre 1996 schloss sich eine Gruppe von Mikrocontrollerherstellern und Compilerbauer zum \OviIndex{Embedded C++ Technical Commitee} zusammen, mit dem Ziel ein für Embedded Systeme optimiertes C++ Subset unter dem Namen \OviIndex{Embedded C++} zu standardisieren. Die Sprache sollte ein echtes Subset von C++ sein, bei welchem alle für Embeddedsysteme ungeeignete Sprachelemente entfernt wurden.
+Die Sprache basiert auf dem standard C++98, es werden aber folgende Elemente nicht unterstützt:
 
-  
+\begin{itemize}
+	 \item  Mehrfachvererbung
+   \item  Virtuelle Basisklassen
+   \item  Run-time type information (typeid)
+   \item  Neue Typecast-Syntax (static\_cast, dynamic\_cast, reinterpret\_cast and const\_cast)
+   \item  Das Schlüsselword mutable
+   \item  Namensbreiche
+   \item  Exceptions
+   \item  Templates
+\end{itemize}
+
+Allerdings gibt es seit 2002 keine Aktualisierungen von embedded C++ mehr, es wird dennoch von
+einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigestellt, einen Standard-Compiler zu verwenden, und je nach Anwendung und Limitationen des Zielsystems auf gewisse C++-Elemente zu verzichten. Möglicherweise können spezialisierte Embedded-C++ Compiler besser optimieren und effizienteren Code generieren weil bestimmte Sprachmittel überhaupt nicht unterstützt werden müssen.
+
+Ein Embedded-C++ Programm ist ein subset von standard C++ und lässt sich mit jedem standardkonformen C++ Compiler übersetzen.
 
 \chapter{\Cpp 11}
 Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
@@ -4034,6 +4120,112 @@ Neu können Templates Variable Argumentenlisten haben.
 template<typename... Values> class tuple;
 \end{CCode}
 
+Ein einfaches Beispiel:
+\begin{CCode}
+template <typename... BasisKlassen> class VariableKlasse : public BasisKlassen... {
+public:
+
+    // Konstruktor (Mit variabler Argumentenliste)
+    VariableKlasse (const BasisKlassen&... Quellen) : BasisKlassen(Quellen)... {};
+    
+};
+\end{CCode}
+Mit typename... P oder class... P wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit ... abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
+Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
+Der Operator sizeof...(P) liefert die Anzahl Elemente im Pack als konstanten Integerwert.
+
+Die folgende Zeile
+\begin{CCode}
+typedef VariableKlasse<Klasse1, Klasse2, Klasse3> KombinierteKlasse;
+\end{CCode}
+
+Entspricht folgender Klassendefinition:
+\begin{CCode}
+class KombinierteKlasse : public Klasse1, Klasse2, Klasse3 {
+public:
+
+    // Konstruktor (Parameterliste von Variadic Template wird expandiert)
+    KombinierteKlasse (const Klasse1 &Quelle1, const Klasse2 &Quelle2, const Klasse3 &Quelle3) : Klasse1(Quelle1), Klasse2(Quelle2), Klasse3(Quelle3) {}
+};
+\end{CCode}
+
+Und benutzt würde das ganze folgendermassen:
+\begin{CCode}
+
+/* Erzeugen von Objekten der Klassen Klasse1 bis Klasse5 */
+
+Klasse1 obj1;
+Klasse2 obj2;
+Klasse3 obj3;
+Klasse4 obj4;
+Klasse5 obj5;
+
+
+KombinierteKlasse MeinObjekt(obj1, obj2, obj3);
+
+VariableKlasse<Klasse1, Klasse2, Klasse3, Klasse4, Klasse5> WeiteresObjekt(obj1, obj2, obj3, obj4, obj5);
+
+\end{CCode}
+
+
+Ein weiteres Beispiel:
+
+Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor, welcher
+sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
+für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \&\& müsste
+noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward() eingebaut werden).  
+\begin{CCode}
+template<typename T>
+class Wraper {
+   private:
+   T Member;
+
+   public:
+   template<typename... Args>
+   Wraper(Args&&... args) : Member(args...) {};
+  
+   // Perfect forwarding:
+   // Wraper(Args&&... args) : Member(std::forward<Args>(args)...) {};
+
+
+};
+
+
+class Demo1
+{
+    int   i;
+    float f;
+
+    public:
+    Demo1(int ni, float nf) : i(ni), f(nf) {};
+};
+
+class Demo2
+{
+    long   l;
+    double d;
+    short  s;
+
+    public:
+    Demo2(long nl, double nd, short ns) : l(nl), d(nd), s(ns) {};
+};
+
+
+int main()
+{
+
+    Wraper<Demo1> w1(10, 4.5f);
+
+    short s = 17;
+    Wraper<Demo2> w2(13L, 13.3, s);
+
+
+    return 0;
+}
+
+\end{CCode}
+
+
 \subsection{Erweiterte Stringliterale}
 Neu können auch UTF-Codierte Stringliterale definiert werden, dazu werden die Prefixes u8, u und U verwendet.
 
@@ -4132,6 +4324,30 @@ Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würd
 	
 \end{itemize}
 
+
+
+\chapter{\Cpp 14}
+Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Dieser bietet einige kleinere Verbesserungen sowie Korrekturen an \Cpp 11 an.
+ 
+
+\section{Neuerungen}
+\begin{itemize}
+	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
+	 \item Alternative Typendeduktion bei Deklarationen
+   \item Gelockerte Einschränkungen für Constexpressions
+   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden.
+   \item Aggregate Member initialisierung
+   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001)
+   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000
+   \item Generische Lambdafunktionen
+   \item Lambda capture expressions
+   \item Attribute [[deprecated]] zum Markieren von obsoleten Schnittstellenelementen.
+   \item Kleinere Erweiterugnen der Standardlibrary
+	
+\end{itemize}
+
+\chapter{\Cpp 17}
+Bereits in der Entwicklungsphase
 
 \appendix
 \chapter{Anhang}
@@ -4283,8 +4499,8 @@ Datei Test.cpp
 \lstinline$   DeinAuto = new Auto(300);	$&Erzeugen eines neuen Autoobjektes und Zeiger darauf setzen\\
 \lstinline$   MeinAuto.SetGewicht(150);	$&Gewicht von MeinAuto auf 150 ändern (Mit . werden Membervariablen und Funktionen von Objekten ausgewählt\\
 \lstinline$   DeinAuto->SetGewicht(250);$&	Gewicht von Objekt, auf das DeinAuto zeigt, auf 250 setzen. Mit -> wird auf Member via 'Zeiger auf Objekt' zugegriffen\\ 
-\lstinline$   cout << "Gewicht von MeinAuto ist ";$&	Text auf Konsole ausgeben\\
-\lstinline$   cout << MeinAuto.GetGewicht();$&	und Gewicht von MeinAuto ausgeben\\
+\lstinline$   std::cout << "Gewicht von MeinAuto ist ";$&	Text auf Konsole ausgeben\\
+\lstinline$   std::cout << MeinAuto.GetGewicht();$&	und Gewicht von MeinAuto ausgeben\\
 \lstinline$   Auto &AuchMeinAuto = MeinAuto;$&	AuchMeinAuto ist eine Referenz auf MeinAuto, eine Referenz ist ein Stellvertreter für ein Objekt. Wann immer die Referenz verwendet wird, wird effektiv auf das referierte Objekt zugegriffen. (Also eine Art automatischer Zeiger).\\ 
 \lstinline$   AuchMeinAuto.SetGewicht(50);$&	Das Gewicht von MeinAuto wird auf 50 gesetzt\\
 \lstinline$   delete DeinAuto;$&	Das Objekt, auf das DeinAuto zeigt, wieder löschen\\
@@ -4369,8 +4585,8 @@ Datei Testerb.cpp
 \lstinline$      MeinAuto.SetTemperatur(22);	$&Temperatur von MeinAuto auf 22 ändern\\
 \lstinline$      DeinAuto->SetGewicht(250);	$&Gewicht von Objekt, auf das DeinAuto zeigt, auf 250 setzen. \\
 \lstinline$      DeinAuto->SetTemperatur(25); // Error !!$&	Nicht möglich, Da Zeiger auf Auto, SetTemperatur ist bei Auto nicht bekannt. \\
-\lstinline$      cout << "Gewicht von MeinAuto ist ";$&Text auf Konsole Ausgeben\\
-\lstinline$      cout << MeinAuto.GetGewicht();	$&und Gewicht von MeinAuto ausgeben\\
+\lstinline$      std::cout << "Gewicht von MeinAuto ist ";$&Text auf Konsole Ausgeben\\
+\lstinline$      std::cout << MeinAuto.GetGewicht();	$&und Gewicht von MeinAuto ausgeben\\
 \lstinline$      Auto &AuchMeinAuto = MeinAuto;	$&AuchMeinAuto ist eine Referenz auf MeinAuto, eine Referenz ist ein Stellvertreter für ein Objekt. Wann immer die Referenz verwendet wird, wird effektiv auf das referierte Objekt zugegriffen. \\
 \lstinline$      AuchMeinAuto.SetGewicht(50);$&	Das Gewicht von MeinAuto wird auf 50 gesetzt\\
 \lstinline$      delete DeinAuto;	$&Das Objekt, auf das DeinAuto zeigt, wieder löschen\\
@@ -4513,6 +4729,447 @@ void TellCAboutIt(void *Object)
 }
 \end{CCode}
 
+\section{Von Interrupt in Objekte wechseln}
+Interrupts werden durch die Hardware ausgelöst, und die Hardware weiss normalerweise nichts von Objekten, deshalb können Interrupts auch nicht direkt Methoden von Objekten aufrufen. Es ist aber möglich, Klassenmethoden (Statische Methoden) aufzurufen, da diese auch ohne Objekte verwendet werden können.
+
+Nachfolgend der Code für einen einfachen Interruptmanager, bei dem sich Objekte für bestimmte Interruptereignisse mit Handlern eintragen können (Observer Pattern). 
+
+\begin{CCode}
+
+class InterruptManagerClass
+{
+   // Data
+   private:
+
+      /* Geht nicht bei allen Compilern */
+      static void IRQ_Handler(void) __attribute__((interrupt("IRQ")));
+
+      static InterruptManagerClass *TheManager;
+
+   // Methods
+   private:
+      /* We wont be copied!!! */
+	   InterruptManagerClass &operator=(const InterruptManagerClass &r);
+	   InterruptManagerClass(const InterruptManagerClass &r);
+
+   private: //( If not possible to make handler friend or static, 
+            //  this must be public... )
+            void ProcessInterrupt(unsigned long Source);
+
+   public:
+            InterruptManagerClass();
+   public:
+            static InterruptManagerClass *GetTheInterruptManager() {return TheManager;};
+            void EnableInterrupts();
+            void DisableInterrupts();
+           ~InterruptManagerClass();
+};
+
+\end{CCode}
+
+
+\begin{CCode}
+
+/* Class constant declaration  */
+
+// Definition of registers and bits ommited ...
+
+/* Class Type declaration      */
+
+
+
+/* Class data declaration      */
+InterruptManagerClass *InterruptManagerClass::TheManager = NULL;
+
+/* Class procedure declaration */
+
+/* Declaration needed to declare it as interrupt-handler */
+static void IRQ_Handler(void) __attribute__((interrupt("IRQ"))) ;
+static void Dummy_IRQ_Handler(void) __attribute__((interrupt("IRQ"))) ;
+
+
+/*****************************************************************************/
+/*  Method      : EnableInterrupts / DisableInterrupts                       */
+/*****************************************************************************/
+/*                                                                           */
+/*  Function    : Enables and disables interrupts, may be nested,            */
+/*                so disables are counted, and after n disbles must follow   */
+/*                n enables, before interrupts are effectively enabled again */
+/*                                                                           */
+/*                First call of disable memorizes state of interrupt, and    */
+/*                last call of enable restores memorized state.              */
+/*                So if interrupts have allready been disabled before first  */
+/*                call of disable, interrupts will also not be enabled after */
+/*                last call to enable.                                       */
+/*                                                                           */
+/*  Type        : static                                                     */
+/*                                                                           */
+/*  Input Para  : None                                                       */
+/*                                                                           */
+/*  Output Para : None                                                       */
+/*                                                                           */
+/*  Author      : I. Oesch                                                   */
+/*                                                                           */
+/*  History     : 19.04.2010  IO  Created                                    */
+/*                                                                           */
+/*****************************************************************************/
+
+void InterruptManagerClass::EnableInterrupts()
+{
+   if (InterruptLockCount > 1) {
+      /* we are still nested, just decrement counter */
+      InterruptLockCount--;
+   } else if (InterruptLockCount == 1) {
+      /* last of nested call, restore old state */
+      InterruptLockCount = 0;
+      if (OldInterruptState == 0) {
+         _ENABLE_IRQ();
+          asm volatile ( "nop\n nop\n nop"  :/* no outputs */ \
+   :/* no inputs */  \
+   :);  /* clobbered registers */
+      }
+   } else {
+      /* more call to enable than disable, should never happen... */
+      InterruptLockCount = 0;
+   }
+}
+
+void InterruptManagerClass::DisableInterrupts()
+{
+   int CurrentInterruptState = _GET_IRQ_STATE();
+
+   /* First disable, so we wont be disturbed in further housekeeping */
+   _DISABLE_IRQ();
+
+   if (InterruptLockCount == 0) {
+      /* first call, save current state of interrupt enable flag */
+      OldInterruptState = CurrentInterruptState;
+   }
+   /* for nested calls, just increment counter */
+   InterruptLockCount++;
+};
+/*****************************************************************************/
+/*  End  Method :  EnableInterrupts / DisableInterrupts                      */
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*  Method      : InterruptManagerClass                                      */
+/*****************************************************************************/
+/*                                                                           */
+/*  Function    : Constructor for the InterruptManager Class. initializes an */
+/*                interrupt manager                                          */
+/*                                                                           */
+/*  Type        : Constructor                                                */
+/*                                                                           */
+/*  Input Para  : None                                                       */
+/*                                                                           */
+/*  Output Para : None                                                       */
+/*                                                                           */
+/*  Author      : I. Oesch                                                   */
+/*                                                                           */
+/*  History     : 19.04.2010  IO  Created                                    */
+/*                                                                           */
+/*****************************************************************************/
+InterruptManagerClass::InterruptManagerClass(void)
+{
+   /* Method data declaration      */
+   int i;
+
+   /* Method code declaration      */
+
+   /* disable interrupts and memorize current interruptstate */
+   OldInterruptState = _GET_IRQ_STATE();
+   _DISABLE_IRQ();
+
+   /* Manager for interrupt nesting, we start with one level of nesting... */
+   /* so one call of enable will really enable the interrupts, no matter   */
+   /* what the state of the interruptsystem was before the constructorcall */
+   InterruptLockCount = 1;
+   OldInterruptState = 0;
+
+
+   if (TheManager == NULL) {
+      TheManager = this;
+
+      /* Workaround for missing static initializer support in eclipse    */
+      /* should not be nescessery, as soon as static initializing works  */
+      /* That method is called 'placement new'                           */
+      new(&ErrorHandler) ErrorInterruptHandlerClass();
+
+      /* Set the interruptvector to our handler */
+      SET_IRQ_HANDLER(IRQ_Handler);
+
+      /* Disable all interruptsources */
+      ICLR  = 0;
+      ICMR  = 0;
+      ICLR2 = 0;
+      ICMR2 = 0;
+
+      /* Invalidate all Priority-Table-Entries */
+      for (i = 0; i < 32; i++) {
+         IPR_0_31[i] = 0;
+      }
+      for (i = 0; i < 8; i++) {
+         IPR_32_39[i] = 0;
+      }
+
+      /* Clear our Vectortable */
+      for (i = 0; i < MAX_HANDLER; i++) {
+         HandlerTable[i].Handler  = &ErrorHandler;
+         HandlerTable[i].Priority = -1;
+         HandlerTable[i].Argument = i;
+      }
+   } else {
+      /* Error, we allready have a handler installed,
+         that will lead to trouble !!!
+         so we wait here for ever...
+         With true singleton, this could be avoided...
+       */
+
+      while(1);
+   }
+
+   /* globally enable interrupts, if not disabled before this call */
+   if (OldInterruptState == 0) {
+      _ENABLE_IRQ();
+   }
+}
+/*****************************************************************************/
+/*  End  Method : InterruptManagerClass                                      */
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*  Method      : ~InterruptManagerClass                                     */
+/*****************************************************************************/
+/*                                                                           */
+/*  Function    : Destructor for the InterruptManager Class. frees allocated */
+/*                Resources                                                  */
+/*                                                                           */
+/*  Type        : Destructor                                                 */
+/*                                                                           */
+/*  Input Para  : None                                                       */
+/*                                                                           */
+/*  Output Para : None                                                       */
+/*                                                                           */
+/*  Author      : I. Oesch                                                   */
+/*                                                                           */
+/*  History     : 19.04.2010  IO  Created                                    */
+/*                                                                           */
+/*****************************************************************************/
+InterruptManagerClass::~InterruptManagerClass(void)
+{
+   /* Method data declaration      */
+   int i;
+
+   /* Method code declaration      */
+
+   /* disable interrupts and never enable them again... */
+   _DISABLE_IRQ();
+
+
+   /* Set the interruptvector to our handler       */
+   /* Would be better to set to some error handler */
+   SET_IRQ_HANDLER(Dummy_IRQ_Handler);
+
+   /* Disable all interruptsources */
+   ICLR  = 0;
+   ICMR  = 0;
+   ICLR2 = 0;
+   ICMR2 = 0;
+
+   /* Invalidate all Priority-Table-Entries */
+   for (i = 0; i < 32; i++) {
+      IPR_0_31[i] = 0;
+   }
+   for (i = 0; i < 8; i++) {
+      IPR_32_39[i] = 0;
+   }
+
+   /* Clear our Vectortable */
+   for (i = 0; i < MAX_HANDLER; i++) {
+      HandlerTable[i].Handler  = &ErrorHandler;
+      HandlerTable[i].Priority = -1;
+      HandlerTable[i].Argument = i;
+   }
+
+   TheManager = NULL;
+
+}
+/*****************************************************************************/
+/*  End  Method : ~InterruptManagerClass                                     */
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*  Method      : ProcessInterrupt                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  Function    : Interrupthandler is called, whenever an FIQ/IRQ happens    */
+/*                Dispatches IRQs to the acording handler, will call         */
+/*                errorhandler if an unexpected interrupt occours            */
+/*                                                                           */
+/*  Type        : Private                                                    */
+/*                                                                           */
+/*  Input Para  : Source: ID of interrupt                                    */
+/*                                                                           */
+/*  Output Para : None                                                       */
+/*                                                                           */
+/*  Author      : I. Oesch                                                   */
+/*                                                                           */
+/*  History     : 19.04.2010  IO  Created                                    */
+/*                                                                           */
+/*****************************************************************************/
+void InterruptManagerClass::ProcessInterrupt(unsigned long Source)
+{
+   /* procedure data */
+
+   /* procedure code */
+
+   /* Check for valid source */
+   if (Source & (1<<15)) {
+
+      /* Extract source */
+      Source &= 0x003f;
+
+      /* and call handler, if Source is valid */
+      if (Source < MAX_HANDLER) {
+         HandlerTable[Source].Handler->HandleInterrupt(HandlerTable[Source].Argument);
+      } else {
+
+         /* We have a problem, call our trouble-handler */
+         ErrorHandler.HandleInterrupt(-1);
+      }
+
+   } else {
+      /* We have a problem, call our trouble-handler */
+      ErrorHandler.HandleInterrupt(-2);
+   }
+
+}
+/*****************************************************************************/
+/*  End  Method : ProcessInterrupt                                           */
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*  Procedure   : IRQ_Handler                                                */
+/*****************************************************************************/
+/**  \brief       Interrupthandler is called, whenever an IRQ happens
+ *
+ *  Function    : Dispatches IRQs to the acording handler, will call errorhandler
+ *                if an unexpected interrupt occours
+ *                must be a static method, since it is an interrupthandler
+ *                currently implemented as plain old function, to
+ *                avoid trouble
+ *
+ *  \type       Interrupthandler
+ *
+ *  \noparam    None
+ *
+ *  \return     None
+ *
+ *
+ *  \author     I. Oesch
+ *
+ *  \date       20.06.2007  IO  Created
+ *
+ *****************************************************************************/
+static void IRQ_Handler(void)
+{
+   /* procedure data */
+   unsigned long Source;
+
+   /* procedure code */
+
+   /* Get the source and call the real manager */
+   Source = ICHP >> 16;
+
+   if (InterruptManagerClass::GetTheInterruptManager() != NULL) {
+      InterruptManagerClass::GetTheInterruptManager()->ProcessInterrupt(Source);
+   }
+
+}
+/*****************************************************************************/
+/*  End         : IRQ_Handler                                                */
+/*****************************************************************************/
+
+/*****************************************************************************/
+/*  End Class   : InterruptManagerClass                                      */
+/*****************************************************************************/
+\end{CCode}
+
+
+\section{Das erste Template Meta Programm}
+
+Nachfolgend der Code des Template Metaprogramms von Erwin Unruh, mit dem er belegte,
+das der Template-Mechanismus Turing-Vollständig ist und die Ausführung beliebiger
+Algorithmen zur Compilezeit zulässt.
+
+(Sein Programm gibt die ersten N Primzahlen als Compiler-Fehlermeldungen aus.)
+
+\begin{CCode}
+// primes.cpp
+// Prime number computation by Erwin Unruh
+template <int i> struct D { D(void*); operator int(); };
+
+template <int p, int i> struct is_prime {
+    enum { prim = (p%i) && is_prime<(i > 2 ? p : 0), i -1> :: prim };
+    };
+
+template < int i > struct Prime_print {
+    Prime_print<i-1> a;
+    enum { prim = is_prime<i, i-1>::prim };
+    void f() { D<i> d = prim; }
+    };
+
+struct is_prime<0,0> { enum {prim=1}; };
+struct is_prime<0,1> { enum {prim=1}; };
+struct Prime_print<2> { enum {prim = 1}; void f() { D<2> d = prim; } };
+#ifndef LAST
+#define LAST 10
+#endif
+main () {
+    Prime_print<LAST> a;
+    }
+\end{CCode}
+
+Und die Ausgabe:
+\begin{CCode}
+
+P:\HC\D386_O> hc3 i primes.cpp -DLAST=30
+MetaWare High C/C++ Compiler R2.6
+(c) Copyright 1987-94, MetaWare Incorporated
+E "primes.cpp",L16/C63(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<2>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<3>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<5>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<7>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<11>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<13>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<17>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<19>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<23>´ ("primes.cpp",L2/C25).
+-- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
+E "primes.cpp",L11/C25(#416):   prim
+|    Type `enum{}´ can´t be converted to txpe `D<29>´ ("primes.cpp",L2/C25).
+
+P:\HC\D386_O> exit 
+
+\end{CCode}
 
 \section{Glossar}
 {
