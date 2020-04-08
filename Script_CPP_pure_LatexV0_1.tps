@@ -17,28 +17,10 @@ Class=LaTeXView
 Document=Script_CPP_pure_LatexV0_1.tex
 
 [Frame0_View0,0]
-TopLine=3789
-Cursor=139060
-
-[Frame1]
-Flags=0
-ShowCmd=1
-MinPos.x=-1
-MinPos.y=-1
-MaxPos.x=-1
-MaxPos.y=-1
-NormalPos.left=4
-NormalPos.top=26
-NormalPos.right=746
-NormalPos.bottom=485
-Class=LaTeXView
-Document=VirtuelFunctionTable.pdf_tex
-
-[Frame1_View0,0]
-TopLine=0
-Cursor=0
+TopLine=4560
+Cursor=171991
 
 [SessionInfo]
-FrameCount=2
+FrameCount=1
 ActiveFrame=0
 

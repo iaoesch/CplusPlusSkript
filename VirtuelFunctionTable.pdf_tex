@@ -36,7 +36,7 @@
   }%
   \providecommand\rotatebox[2]{#2}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{297.05bp}%
+    \setlength{\unitlength}{297.05544552bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -48,37 +48,22 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.49027306)%
+  \begin{picture}(1,0.4908407)%
     \put(0,0){\includegraphics[width=\unitlength]{VirtuelFunctionTable.pdf}}%
-    \put(0.00837524,0.14340477){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::~Base\end{minipage}}}%
-    \put(0.00837524,0.10742056){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f3\end{minipage}}}%
-    \put(0.00837524,0.07068974){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f2\end{minipage}}}%
-    \put(0.00837524,0.03470553){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f1\end{minipage}}}%
-    \put(0.56989687,0.14475134){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.35586901\unitlength}\raggedright Derived::~Derived\end{minipage}}}%
-    \put(0.56989687,0.10876714){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f3\end{minipage}}}%
-    \put(0.56989687,0.07203631){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Derived::f2\end{minipage}}}%
-    \put(0.56989687,0.0360521){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Derived::f1\end{minipage}}}%
-    \put(0.56989687,0.18110886){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.35586901\unitlength}\raggedright Derived::f4\end{minipage}}}%
-    \put(0.09099629,0.35237711){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright vtblptr\end{minipage}}}%
-    \put(0.08964972,0.45606336){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15620266\unitlength}\raggedright x\\ y\end{minipage}}}%
-    \put(0.08830314,0.49376745){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright ObjA\end{minipage}}}%
-    \put(0.57307002,0.34833739){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright vtblptr\end{minipage}}}%
-    \put(0.57172344,0.45202363){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15620266\unitlength}\raggedright x\\ y\end{minipage}}}%
-    \put(0.57037687,0.48972772){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright ObjB\end{minipage}}}%
-    \put(0.57307002,0.34833739){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright vtblptr\end{minipage}}}%
-    \put(0.57172344,0.45202363){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15620266\unitlength}\raggedright x\\ y\\ z\end{minipage}}}%
-    \put(0.57037687,0.48972772){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright ObjB\end{minipage}}}%
-    \put(0.56989687,0.18110886){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.35586901\unitlength}\raggedright Derived::f4\end{minipage}}}%
-    \put(0.09099629,0.35237711){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright vtblptr\end{minipage}}}%
-    \put(0.08964972,0.45606336){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15620266\unitlength}\raggedright x\\ y\end{minipage}}}%
-    \put(0.08830314,0.49376745){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.15889581\unitlength}\raggedright ObjA\end{minipage}}}%
-    \put(0.56989687,0.14475134){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.35586901\unitlength}\raggedright Derived::~Derived\end{minipage}}}%
-    \put(0.56989687,0.10876714){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f3\end{minipage}}}%
-    \put(0.56989687,0.07203631){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Derived::f2\end{minipage}}}%
-    \put(0.56989687,0.0360521){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Derived::f1\end{minipage}}}%
-    \put(0.00837524,0.14340477){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::~Base\end{minipage}}}%
-    \put(0.00837524,0.10742056){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f3\end{minipage}}}%
-    \put(0.00837524,0.07068974){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f2\end{minipage}}}%
-    \put(0.00837524,0.03470553){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23198416\unitlength}\raggedright Base::f1\end{minipage}}}%
+    \put(0.00837509,0.14340214){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.26699021\unitlength}\raggedright Base::\textasciitilde Base\end{minipage}}}%
+    \put(0.00837509,0.10741859){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23197991\unitlength}\raggedright Base::f3\end{minipage}}}%
+    \put(0.00837509,0.07068844){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23197991\unitlength}\raggedright Base::f2\end{minipage}}}%
+    \put(0.00837509,0.03470489){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23197991\unitlength}\raggedright Base::f1\end{minipage}}}%
+    \put(0.09099461,0.35237065){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1588929\unitlength}\raggedright vtblptr\end{minipage}}}%
+    \put(0.08964806,0.456055){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1561998\unitlength}\raggedright x\\ y\end{minipage}}}%
+    \put(0.08830151,0.4937584){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1588929\unitlength}\raggedright ObjA\end{minipage}}}%
+    \put(0.56988642,0.10876514){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23197991\unitlength}\raggedright Base::f3\end{minipage}}}%
+    \put(0.56988642,0.14474869){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.35586248\unitlength}\raggedright Derived::\textasciitilde Derived\end{minipage}}}%
+    \put(0.56988642,0.07203499){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23197991\unitlength}\raggedright Derived::f2\end{minipage}}}%
+    \put(0.56988642,0.03605144){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.23197991\unitlength}\raggedright Derived::f1\end{minipage}}}%
+    \put(0.56988642,0.18110554){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.35586248\unitlength}\raggedright Derived::f4\end{minipage}}}%
+    \put(0.5730595,0.348331){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1588929\unitlength}\raggedright vtblptr\end{minipage}}}%
+    \put(0.5703664,0.48971875){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1588929\unitlength}\raggedright ObjB\end{minipage}}}%
+    \put(0.57440605,0.44932225){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\begin{minipage}{0.1561998\unitlength}\raggedright x\\ y\\ z\end{minipage}}}%
   \end{picture}%
 \endgroup%

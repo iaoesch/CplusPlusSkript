@@ -20,6 +20,9 @@
 %/*  C++ Runtime, Startup (init, global ctors, global dtors                   */
 %/*  C++ Internas, Effizienz (vtables, exceptions)                            */
 %/*                                                                           */
+%/* Exception/Virtual/ctor/dtor im Multithreading/interruptkontext            */
+%/* Persistenz / HW-Abstraktion                                               */
+%/*                                                                           */
 %/*                                                                           */
 %/*  Besser Durchstrukturieren, logische Reihenfolge                          */
 %/*  Zuerst alles UML, dann C++                                               */
@@ -89,6 +92,8 @@
 \usepackage{colortbl}
 \usepackage{float}
 \usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{hyperref}
 %\usepackage{html,makeidx}
 
 \usepackage{graphicx}
@@ -101,6 +106,28 @@
 
 %Kopf- und Fußzeile
 \usepackage{fancyhdr}
+
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={My title},    % title
+    pdfauthor={Author},     % author
+    pdfsubject={Subject},   % subject of the document
+    pdfcreator={Creator},   % creator of the document
+    pdfproducer={Producer}, % producer of the document
+    pdfkeywords={keyword1} {key2} {key3}, % list of keywords
+    pdfnewwindow=true,      % links in new PDF window
+    colorlinks=false,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links (change box color with linkbordercolor)
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan,          % color of external links
+    linkbordercolor={0 0 1}
+}
 
 \lstloadlanguages{[ISO]C++}
 
@@ -699,7 +726,7 @@ Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und 
 Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
 die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
 zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
-wenn die Operatoren << und >> nicht die gewünschte Funktionalität liefern. 
+wenn die Operatoren $<<$ und $>>$ nicht die gewünschte Funktionalität liefern. 
 
 \subsection{Formatierte Ausgabe}
 \index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
@@ -1386,6 +1413,9 @@ class MyClass {
 };
 \end{CCode}
 
+\subsection{C11 Move-Construktor}
+Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporarys erlaubt.
+
 \subsection{Zuweisungsoperator}
 In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (operator =()), dieser wird jedesmal aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (*this) zurückliefern. Der Zuweisungsoperator kann
 für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes geloescht (Ueberschrieben) und durch neue Werte ersetzt wird.
@@ -1698,6 +1728,29 @@ class StudentClass {
                          // im Konstruktor) und geloescht werden (Im Destruktor).                        
 };
 \end{CCode}
+
+\section{Placement new}
+Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objekes in einem vorgegebenen Speicherplatz, der Speicher wird vom Anwender zur Verfügung gestellt, und nicht vom System. Dafür darf auf ein solchermassen erzeugtes Objekt auf keinen Fall delete aufgerufen werden. Hier ist einer der wenigen Fälle, wo der Destruktor explizit aufgerufen werden darf und muss.
+
+\begin{CCode}
+
+StudentClass *sp;
+
+// Speicherplatz erzeugen (Koennte auch eine hardcodierte Adresse sein)
+char Buffer[sizeof (StudentClass)];
+
+// Das Objekt im speziellen Speicherbereich erzeugen
+sp = new() StudentClass("Hans");
+
+// Weiterer Code
+
+// Das Objekt wird nicht mehr gebraucht, manueller Destruktoraufruf
+sp->~StudentClass();
+
+
+
+\end{CCode}
+
 
 
 \section{Beispiel einer Klasse}
@@ -2204,6 +2257,52 @@ auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
  
 Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn wann immer möglich konstante Referenzen benutzt werden)
  
+Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale new/delete, oder der operator new/delete für eine bestimmte Klasse überladen werden:
+
+\begin{CCode}
+class SpecialMemory {
+   float r, i;
+   public:
+  
+   // A lot of methods
+
+   // Our overloaded new and delete
+    void *operator new (size_t size) {
+       // some Magic to get memory
+       // in a better way than mewe usually does
+    
+       return AdressOfNewMemory;
+    };
+    
+    void *operator new[] (size_t size) {
+       // some Magic to get memory
+       // in a better way than mewe usually does
+    
+       return AdressOfNewMemory;
+    };
+    
+    void  operator delete(void *pMem, size_t size) {
+    
+       // Release the given memory
+    };
+    
+    void  operator delete[](void *pMem, size_t size) {
+    
+       // Release the given memory
+    };
+    
+};
+
+\end{CCode}
+
+Eine eigene Speicherverwaltung wird nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
+
+Es ist auch möglich, das Placement-new zu überladen, oder neue Versonen von new mit anderen Argumentenlisten zu definieren.
+
+
+
+ 
+
 \section{Ausnahmebehandlung (Exceptions)}
 Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
 
@@ -3054,10 +3153,11 @@ wie 'gewöhnliche' Klassen.
 
 
 
-\section{Die STL (Standard Template Library)}
-Die \OviIndex{STL} (\OviIndex{Standard Template Library}) ist eine der ersten Anwendungen, die umfassend von Templates gebrauch machte, und zudem die Erweiterung und Verbesserung der Templatesyntax zur Folge hatte.
+\section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
+Die \OviIndex{STL} (\OviIndex{Standard Template Library}) war eine der ersten Anwendungen, die umfassend von Templates gebrauch machte, und zudem die Erweiterung und Verbesserung der Templatesyntax zur Folge hatte. Mittlerweile ist die STL in die \OviIndex{\Cpp - Standardbibliothek}
+integriert worden. In diesem Kapitel wird vorallem auf die aus der STL übernommenen Komponenten der \Cpp - Standardbibliothek eingegangen. 
 
-Die STL abstrahiert viele oft gebrauchte Elemente und Baublöcke der SW-Implementation, sie stellt universelle Templates für \OviIndex{Container}, \OviIndex{Iteratoren} und \OviIndex{Algorithmen} zur Verfügung.
+Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implementation, sie stellt universelle Templates für \OviIndex{Container}, \OviIndex{Iteratoren} und \OviIndex{Algorithmen} zur Verfügung.
 
 \OviIndex{Container} sind eine Art universelle Behälter für Daten. Dazu gehören Listen, Vektoren und Mengen. Bei den Containern ist nicht vorgeschrieben wie sie implementiert sind, sondern nur welche Eigenschaften sie besitzen müssen. Ein Vektor muss z.B. effizienten wahlfreien (direkten) Zugriff auf seine Elemente erlauben, eine Liste hingegen muss effizientes Einfügen und Entfernen von Objekten ermöglichen. Eine Map wiederum ordnet zwei Elemente einander zu. Dabei dient eines als Schlüssel und das andere als Wert. Mit einem Schlüssel kann man jederzeit den dazugehörigen Wert aus der Map holen. Eine Map ist somit ein assoziativer Container und kann als kleine Datenbank betrachtet werden.
 
@@ -3068,7 +3168,7 @@ Die STL abstrahiert viele oft gebrauchte Elemente und Baublöcke der SW-Implement
 In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map vorgestellt:
  
 
-\subsection{Kurzübersicht zu Container list<> aus STL}
+\subsection{Kurzübersicht zu Container list<> aus der \Cpp - Standardbibliothek}
 Als Beispiel erstellen wir eine \OviIndex{Liste} von int's
 \begin{CCode}
 #include<list>
@@ -3122,7 +3222,7 @@ while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
 
  
 
-\subsection{Kurzübersicht zu Container vector<> aus STL}
+\subsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 Als Beispiel erstellen wir ein Array von double's. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit [] (Ohne Bereichsüberprüfung) und der Methode at() (Mit Bereichsüberprüfung) möglich. 
 \begin{CCode}
 #include<vector>
@@ -3181,7 +3281,7 @@ while(!Vektor.empty()) {       /* Solange Vektor nicht leer ist */
 }
 \end{CCode}
 
-\subsection{Kurzübersicht zu Container map<> aus STL}
+\subsection{Kurzübersicht zu Container map<> aus der \Cpp - Standardbibliothek}
 Die \OviIndex{map} ist ein \OviIndex{assozitiver Container}, das heisst er verwaltet Wertepaare.
 Ein Wert ist der \OviIndex{Schlüssel} des Paares, und der andere Wert beinhaltet die
 Daten, welche unter diesem Schlüssel abgelegt sind. Der Schlüssel kann wie
@@ -3482,7 +3582,7 @@ Beispiel
 x = a + b + c;
 
 // wird zu
-x.operator=(operator+(operator(a, b), c));
+x.operator=(operator+(operator+(a, b), c));
 
 // und dies zu
 t1 = operator(a, b);    // t1 ist temporaeres Objekt
@@ -3493,12 +3593,31 @@ Nebst den beiden Temporaries t1 und t2 werden für die Ergebnisrückgabe der Opera
 
 Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
 
+\section{Interrupt und Multithreading}
+
+Wenn Interrupts oder Multithreading ins Spiel kommen, sind einige Punkte zu beachten:
+
+Innerhalb von interruptroutinen sollte grundsätzlich auf Exceptions verzichtet werden, und sonst auf jeden Fall sicherstellen dass \emph{jede} Exception aufgefangen wird, befor das Ende der Interruptroutine erreicht wird, ansonsten wird der Code unweigerlich abstürzen.
+
+Auch das Erzeugen von Objekten sollte innerhalb von Interrupts unterlassen werden, da auf jeden Fall die Konstruktoren (Rechenzeit) ausgeführt werden, und bei dynamischer Speicherverwaltung zusätzlich noch Speicher alloziert werden muss. Ebenso ist das Löschen von Objekten zu vermeiden.
+
+Virtuelle Funktionen können innerhalb von Interruptreoutinen verwendet werden, man muss sich einfach bewusst sein, dass diese zusätzliche Indirektion Rechenzeit kostet. (Aber möglicherweise einen Switch() oder einen Callback erspart. Um virtuelle Funktionen einsetzen zu können, muss aber zuerst von der (statischen) Interuptfunktion eine Methode von einem Objekt aufgerufen werden.
+(Eine Interuptfunktion kann nur eine globale Funktion oder eine statische Methode sein, da diese von der Hardware, ohne Kenntnisse eines Objektes, aufgerufen wird.) 
+
+In Multithreadingumgebungen muss Sichergestellt werden, dass Konstruktoren, Destruktoren und Memorymanagement Threadsafe sind, ansonsten dürfen innerhalb von Threads keine neuen Objekte erzeugt werden. Ein Thread darf zudem \emph{nie} mit einer Exception beendet werden (ausser das verwendete OS kann mit Exceptions umgehen). Vor dem Threadende müssen somit immer alle Exceptions aufgefangen werden (Den gesammten Thread-Code in Try-Catch einschliessen.). 
+
+\section{Persistenz}
+Wenn Objekte ihren Zustand bei einem Stromausfall (Ausschalten) behalten sollen, spricht man von Persistenz. Dazu kann man Konstruktoren entwerfen, welche ihre Daten aus einem Dateisystem, FLASH-Speicher oder Akku-gepuffertem RAM holen, und entsprechende Funktionen, welche dieses Daten bei Bedarf auf diese nichtflüchtigen Medien speichern. Placement new() oder eigene new/delete Operatoren können auch benutzt werden, um Objekte in persistentem Speicher zu erzeugen, wobei bei jedem Systemstart geprüft werden muss, ob der Speicherinhalt noch gültig ist, bevor er wieder verwendet wird.  
+
+
+  
 
 \chapter{\Cpp 11}
 Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
 
 \section{Neuerungen}
 \subsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
+\label{subsec:RValueRefs}
 
 RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
@@ -3511,10 +3630,10 @@ Beispiel:
 
 class Demo {
 		// ...
-		Demo(const Demo &Src);	 		      // Kopierkonstruktor
-		Demo(Demo&&Src);	            		// Move-Konstruktor
-		Demo& operator=(const Demo &Src);	// Zuweisungsoperator (Kopierend)
-		Demo& operator=(Demo &&Src);		  // Zuweisungsoperator (Schiebend)
+		Demo(const Demo &Src);            // Kopierkonstruktor
+		Demo(Demo&&Src);                  // Move-Konstruktor
+		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
+		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
 	};	 
  
 \end{CCode}
@@ -3546,6 +3665,8 @@ constexpr double MondAnziehung = Erdanziehung / 6.0;
 \end{CCode}
 
 Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+
+Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
 
 \subsection{extern Templates}
 Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
@@ -3631,10 +3752,10 @@ for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
 
 \subsection{Automatische For-Schlaufe}
 
-Eine Forschlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
+Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
 
 \begin{CCode}
-int Elements[5] = {1, 2, 3, 4, 5};
+int Elemente[5] = {1, 2, 3, 4, 5};
 int Summe = 0;
 
 // Ueber alle Elemente iterieren
@@ -3696,7 +3817,7 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 
 \subsection{Alternative Funktionsdefinition}
 
-Der Rückgabetyo von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
+Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
 
 \begin{CCode}
 
@@ -3756,7 +3877,7 @@ private:
 
 \subsection{Kontrolliertes Überschreiben von Funktionen}
 
-Mit den Bezeichnern override und final kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
+Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
 
 Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
 
@@ -3780,7 +3901,7 @@ class Abgeleitet : Basisklasse {
 
 \subsection{Nullpointer}
 Neu gibt es ein Schlüsselwort für den Nullpointer: nullptr
-Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei Überladenen Funktionen wichtig.
+Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig.
 
 \subsection{Typsicherere Enummerationen}
 Neu gibt es einen typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
@@ -3811,8 +3932,8 @@ enum class Enum2 : unsigned int {Item1, Item2};
 
 \end{CCode}
 
-\subsection{Template-Verschachtelung \textgreater\textgreater}
-Bei verschachtelten Templates wird \textgreater\textgreater als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
+\subsection{Template-Verschachtelung $>>$}
+Bei verschachtelten Templates wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
 
 \subsection{Explizite Umwandlungsoperatoren}
 Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
@@ -3845,6 +3966,7 @@ Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Pre
 Beispiel:
 \begin{CCode}
 R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
+
 // Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
 R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
 \end{CCode}
@@ -3853,13 +3975,15 @@ R und U können auch kombiniert werden.
 
 \subsection{Benutzerdefinierte Literale}
 
-Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen.
+Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
 
 Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
 \begin{CCode}
-OutputType operator "" _Magic(const char * literal_string); // Erhaelt einen String mit der Zeichenkette vor dem Suffix
-OutputType operator "" _kg(unsigned long long);    // Erhaelt den Integerwert des Literals
+// Erhaelt einen String mit der Zeichenkette vor dem Suffix
+OutputType operator "" _Magic(const char * literal_string); 
+
+OutputType operator "" _kg(unsigned long long); // Erhaelt den Integerwert des Literals
 OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
 \end{CCode}
 
@@ -3868,7 +3992,7 @@ Die Operatorfunktionen können dabei einen beliebigen Rückgabewert liefern, im Al
 Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
 
 \begin{CCode}
-OutputType operator "" _suffixconst char     * StringValues,  size_t StringLaenge);
+OutputType operator "" _suffix(const char     * StringValues, size_t StringLaenge);
 OutputType operator "" _suffix(const wchar_t  * StringValues, size_t StringLaenge);
 OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaenge);
 OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
@@ -3881,13 +4005,14 @@ Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden 
 
 \begin{CCode}
 class Demo {
-    Demo() = default;                        // Den Defaultkonstruktor anfordern.
-    Demo(const Demo&) = delete;              // Den Kopierkonstruktor verbieten.
-    Demo & operator=(const Demo&) = delete;  // Den Zuweisungsoperator verbieten.
+    Demo() = default;                       // Den Defaultkonstruktor anfordern.
+    Demo(const Demo&) = delete;             // Den Kopierkonstruktor verbieten.
+    Demo & operator=(const Demo&) = delete; // Den Zuweisungsoperator verbieten.
     void f(double i);                    
-    void f(int) = delete;                    // f darf nicht mit int aufgerufen werden
-    template<class T> void f(T) = delete;    // f mit irgend etwas anderem als double
-		                                         // aufrufen ist verboten
+    void f(int) = delete;                   // f darf nicht mit int aufgerufen 
+                                            // werden
+    template<class T> void f(T) = delete;   // f mit irgend etwas anderem als 
+		                                        // double aufrufen ist verboten
 };
 
 \end{CCode}

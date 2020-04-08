@@ -42,8 +42,30 @@
 %/*   6.2 Versuchen Abgerundetet Rechtecke hinzubekommen                      */
 %/*                                                                           */
 %/*                                                                           */
-%/*                                                                           */
-%/*                                                                           */
+%/*   
+Visitor pattern
+                                                                        */
+Guten Tag Herr Oesch
+
+Ich arbeite für ein Projekt gerade Ihr UML-Skript durch (Einführung in die OOP) 
+und habe dabei folgende mögliche Korrekturen entdeckt:
+
+Seite 16 (Kapitel 4.3.1.), "Späte Bindung".
+"...Das heisst, dass immer die effektiv zum Objekt gehörende Methode benutzt 
+wird, sofern sie in der abgeleiteten Klasse *überladen *wurde. Wenn die Methode 
+nicht *überladen *wurde.."
+Da sollte meiner Meinung nach zweimal überschrieben, und nicht überladen stehen.
+
+Seite 25 (Kapitel 4.5.1), "Sequenzdiagramm" (Abbildung 4.10).
+Hier fehlt die Beschriftung der 3. Methode (wird wahrscheinlich "Akzeptieren()" 
+sein, dann wären Kollaborationsdiagramm und Sequenzdiagramm konsistent).
+
+Desweiteren bin ich mir nich ganz sicher, ob in Abbildung 4.09 (S.24) nicht auch 
+die Sekretärin eine Assoziation mit der Vertrag-Klasse haben müsste, da sie ja 
+auf die Methode "VertragErzeugen()" zugreift.
+
+Freundliche Grüsse
+Christof Baeriswyl%/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
@@ -777,8 +799,8 @@ Bei der \OviIndex{frühen Bindung} wird bereits wärend der Übersetzung vom Compil
 \paragraph{Späte Bindung}
 \label{Spaete Bindung}
 Bei der \OviIndex{späten Bindung} kennt der Compiler alle möglichen Methoden, die an dieser Stelle aufgerufen werden könnten, aber die effektive Auswahl der Methode findet zur Laufzeit abhängig vom Objekttyp statt. Das heisst, dass immer die effektiv zum Objekt
-gehörende Methode benutzt wird, sofern sie in der abgeleiteten Klasse überladen wurde.
-Wenn die Methode nicht überladen wurde, wird die Methode der Oberklasse benutzt.
+gehörende Methode benutzt wird, sofern sie in der abgeleiteten Klasse überschrieben wurde.
+Wenn die Methode nicht überschrieben wurde, wird die Methode der Oberklasse benutzt.
 Dies erfordert zusätzlichen Rechenaufwand zur Laufzeit, ist aber eine wesentliche Voraussetzung für OOP. Späte Bindung wird in \Cpp mit virtuellen Methoden realisiert, und ist in Java das standard Verhalten.
 
 
