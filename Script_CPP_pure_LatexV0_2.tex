@@ -5305,10 +5305,12 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 
 \section{Multithreading support (Seit \Cpp11)}
 \label{sect:Multithreading}
-\OviIndex{Multithreading} wird seit \Cpp11 durch die Thread support Library unterstützt, dazu muss <thread> eingebunden werden. Nachfolgend werden einige wesentliche Komponenten aus dieser Bibliothek vorgestellt.
+\OviIndex{Multithreading} wird seit \Cpp11 durch die Thread support Library unterstützt, dazu muss <thread> eingebunden werden. Zuvor muss jedoch die Library auf das verwendete Betriebssystem portiert worden sein. Gerade bei Embeddedsystemen und Echtzeit Betriebssystemen muss man damit rechnen, dass nicht auf eine existierende Portierung zurückgegriffen werden kann.
+
+Nachfolgend werden einige wesentliche Komponenten aus dieser Bibliothek vorgestellt.
 
 \subsubsection{Thread}
-\OviIndex{Thread} dient zum Erzeugen und Starten eines neuen Threads. (Je nach verwendetem Konstruktor sind kann Thread auch für andere Aufgaben genutzt werden.)
+\OviIndex{Thread} dient zum Erzeugen und Starten eines neuen Threads. (Je nach verwendetem Konstruktor kann Thread auch für andere Aufgaben genutzt werden.)
 
 Ein Beispiel:
 \begin{CCode}
