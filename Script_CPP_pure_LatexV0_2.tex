@@ -5302,6 +5302,144 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
       GroupedElements.splice (GroupedElements.begin(), Figuren, Figuren.begin(), Figuren.end());
 \end{CCode}
 
+
+\section{Multithreading support (Seit \Cpp11)}
+\label{sect:Multithreading}
+\OviIndex{Multithreading} wird seit \Cpp11 durch die Thread support Library unterstützt, dazu muss <thread> eingebunden werden. Nachfolgend werden einige wesentliche Komponenten aus dieser Bibliothek vorgestellt.
+
+\subsubsection{Thread}
+\OviIndex{Thread} dient zum Erzeugen und Starten eines neuen Threads. (Je nach verwendetem Konstruktor sind kann Thread auch für andere Aufgaben genutzt werden.)
+
+Ein Beispiel:
+\begin{CCode}
+
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <string>
+
+void Worker1(int n)
+{
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Thread " << n << " executing\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+void Worker2(int n, std::string Info)
+{
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Thread [" << Info << "]" << n << " executing\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
+
+
+int main()
+{
+    // Create and start threads
+    std::thread FirstThread(Worker1, 1);
+    std::thread SecondThread(Worker1, 2);
+    std::thread ThirdThread(Worker2, 1, "Hans");
+
+    // Wait for end of threads
+    FirstThread.join();
+    SecondThread.join();
+    ThirdThread.join();
+    std::cout << "Done\n";
+}
+
+
+\end{CCode}
+
+
+\subsubsection{Futures}
+\OviIndex{Futures} dienen zum übermitteln von Daten von einem Thread zum Anderen. Ein Future ist eine Variable, welche irgendwann in Zukunft einen Wert enthalten wird. Wenn ein Thread versucht, diese Variable mittels get() zu lesen wird er angehalten, bis diese Variable einen Wert enthält. Ein Thread kann auch mit wait() (ohne Timeout) oder wait\_until()/wait\_for() (Mit Timeout) auf das Verfügbar werden des Wertes warten.
+ 
+Ein gültiges Future ist immer mit einem \OviIndex{Promise} verbunden, sobald ein Thread in ein Promise schreibt, erhält das dazugehörende Future den übergebenen Wert. Sobald ein Future-Promise Paar einmal verwendet wurde, wird es ungültig und kann kein zweites mal benutzt werden. (Einmal verwendet heisst das ein Wert in das Promise geschrieben wurde, und aus dem Future gelesen wurde.).
+
+Ein Beispiel:
+\begin{CCode}
+
+#include <thread>
+#include <future>
+#include <iostream>
+#include <chrono>
+
+void DoSomeWork(int a, int b, std::promise<int> PromisedSumm)
+{
+    // Do some hard work
+    int Summ = 0;
+    for (int i = a; i < b; i++) {
+        Summ += i;
+    }
+    // Send result to future
+    PromisedSumm.set_value(Summ);
+}
+
+
+
+int main()
+{
+    // Demonstrate using promise<int> to transmit a result between threads.
+    std::promise<int> PromisedResult;
+    std::future<int> FutureResult = PromisedResult.get_future();
+    std::thread WorkerThread(DoSomeWork, 1, 10000, std::move(PromisedResult));
+
+    // Wait (block) until result is availlable
+    FutureResult.wait();
+
+    // Get result from future
+    std::cout << "result=" << FutureResult.get() << '\n';
+
+    // Wait until thread ends
+    WorkerThread.join();
+
+}
+\end{CCode}
+
+Mit Promise-Future können auch Exceptions übermittelt werden.
+
+\subsubsection{async}
+Mit \OviIndex{async} kann eine Funktion auf einfache Weise parallel ausgeführt werden, und bei Bedarf auf ihren Rückgabewert gewartet werden. Es wird automatisch ein Thread und ein Future erzeugt, die Funktion aufgerufen und das Ergebnis dem Future zugewiesen. Der Aufrufer von async() erhält das entsprechende Future als Rückgabewert von Async().
+
+Ein Beispiel:
+\begin{CCode}
+
+#include <iostream>
+#include <future>
+
+
+int HardWorkingFunction(int a, int b)
+{
+    // Do some hard work
+    int Summ = 0;
+    for (int i = a; i < b; i++) {
+        Summ += i;
+    }
+    
+    // Return Result
+    return Summ;
+}
+
+int main()
+{
+    // Call the function in a separate thread, async() returns a Future which will
+    // contain the returned Value
+    auto FutureResult = std::async(std::launch::async, HardWorkingFunction, 1, 10000);
+
+    // Wait until Future gets a result and print it
+    std::cout << "The sum is " << FutureResult.get() << '\n';
+}
+
+\end{CCode}
+
+Anstelle von std::launch::async kann async() auch std::launch::deferred übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald get() aufgerufen wird (get() ruft somit die übergebene Funktion auf). Wenn async() ohne eine dieser Policies aufgerufen wird (std::async(HardWorkingFunction, 1, 10000) ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von get() ausgeführt wird.
+
+\subsubsection{Mutex}
+Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex} zur Verfügung, sowie dazugehörende Manipulationsfunktionen.
+
+
 \chapter{C++ in Embedded Systemen}
 \section{Startup Code}
 
