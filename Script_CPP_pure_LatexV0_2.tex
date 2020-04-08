@@ -1600,6 +1600,62 @@ Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable 
 		
 \end{CCode}
 
+\subsection{Structured Bindings (Seit \Cpp17)}
+\label{subsubsect:StructuredBindings}
+\index{Structured Bindings}
+Neu können strukturierte Datentypen automatisch in Einzelvariablen umgepackt werden. Dadurch können unter anderem auch mehrere Werte aus einer Funktion/Methode zurückgegeben werden:
+
+\begin{CCode}
+	
+#include <iostream>
+#include <tuple>
+#include <utility>
+
+using namespace std;
+
+std::tuple<int, std::string, double> ReturnMultipleValues()
+{
+   return std::make_tuple(1, "marius", 1234.5);
+}
+
+struct Demo {
+     int x;
+     float pi;
+} D = {99, 3.14f};
+
+
+int main()
+{
+     double Array[] = {1.2, 2.4, 3.6};
+     
+     /* id, name und score werden mit dem passenden Datentypen definiert */
+     /* und mit dem entsprechenden Rückgabewert initialisiert der Rückgabewert */
+     /* muss ein zusammengesetzter Dartentyp mit drei Elementen sein */
+     auto [id, name, score] = ReturnMultipleValues();
+     cout << id << ":" << name << ":" << score << endl;
+     
+     /* Val1 und Val2 werden mit dem passenden Datentypen definiert und mit*/
+     /* dem entsprechenden Membern aus der zugewiesenen Struktur initialisiert */
+     auto [Val1, Val2] = D;
+     cout << Val1 << ":" << Val2 << endl;
+     
+     /* a1, a2 und a2 werden mit dem passenden Datentypen definiert und mit*/
+     /* dem entsprechenden Elementen aus dem zugewiesenen Array initialisiert */
+     auto [a1, a2, a3] = Array;
+     cout << a1 << ":" << a2 << ":" << a3 << endl;
+     return 0;
+}
+
+
+/* Ausgabe des Programms:
+
+ 1:marius:1234.5
+ 99:3.14
+ 1.2:2.4:3.6
+
+*/
+
+\end{CCode}
 
 \section{Felder (Arrays)}
 Felder sehen so aus wie bei den meisten anderen Programmiersprachen. Achtung, die Zählung der Elemente beginnt bei 0! Zudem werden die Bereichsgrenzen nicht überprüft, man kann also ohne Probleme über die Grenzen eines Arrays hinaus zugreifen, was aber über kurz oder lang zu Systemabstürzen oder unvorhersehbarem Verhalten führt (Negative Indices sind auch möglich). Arrays sind eigentlich nichts anders als konstante Zeiger die auf einen für das Array reservierten Speicherblock zeigen.
@@ -4158,6 +4214,8 @@ class SpeziellKomplizierteKlasse {
 };
 \end{CCode}
 
+
+
 \subsection{Parametrisierung von Templates mit Konstanten}
 Templates können in ihrer Parameterliste auch konstante
 Werte (int, float, Adressen, ...) enthalten, welche 
@@ -4175,6 +4233,46 @@ class SpeziellKomplizierteKlasse {
    ...
 };
 \end{CCode}
+
+
+\subsection{Automatische Parametererkennung (Seit \Cpp17)}
+\index{Automatische Templateparametererkennung}
+\label{subsection:AutomatischeTemplateparametererkennung}
+Seit \Cpp17 erkennt der Compiler beim Konstruktoraufruf 
+wie bei Funktionstemplate automatisch für welche Parameter das Template zu instantiiern ist,
+vorausgesetzt es ist eine eindeutige Zuordnung möglich.
+
+\begin{CCode}
+
+template <class T>
+class Complex {
+
+T Real;
+T Imag;
+
+public:
+Complex (T r, T i) : Real(r), Imag(i) {}
+
+
+};
+
+
+/* Erzeugt Complex<int> */
+Complex c(1, 2);
+
+
+/* Erzeugt Complex<float> */
+Complex c(1.0f, 1.2f);
+
+short int x;
+short int y;
+
+/* Erzeugt Complex<short int> */
+Complex c(x, y);
+
+\end{CCode}
+
+
 
 \subsection{Default Templateparameter}
 \index{Default Templateparameter}
@@ -6629,32 +6727,24 @@ Im Dezember 2017 publiziert.
 
     \item A compile-time static if with the form if constexpr(expression)
 
-    \item Structured bindings, allowing auto [a, b] = getTwoReturnValues();
+    \item Structured bindings, allowing auto [a, b] = getTwoReturnValues(); (Siehe \autoref{subsubsect:StructuredBindings})
 
-    \item Initializers in if and switch statements
+    \item Initializers in if and switch statements (if (init; condition) and switch (init; condition))
 
     \item Guaranteed copy elision by compilers in some cases
 
     \item Some extensions on aligned memory allocation
 
-    \item Template deduction of constructors, allowing pair(5.0, false) instead of pair<double,bool>(5.0, false)
+    \item Template deduction of constructors, allowing pair(5.0, false) instead of pair<double,bool>(5.0, false) (Siehe \autoref{subsection:AutomatischeTemplateparametererkennung})
 
     \item Inline variables, which allows the definition of variables in header files
     
     
-    \item Dynamic memory allocation for over-aligned data
-    \item Template argument deduction for class templates
     \item template <auto>
-    \item Guaranteed copy elision
     \item A weaker version of fixed order-of-evaluation for expressions 
-    \item constexpr if
     \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
-    \item Inline variables 
-    \item Structured bindings 
-    \item if (init; condition) and switch (init; condition)
-
+    
     \item C++17 is based on C11 instead of C99
-    \item variant<>
     \item destroy(\_at|\_n), uninitialized\_move(\_n), uninitialized\_value\_construct(\_n), uninitialized\_default\_construct(\_n)
     \item Splicing for map<>,unordered\_map<>, set<>, and unordered\_set<>
     \item Reserve std[0-9]+ for future standard libraries
