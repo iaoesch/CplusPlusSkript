@@ -85,8 +85,16 @@
 \usepackage{textcomp}
 \usepackage{makeidx}
 
+
 %Kopf- und Fußzeile
-\usepackage{fancyhdr}
+%\usepackage{fancyhdr}
+\usepackage{scrlayer-scrpage}
+
+%\usepackage[automark,autooneside=false]{scrlayer-scrpage}
+
+%Automatisches generieren von Kopfzeilentaxt aus Kapitelname (\leftmark)
+\automark[chapter]{chapter}
+
 
 \hypersetup{
     bookmarks=true,         % show bookmarks bar?
@@ -110,31 +118,46 @@
     linkbordercolor={0 0 1}
 }
 
+%Programmiersprachenformatierer laden
 \lstloadlanguages{[ISO]C++}
 
-\pagestyle{fancy}
-\fancyhf{}
+% kOPF/fUSZEILEN AUS Kommaskript verwenden
+\pagestyle{scrheadings}
+%\pagestyle{fancy}
+%\fancyhf{}
 
+%Indexerzeugen einschalten
 \makeindex
 
 %Kopfzeile links bzw. innen
-\fancyhead[L]{\MyTitle}
-%Kopfzeile rechts bzw. außen
-\fancyhead[R]{\nouppercase{\leftmark}}
+\ihead{\MyTitle}
+
+%Kopfzeile mitte
+\chead{}
+
+%\fancyhead[L]{\MyTitle}
+%Kopfzeile rechts bzw. außen (Leftmark = Kapitelname)
+\ohead{\leftmark}
+%\fancyhead[R]{\nouppercase{\leftmark}}
 %Linie oben
-\renewcommand{\headrulewidth}{0.5pt}
+%\renewcommand{\headrulewidth}{0.5pt}
 
 %Fußzeile links bzw. innen
-\fancyfoot[L]{Version 1.3\hspace{2ex} I. Oesch}
+\ifoot{Version 1.3\hspace{2ex} I. Oesch}
+%\fancyfoot[L]{Version 1.3\hspace{2ex} I. Oesch}
 %Fußzeile mittig
-\fancyfoot[C]{\today}
-%Fußzeile rechts bzw. außen
-\fancyfoot[R]{\thepage}
+\cfoot{\today}
+%\fancyfoot[C]{\today}
+%Fußzeile rechts bzw. außen (Seitennummer)
+\ofoot{\thepage}
+%\fancyfoot[R]{\thepage}
 %Linie unten
-\renewcommand{\footrulewidth}{0.5pt}
+%\renewcommand{\footrulewidth}{0.5pt}
 
 \setlength{\parskip}{1ex plus0.5ex minus0.3ex} 
-\newcommand{\Cpp}{C{\texttt ++} }
+
+%Eigene Befehle
+\newcommand{\Cpp}{C{\texttt{++}} }
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
 
@@ -162,6 +185,8 @@
 % }
 %% for an environment, just use the \lstset command as init (2nd to
 %% last) argument of the \lstnewenvironment{}[][]{}{} command
+
+% Erweitern der Listingumgebung (Schattierte Box)
 \lstnewenvironment{CCode}{
 \pagebreak[3]
 \lstset{showspaces=false,
@@ -178,6 +203,7 @@ tab=\rightarrowfill}
 %\end{framed}
 }
 
+%Programmcodeformater konfigurieren
 \lstset{showspaces=false,
 showtabs=false,
 language={[ISO]C++},
@@ -187,25 +213,29 @@ basicstyle={\footnotesize \ttfamily},
 %frame=single,
 tab=\rightarrowfill}
 
+%Nicht sicher obs das wirklich braucht...
+% Versuch verbatime mit CCode zu kombinieren
 
+%Klammeraffe als Buchstaben betrachten (Nun in Namen erlaubt)
+%\makeatletter
+%
+%\def\newverbatim{\let\@NVtempa\newcommand\@newverbatim}
+%\def\renewverbatim{\let\@NVtempa\renewcommand\@newverbatim}
+%\def\@newverbatim#1{\@ifnextchar[%]
+     %{\@inewverbatim{#1}}{\@inewverbatim{#1}[0]}}
+%\long\def\@inewverbatim#1[#2]#3#4#5#6{%
+ %\expandafter\@NVtempa\csname #1\endcsname[#2]%
+  %{#3\@verbatim\frenchspacing\@vobeyspaces#4\@defxverbatim{#1}%
+%\@xverbatim}%
+ %\@namedef{end#1}{#5\endverbatim#6}}
+%
+%\begingroup \catcode `|=0 \catcode `[= 1
+%\catcode`]=2 \catcode `\{=12 \catcode `\}=12
+%\catcode`\\=12 
+%|gdef|@defxverbatim#1[|def|@xverbatim##1\end{#1}[##1|end[#1]]]
+%|endgroup
 
-\makeatletter
-
-\def\newverbatim{\let\@NVtempa\newcommand\@newverbatim}
-\def\renewverbatim{\let\@NVtempa\renewcommand\@newverbatim}
-\def\@newverbatim#1{\@ifnextchar[%]
-     {\@inewverbatim{#1}}{\@inewverbatim{#1}[0]}}
-\long\def\@inewverbatim#1[#2]#3#4#5#6{%
- \expandafter\@NVtempa\csname #1\endcsname[#2]%
-  {#3\@verbatim\frenchspacing\@vobeyspaces#4\@defxverbatim{#1}%
-\@xverbatim}%
- \@namedef{end#1}{#5\endverbatim#6}}
-
-\begingroup \catcode `|=0 \catcode `[= 1
-\catcode`]=2 \catcode `\{=12 \catcode `\}=12
-\catcode`\\=12 
-|gdef|@defxverbatim#1[|def|@xverbatim##1\end{#1}[##1|end[#1]]]
-|endgroup
+% Ende nicht sicher obs das wirklich braucht
 
 %\newverbatim{CCode}{}{}{}{}
 
@@ -219,7 +249,7 @@ tab=\rightarrowfill}
 %\end{verbatim}   
 %}
 
-
+% Eigene umgebung fuer eingerahmte Zitate
 \newenvironment{framedquote}{
 \begin{framed}
 \begin{quote}
@@ -229,6 +259,7 @@ tab=\rightarrowfill}
 \end{framed}
 }
 
+% Eigene Umgebung fuer Tabelle mit C-Code
 \newenvironment{CodeTable}{
 \noindent
 \renewcommand{\arraystretch}{1.4}
@@ -238,8 +269,10 @@ tab=\rightarrowfill}
 \end{tabular}
 }
 
+% Level von Inhaltsverzeichnis
 \setcounter{tocdepth}{1}
 
+%Jetzt begints...
 
 \begin{document}
 \begin{titlepage}
@@ -307,7 +340,10 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 %   \includegraphics[bb=0 0 36cm 20.5cm, width=\textwidth]{TitelImage.png}
 %\end{figure}
 \cleardoublepage
+
+%Inhaltsverzeichnis einfuegen
 \tableofcontents
+
 \chapter{Zu diesem Skript}
 Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
 In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Unbehandelt bleibt insbesondere die Standard-Bibliothek.
@@ -1242,7 +1278,7 @@ aufgerufen. Dies führt zu effizienterem und schnellerem Code, kann dafür mehr
 Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei langen
 Funktionen ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
-
+ 
 Wenn Inlinefunktionen über Pointer aufgerufen oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Funktion direkt aufgerufen wird) 
 
 \begin{CCode}
@@ -3670,7 +3706,7 @@ Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implemen
 \subsection{Kurzübersicht zu den Iteratoren aus der \Cpp - Standardbibliothek}
 Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen ++ und * definiert sind. bidirektionale Iteratoren bieten noch -- an, und Random-Access-Iteratoren haben weiter die Operatoren [] und += definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
 
-Moegliche Implementationen von Iteratoren:
+Mögliche Implementationen von Iteratoren:
 \begin{CCode}
 class MyIterator : public std::iterator<std::input_iterator_tag, int>
 {
@@ -4103,7 +4139,7 @@ vor dem Aufruf von main() ausgeführt werden, und entsprechend deren Destruktoren
 das Programm durch Aufruf von exit()\footnote{Ein \Cpp Programm sollte nie mit exit() beendet werden, da so die Destruktoren der automatischen (Auf dem Stack angelegten) Objekte nicht aufgerufen werden. Anstelle von exit() sollte das Exceptionhandling, oder allenfalls Rückgabewerte von Funktionen benutzt werden, so dass ein \Cpp Programm immer via Beenden von main() terminiert.}  oder beenden von main() sein Ende erreicht. Dabei darf nicht vergessen werden, dass neben den vom Programmierer definierten globalen und statischen Objekte auch in der Standard-Library globale und statische Objekte vorhanden sind (z.B. cin, cerr und cout).
 
 
-Dieser Initialisierungsablauf von \Cpp  ist jedoch sehr Compilerabhängig, bei einigen Compilern muss nur eine Runtimefunktion (z.B. \_\_init()) aufgerufen werden, bei anderen wird vom Cpompiler eine Tabelle mit Funktionszeigern generiert, die in dieser Tabelle aufgeführten Funktionen müssen vor dem Aufruf von main() durch den Startupcode aufgerufen werden.
+Dieser Initialisierungsablauf von \Cpp  ist jedoch sehr Compilerabhängig, bei einigen Compilern muss nur eine Runtimefunktion (z.B. \_\_init()) aufgerufen werden, bei anderen wird vom Compiler eine Tabelle mit Funktionszeigern generiert, die in dieser Tabelle aufgeführten Funktionen müssen vor dem Aufruf von main() durch den Startupcode aufgerufen werden.
 
 Zudem muss normalerweise der Linker angewiesen werden, diese Initialisierungsdaten
 aus den einzelnen Modulen zusammenzutragen und am richtigen Ort im Speicher abzulegen.
@@ -4455,16 +4491,16 @@ Ein Embedded-C++ Programm ist ein subset von standard C++ und lässt sich mit jed
 
 \chapter{Standardisierungen}
 \section{\Cpp 11}
-Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
+\index{c++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
 
 \subsection{Neuerungen}
 \subsubsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
 \label{subsec:RValueRefs}
 
-RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
+\OviIndex{RValue Referenzen} werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
 
-Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
 
 Beispiel:
 \begin{CCode}
@@ -4511,7 +4547,7 @@ class Demo {
 \end{CCode}
 
 \subsubsection{constexpr}
-Mit dem Schlüsselwort constexpr können Ausdrücke und Rückgabewerte von Funktionen als
+Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten.
 
 Beispiel
@@ -4549,7 +4585,8 @@ extern template class std::vector<DemoClass>; // Template darf in diesem Modul b
 \end{CCode}
 
 \subsubsection{Initialisiererlisten}
-Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu mus jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
+\index{Initialisiererlisten}
+Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
 
 Beispiel:
 \begin{CCode}
@@ -4567,7 +4604,7 @@ DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
 Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
 
 \subsubsection{Vereinheitlichte Initialisierung}
-Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels gescheiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
+Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
 passende Konstruktor aufgerufen (falls vorhanden).
 
 Beispiel:
@@ -4603,7 +4640,8 @@ f2({5, 1.23f});
 \end{CCode}
 
 \subsubsection{Automatische Typerkennung}
-Mit dem Schlüselwort auto wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort decltype kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+\index{Automatische Typerkennung}
+Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort \OviIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
 \begin{CCode}
 
 auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
@@ -4641,14 +4679,14 @@ Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wo
 
 \subsubsection{Anonyme Funktionen (Lambda Funktionen)}
 
-Lambda Funktionen sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
+\OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 
 Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 \begin{CCode}
 [capture](parameters)->return_type{body}
 \end{CCode}
 
-Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die Capture-Liste darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
 
 \emph{Parameter} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
@@ -4716,8 +4754,8 @@ auto Demo::MemberFunktion(int x, int y) -> int // Rueckgabewert ist int
 
 
 \subsubsection{Vereinfachte Objektkonstruktion}
-
-Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können Defaultwerte für Membervariablen festgelegt werden.
+\index{Vereinfachte Objektkonstruktion}
+Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
 
 \begin{CCode}
 class Demo  {
@@ -4772,11 +4810,44 @@ class Abgeleitet : Basisklasse {
 \end{CCode}
 
 \subsubsection{Nullpointer}
-Neu gibt es ein Schlüsselwort für den Nullpointer: nullptr
-Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig.
+Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
+Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
+
+\begin{CCode}
+class StrangeClass {
+    public:
+    void DoSomething(float *p);
+    void DoSomething(int *p);
+};
+
+StrangeClass sc;
+int a;
+
+sc.DoSomething(&a);
+sc.DoSomething(nullptr); // Error float* or int* ???
+
+
+class LessStrangeClass {
+    public:
+    void DoSomething(float *p);
+    void DoSomething(int *p);
+    void DoSomething(std::nulptr_t p);  // Variant for nullptr
+};
+
+LessStrangeClass lsc;
+int a;
+
+lsc.DoSomething(&a);
+lsc.DoSomething(nullptr); // ok, std::nulptr_t
+
+
+
+
+\end{CCode}
+  
 
 \subsubsection{Typsicherere Enummerationen}
-Neu gibt es einen typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
+Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
 
 Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
 mehrere Enums dieselben Bezeichner verwenden.   
@@ -4805,7 +4876,7 @@ enum class Enum2 : unsigned int {Item1, Item2};
 \end{CCode}
 
 \subsubsection{Template-Verschachtelung $>>$}
-Bei verschachtelten Templates wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
+Bei \OviIndex{verschachtelten Templates} wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
 
 \subsubsection{Explizite Umwandlungsoperatoren}
 Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
@@ -4924,7 +4995,7 @@ int main()
 
 
 \subsubsection{Erweiterte Stringliterale}
-Neu können auch UTF-Codierte Stringliterale definiert werden, dazu werden die Prefixes u8, u und U verwendet.
+Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
 
 \begin{CCode}
 u8"Ein UTF-8 String"  // hat den Typ const char[]
@@ -4939,7 +5010,7 @@ u"Ein spezielles UTF-16 Zeichen: \u2018"
 U"Ein spezielles UTF-32 Zeichen: \U00002018"  
 \end{CCode}
 
-Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
 
 Beispiel:
 \begin{CCode}
@@ -4952,7 +5023,7 @@ R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz"
 R und U können auch kombiniert werden.
 
 \subsubsection{Benutzerdefinierte Literale}
-
+\index{Benutzerdefinierte Literale}
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
 
 Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
@@ -5024,6 +5095,7 @@ Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würd
 
 
 \section{\Cpp 14}
+\index{C++ 14}
 Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Dieser bietet einige kleinere Verbesserungen sowie Korrekturen an \Cpp 11 an.
  
 
@@ -5039,7 +5111,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
    \item Generische Lambdafunktionen
    \item Lambda capture expressions
    \item Attribute [[deprecated]] zum Markieren von obsoleten Schnittstellenelementen.
-   \item Kleinere Erweiterugnen der Standardlibrary
+   \item Kleinere Erweiterungen der Standardlibrary
 	
 \end{itemize}
 
