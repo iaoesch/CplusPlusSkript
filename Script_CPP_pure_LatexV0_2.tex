@@ -267,7 +267,9 @@ tab=\rightarrowfill}
 \end{framed}
 }
 
-\newcommand{\CodeIndex}[1]{\lstinline{#1}\index{#1}}
+
+\newcommand{\CodeStyle}[1]{\lstinline[basicstyle={\normalsize \ttfamily}]{#1}}
+\newcommand{\CodeIndex}[1]{\CodeStyle{#1}\index{#1}}
 
 % Eigene Umgebung fuer Tabelle mit C-Code
 \newenvironment{CodeTable}{
@@ -386,7 +388,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als \lstinline{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
+ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
 
 \section{Bezeichner und reservierte Namen}
 Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
@@ -516,7 +518,7 @@ Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen w
 
 \subsection{Beispiel eines kleinen \Cpp-Projektes}
 
-Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \lstinline{SayHello} vom Modul sayhello.cpp und muss deshalb die Headerdatei sayhello.h mit '\#include' einbinden. In dieser Headerdatei sind die Schnittstellen der gleichnamigen Klasse deklariert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \lstinline{static} deklariert.
+Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \CodeStyle{SayHello} vom Modul sayhello.cpp und muss deshalb die Headerdatei sayhello.h mit '\#include' einbinden. In dieser Headerdatei sind die Schnittstellen der gleichnamigen Klasse deklariert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \CodeStyle{static} deklariert.
 
 \begin{center}
 { \footnotesize
@@ -601,8 +603,8 @@ void SayHello::SayGreeting()                   \linebreak[4]
 \end{center}
  
 %\fbox{\parbox[t]{5cm}{
-%\lstinline$#include "sayhello.h"$\linebreak[4]
-%\lstinline$#$\linebreak[4]
+%\CodeStyle$#include "sayhello.h"$\linebreak[4]
+%\CodeStyle$#$\linebreak[4]
 %\lstinline$#int main(int argc, char *argv[])$\linebreak[4]
 %\lstinline$#{$\linebreak[4]
 %\lstinline$#    SayHelloWorld();$\linebreak[4]
@@ -612,7 +614,7 @@ void SayHello::SayGreeting()                   \linebreak[4]
 
 
 \section{Kommentare}
-\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \lstinline{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \lstinline{/*} eingeleitet und endet mit \lstinline{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
+\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \CodeStyle{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \CodeStyle{/*} eingeleitet und endet mit \CodeStyle{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
 \begin{CCode}
 // Ein Zeilenkommentar
 /* dieser Kommentar
@@ -654,25 +656,25 @@ Es gibt zwei Formen für den Includebefehl:
 \#include <......> sucht die Datei im Systemverzeichnis des Compilers und allfälligen weiteren vom Benutzer angegebenen Verzeichnissen. Diese Form wird für Bibliotheksfunktionen verwendet.
 \#include ''.....'' sucht zuerst im gleichen Verzeichnis in welchem die cpp Datei liegt, und dann in denselben Verzeichnissen wie \#include <...>. Diese Form wird für Projektbezogene Dateien (Vom Benutzer selbst geschriebene Dateien) eingesetzt. 
 
-Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \lstinline{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \lstinline{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
+Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \CodeStyle{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \CodeStyle{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
 
-\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \lstinline{const, constexpr} und \lstinline{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
+\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
 
 \section{Datentypen}
 \subsection{Einfache Datentypen}
-Neben den bereits von C bekannten Datentypen wie \lstinline{char, int float} usw. gibt es in \Cpp den Datentypen \lstinline{bool} für die logischen Werte \lstinline{true} und \lstinline{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
+Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
 
 Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
 
 
 \subsection{Zeiger und Referenzen}
-\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \lstinline{&}. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit \lstinline{*} \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
+\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \CodeStyle{&}. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit \CodeStyle{*} \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
-Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \lstinline{&&} bei der Definition.
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
-In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \lstinline{shared} oder \lstinline{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
 Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
 
@@ -818,7 +820,7 @@ Beispiel zu Einsatz von shared Pointer:
 \label{subsec:RValueRefs}
 \autoref{subsec:RValueRefs}
 
-\OviIndex{RValue Referenzen} werden durch \lstinline{T &&r} (im Gegensatz zu \lstinline{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
+\OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
 
 Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
@@ -926,7 +928,7 @@ Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übe
 	f2(ci); // Ok f2 kann i nicht aendern
 \end{CCode}
 
-Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als \lstinline{const} deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit \lstinline{const} kann man eine Methode also überladen.
+Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als \CodeStyle{const} deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit \CodeStyle{const} kann man eine Methode also überladen.
 \begin{CCode}
 	class MyClass {
 		
@@ -963,7 +965,7 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 \end{CCode}
 
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \lstinline{constexpr}-Funktionen durften nebst der \lstinline{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 
 Beispiel
 \begin{CCode}
@@ -995,8 +997,8 @@ aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
 (z. B. ein statischer Zugriffszähler) modifiziert.
 
 Für diese Fälle kann ein Attribut als \CodeIndex{mutable} gekennzeichnet werden. 
-Attribute mit dem Qualifizierer \lstinline{mutable} dürfen, im Gegensatz zu 'normalen'
-Attributen, von \lstinline{const} Methoden verändert werden.
+Attribute mit dem Qualifizierer \CodeStyle{mutable} dürfen, im Gegensatz zu 'normalen'
+Attributen, von \CodeStyle{const} Methoden verändert werden.
 
 
 \begin{CCode}
@@ -1025,7 +1027,7 @@ Attributen, von \lstinline{const} Methoden verändert werden.
 \end{CCode}
 
 Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
-alles konstant ist. \lstinline{Mutable} sollte nur in gut begründeten Ausnahmefällen
+alles konstant ist. \CodeStyle{Mutable} sollte nur in gut begründeten Ausnahmefällen
 eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
 nicht ändert, aber interne Verwaltungsinformation geändert werden
 muss. 
@@ -1038,7 +1040,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
 
 \subsection{Typsicherere Enummerationen (Seit \Cpp11)}
 \label{subsubsect:TypsichererEnum}
-Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \lstinline{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
+Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \CodeStyle{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
 
 Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
 mehrere Enums dieselben Bezeichner verwenden.   
@@ -1069,7 +1071,7 @@ Neue Syntax:
  \subsection{Initialisiererlisten (Seit \Cpp11)}
  \label{subsubsect:Initialisiererlisten}
  \index{Initialisiererlisten}
- Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \lstinline{std::initializer_list} entgegennimmt.
+ Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
  
  Beispiel:
  \begin{CCode}
@@ -1084,20 +1086,20 @@ Neue Syntax:
  	
  \end{CCode}
  
- Das Template \lstinline{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
+ Das Template \CodeStyle{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
  
  
  \subsection{Weitere Datentypen}
- Weiter gibt es \lstinline{struct} und \lstinline{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden.
+ Weiter gibt es \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden.
  Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
  
   \section{Literale}
- Zu den bereits von C bekannten Literalen kommen die bool-Literale \lstinline{true} und \lstinline{false}, binäre Literale, der Nullzeiger-Typ \lstinline{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale, der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
  
  \subsubsection{Nullpointer (Seit \Cpp11)}
  \label{subsubsect:nullptr}
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
- Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \lstinline{nullptr} besitzt sogar einen eigenen Datentypen (\lstinline{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \lstinline{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \lstinline{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \lstinline{std::nullptr_t} kann dies umgangen werden.
+ Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
  
  \begin{CCode}
  	class StrangeClass {
@@ -1281,8 +1283,8 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit \lstinline{new} kann dynamisch Speicher reserviert werden, und mit \lstinline{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \lstinline{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \lstinline{new} allozierte Speicherblock muss mit \lstinline{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). \lstinline{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
-Dynamische Arrays werden am Besten mit \lstinline{std::vector} realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
+Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
+Dynamische Arrays werden am Besten mit \CodeStyle{std::vector} realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
 
 \begin{CCode}
 int *Memory;            // Ein Zeiger auf int definieren
@@ -1340,12 +1342,12 @@ void ConsumeElement(std::unique_ptr<int> e) {
 
 \end{CCode}
 
-Der aktuelle \Cpp Standard schreibt 3 Varianten für \lstinline{new} vor, wobei der Programmierer durch Überladen weitere Varianten hinzufügen, oder bestehende ersetzen kann. die Standardvarianten sind:
+Der aktuelle \Cpp Standard schreibt 3 Varianten für \CodeStyle{new} vor, wobei der Programmierer durch Überladen weitere Varianten hinzufügen, oder bestehende ersetzen kann. die Standardvarianten sind:
 
 \begin{enumerate}
-	\item das einfache \lstinline{new}, dieses erzeugt ein Objekt oder wirft eine \lstinline{std::bad_alloc Exception} wenn der Speicher nicht reserviert werden konnte.
-	\item das \lstinline{new(std::nothrow)}, dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefällen verwendet werden, das Exception werfende \lstinline{new} führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
-	\item das placement \lstinline{new}, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich. Achtung, mit placement \lstinline{new} allozierte Speicherblöcke dürfen nicht mit \lstinline{delete} freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
+	\item das einfache \CodeStyle{new}, dieses erzeugt ein Objekt oder wirft eine \CodeStyle{std::bad_alloc Exception} wenn der Speicher nicht reserviert werden konnte.
+	\item das \CodeStyle{new(std::nothrow)}, dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefällen verwendet werden, das Exception werfende \CodeStyle{new} führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
+	\item das placement \CodeStyle{new}, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich. Achtung, mit placement \CodeStyle{new} allozierte Speicherblöcke dürfen nicht mit \CodeStyle{delete} freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
 \end{enumerate}
  
 Beispiele:
@@ -1390,9 +1392,9 @@ aptr->~A();
 \end{CCode}
 
 \section{Ein- und Ausgabe}
-Bildschirmausgaben laufen über (das Objekt) \CodeIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \CodeIndex{cin} gelesen werden. Um \lstinline{cin} oder \lstinline{cout} benutzen zu können muss das entsprechende Headerfile mittels \lstinline{#include <iostream>} eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
-Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich \lstinline{std} abgelegt sind, müssen Bibliotheksfunktionen
-und Objekte mit dem prefix \lstinline{std::} (z. B. \lstinline{std::cin}) oder '\lstinline{using namespace std}' zugänglich gemacht werden.
+Bildschirmausgaben laufen über (das Objekt) \CodeIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \CodeIndex{cin} gelesen werden. Um \CodeStyle{cin} oder \CodeStyle{cout} benutzen zu können muss das entsprechende Headerfile mittels \CodeStyle{#include <iostream>} eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
+Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich \CodeStyle{std} abgelegt sind, müssen Bibliotheksfunktionen
+und Objekte mit dem prefix \CodeStyle{std::} (z. B. \CodeStyle{std::cin}) oder '\CodeStyle{using namespace std}' zugänglich gemacht werden.
 
 \begin{CCode}
 #include <iostream>
@@ -1554,7 +1556,7 @@ int main(int argc, char *argv[])
 %
  %
 \section{Hauptprogramm}
-Jedes lauffähige \Cpp Programm muss eine Funktion \lstinline{main()} enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente \lstinline{argc} und \lstinline{argv} enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
+Jedes lauffähige \Cpp Programm muss eine Funktion \CodeStyle{main()} enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente \CodeStyle{argc} und \CodeStyle{argv} enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
 
 \begin{CCode}
 #include <iostream>
@@ -1566,7 +1568,7 @@ int main(int argc, char *argv[])
 } 
 \end{CCode}
 
-Vor dem Aufruf von \lstinline{main()} werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von \lstinline{main()} werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
+Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von \CodeStyle{main()} werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
 
 \chapter{Variablen}
 \section{Definition von Variablen}
@@ -1586,7 +1588,7 @@ char c;          // Eine Zeichenvariable definieren (8 Bit)
 \subsection{Automatische Typerkennung}
 \label{subsubsect:AutomatischeTyperkennung}
 \index{Automatische Typerkennung}
-Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort \lstinline{auto} benutzt. Mit dem Schlüsselwort \CodeIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort \CodeStyle{auto} benutzt. Mit dem Schlüsselwort \CodeIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
 \begin{CCode}
 	
 	auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
@@ -1714,7 +1716,7 @@ if (c > 0) {
 }
 \end{CCode}
 
-Seit \Cpp17 können \lstinline{if} (und \lstinline{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
+Seit \Cpp17 können \CodeStyle{if} (und \CodeStyle{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 if (int a = 7; b > c) {
    c = a;
@@ -1752,7 +1754,7 @@ do {
  
 \section{for()}
 Die For-Schlaufe ist etwas komplizierter, sie besteht aus 3 Teilen:
-	\lstinline{for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)}
+	\CodeStyle{for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)}
 Die Initialisierungsbefehle werden vor Beginn der Schlaufe einmal ausgeführt. Die Schlaufe wird solange ausgeführt wie die Eintrittsbedingung wahr ist, die Prüfung wird zu Beginn der Schlaufe ausgeführt. Die Repetitionsanweisung wird jeweils am Schlaufenende durchgeführt.
 \begin{CCode}
 c = 0;
@@ -1813,11 +1815,11 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 	
 \end{CCode}
 
-Dies funktioniert für Arrays und alle Objekte, welche \lstinline{begin()} und\lstinline{ end()} definiert haben, wobei \lstinline{begin()} und \lstinline{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
+Dies funktioniert für Arrays und alle Objekte, welche \CodeStyle{begin()} und\CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
 
 
 \section{switch()}
-Auswahlanweisung, der Programmfluss wird bei demjenigen \lstinline{case} - Statement weitergeführt, welches mit dem Wert der \lstinline{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \lstinline{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \lstinline{break} oder das Ende der Struktur trifft. Wenn nach einem \lstinline{case} Statement kein \lstinline{break} steht, fährt das Programm mit den Anweisungen des nächsten \lstinline{case} weiter. (Dies sollte jedoch vermieden werden). Falls kein \lstinline{case} zutrifft, wird beim \lstinline{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
+Auswahlanweisung, der Programmfluss wird bei demjenigen \CodeStyle{case} - Statement weitergeführt, welches mit dem Wert der \CodeStyle{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \CodeStyle{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \CodeStyle{break} oder das Ende der Struktur trifft. Wenn nach einem \CodeStyle{case} Statement kein \CodeStyle{break} steht, fährt das Programm mit den Anweisungen des nächsten \CodeStyle{case} weiter. (Dies sollte jedoch vermieden werden). Falls kein \CodeStyle{case} zutrifft, wird beim \CodeStyle{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
 \begin{CCode}
 switch (i) {
   case 1: std::cout << "Eins" << std::endl;
@@ -1831,7 +1833,7 @@ switch (i) {
 }
 \end{CCode}
 
-Seit \Cpp17 können \lstinline{switch} (und \lstinline{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \lstinline{switch}-Statement (resp. \lstinline{if}-Statement) und die dazugehörigen Blöcke beschränkt:
+Seit \Cpp17 können \CodeStyle{switch} (und \CodeStyle{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \CodeStyle{switch}-Statement (resp. \CodeStyle{if}-Statement) und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 switch (int a = 7; b) {
    case 1: c = a;
@@ -1848,9 +1850,9 @@ switch (SomeClass SomeObject = GetTheObject(); SomeObject.Value()) {
 
 
 \section{Funktionen}
-Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \lstinline{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\lstinline{const}).
+Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \CodeStyle{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\CodeStyle{const}).
 
-Mit '\lstinline{return x}' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit '\lstinline{return}' oder '\lstinline{return x}' kann eine Funktion auch vor ihrem Ende verlassen werden.
+Mit '\CodeStyle{return x}' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit '\CodeStyle{return}' oder '\CodeStyle{return x}' kann eine Funktion auch vor ihrem Ende verlassen werden.
 
 
 \begin{CCode}
@@ -1940,7 +1942,7 @@ wird die ganze Funktion samt Code in diesem Fall in der Headerdatei definiert). 
 werden (Soweit möglich) vom Compiler an der Aufrufstelle in den Code eingefügt, und nicht
 aufgerufen. Dies führt zu effizienterem und schnellerem Code, kann dafür mehr
 Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei langen
-Funktionen ist \lstinline{inline} nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
+Funktionen ist \CodeStyle{inline} nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
  
 Wenn Inlinefunktionen über Pointer aufgerufen oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Funktion direkt aufgerufen wird) 
@@ -2020,7 +2022,7 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 
 \subsection{constexpr Funktionen (Seit \Cpp11)}
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \lstinline{constexpr}-Funktionen durften neben der \lstinline{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 
 \subsection{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
 \label{subsec:LambdaFunctions}
@@ -2035,7 +2037,7 @@ Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Fun
 
 \emph{Parameters} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
-\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das \lstinline{return}-Statement definiert oder \lstinline{void} wenn kein \lstinline{return}-Statement vorhanden ist. 
+\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das \CodeStyle{return}-Statement definiert oder \CodeStyle{void} wenn kein \CodeStyle{return}-Statement vorhanden ist. 
 
 \emph{Body} enthält den Code der Funktion.
 
@@ -2068,12 +2070,12 @@ Beispiele
 	);
 \end{CCode}
 Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
-Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \lstinline{auto} oder \lstinline{decltype} die Variablendefinition.
+Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \CodeStyle{auto} oder \CodeStyle{decltype} die Variablendefinition.
 
 \chapter{Überladen von Operatoren}
-\index{Überladen von Operatoren}\OviIndex{Operatoren} ( \lstinline{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \lstinline{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
+\index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \lstinline{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \lstinline{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \lstinline{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. 
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. 
 
 \begin{CCode}
 	class Complex {
@@ -2116,28 +2118,28 @@ Die \OviIndex{Operatoren} ( Binäre: \lstinline{+ - * / \% \& | ^ >> << = < > >= 
 	}
 \end{CCode}
 
-\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (\lstinline{friend}-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, ist zu beachten, dass der erste Operand immer ein Objekt sein muss.
-Der Ausdruck \lstinline{a + b} entspricht somit den Ausdrücken \lstinline{a.operator +(b)} oder \lstinline{operator +(a, b)}, man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
+\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (\CodeStyle{friend}-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, ist zu beachten, dass der erste Operand immer ein Objekt sein muss.
+Der Ausdruck \CodeStyle{a + b} entspricht somit den Ausdrücken \CodeStyle{a.operator +(b)} oder \CodeStyle{operator +(a, b)}, man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
 
 Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
-Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialität. Um Post (\lstinline{i++}) und Pre (\lstinline{++i})
+Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialität. Um Post (\CodeStyle{i++}) und Pre (\CodeStyle{++i})
 auseinanderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 
 {
 	\centering
 	\begin{tabular}{ll}
-		prefix (\lstinline!++i!): &\lstinline!operator++()!\\
-		postfix (\lstinline!i++!):&\lstinline!operator++(int)!\\
-		prefix (\lstinline!--i!): &\lstinline!operator--()!\\
-		postfix (\lstinline!i--!):&\lstinline!operator--(int)!\\
+		prefix (\CodeStyle!++i!): &\CodeStyle!operator++()!\\
+		postfix (\CodeStyle!i++!):&\CodeStyle!operator++(int)!\\
+		prefix (\CodeStyle!--i!): &\CodeStyle!operator--()!\\
+		postfix (\CodeStyle!i--!):&\CodeStyle!operator--(int)!\\
 	\end{tabular}
 	
-	Das \lstinline{int} Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
+	Das \CodeStyle{int} Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
 }   
 
 Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn, wann immer möglich, konstante Referenzen benutzt werden)
 
-Die Operatoren \lstinline{new} und \lstinline{delete} lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale \lstinline{new}/\lstinline{delete}, oder der Operator \lstinline{new}/\lstinline{delete} für eine bestimmte Klasse überladen werden:
+Die Operatoren \CodeStyle{new} und \CodeStyle{delete} lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale \CodeStyle{new}/\CodeStyle{delete}, oder der Operator \CodeStyle{new}/\CodeStyle{delete} für eine bestimmte Klasse überladen werden:
 
 \begin{CCode}
 	class SpecialMemory {
@@ -2175,18 +2177,18 @@ Die Operatoren \lstinline{new} und \lstinline{delete} lassen sich ebenfalls über
 	
 \end{CCode}
 
-Dabei muss beachtet werden, dass sämtliche globalen Varianten von \lstinline{new} für eine Klasse verdeckt werden, sobald auch nur eine Variante
-von \lstinline{new} in dieser Klasse neu definiert wird.
+Dabei muss beachtet werden, dass sämtliche globalen Varianten von \CodeStyle{new} für eine Klasse verdeckt werden, sobald auch nur eine Variante
+von \CodeStyle{new} in dieser Klasse neu definiert wird.
 
 Eine eigene Speicherverwaltung wird üblicherweise nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
 
-Es ist auch möglich, das Placement-\lstinline{new} zu überladen, oder neue Versonen von \lstinline{new} mit anderen Argumentenlisten zu definieren.
+Es ist auch möglich, das Placement-\CodeStyle{new} zu überladen, oder neue Versonen von \CodeStyle{new} mit anderen Argumentenlisten zu definieren.
 \section{Überladbare Operatoren mit veränderter Funktionalität}
-Der Operator \lstinline{->()} ist ein unärer Operator und muss wieder einen Pointer auf ein Objekt zurückliefern, auf welchen erneut \lstinline{->} mit dem original Membernamen angewendet wird (Wobei möglicherweise erneut ein überladener \lstinline{operator ->} zum Zuge kommen kann).
-Die Operatoren \lstinline{&&, ||} und \lstinline{,} verlieren ihre speziellen Auswertungsregeln, es werden immer beide Operanden ausgewertet, so wie bei den restlichen binären Operatoren (Üblicherweise wird bei \lstinline{&&} und \lstinline{||} nur der erste Operand ausgewertet, wenn dadurch das Ergebnis schon klar ist, und beim \lstinline{,} wird üblicherweise der erste Operand zuerst ausgewertet. 
+Der Operator \CodeStyle{->()} ist ein unärer Operator und muss wieder einen Pointer auf ein Objekt zurückliefern, auf welchen erneut \CodeStyle{->} mit dem original Membernamen angewendet wird (Wobei möglicherweise erneut ein überladener \CodeStyle{operator ->} zum Zuge kommen kann).
+Die Operatoren \CodeStyle{&&, ||} und \CodeStyle{,} verlieren ihre speziellen Auswertungsregeln, es werden immer beide Operanden ausgewertet, so wie bei den restlichen binären Operatoren (Üblicherweise wird bei \CodeStyle{&&} und \CodeStyle{||} nur der erste Operand ausgewertet, wenn dadurch das Ergebnis schon klar ist, und beim \CodeStyle{,} wird üblicherweise der erste Operand zuerst ausgewertet. 
 \section{Nicht überladbare Operatoren}
 Die folgenden Operatoren sind grundsätzlich nicht überladbar:
-\lstinline{:: . .* sizeof alignof typeid ?:}
+\CodeStyle{:: . .* sizeof alignof typeid ?:}
 
 
 \section{Benutzerdefinierte Literale (Seit \Cpp11)}
@@ -2194,7 +2196,7 @@ Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \label{subsubsect:BenutzerdefinierteLiterale}
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
 
-Numerische Literale können dabei als Strings, als \lstinline{unsigned long long} oder als \lstinline{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
+Numerische Literale können dabei als Strings, als \CodeStyle{unsigned long long} oder als \CodeStyle{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
 \begin{CCode}
 	// Erhaelt einen String mit der Zeichenkette vor dem Suffix
@@ -2343,7 +2345,7 @@ class MyClass {
 };
 \end{CCode}
 
-Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerweise über die \OviIndex{Initialisiererliste}. Die Initialisiererliste wird durch ein ':' eingeleitet, die Attribute werden mit der Konstruktorsyntax initialisiert (Attributname(Wert1, Wert2, ....) ). Basisklassen und eingebettete Klassen ohne Defaultkonstruktor sowie Referenzen können \emph{nur} über die Initialisiererliste initialisiert werden. Die Elemente in der Initialisiererliste werden in derselben Reihenfolge initialisiert, wie sie in der Klassendeklaration erscheinen, und sollten in der Initialisiererlist auch in dieser Reihenfolge aufgeführt werden.
+Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerweise über die \OviIndex{Initialisiererliste}. Die Initialisiererliste wird durch ein '\CodeStyle{:}' eingeleitet, die Attribute werden mit der Konstruktorsyntax initialisiert (\CodeStyle{Attributname(Wert1, Wert2, ....)} ). Basisklassen und eingebettete Klassen ohne Defaultkonstruktor sowie Referenzen können \emph{nur} über die Initialisiererliste initialisiert werden. Die Elemente in der Initialisiererliste werden in derselben Reihenfolge initialisiert, wie sie in der Klassendeklaration erscheinen, und sollten in der Initialisiererlist auch in dieser Reihenfolge aufgeführt werden.
 
 \begin{CCode}
    MyClass::MyClass(void) : k(13), j(2)
@@ -2359,8 +2361,8 @@ Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerwe
 
 
 Der Compiler kann zum Teil selbst nach Bedarf Konstruktoren aufrufen, um Typen
-ineinander umzuwandeln. Dies kann mit dem Schlüsselwort \OviIndex{explizit} unterdrückt werden.
-Mit explizit definierte Konstruktoren müssen explizit aufgerufen werden. 
+ineinander umzuwandeln. Dies kann mit dem Schlüsselwort \CodeIndex{explizit} unterdrückt werden.
+Mit \CodeStyle{explizit} definierte Konstruktoren müssen explizit aufgerufen werden. 
 \begin{CCode}
 
 class YourClass {
@@ -2460,8 +2462,8 @@ MyClass f2()
 
 \end{CCode}
 
-\subsection{C11 Move-Construktor}
-Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+\subsection{\CppVers{11} Move-Construktor}
+Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
                 MyClass(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
@@ -2470,7 +2472,7 @@ Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueR
 \end{CCode}
 
 \subsection{Zuweisungsoperator}
-In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (operator =()), dieser wird jedesmal aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (*this) zurückliefern. Der Zuweisungsoperator kann
+In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (\CodeStyle{operator =()}), dieser wird jeweils aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (\CodeStyle{*this}) zurückliefern. Der Zuweisungsoperator kann
 für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes gelöscht (Überschrieben) und durch neue Werte ersetzt wird. Der Zuweisungsoperator sollte Fail-Safe sein, d.h. auch wenn Exceptions auftreten, sollte die Zuweisung funktioneren, resp. es sollten gar keine Exceptions auftreten.
 
 \begin{CCode}
@@ -2513,8 +2515,8 @@ a = b;      // Aufruf des Zuweisungsoperators
 
 \end{CCode}
 
-\subsection{C11 Move-Zuweisungsoperator}
-Unter C11 gibt es neu den Movezuweisungsoperator (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+\subsection{\CppVers{11} Move-Zuweisungsoperator}
+Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
                 MyClass & MyClass::operator=(MyClass &&Source);  // Move-Movezuweisungsoperator (&& und kein const)
@@ -2537,7 +2539,7 @@ class MyClass {
 
 \subsection{Umwandlungsoperator}
 \OviIndex{Umwandlungsoperatoren} gehören eigentlich ins Kapitel Operatoren überladen, werden aber hier erwähnt. Wenn ein Objekt in ein anderes umgewandelt werden soll, ist dies entweder mit Konstruktoren oder Umwandlungsoperatoren möglich. Da PODs keine Konstruktoren haben, sind in diesem Fall nur Umwandlungsoperatoren möglich.
-Möchte man eine automatische Umwandlung einer Klasse A in einen int haben, falls ein Objekt dieser Klasse einem int zugewiesen wird, müsste folgender Umwandlungsoperator definiert werden:
+Möchte man eine automatische Umwandlung einer Klasse A in einen \CodeStyle{int} haben, falls ein Objekt dieser Klasse einem \CodeStyle{int} zugewiesen wird, müsste folgender Umwandlungsoperator definiert werden:
 \begin{CCode}
 class A {
    private:
@@ -2565,16 +2567,17 @@ int main(int argc, char *argv[])
 
 Achtung: Umwandlungsoperatoren sollten sehr zurückhaltend eingesetzt werden, da sonst viele inkompatible Zuweisungen plötzlich erlaubt werden, und viele Flüchtigkeitsfehler vom Compiler nicht mehr erkannt werden können.
 Es kann auch vorkommen, dass unerwartete Umwandlungen geschehen und man generell den Überblick über die möglichen Umwandlungen verliert. 
-Deshalb empfiehlt es sich, Umwandlungsoperatoren als explizit zu definieren (Seit \Cpp11 möglich), damit wird der automatische Aufruf unterdrückt.
+Deshalb empfiehlt es sich, Umwandlungsoperatoren als \CodeStyle{explizit} zu definieren (Seit \CppVers{11} möglich), damit wird der automatische Aufruf unterdrückt.
 
-\subsubsection{Explizite Umwandlungsoperatoren (Seit \Cpp11)}
+\subsubsection{Explizite Umwandlungsoperatoren (Seit \CppVers{11})}
 \label{subsubsect:ExpliziteUmwandlungsoperatoren}
-Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
+Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort '\CodeStyle{explizit}' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach \CodeStyle{bool} in Bedingungen bei Kontrollstrukturen und für Argumente für Logische Operatoren gilt als expliziter Einsatz)
 
-\subsection{Vereinfachte Objektkonstruktion (Seit \Cpp11)}
+\subsection{Vereinfachte Objektkonstruktion (Seit \CppVers{11})}
 \label{subsubsect:VereinfachteObjektkonstruktion}
 \index{Vereinfachte Objektkonstruktion}
 Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
+Das Übernehmen der Konstruktoren der Basisklasse ist angebracht, wenn die Konstruktoren der abgeleiteten Klasse direkt die Konstruktoren der Basiskalsse (Mit unveränderter Argumentübergabe) aufrufen. Dies erspart unnötigen Code. 
 
 \begin{CCode}
 class Demo  {
@@ -2605,9 +2608,9 @@ private:
 \end{CCode}
 
 
-\subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen (Seit \Cpp11)}
+\subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen (Seit \CppVers{11})}
 \label{subsubsect:ControlAutoMember}
-Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
+Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, \CodeStyle{new}, ... werden vom Compiler automatisch erzeugt. Zudem findet bei passenden Typen eine automatische Umwandlung statt, wenn keine direkt passende Methode vorhanden ist. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
 
 \begin{CCode}
 class Demo {
@@ -2622,20 +2625,20 @@ class Demo {
 };
 
 \end{CCode}
-Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
+Ohne die beiden letzten \CodeStyle{delete} könnte \CodeStyle{f()} auch mit \CodeStyle{int} aufgerufen werden, \CodeStyle{int} würde in diesem Fall in \CodeStyle{double} umgewandelt werden.
 
 
 \section{Zugriffsrechte}
 In Klassen kann unter \Cpp der Zugriff auf Member (Attribute und Methoden) eingeschränkt werden. Es gibt folgende \OviIndex{Zugriffsrechte}\index{public}\index{protected}\index{private}:
 \paragraph{public:} 
 Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubute vermieden werden (Default bei Strukturen).
-\paragraph{protected:}	Auf dieses Element kann nur von Methoden dieser Klasse und davon abgeleiteten Klassen (sowie von Friendfunktionen) zugegriffen werden. Es wird empfohlen, dieses Zugriffsrecht nur in Ausnahmefällen einzusetzen. Besser private mit Zugriffsmethoden einsetzen.
+\paragraph{protected:}	Auf dieses Element kann nur von Methoden dieser Klasse und davon abgeleiteten Klassen (sowie von Friendfunktionen) zugegriffen werden. Es wird empfohlen, dieses Zugriffsrecht nur in Ausnahmefällen einzusetzen. Besser \CodeStyle{private} mit Zugriffsmethoden einsetzen.
 \paragraph{private:}	Auf dieses Element kann nur von Methoden dieser Klasse (sowie von Friendfunktionen) zugegriffen werden (Default bei Klassen).
 
 Eine Zugriffsberechtigung ist innerhalb der Klassendeklaration für alle nachfolgenden Klassenmember gültig bis eine andere Zugriffsberechtigung eingestellt wird.
 
 \section{Friendfunktionen, Friend Klassen}
-\index{Friendfunktionen}\index{Friend klassen} Möchte man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben, ohne diese Member als public zu definieren, kann diese Funktion oder Klasse als \OviIndex{friend} deklariert werden:
+\index{Friendfunktionen}\index{Friend klassen} Möchte man einer Funktion oder einer Klasse Zugriff auf \CodeStyle{private} oder \CodeStyle{protected} Member erlauben, ohne diese Member als \CodeStyle{public} zu definieren, kann diese Funktion oder Klasse als \CodeIndex{friend} deklariert werden:
 
 \begin{CCode}
 class MyClass {
@@ -2659,12 +2662,12 @@ friend class BigBrother;            // Alle Methoden der Klasse BigBrother
 };
 \end{CCode}
 
-Achtung, die Klasse gibt anderen das Recht auf sie zuzugreifen, und nicht umgekehrt. Die friend Deklaration muss deshalb immer in der betroffenen Klasse stehen. Mit friend kann man den Zugriffsschutz für eine bestimmte Funktion oder Klasse ausschalten. Eine Klasse kann beliebig viele Friends deklarieren.
+Achtung, die Klasse gibt anderen das Recht auf sie zuzugreifen, und nicht umgekehrt. Die \CodeStyle{friend} Deklaration muss deshalb immer in der betroffenen Klasse stehen. Mit \CodeStyle{friend} kann man den Zugriffsschutz für eine bestimmte Funktion oder Klasse ausschalten. Eine Klasse kann beliebig viele Friends deklarieren.
 Man sollte damit aber zurückhaltend umgehen, da damit das Prinzip der Kapselung verletzt wird.
 In einigen Fällen ist es jedoch sinnvoller, ein bestimmtes Element als Friend zu deklarieren
 als eine Menge von Set- und Get-Methoden einzubauen, da mit unnötigen Set- und Get-Methoden
 die Kapselung erst recht durchbrochen wird.
-Achtung, Templates als friend zu deklarieren ist gefährlich, dadurch werden alle aktuellen und zukunftigen, dem Template entsprechenden Funktionen und Methoden Zugriffsberechtigung erhalten.
+Achtung, Templates als \CodeStyle{friend} zu deklarieren ist gefährlich, dadurch werden alle aktuellen und zukünftigen, dem Template entsprechenden Funktionen und Methoden Zugriffsberechtigung erhalten.
 
 \section{Vorwärts Deklarationen} 
 \index{Vorwärts Deklarationen}Wenn man Zeiger oder Referenzen auf Objekte definieren/deklarieren will, muss die Klasse nicht vollständig bekannt sein. Solange man nicht auf Attribute oder Methoden der Klasse zugreift, reicht eine einfache Klassendeklaration der Form
@@ -2678,12 +2681,12 @@ Sobald man auf Member zugreift, muss die Klasse vollständig bekannt sein.
 
 \section{Inline Methoden}
 \index{Inline Methoden} 
-Kurze und oft benutzte Methoden können als \OviIndex{inline} definiert werden. (Üblicherweise
+Kurze und oft benutzte Methoden können als \CodeIndex{inline} definiert werden. (Üblicherweise
 wird die ganze Funktion samt Code in diesem Fall in der Headerdatei innerhalb der Klassendeklaration definiert). Solche Methoden
 werden (Soweit möglich) vom Compiler an der Aufrufstelle in den Code eingefügt, und nicht
 aufgerufen. Dies führt zu effizienterem und schnellerem Code, kann dafür mehr
 Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei langen
-Methoden ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
+Methoden ist \CodeStyle{inline} nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
 
 Wenn Inlinemethoden über Pointer aufgerufen oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Methode direkt aufgerufen wird) 
@@ -2721,11 +2724,11 @@ inline void A::DoSomething()  // Inline Methoden können mit dem Schluesselwort
 
  
 \section{Statische Member}
-\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Sie können somit such aufgerufen werden, ohne dass ein Objekt von dieser Klasse existiert. Auf statische Member wird über den Klassennamen mit dem Scope-Resolutions-Operator ('::') zugegriffen.
+\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Sie können somit such aufgerufen werden, ohne dass ein Objekt von dieser Klasse existiert. Auf statische Member wird über den Klassennamen mit dem Scope-Resolutions-Operator ('\CodeStyle{::}') zugegriffen.
 
 Achtung: Für statische Attribute muss neben der Deklaration in der Klasse explizit eine Variable definiert werden, üblicherweise in der dazugehörigen Implementationsdatei, welche auch den Code für die Methoden dieser Klasse enthält. 
 
-Const static Member vom integer oder enum Typen werden direkt in der Klasse initialisiert und benötigen keine Definition, ausser die Adresse der Variable wird irgendwo verwendet. Mit constexpr können auch andere Typen als konstante Member definiert werden, müssen dabei aber mit konstanten Ausdrücken initialisiert werden. 
+\CodeStyle{const static} Member von \CodeStyle{integer} oder \CodeStyle{enum} Typen werden direkt in der Klasse initialisiert und benötigen keine Definition, ausser die Adresse der Variable wird irgendwo verwendet. Mit \CodeStyle{constexpr} können auch andere Typen als konstante Member definiert werden, müssen dabei aber mit konstanten Ausdrücken initialisiert werden. 
 
 \begin{CCode}
 class A {
@@ -2755,7 +2758,7 @@ int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
 
 
 \section{Der this-Pointer}
-Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) hat implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf dessen Attribute zugreifen.
+Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) hat implizit einen vordefinierten Pointer mit dem Namen \CodeIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf dessen Attribute zugreifen.
 
 \begin{CCode}
 class Auto {
@@ -2787,7 +2790,7 @@ In \Cpp gibt es die Möglichkeit, \OviIndex{Memberpointer} zu verwenden. Das sind
 auf die einzelnen Elemente einer Klasse. Ein Memberpointer enthält in dem Sinne
 eigentlich nicht eine Adresse, sondern mehr ein Offset oder die Identifikation 
 eines Klassenmembers. Ein \OviIndex{Elementzeiger} kann nur für die Klasse verwendet werden, für
-die er definiert wurde. Ein Memberzeiger ist also an eine bestimmte Klasse gebunden.
+die er definiert wurde. Ein Memberzeiger ist somit an eine bestimmte Klasse gebunden.
 \begin{CCode}
 class Demo {
    public:
@@ -2850,12 +2853,12 @@ int TotalReserviert = DoSummation(Data, 10, &Demo::Reserviert);
  
 \end{CCode}
 Wie schon bei den 'normalen' Funktionszeigern wird dringend der Gebrauch von
-typedef empfohlen, um den Code lesbarer zu halten. 
+\CodeStyle{typedef} empfohlen, um den Code lesbarer zu halten. 
 
 \section{Erzeugen von Objekten}
 Unter \Cpp werden Objekte wie gewöhnliche Variablen erzeugt. Ein Objekt ist somit nichts anders als eine Variable vom Typ seiner Klasse. Beim Erzeugen eines Objektes wird jeweils der passende Konstruktor aufgerufen.
 
-Eine int Variable kann wie folgt erzeugt werden:
+Eine \CodeStyle{int} Variable kann wie folgt erzeugt werden:
 
 \begin{CCode}
   int i;       // Erzeugen einer Integervariablen mit dem Namen i
@@ -2885,10 +2888,10 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 
 \end{CCode}
 
-Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit new erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
-Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp. des Programms. 
+Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit \CodeStyle{new} erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
+Globale Objekte werden vor Aufruf von\CodeStyle{ main()} erzeugt, auch deren Konstruktor wird vor dem Start von \CodeStyle{main()} aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von \CodeStyle{main()} resp. des Programms. 
 
-Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit \CodeStyle{delete} wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 \begin{CCode}
 
   #include <memory>  // definiton von unique_ptr
@@ -2993,7 +2996,7 @@ Beispiel:
 \end{CCode}
 
 \section{Placement new}
-Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objekes in einem vorgegebenen Speicherplatz, der Speicher wird vom Anwender zur Verfügung gestellt, und nicht vom System. Dafür darf auf ein solchermassen erzeugtes Objekt auf keinen Fall delete aufgerufen werden. Hier ist einer der wenigen Fälle, wo der Destruktor explizit aufgerufen werden darf und muss.
+Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objektes in einem vorgegebenen Speicherplatz, der Speicher wird vom Anwender zur Verfügung gestellt, und nicht vom System. Dafür darf auf ein solchermassen erzeugtes Objekt auf keinen Fall \CodeStyle{delete} aufgerufen werden. Hier ist einer der wenigen Fälle, wo der Destruktor explizit aufgerufen werden darf und muss.
 
 \begin{CCode}
 
@@ -3108,7 +3111,7 @@ Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden,
 
 Bei der \OviIndex{Vererbung} übernimmt die neue Klasse zuerst einmal alle Attribute und Methoden der bereits bestehenden Klasse, und fügt eventuell neue Attribute und Methoden hinzu, oder ändert die geerbten Methoden ab (Überschreibt Sie).
 
-Wenn eine Klasse von einer bestehenden Klasse (Basisklasse) erben soll, wird nach dem Klassennamen ein Doppelpunk gesetzt, anschliessend folgt ein Zugriffspefizierer und danach der Namen der Basisklasse. Der Zugriffsspezifizierer legt die Zugriffsrechte für die Basisklasse fest, genau so wie wenn sie ein Attribut der neuen Klasse wäre. Normalerweise wird hier public verwendet, da sonst Probleme mit \OviIndex{Polymorphismus} auftreten. (Die Methoden der Basisklasse sind via abgeleitete Klasse nicht zugänglich)
+Wenn eine Klasse von einer bestehenden Klasse (Basisklasse) erben soll, wird nach dem Klassennamen ein Doppelpunk gesetzt, anschliessend folgt ein Zugriffspefizierer und danach der Namen der Basisklasse. Der Zugriffsspezifizierer legt die Zugriffsrechte für die Basisklasse fest, genau so wie wenn sie ein Attribut der neuen Klasse wäre. Normalerweise wird hier \CodeStyle{public} verwendet, da sonst Probleme mit \OviIndex{Polymorphismus} auftreten. (Die Methoden der Basisklasse sind via abgeleitete Klasse nicht zugänglich)
 
 Unter \Cpp sieht eine \OviIndex{Vererbung} wie folgt aus:
 
@@ -3215,7 +3218,7 @@ In Bild \ref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu
 	\label{fig:Mehrfachvererbung}
 \end{figure}
 
-Einerseits ist mit D::y nicht klar, ob jetzt das y aus B oder das y aus C gemeint ist. Aber noch viel schwerwiegender ist, dass das Element x aus der Klasse A in D effektiv doppelt vorhanden ist (Also auch \emph{zwei} Speicherplätze belegt). Und je nach Zugriff auf D wird einmal das x von der B-Seite, und einmal dasjenige von der C-Seite benutzt. 
+Einerseits ist mit \CodeStyle{D::y} nicht klar, ob jetzt das y aus B oder das y aus C gemeint ist. Aber noch viel schwerwiegender ist, dass das Element x aus der Klasse A in D effektiv doppelt vorhanden ist (Also auch \emph{zwei} Speicherplätze belegt). Und je nach Zugriff auf D wird einmal das x von der B-Seite, und einmal dasjenige von der C-Seite benutzt. 
 
 \begin{CCode}
 class A {
@@ -3305,10 +3308,10 @@ cout << d.C::A::x; // gibt 5 aus
 
 \section{Polymorphismus (Virtuelle Funktionen)}
 \label{subsec:VirtualFunctions}
-Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \OviIndex{virtual}, aber nicht bei der Definition (Implementation).
+Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \CodeIndex{virtual}, aber nicht bei der Definition (Implementation).
 \emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil ansonsten unter Umständen der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht derjenige der Basisklasse benutzt werden.
 
-Wenn es keinen Sinn macht, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit = 0 in der Deklaration: 'virtual void f(void) = 0'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen.
+Wenn es unsinnig ist, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit\CodeStyle{ = 0} in der Deklaration: '\CodeStyle{virtual void f(void) = 0}'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen, entsprechend besteht meistens auch kein Bedarf für diese Funktion. (Ausser sie würde von einer abgeleiteten Klasse direkt aufgerufen.)
 \NextPagePlease
 \paragraph{MyClass.hpp} (Klassendeklaration)
 \begin{CCode}
@@ -3409,9 +3412,9 @@ int main (int argc, char *argv[])
 \subsection{Kontrolliertes Überschreiben von Funktionen (seit \Cpp11)}
 \label{subsubsect:KontrolliertesUeberschreiben}
 
-Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
+Mit den Bezeichnern \index{override}{\CodeStyle{override}} und \index{final}\CodeStyle{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürfen weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
 
-Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
+Methoden mit dem Bezeichner \CodeStyle{override} müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner \CodeStyle{final} dürfen von keiner abgeleiteten Klasse überschrieben werden.
 
 \begin{CCode}
 class Basisklasse {
@@ -3537,22 +3540,23 @@ class Abgeleitet : Basisklasse {
  
 
 \chapter{Ausnahmebehandlung (Exceptions)}
+%\index{throw}\index{try}\index{catch}
 Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
 
-Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit throw() eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
+Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit \CodeStyle{throw()} eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
-Mit \OviIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch int, char, ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
-Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler catch(...) fängt jede beliebige Exception. Nach jedem \OviIndex{try}-Block folgt eine Liste von Handlern (catch()). Die Handler werden in der Reihenfolge ihrer Definition durchsucht, der erste passende Handler wird benutzt, und alle weiteren Handler
-dieser Liste ignoriert, auch wenn einer noch besser passen würde. Somit werden alle Handler nach \OviIndex{catch}(...) ignoriert. 
+Mit \CodeIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch \CodeStyle{int, char,} ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
+Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler \CodeStyle{catch(...)} fängt jede beliebige Exception. Nach jedem \CodeIndex{try}-Block folgt eine Liste von Handlern (\CodeIndex{catch()}). Die Handler werden in der Reihenfolge ihrer Definition durchsucht, der erste passende Handler wird benutzt, und alle weiteren Handler
+dieser Liste ignoriert, auch wenn einer noch besser passen würde. Somit werden alle Handler nach \CodeStyle{catch(...)} ignoriert. 
 
-Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort throw() verwendet. Im throw Statement werden alle Exceptions aufgeführt, welche
-von der Funktion ausgelöst werden können. Ein fehlendes throw() Statement bedeutet, dass diese
-Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres throw() bedeutet, dass die
+Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort \CodeStyle{throw()} verwendet. Im \CodeStyle{throw} Statement werden alle Exceptions aufgeführt, welche
+von der Funktion ausgelöst werden können. Ein fehlendes \CodeStyle{throw()} Statement bedeutet, dass diese
+Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres\CodeStyle{ throw()} bedeutet, dass die
 Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
-Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden try/catch Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
+Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden \CodeStyle{try}/\CodeStyle{catch} Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
-Seit \Cpp11 sollte noexcept(true) oder noexcept anstelle von throw() verwendet werden, um anzuzeigen dass eine Funktion keine Exception werfen kann. (Wenn sie es dennoch tut, wird nach wie vor das Programm sofort mit terminate() beendet). 
+Seit \CppVers{11} sollte \CodeStyle{noexcept(true)} oder \CodeStyle{noexcept} anstelle von \CodeStyle{throw()} verwendet werden, um anzuzeigen dass eine Funktion keine Exception werfen kann. (Wenn sie es dennoch tut, wird nach wie vor das Programm sofort mit \CodeStyle{terminate()} beendet). 
 
 Beispiel:
 \begin{CCode}
@@ -3665,11 +3669,11 @@ catch (DivideByZerroErrorClass &e) {
 
 \end{CCode}
 
-Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (new) ist der Benutzer hingegen selbst zuständig (Durch entsprechende catch throw Anweisungen).
+Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (\CodeStyle{new}) ist der Benutzer hingegen selbst zuständig (Durch entsprechende \CodeStyle{catch throw} Anweisungen).
 
 Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
-Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit new), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen (Oder Smart/Unique/Shared Pointer nutzen). Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit throw() einfach erneut geworfen:
+Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit \CodeStyle{new}), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen (Oder Smart/Unique/Shared Pointer nutzen). Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit \CodeStyle{throw()} einfach erneut geworfen:
 
 \begin{CCode}
 void f(int y) {
@@ -3703,9 +3707,9 @@ void f(int y) {
 \index{RTTI}
 \index{run-time type information}
 \index{Laufzeit Typinformation}
-Mit dem Operator \OviIndex{typeid}() ist es möglich, zur Laufzeit Informationen
-über den Typ eines Objektes zu erhalten. Der Operator typeid liefert eine Referenz auf ein Objekt der Klasse \OviIndex{type\_info}, welche in \mbox{<typeinfo>} deklariert ist.
-Type\_info-Objekte können nicht kopiert werden, es kann höchstens
+Mit dem Operator \CodeStyle{typeid()} ist es möglich, zur Laufzeit Informationen
+über den Typ eines Objektes zu erhalten. Der Operator \CodeIndex{typeid} liefert eine Referenz auf ein Objekt der Klasse \CodeStyle{type_info}\index{type\_info}, welche in \mbox{<typeinfo>} deklariert ist.
+\CodeStyle{type_info}-Objekte können nicht kopiert werden, es kann höchstens
 ihre Adresse in einem Zeiger abgespeichert werden. Man muss aber beachten, dass für denselben Typen durchaus mehrere Objekte im System existieren können. 
 Man muss also immer die Objekte direkt miteinander vergleichen, nie
 ihre Adressen. Ein sinnvoller Einsatz ist vorallem bei Vererbung und
@@ -3724,10 +3728,10 @@ void f(A *p) {
 }
 \end{CCode}
 
-In diesem type\_info-Objekt sind alle verfügbaren Informationen über die betroffene
-Klasse abgelegt. Im System gibt es für jeden Datentyp und jede Klasse (Auch Benutzerdefinierte) ein (oder mehrere) entsprechende type\_info-Objekte.  
+In diesem \CodeStyle{type_info}-Objekt sind alle verfügbaren Informationen über die betroffene
+Klasse abgelegt. Im System gibt es für jeden Datentyp und jede Klasse (Auch Benutzerdefinierte) ein (oder mehrere) entsprechende \CodeStyle{type_info}-Objekte.  
 
-Der implementierungsunabhängige Teil der Klasse type\_info sieht wie folgt aus.
+Der implementierungsunabhängige Teil der Klasse \CodeStyle{type_info} sieht wie folgt aus.
 \begin{CCode}
 class type_info 
    {
@@ -3753,7 +3757,7 @@ class type_info
    };
 \end{CCode}
  
-Zu Debug- und Testzwecken ist vorallem die Methode name() interessant.
+Zu Debug- und Testzwecken ist vorallem die Methode \CodeStyle{name()} interessant.
 Was genau die Funktion zurückliefert ist implementationsabhängig,
 aber es muss in jedem Fall ein String sein, und man darf erwarten
 das er in irgendeiner Form den Typen des betroffenen Objektes
@@ -3769,27 +3773,27 @@ void f(A *p) {
    ...
 }
 \end{CCode}
-Man sollte aber typeid nicht dazu verwenden, objektabhängigen
+Man sollte aber \CodeStyle{typeid} nicht dazu verwenden, objektabhängigen
 Code zu erzeugen, dazu sind die virtuellen Funktionen da. In gewissen
-speziellen Notfällen ist es manchmal notwendig, auf typeid
+speziellen Notfällen ist es gelegentlich notwendig, auf \CodeStyle{typeid}
 zurückzugreifen.
 
 \chapter{Typumwandlungen (Casts)}
 In \Cpp gibt es mehrere Möglichkeiten, um Typen ineinander umzuwandeln. Einerseits
-der aus C 'geerbte' \OviIndex{Castoperator} (Z. B. (int) ), der aber nicht mehr benutzt
-werden sollte, andererseits die neuen, flexibleren Castoperatoren dynamic\_cast<>(), static\_cast<>(), const\_cast<>() und reinterpret\_cast<>(). 
+der aus C 'geerbte' \OviIndex{Castoperator} (Z. B.\CodeStyle{ (int)} ), der aber nicht mehr benutzt
+werden sollte, andererseits die neuen, flexibleren Castoperatoren \CodeStyle{dynamic_cast<>(), static_cast<>(), const_cast<>()} und \CodeStyle{reinterpret_cast<>()}. 
 
 \paragraph*{cast type() und (type)}
-Mit dem Castoperator kann wie mit dem aus C bekannten (cast) eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht entweder aus einem Typnamen in Klammern, gefolgt von einem umzuwandelnden Ausdruck, oder einem Typnamen gefolgt von dem umzuwandelnden Ausdruck in Klammern (Funktionsaufrufsyntax).
+Mit dem Castoperator kann wie mit dem aus C bekannten \CodeStyle{(cast)} eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht entweder aus einem Typnamen in Klammern, gefolgt von einem umzuwandelnden Ausdruck, oder einem Typnamen gefolgt von dem umzuwandelnden Ausdruck in Klammern (Funktionsaufrufsyntax).
 
 Wann immer ein C-Style-Cast auftritt, versucht der Compiler casts in der folgenden Priorität durchzuführen:
  
 \begin{itemize}
-	 \item const\_cast<new\_type>(expression);
-\item static\_cast<new\_type>(expression), mit Erweiterungen: Zeiger oder Referenzen auf eine abgeleitete Klasse dürfen zusätzlich in einen Zeiger oder eine Referenz zu einer eindeutigen Basisklasse umgewandelt werden (Und umgekehrt), auch wenn die Basisklasse nicht zugreifbar ist (Somit wird der private Spezifizierer bei der Vererbung ignoriert). Dasselbe gilt für Memberpointer und memberpointer auf nichtvirtuelle Basisklassen.
-\item static\_cast ( mit Erweiterungen) gefolgt von const\_cast;
-\item  reinterpret\_cast<new\_type>(expression);
-\item  reinterpret\_cast gefolgt von const\_cast.
+	 \item \CodeStyle{const_cast<new_type>(expression);}
+\item \CodeStyle{static_cast<new_type>(expression)}, mit Erweiterungen: Zeiger oder Referenzen auf eine abgeleitete Klasse dürfen zusätzlich in einen Zeiger oder eine Referenz zu einer eindeutigen Basisklasse umgewandelt werden (Und umgekehrt), auch wenn die Basisklasse nicht zugreifbar ist (Somit wird der private Spezifizierer bei der Vererbung ignoriert). Dasselbe gilt für Memberpointer und Memberpointer auf nichtvirtuelle Basisklassen.
+\item \CodeStyle{static_cast} ( mit Erweiterungen) gefolgt von \CodeStyle{const_cast};
+\item  \CodeStyle{reinterpret_cast<new_type>(expression)};
+\item  \CodeStyle{reinterpret_cast} gefolgt von \CodeStyle{const_cast}.
 \end{itemize}
 Dabei wird die erste mögliche Variante ausgewählt.
 
@@ -3816,9 +3820,9 @@ dp = (D*)   cdp; // OK, Zeiger const darf weggecastet werden
 dp = (D*)    a;  // OK, aber vermutlich sinnlos, wandelt int in Adresse um
 \end{CCode}
 
-\paragraph*{reinterpret\_cast<>()}
-Mit dem Castoperator \OviIndex{reinterpret\_cast<>()} kann wie mit dem aus C bekannten (cast) eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht aus dem Schlüsselwort reinterpret\_cast und einem in spitzen Klammern eingeschlossenen gültigen Datentyp. Der reinterpret\_cast<>() wird wie ein Funktionsaufruf benutzt und hat eine entsprechend hohe Priorität. Bei der Umwandlung wird versucht, denn Wert
-der Daten soweit wie möglich zu erhalten, was aber oft nicht möglich ist, wenn ein grösserer Datentyp in einen kleineren gezwängt wird. Grundsätzlich kann aber mit dem reinterpret\_cast<>() jeder skalare Typ (Zeiger und arithmetische Typen) in jeden anderen skalaren Typen umgewandelt werden. Verboten sind entfernen von const oder volatile, sowie Umwandlungen von Fliesskommatypen nach Zeigern und umgekehrt. implementationsabhängig ist die Umwandlung von Funktionszeiger auf andere Zeiger und umgekehrt. 
+\paragraph*{\CodeStyle{reinterpret_cast<>()}}
+Mit dem Castoperator \CodeStyle{reinterpret_cast<>()}\index{reinterpret\_cast<>()} kann wie mit dem aus C bekannten \CodeStyle{(cast)} eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht aus dem Schlüsselwort \CodeStyle{reinterpret_cast} und einem in spitzen Klammern eingeschlossenen gültigen Datentyp. Der \CodeStyle{reinterpret_cast<>()} wird wie ein Funktionsaufruf benutzt und hat eine entsprechend hohe Priorität. Bei der Umwandlung wird versucht, denn Wert
+der Daten soweit wie möglich zu erhalten, was aber oft nicht möglich ist, wenn ein grösserer Datentyp in einen kleineren gezwängt wird. Grundsätzlich kann aber mit dem \CodeStyle{reinterpret_cast<>()} jeder skalare Typ (Zeiger und arithmetische Typen) in jeden anderen skalaren Typen umgewandelt werden. Verboten sind entfernen von \CodeStyle{const} oder \CodeStyle{volatile}, sowie Umwandlungen von Fliesskommatypen nach Zeigern und umgekehrt. Implementationsabhängig ist die Umwandlung von Funktionszeiger auf andere Zeiger und umgekehrt. 
 \begin{CCode}
 class D {...};
 
@@ -3842,8 +3846,8 @@ dp = reinterpret_cast<D*>(a);     // OK, aber vermutlich sinnlos, wandelt int in
 
 \end{CCode}
 
-\paragraph*{static\_cast<>()}Mit dem Castoperator \OviIndex{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie int und float, oder zwischen verschiedenen Zeigertypen. Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt ist nicht möglich, und const kann ebenfalls nicht weggecastet werden. Diese Variante ist sicherer, und
-dem reinterpret\_cast<>() wann immer möglich vorzuziehen.
+\paragraph*{\CodeStyle{static_cast<>()}}Mit dem Castoperator \CodeStyle{static_cast<>()}\index{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie \CodeStyle{int} und \CodeStyle{float}, oder zwischen verschiedenen Zeigertypen. Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt ist nicht möglich, und \CodeStyle{const} kann ebenfalls nicht weggecastet werden. Diese Variante ist sicherer, und
+dem \CodeStyle{reinterpret_cast<>()} wann immer möglich vorzuziehen.
 \begin{CCode}
 class D {...};
 
@@ -3863,7 +3867,7 @@ dp = static_cast<D*>(cdp);    // Fehler, const darf nicht entfernt werden
 dp = reinterpret_cast<D*>(a); // Fehler, Numerisch nach Zeiger ist nicht moeglich
 \end{CCode}
 
-\paragraph*{const\_cast<>()}Mit dem \OviIndex{Castoperator const\_cast<>()} kann die Konstantheit (const) und die Volatilität (volatile) entfernt werden. Weitergehende Umwandlungen sind nicht möglich.
+\paragraph*{const\_cast<>()}Mit dem \CodeStyle{Castoperator const_cast<>()}\index{Castoperator const\_cast<>()} kann die Konstantheit (\CodeStyle{const}) und die Volatilität (\CodeStyle{volatile}) entfernt werden. Weitergehende Umwandlungen sind nicht möglich.
 \begin{CCode}
 class D {...};
 
@@ -3881,7 +3885,7 @@ f  = const_cast<float>(cf);   // OK, nur const entfernt
 dp = const_cast<D*>(cdp);     // OK, nur const entfernt
 \end{CCode}
 
-\paragraph*{dynamic\_cast<>()}Mit dem Castoperator \OviIndex{dynamic\_cast<>()} können Zeiger und Referenzen auf Objekte innerhalb der Vererbungshierarchie ineinander umgewandelt werden. Dabei wird aber zu Laufzeit geprüft, ab das betroffene Objekt zum neuen Typ passt, sonst wird eine Exception geworfen (Referenzen) oder ein Nullzeiger geliefert (Zeiger). Das heisst für eine erfolgreiche Umwandlung muss das betroffene Objekt tatsächlich der gewünschten Klasse angehören, oder davon abgeleitet sein. const kann nicht weggecastet werden.
+\paragraph*{\CodeStyle{dynamic_cast<>()}}Mit dem Castoperator \CodeStyle{dynamic_cast<>()}\index{dynamic\_cast<>()} können Zeiger und Referenzen auf Objekte innerhalb der Vererbungshierarchie ineinander umgewandelt werden. Dabei wird aber zu Laufzeit geprüft, ab das betroffene Objekt zum neuen Typ passt, sonst wird eine Exception geworfen (Referenzen) oder ein Nullzeiger geliefert (Zeiger). Das heisst für eine erfolgreiche Umwandlung muss das betroffene Objekt tatsächlich der gewünschten Klasse angehören, oder davon abgeleitet sein. \CodeStyle{const} kann nicht weggecastet werden.
 \begin{CCode}
 class Y {...};
 class A {...};
@@ -3916,11 +3920,11 @@ pc = dynamic_cast<C *>(py); // Runtime-Fehler, py zeigt auf nichts C-aehnliches
                             // pc wird auf NULL gesetzt
 \end{CCode}
 
-dynamic\_cast<>() setzt Polymorphismus voraus, d.h. mindestens eine Funktion
+\CodeStyle{dynamic_cast<>()} setzt Polymorphismus voraus, d.h. mindestens eine Funktion
 von beiden beteiligten Klassen muss virtuell sein.
  
 \chapter{Namensbereiche (Namespaces)}
-\OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit kann man eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
+\OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit lässt sich eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
 
 Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
 
@@ -3961,7 +3965,7 @@ graphic::print();   // print aus graphic wird benutzt
 print();            // Illegal, unklar welches print gemeint ist
 \end{CCode}
 
-Wenn man nicht jedes mal den Namensbereich angeben will, kann die using Direktive verwendet werden:
+Wenn man nicht jedes mal den Namensbereich angeben will, kann die \CodeStyle{using} Direktive verwendet werden:
 \begin{CCode}
 using graphic::print;  // Benutze print aus graphic wenn nichts anderes gesagt wird
 
@@ -3970,12 +3974,12 @@ network::print();      // print aus network wird benutzt
 \end{CCode}
 
  
-Um alle Funktionen eines Namensbereichs sichtbar zu machen, verwendet man folgendes using:
+Um alle Funktionen eines Namensbereichs sichtbar zu machen, verwendet man folgendes \CodeStyle{using}:
 \begin{CCode}
 using namespace graphic;
 \end{CCode}
 Achtung, dadurch geht die ganze Trennung verloren und der Vorteil der Namespaces verschwindet.
-In den Standardbibliotheken sind alle Member im Namensbereich std definiert, also muss man ohne using-Direktive 
+In den Standardbibliotheken sind alle Member im Namensbereich \CodeStyle{std} definiert, also muss man ohne \CodeStyle{using}-Direktive 
 \begin{CCode}
 std::cout << "Hallo" << std::endl; 
 \end{CCode}
@@ -3998,7 +4002,7 @@ BernerFachhochschule::Print();
 Es können auch \OviIndex{anonyme Namensbereiche} definiert werden, alle in
 einem anonymen Namensbereich definierten Elemente sind nur
 innerhalb der definierenden Übersetzungseinheit (Source-Datei)
-verfügbar. Dies entspricht in etwa dem Prinzip von static in C.   
+verfügbar. Dies entspricht in etwa dem Prinzip von \CodeStyle{static} in C.   
 
 \begin{CCode}
 
@@ -4012,10 +4016,10 @@ namespace {
 
 \end{CCode}
  
- \chapter{constexpr (Seit \Cpp11)}
+ \chapter{constexpr (Seit \CppVers{11})}
  \label{subsubsect:constexpr}
- Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
- Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser try, goto, asm, label und static oder uninitialisierte Variablen benutzt werden.).
+ Mit dem Schlüsselwort \CodeIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
+ Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.).
  
  Beispiel
  \begin{CCode}
@@ -4039,9 +4043,9 @@ namespace {
  	constexpr double MondAnziehung = Erdanziehung / 6.0;
  \end{CCode}
  
- Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+ Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
  
- Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+ Mit \CodeStyle{constexpr} kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
  
 
 \chapter{Templates (Schablonen)}
@@ -4052,7 +4056,7 @@ sehr komplexe, verallgemeinerte und typunabhängige Programmierung erlaubt. Mit T
 Der Benutzer eines Templates kann selbst angeben, für welchen Datentyp das Template Code erzeugen soll, er kann dabei auch Datentypen angeben, die bei der Erstellung eines Templates nicht bekannt waren.
 Es können \OviIndex{Funktionstemplate} und \OviIndex{Klassentemplates} erzeugt werden. Achtung, Templates werden normalerweise vollständig in einer Headerdatei definiert, welche vom Anwender des Templates mittels \#include eingebunden werden muss.
 
-In diesem Kapitel werden Templates nur kurz vorgestellt, eine umfassende Beschreibung von Templates kann in entsprechender Fachliteratur nachgeschlagen werden. Wer schon mal einen Blick in einen der Standardheader der STL (Z. B. vector) geworfen hat, weiss das Template-Programmierung sehr schnell zu schwer nachvollziehbarem Code führt. (Die Anwendung dagegen ist meist sehr einfach). Template-Parameter und Template-Spezialisierungen werden hier nur am Rande gestreift.
+In diesem Kapitel werden Templates nur kurz vorgestellt, eine umfassende Beschreibung von Templates kann in entsprechender Fachliteratur nachgeschlagen werden. Wer schon mal einen Blick in einen der Standardheader der STL (Z. B. \CodeStyle{vector}) geworfen hat, weiss das Template-Programmierung sehr schnell zu schwer nachvollziehbarem Code führt. (Die Anwendung dagegen ist meist sehr einfach). Template-Parameter und Template-Spezialisierungen werden hier nur am Rande gestreift.
 
 \section{Funktionstemplates}
 Mit dem nachfolgenden Template wird eine generische Funktion zur
@@ -4110,7 +4114,7 @@ long y;
 
 x = Maximum (x, y);  // Compiler erkennt selbst, dass hier long verwendet werden soll
 \end{CCode}
-Anstelle des Schlüsselwortes class kann übrigens auch das Schlüsselwort \OviIndex{typename} verwendet werden.
+Anstelle des Schlüsselwortes \CodeStyle{class} kann übrigens auch das Schlüsselwort \CodeIndex{typename} verwendet werden.
 
 \subsection{\"Uberladen von Funktionstemplates}
 Das Funktionstemplate Maximum aus dem vorherigen Kapitel kann noch
@@ -4133,7 +4137,7 @@ T *Maximum (T *a, T *b)  // gilt fuer alle Zeiger
 \end{CCode}
 Dieses Template wird jetzt immer aufgerufen, wenn zwei Zeiger
 miteinander verglichen werden sollen. Natürlich gibt es immer noch ein
-Problem, wenn Doppelzeiger (T**) oder Mehrfachzeiger (T**...**) im Spiel sind, dann müsste dieses Spiel weitergetrieben werden.
+Problem, wenn Doppelzeiger (\CodeStyle{T**}) oder Mehrfachzeiger (\CodeStyle{T**...**}) im Spiel sind, dann müsste dieses Spiel weitergetrieben werden.
 Oder man kann das ganze elegant mit rekursivem Templateeinsatz erledigen. Das Nachfolgende Template kann für beliebig verschachtelte Pointer benutzt werden
 da es sich selbst rekursiv benutzt. Diese Anwendung ist sicher nicht sinnvoll,
 soll aber das Prinzip zeigen. 
@@ -4150,7 +4154,7 @@ T *Maximum(T *a, T *b)  // gilt fuer alle Zeiger
    return Resultat;
 }
 \end{CCode}
-Für Strings (char *) ist eine weitere \"Uberladung erforderlich.
+Für Strings (\CodeStyle{char *}) ist eine weitere \"Uberladung erforderlich.
 \begin{CCode}
 const char* Maximum(const char *a, const char *b)  // gilt fuer alle Strings
 {
@@ -4204,12 +4208,12 @@ Benutzung des Templates
    cdb = cda + cdb;
 \end{CCode}
 
-Falls die Klasse Complex auch den > operator definiert hätte, könnte das Maximum Template auch auf Complex Template Objekte angewendet werden:
+Falls die Klasse Complex auch den > Operator definiert hätte, könnte das Maximum Template auch auf Complex Template Objekte angewendet werden:
 \begin{CCode}
 cb = Maximum< Complex<int>  > (ca, cb);
 \end{CCode}
 
-(Vor \Cpp11 muss  den beiden > > achten, sonst wäre es der Schiebeoperator !)
+(Vor \CppVers{11} muss zwischen den beiden \CodeStyle{> >} ein Leerzeichen stehen, sonst wäre es der Schiebeoperator !)
 
 
 Es sind auch Templates mit mehreren verschiedenen Typen möglich:
@@ -4229,7 +4233,7 @@ class SpeziellKomplizierteKlasse {
 
 \subsection{Parametrisierung von Templates mit Konstanten}
 Templates können in ihrer Parameterliste auch konstante
-Werte (int, float, Adressen, ...) enthalten, welche 
+Werte (\CodeStyle{int, float}, Adressen, ...) enthalten, welche 
 innerhalb des Templates benutzt werden können.
 (Z. B. Arraygrenzen, Adressen von Funktionen, Hardwareadressen,
  Abbruchkriterium für Iterationen)
@@ -4246,10 +4250,10 @@ class SpeziellKomplizierteKlasse {
 \end{CCode}
 
 
-\subsection{Automatische Parametererkennung (Seit \Cpp17)}
+\subsection{Automatische Parametererkennung (Seit \CppVers{17})}
 \index{Automatische Templateparametererkennung}
 \label{subsection:AutomatischeTemplateparametererkennung}
-Seit \Cpp17 erkennt der Compiler beim Konstruktoraufruf 
+Seit \CppVers{17} erkennt der Compiler beim Konstruktoraufruf 
 wie bei Funktionstemplate automatisch für welche Parameter das Template zu instantiiern ist,
 vorausgesetzt es ist eine eindeutige Zuordnung möglich.
 
@@ -4340,7 +4344,7 @@ erfolgen.
 \subsection{Komplette Spezialisierung von Templates}
 Bei der \OviIndex{kompletten Spezialisierung} wird das Template 
 für einen ganz bestimmten Datentypen spezialisiert,
-zum Bespiel fuer den Fall das Komplex mit int
+zum Bespiel für den Fall das Komplex mit \CodeStyle{int}
 erzeugt wird, und wir besonders schnelle Algorithmen
 für diesen Fall kennen und auch anwenden wollen:
 
@@ -4432,10 +4436,10 @@ Partielle Spezialisierungen werden im allgemeinen erst bei komplexeren
 Anwendung zur Verhinderung von Codeduplikation benutzt. So kann jede
 Liste aus Zeigern gleich behandelt werden, es muss nicht für jeden
 Zeigertyp neuer Code erzeugt werden. Dies lässt sich durch eine
-komplette Spezialisierung mit void-Zeiger, und partieller Spezialisierung für
+komplette Spezialisierung mit \CodeStyle{void}-Zeiger, und partieller Spezialisierung für
 alle anderen Zeigern erreichen, wobei die partielle Spezialisierung
-auf die void-Spezialisierung zurückgreift. Damit wird nur Code 
-für die void-Variante erzeugt. Sonst würde für jeden neuen Zeigertyp
+auf die \CodeStyle{void}-Spezialisierung zurückgreift. Damit wird nur Code 
+für die \CodeStyle{void}-Variante erzeugt. Sonst würde für jeden neuen Zeigertyp
 erneut Code produziert.
 
 Bei der Instantiierung eines Templates wird immer die am meisten
@@ -4535,7 +4539,7 @@ Um innerhalb von Templateklassen Friend-Funktionen zu definieren gibt es drei Va
 \subsubsection{Offen}
 
 Man definiert einfach eine Templatefunktion als Friend. Der Nachteil dieser Variante ist dass hier alle 
-möglichen Templatevarianten als friend anerkannt werden. Ein bösartiger Proegrammierer
+möglichen Templatevarianten als \CodeStyle{friend} anerkannt werden. Ein bösartiger Proegrammierer
 könnte durch eigene Instanzen der Friendfunktion Zugriff auf Internas von Demo1-Instanzen erhalten.
 
 
@@ -4559,7 +4563,7 @@ std::ostream& operator<<( std::ostream& o, const Demo1<T>& ) {
 
 \subsubsection{Geschlossen mit Inlining}
 
-Die Friendfunktion wird gleich inline definiert und ist selbst kein Template. Diese
+Die Friendfunktion wird gleich \CodeStyle{inline} definiert und ist selbst kein Template. Diese
 Funktion wird aber bei jeder neuen Instanzierung des Template Demo2 ebenfalls neu
 mit den passenden Typen erzeugt und sie hat nur Zugriff auf ihre Instanz.
 
@@ -4632,7 +4636,7 @@ namespace hacker {
 }
 \end{CCode}
 
-\section{Template mit variabler Argumentenanzahl (Seit \Cpp11)}
+\section{Template mit variabler Argumentenanzahl (Seit \CppVers{11})}
 \label{subsubsect:TemplateVarArg}
 
 Neu können Templates Variable Argumentenlisten haben.
@@ -4650,9 +4654,9 @@ Ein einfaches Beispiel:
 		
 	};
 \end{CCode}
-Mit typename... P oder class... P wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit ... abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
+Mit \CodeStyle{typename... P} oder \CodeStyle{class... P} wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit \CodeStyle{...} abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
 Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
-Der Operator sizeof...(P) liefert die Anzahl Elemente im Pack als konstanten Integerwert.
+Der Operator \CodeStyle{sizeof...(P)} liefert die Anzahl Elemente im Pack als konstanten Integerwert.
 
 Die folgende Zeile
 \begin{CCode}
@@ -4692,8 +4696,8 @@ Ein weiteres Beispiel:
 
 Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor, welcher
 sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
-für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \&\& müsste
-noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward() eingebaut werden).  
+für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \CodeStyle{&&} müsste
+noch \textquotesingle perfektes Forwarding\textquotesingle {} mit \CodeStyle{std::forward()} eingebaut werden).  
 \begin{CCode}
 	template<typename T>
 	class Wraper {
@@ -4743,13 +4747,13 @@ noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward()
 	
 \end{CCode}
 
-\section{Template-Verschachtelung $>>$ (Seit \Cpp11)}
+\section{Template-Verschachtelung $>>$ (Seit \CppVers{11})}
 \label{subsubsect:TemplateVerschatelung}
-Bei \OviIndex{verschachtelten Templates} wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden. Vor \Cpp11 musste ein Leerzeichen zwischen zwei schliessende Templateklammern gesetzt werden ($> >$), sonst wurde dies als Schiebeoperator interpretiert.
+Bei \OviIndex{verschachtelten Templates} wird \CodeStyle{>>} als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden. Vor \CppVers{11} musste ein Leerzeichen zwischen zwei schliessende Templateklammern gesetzt werden (\CodeStyle{> >}), sonst wurde dies als Schiebeoperator interpretiert.
  
-\section{extern Templates (Seit \Cpp11)}
+\section{extern Templates (Seit \CppVers{11})}
 \label{subsubsect:externTemplates}
-Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
+Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit \CodeStyle{extern} kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
 
 
 \begin{CCode}
@@ -4762,7 +4766,7 @@ Die Standarbibliothek ist eine umfangreiche Klassen- und Templatesammlung, ähnli
 Sie stellt unter anderem Elemente aus der vormaligen STL (Datenhaltung und Datenverarbeitung), Strings, Ein- Ausgabe über Streams, Numerische Funktionen, Zufallszahlen, Multithreading und Reguläre Ausdrücke zur Verfügung. Einige dieser Aspekte werden in den nachfolgenden Kapiteln näher vorgestellt.   
 \section{Strings}
 \label{sect:strings}
-\OviIndex{Strings} werden in \Cpp in Form der Klasse string unterstützt. Diese Klasse
+\OviIndex{Strings} werden in \Cpp in Form der Klasse \CodeStyle{string} unterstützt. Diese Klasse
 bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
 das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
 vereinfacht.
@@ -4806,9 +4810,9 @@ String gelesen, oder in einen String geschrieben wird:
 
 \section{Datei Ein- und Ausgabe}
 \label{sect:DateiEinAusgabe}
-\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
+\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \CodeIndex{ofstream}, Eingaben über solche vom Typ \CodeIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile \CodeStyle{<fstream>} mittels \CodeStyle{#include <fstream>} eingebunden werden. (Mit \CodeStyle{#include} werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie \CodeStyle{cin} und \CodeStyle{cout} benutzt werden. (\CodeStyle{cin} und \CodeStyle{cout} sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
 
-Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
+Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
 
 \begin{CCode}
 #include <fstream>
@@ -4832,9 +4836,9 @@ int main(int argc, char *argv[])
 
 
 Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
-Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden.
-ios\_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben.
-ios\_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit \CodeStyle{|} (binäres or) kombiniert werden.
+\CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
+\CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
 
 Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
 \begin{CCode}
@@ -4858,22 +4862,22 @@ Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und 
 \end{CCode}
 
 Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
-die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
+die Methoden \CodeStyle{put(), write(), get(), getline(), read()} und \CodeStyle{ignore()} zur Verfügung. Diese Methoden sind
 zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
-wenn die Operatoren $<<$ und $>>$ nicht die gewünschte Funktionalität liefern. 
+wenn die Operatoren \CodeStyle{<<} und \CodeStyle{>>} nicht die gewünschte Funktionalität liefern. 
 
 \subsection{Formatierte Ausgabe}
 \index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
-Methode Flags() können die Flags gesetzt oder gelesen werden, mit
-setf können Flags hinzugefügt werden.
+Methode \CodeStyle{flags()} können die Flags gesetzt oder gelesen werden, mit
+\CodeStyle{setf()} können Flags hinzugefügt werden.
 
 Es sind unter anderem folgende Flags definiert:
 
-Wahl des Zahlensystems: ios\_base::dec, ios\_base::hex, ios\_base::oct 
+Wahl des Zahlensystems: \CodeStyle{ios_base::dec, ios_base::hex, ios_base::oct} 
 
-Bündigkeit: ios\_base::left, ios\_base::right
+Bündigkeit: \CodeStyle{ios_base::left, ios_base::right}
 
-Gleitkommaformat: ios\_base::scientific, ios\_base::fixed
+Gleitkommaformat: \CodeStyle{ios_base::scientific, ios_base::fixed}
 
  
 Beispiel:
@@ -4898,8 +4902,8 @@ Beispiel:
 \end{CCode} 
 
 Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
-precision kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
-definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden:
+\CodeStyle{precision()} kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
+definiert werden, mit \CodeStyle{width()} die Feldbreite und mit \CodeStyle{fill()} das Füllzeichen gewählt werden:
 \begin{CCode}
 
   std::streamsize OldPrecision;
@@ -4921,7 +4925,7 @@ definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewä
 
 \end{CCode} 
 
-width() gilt nur für die nächste Ausgabe und wird danach wieder
+\CodeStyle{width()} gilt nur für die nächste Ausgabe und wird danach wieder
 auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
 
 
@@ -4942,7 +4946,7 @@ selbst neue Manipulatoren zu erzeugen.
 
 \end{CCode} 
 
-Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
+Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, left, right}
 
 
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
@@ -4989,7 +4993,7 @@ Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implemen
 \subsection{Kurzübersicht zu den Iteratoren aus der \Cpp - Standardbibliothek}
 \label{subsect:Iteratoren}
 
-Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen ++ und * definiert sind. Bidirektionale Iteratoren bieten noch -{}- an, und Random-Access-Iteratoren haben weiter die Operatoren [] und += definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
+Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen \CodeStyle{++} und \CodeStyle{*} definiert sind. Bidirektionale Iteratoren bieten noch \CodeStyle{--} an, und Random-Access-Iteratoren haben weiter die Operatoren \CodeStyle{[]} und \CodeStyle{+=} definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
 
 Mögliche Implementationen von Iteratoren:
 \begin{CCode}
@@ -5024,8 +5028,8 @@ public:
 
 Weiter gibt es noch \OviIndex{Einfüge-Iteratoren} (\OviIndex{Insert Iterator}), welche die geschriebenen Werte einfach in eine Sequenz einfügen (Inkrement und Dekrement haben bei einem Einfüge-Iterator keine Funktion.) 
 
-Hier eine mögliche Implementierung des Insert Iterators (*i++ = Value; soll zum einfügen von Value führen,
-also operator =(operator *(operator++(i)), Value) soll schlussendlich Value einfügen).
+Hier eine mögliche Implementierung des Insert Iterators (\CodeStyle{*i++ = Value;} soll zum Einfügen von Value führen,
+also \CodeStyle{operator =(operator *(operator++(i)), Value)} soll schlussendlich Value einfügen).
 \begin{CCode}
 template <class Container>
   class insert_iterator :
@@ -5060,7 +5064,7 @@ public:
  
 
 \subsection{Kurzübersicht zu Container list<> aus der \Cpp - Standardbibliothek}
-Als Beispiel erstellen wir eine \OviIndex{Liste} von int's
+Als Beispiel erstellen wir eine \OviIndex{Liste} von \CodeStyle{int}'s
 \begin{CCode}
 #include<list>
 #include<algorithm>
@@ -5088,7 +5092,7 @@ if (ptr == MyList.end()) //Pruefen ob der Iterator das Listenende erreicht hat
 MyList.sort();           //Sortieren der Liste, optimiert fuer Liste
 \end{CCode}
 
-Ein einfaches Beispiel, diesmal aber mit einer Liste von unsigned long Werten (Es können Listen von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
+Ein einfaches Beispiel, diesmal aber mit einer Liste von \CodeStyle{unsigned long} Werten (Es können Listen von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
 
 \begin{CCode}
 std::list<unsigned long>Liste;     /* Liste fuer unsigned long erstellen */
@@ -5115,7 +5119,7 @@ while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
 
 \subsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 \label{subsect:Vector}
-Als Beispiel erstellen wir ein Array von double's. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit [] (Ohne Bereichsüberprüfung) und der Methode at() (Mit Bereichsüberprüfung) möglich. 
+Als Beispiel erstellen wir ein Array von \CodeStyle{double}'s. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit \CodeStyle{[]} (Ohne Bereichsüberprüfung) und der Methode \CodeStyle{at()} (Mit Bereichsüberprüfung) möglich. 
 \begin{CCode}
 #include<vector>
 #include<algorithm>
@@ -5147,7 +5151,7 @@ sort(MyVector.begin(), MyVector.end()) //Universeller Sortieralgorythmus, funkti
                               // mit wahlfreiem Zugriff existiert
 \end{CCode}
 
-Ein einfaches Beispiel, diesmal aber mit einem Vektor von char* Werten (Es können Vektoren von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
+Ein einfaches Beispiel, diesmal aber mit einem Vektor von \CodeStyle{char*} Werten (Es können Vektoren von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
 \begin{CCode}
 std::vector<char *> Vektor;  /* Vektor fuer char * erstellen */
 
@@ -5182,13 +5186,13 @@ Schlüssel erhält man Zugriff auf die dazugehörigen Daten. Deshalb muss
 jeder Schlüssel innerhalb einer map einmalig sein. Die Daten werden innerhalb der
 map nach dem Schlüssel in aufsteigender Reihenfolge sortiert, und beim
 Iterieren in dieser Reihenfolge abgearbeitet. Zur einfachen Benutzung
-der map wurde der Indexoperator [] überladen, so dass der Schlüssel direkt als
+der map wurde der Indexoperator \CodeStyle{[]} überladen, so dass der Schlüssel direkt als
 Index verwendet werden kann. Wird ein nicht existierender Schlüssel
 benutzt, erzeugt die map automatisch einen leeren Eintrag für diesen
 Schlüssel und liefert eine Referenz darauf zurück.
 
 Der Schlüssel muss ein Datentyp mit einer eindeutigen Ordnung sein, d. H.
-die Relation '<' muss definiert und eindeutig sein. (Sonst könnten die
+die Relation '\CodeStyle{<}' muss definiert und eindeutig sein. (Sonst könnten die
 Schlüssel nicht sortiert werden).
 
 Der Wert kann ein beliebiger Datentyp sein (Im Extremfall eine Liste
@@ -5234,12 +5238,12 @@ Mit einer map ist es sehr einfach, Daten zu verwalten. Für einen bestimmten Schl
 muss eine Multimap verwendet werden.
 
 Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Suchen von
-Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator [] Sucht \emph{und} fügt hinzu, falls nicht gefunden)
+Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator \CodeStyle{[]} Sucht \emph{und} fügt hinzu, falls nicht gefunden)
 
 \subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
 \subsubsection{for\_each()}
-Der wohl einfachste Algorithmus ist for\_each. Mit \OviIndex{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. for\_each benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer oder ein Objekt mit überladenem () operator.
-Die Funktion oder der Operator() wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \OviIndex{mem\_fn()} aus der Standardlibrary benutzt werden (Vor \CppVers{11} \OviIndex{mem\_fun()}).
+Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer oder ein Objekt mit überladenem \CodeStyle{()} operator.
+Die Funktion oder der \CodeStyle{operator()} wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \CodeStyle{mem_fn()}\index{mem\_fn()} aus der Standardlibrary benutzt werden (Vor \CppVers{11} \CodeStyle{mem_fun()}\index{mem\_fun()}).
 \begin{CCode}
 
 #include <algorithm>
@@ -5283,7 +5287,7 @@ Die Funktion oder der Operator() wird für jedes Element in der Sequenz aufgerufe
    }
 \end{CCode}
 \subsubsection{transform()}
-\OviIndex{Transform()} funktioniert ähnlich wie for\_each, nur dass die Rückgabewerte der einzelnen Funktionsaufrufe in einer weiteren Sequenz gesammelt werden. Falls die Zielsequenz identisch zur Quellsequenz ist, überschreibt das Ergebnis das Originalelement.
+\CodeIndex{transform()} funktioniert ähnlich wie \CodeStyle{for_each}, nur dass die Rückgabewerte der einzelnen Funktionsaufrufe in einer weiteren Sequenz gesammelt werden. Falls die Zielsequenz identisch zur Quellsequenz ist, überschreibt das Ergebnis das Originalelement.
 Mithilfe eines Einfüge Iterators (Spezieller Iterator) können die Ergebnisse auch an einen Container angefügt werden.
 \begin{CCode}
 #include <iterator>
@@ -5313,7 +5317,7 @@ Mithilfe eines Einfüge Iterators (Spezieller Iterator) können die Ergebnisse auc
 
 
 \subsubsection{swap()}
-\OviIndex{Swapp()} vertauscht den Inhalt zweier Objekte so effizient wie möglich. Die Defaultimplementation führt eine gewöhnliche Vertauschung über ein Hilfsobjekt durch.
+\CodeIndex{swapp()} vertauscht den Inhalt zweier Objekte so effizient wie möglich. Die Defaultimplementation führt eine gewöhnliche Vertauschung über ein Hilfsobjekt durch.
 
 
 \begin{CCode}
@@ -5327,8 +5331,8 @@ void swap(T &a, T&b)
 }
 \end{CCode}
 
-Seit  \Cpp11 werden Move-Konstruktor und Move-Zuweisung benutzt, falls
-unterstützt. (Wird durch das Template move() ermöglicht) 
+Seit \CppVers{11} werden Move-Konstruktor und Move-Zuweisung benutzt, falls
+unterstützt. (Wird durch das Template \CodeStyle{move()} ermöglicht) 
 \begin{CCode}
 // Seit C++11
 template <class T> void swap (T& a, T& b)
@@ -5344,10 +5348,10 @@ template <class T, size_t N> void swap (T (&a)[N], T (&b)[N])
 }
 \end{CCode}
 
-Für die meisten Typen der Standardlibrary gibt es überladene Versionen, welche den Tausch effizienter ausführen (Bei Container wird meist der Inhalt ausgetauscht, indem einfach die Pointer auf die Inhalte ausgetauscht werden, der Inhalt muss so nicht bewegt werden). Viele Algorithmen der Standardlibrary nutzen die Swap-Funktion, wenn sie Elemente tauschen müssen, deshalb empfiehlt es sich, auch für eigene Klassen eine optimierte swapfunktion zu schreiben, wenn Algorithmen benutzt werden.
+Für die meisten Typen der Standardlibrary gibt es überladene Versionen, welche den Tausch effizienter ausführen (Bei Container wird meist der Inhalt ausgetauscht, indem einfach die Pointer auf die Inhalte ausgetauscht werden, der Inhalt muss so nicht bewegt werden). Viele Algorithmen der Standardlibrary nutzen die Swap-Funktion, wenn sie Elemente tauschen müssen, deshalb empfiehlt es sich, auch für eigene Klassen eine optimierte Swapfunktion zu schreiben, wenn Algorithmen benutzt werden.
 
 \subsubsection{merge()}  
-Mit \OviIndex{merge()} können zwei sortierte Sequenzen so zusammengefügt werden, dass die resultierende Sequenz ebenfalls sortiert ist. Merge benötigt je einen Iterator auf Start und Ende der ersten sowie der zweiten Sequenz und einen Iterator für die resultierende Sequenz.
+Mit \CodeIndex{merge()} können zwei sortierte Sequenzen so zusammengefügt werden, dass die resultierende Sequenz ebenfalls sortiert ist. \CodeStyle{merge/()} benötigt je einen Iterator auf Start und Ende der ersten sowie der zweiten Sequenz und einen Iterator für die resultierende Sequenz.
 
 Merge könnte wie folgt definiert sein:
 \begin{CCode}
@@ -5365,7 +5369,7 @@ template <class InputIterator1, class InputIterator2, class OutputIterator>
 \end{CCode}
 
 \subsubsection{copy()}
-\OviIndex{Copy()} kopiert alle Elemente einer Sequenz in eine andere Sequenz. Copy benötigt je einen Iterator auf Start und Ende der zu kopierenden Sequenz und einen Iterator für das Ziel des Kopiervorganges.
+\CodeIndex{copy()} kopiert alle Elemente einer Sequenz in eine andere Sequenz. \CodeStyle{copy()} benötigt je einen Iterator auf Start und Ende der zu kopierenden Sequenz und einen Iterator für das Ziel des Kopiervorganges.
 
 Copy könnte wie folgt definiert sein:
 \begin{CCode}
@@ -5380,7 +5384,7 @@ Copy könnte wie folgt definiert sein:
 }
  \end{CCode}
 \subsubsection{count\_if()}
-\OviIndex{Count\_if()} zählt alle Elemente einer Sequenz, welche eine gegebene Bedingung erfüllen. Die Bedingung wird als Prädikat übergeben, das ist eine Funktion oder ein Objekt mit operator() welche mit jedem Objekt in der Sequenz aufgerufen wird und true zurückliefert, wenn das Objekt gezählt werden soll.
+\CodeStyle{count_if()} \index{Count\_if()} zählt alle Elemente einer Sequenz, welche eine gegebene Bedingung erfüllen. Die Bedingung wird als Prädikat übergeben, das ist eine Funktion oder ein Objekt mit \CodeStyle{operator()} welche mit jedem Objekt in der Sequenz aufgerufen wird und \CodeStyle{true} zurückliefert, wenn das Objekt gezählt werden soll.
  \begin{CCode}
 template <class InputIterator, class UnaryPredicate>
   typename iterator_traits<InputIterator>::difference_type
@@ -5406,7 +5410,7 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 
 \end{CCode}
 \subsubsection{Splice()}
-\OviIndex{Splice()} bewegt alle Elemente einer Sequenz in eine andere Sequenz, dabei können auch nur Ausschnitte aus einer grösseren Sequenz bewegt werden. Alle bewegten Elemente werden aus der Quellsequenz entfernt und in der Zielsequenz eingefügt
+\CodeIndex{splice()} bewegt alle Elemente einer Sequenz in eine andere Sequenz, dabei können auch nur Ausschnitte aus einer grösseren Sequenz bewegt werden. Alle bewegten Elemente werden aus der Quellsequenz entfernt und in der Zielsequenz eingefügt
 
 \begin{CCode}
       // Alle Elemente aus Figuren nach GroupedElements transferieren
@@ -5414,9 +5418,9 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 \end{CCode}
 
 
-\section{Multithreading support (Seit \Cpp11)}
+\section{Multithreading support (Seit \CppVers{11})}
 \label{sect:Multithreading}
-\OviIndex{Multithreading} wird seit \Cpp11 durch die Thread support Library unterstützt, dazu muss <thread> eingebunden werden. Zuvor muss jedoch die Library auf das verwendete Betriebssystem portiert worden sein. Gerade bei Embeddedsystemen und Echtzeit Betriebssystemen muss man damit rechnen, dass nicht auf eine existierende Portierung zurückgegriffen werden kann.
+\OviIndex{Multithreading} wird seit \CppVers{11} durch die Thread support Library unterstützt, dazu muss \CodeStyle{<thread>} eingebunden werden. Zuvor muss jedoch die Library auf das verwendete Betriebssystem portiert worden sein. Gerade bei Embeddedsystemen und Echtzeit Betriebssystemen muss man damit rechnen, dass nicht auf eine existierende Portierung zurückgegriffen werden kann.
 
 Nachfolgend werden einige wesentliche Komponenten aus dieser Bibliothek vorgestellt.
 
@@ -5467,7 +5471,7 @@ int main()
 
 
 \subsection{Futures}
-\OviIndex{Futures} dienen zum übermitteln von Daten von einem Thread zum Anderen. Ein Future ist eine Variable, welche irgendwann in Zukunft einen Wert enthalten wird. Wenn ein Thread versucht, diese Variable mittels get() zu lesen wird er angehalten, bis diese Variable einen Wert enthält. Ein Thread kann auch mit wait() (ohne Timeout) oder wait\_until()/wait\_for() (Mit Timeout) auf das Verfügbar werden des Wertes warten.
+\OviIndex{Futures} dienen zum übermitteln von Daten von einem Thread zum Anderen. Ein Future ist eine Variable, welche irgendwann in Zukunft einen Wert enthalten wird. Wenn ein Thread versucht, diese Variable mittels \CodeStyle{get()} zu lesen wird er angehalten, bis diese Variable einen Wert enthält. Ein Thread kann auch mit \CodeStyle{wait()} (ohne Timeout) oder \CodeStyle{wait_until()}/\CodeStyle{wait_for()} (Mit Timeout) auf das Verfügbar werden des Wertes warten.
  
 Ein gültiges Future ist immer mit einem \OviIndex{Promise} verbunden, sobald ein Thread in ein Promise schreibt, erhält das dazugehörende Future den übergebenen Wert. Sobald ein Future-Promise Paar einmal verwendet wurde, wird es ungültig und kann kein zweites mal benutzt werden. (Einmal verwendet heisst das ein Wert in das Promise geschrieben wurde, und aus dem Future gelesen wurde.).
 
@@ -5514,7 +5518,7 @@ int main()
 Mit Promise-Future können auch Exceptions übermittelt werden.
 
 \subsection{async}
-Mit \OviIndex{async} kann eine Funktion auf einfache Weise parallel ausgeführt werden, und bei Bedarf auf ihren Rückgabewert gewartet werden. Es wird automatisch ein Thread und ein Future erzeugt, die Funktion aufgerufen und das Ergebnis dem Future zugewiesen. Der Aufrufer von async() erhält das entsprechende Future als Rückgabewert von Async().
+Mit \CodeIndex{async()} kann eine Funktion auf einfache Weise parallel ausgeführt werden, und bei Bedarf auf ihren Rückgabewert gewartet werden. Es wird automatisch ein Thread und ein Future erzeugt, die Funktion aufgerufen und das Ergebnis dem Future zugewiesen. Der Aufrufer von \CodeStyle{async()} erhält das entsprechende Future als Rückgabewert von \CodeStyle{async()}.
 
 Ein Beispiel:
 \begin{CCode}
@@ -5547,7 +5551,7 @@ int main()
 
 \end{CCode}
 
-Anstelle von \lstinline{std::launch::async} kann async() auch \lstinline{std::launch::deferred} übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald \lstinline{get()} aufgerufen wird (\lstinline{get()} ruft somit die übergebene Funktion auf). Wenn \lstinline{async()} ohne eine dieser Policies aufgerufen wird (\lstinline{std::async(HardWorkingFunction, 1, 10000)} ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von \lstinline{get()} ausgeführt wird.
+Anstelle von \CodeStyle{std::launch::async} kann \CodeStyle{async()} auch \CodeStyle{std::launch::deferred} übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald \CodeStyle{get()} aufgerufen wird (\CodeStyle{get()} ruft somit die übergebene Funktion auf). Wenn \CodeStyle{async()} ohne eine dieser Policies aufgerufen wird (\CodeStyle{std::async(HardWorkingFunction, 1, 10000)} ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von \CodeStyle{get()} ausgeführt wird.
 
 \subsection{Mutex und conditional Variables}
 Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex} und \OviIndex{Conditional Variables} zur Verfügung, sowie dazugehörende Manipulationsfunktionen.
@@ -5560,22 +5564,22 @@ Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mu
 
 Im Vergleich zu C muss der Startupcode von  \Cpp wesentlich mehr Arbeit leisten. Bei
 C müssen nur alle globalen und statischen Variablen vor der ersten Benutzung initialisiert
-werden, dies wird meist durch ein kurzes Codestück vor dem Aufruf von main() erledigt.
+werden, dies wird meist durch ein kurzes Codestück vor dem Aufruf von\CodeStyle{ main()} erledigt.
 
 Bei  \Cpp müssen zusätzlich die Konstruktoren von allen globalen und statischen Objekten
-vor dem Aufruf von main() ausgeführt werden, und entsprechend deren Destruktoren wenn
-das Programm durch Aufruf von exit()\footnote{Ein \Cpp Programm sollte nie mit exit() beendet werden, da so die Destruktoren der automatischen (Auf dem Stack angelegten) Objekte nicht aufgerufen werden. Anstelle von exit() sollte das Exceptionhandling, oder allenfalls Rückgabewerte von Funktionen benutzt werden, so dass ein \Cpp Programm immer via Beenden von main() terminiert.}  oder beenden von main() sein Ende erreicht. Dabei darf nicht vergessen werden, dass neben den vom Programmierer definierten globalen und statischen Objekte auch in der Standard-Library globale und statische Objekte vorhanden sind (z.B. cin, cerr und cout).
+vor dem Aufruf von \CodeStyle{main()} ausgeführt werden, und entsprechend deren Destruktoren wenn
+das Programm durch Aufruf von \CodeStyle{exit()}\footnote{Ein \Cpp Programm sollte nie mit exit() beendet werden, da so die Destruktoren der automatischen (Auf dem Stack angelegten) Objekte nicht aufgerufen werden. Anstelle von exit() sollte das Exceptionhandling, oder allenfalls Rückgabewerte von Funktionen benutzt werden, so dass ein \Cpp Programm immer via Beenden von main() terminiert.}  oder beenden von \CodeStyle{main()} sein Ende erreicht. Dabei darf nicht vergessen werden, dass neben den vom Programmierer definierten globalen und statischen Objekte auch in der Standard-Library globale und statische Objekte vorhanden sind (z.B. \CodeStyle{cin, cerr} und \CodeStyle{cout}).
 
 
-Dieser Initialisierungsablauf von \Cpp  ist jedoch sehr Compilerabhängig, bei einigen Compilern muss nur eine Runtimefunktion (z.B. \_\_init()) aufgerufen werden, bei anderen wird vom Compiler eine Tabelle mit Funktionszeigern generiert, die in dieser Tabelle aufgeführten Funktionen müssen vor dem Aufruf von main() durch den Startupcode aufgerufen werden.
+Dieser Initialisierungsablauf von \Cpp  ist jedoch sehr Compilerabhängig, bei einigen Compilern muss nur eine Runtimefunktion (z.B. \CodeStyle{__init()}) aufgerufen werden, bei anderen wird vom Compiler eine Tabelle mit Funktionszeigern generiert, die in dieser Tabelle aufgeführten Funktionen müssen vor dem Aufruf von \CodeStyle{main()} durch den Startupcode aufgerufen werden.
 
 Zudem muss normalerweise der Linker angewiesen werden, diese Initialisierungsdaten
 aus den einzelnen Modulen zusammenzutragen und am richtigen Ort im Speicher abzulegen.
 
 Nachfolgend als Beispiel, wie es beim Carme-Kit/Atollic True Studio gemacht werden muss:
                
-Im Linkerskript muss das zusammenführen der Konstruktoren/Destruktorentabellen (.preinit\_array, 
- .init\_array, .fini\_array) codiert werden: 
+Im Linkerskript muss das zusammenführen der Konstruktoren/Destruktorentabellen (\CodeStyle{.preinit_array, 
+ .init_array, .fini_array}) codiert werden: 
 \begin{CCode}
 
 	/* The program code and other data goes into FLASH */
@@ -5621,7 +5625,7 @@ Im Linkerskript muss das zusammenführen der Konstruktoren/Destruktorentabellen (
 
 \end{CCode}
 
-Im Startupcode müssen nun die entsprechenden Initialisierungefunktionen (\_\_libc\_init\_array, \_\_libc\_fini\_array und exit) vor und nach dem Aufruf von main() aufgerufen werden:
+Im Startupcode müssen nun die entsprechenden Initialisierungefunktionen (\CodeStyle{__libc_init_array, __libc_fini_array} und \CodeStyle{exit}) vor und nach dem Aufruf von \CodeStyle{main()} aufgerufen werden:
    
 \begin{CCode}
 Reset_Handler:
@@ -5737,7 +5741,7 @@ soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden w
 		 
 
 \subsection{Member Funktionen}
-Jeder Memberfunktion wird beim Aufruf ein zusätzliches, vor dem Programmierer verstecktes Argument übergeben, nämlich ein Zeiger auf das Objekt für welches die Methode aufgerufen wird. Innerhalb der Methode kann auf diesen Zeiger mit dem Schlüsselwort this zugegriffen werden. Für dieses zusätzliche Argument wird etwas mehr Code und Rechenzeit benötigt. (In C müsste man bei der Verwendung von Strukturen die Adresse der Struktur übergeben, somit eigentlich kein Unterschied zwischen C und \Cpp )
+Jeder Memberfunktion wird beim Aufruf ein zusätzliches, vor dem Programmierer verstecktes Argument übergeben, nämlich ein Zeiger auf das Objekt für welches die Methode aufgerufen wird. Innerhalb der Methode kann auf diesen Zeiger mit dem Schlüsselwort \CodeStyle{this} zugegriffen werden. Für dieses zusätzliche Argument wird etwas mehr Code und Rechenzeit benötigt. (In C müsste man bei der Verwendung von Strukturen die Adresse der Struktur übergeben, somit eigentlich kein Unterschied zwischen C und \Cpp )
 \begin{CCode}
 	x.f(a, 12);
   // wird zu	
@@ -5764,7 +5768,7 @@ Wenn eine virtuelle Funktion direkt auf ein Objekt angewendet wird, kann der Com
 
 Wenn eine virtuelle Funktion auf einen Pointer oder eine Referenz auf ein Objekt angewendet wird, kann der Compiler zur Compilezeit nicht bestimmen, welches Objekt vorliegt, es muss zur Laufzeit entschieden werden, welches Objekt vorliegt.
 
-Das setzt voraus, dass in jedem Objekt eine Information über das Objekt selbst abgelegt ist. Üblicherweise wird dazu an erster Stelle im Objekt ein zusätzlicher Pointer auf eine Tabelle abgelegt. Dieser Pointer wird vtblptr (Pointer auf die Virtuelle Funktionstabelle) genannt. 
+Das setzt voraus, dass in jedem Objekt eine Information über das Objekt selbst abgelegt ist. Üblicherweise wird dazu an erster Stelle im Objekt ein zusätzlicher Pointer auf eine Tabelle abgelegt. Dieser Pointer wird meist vtblptr (Pointer auf die Virtuelle Funktionstabelle) genannt. 
 
 Für jede Klasse mit virtuellen Funktionen wird einmal eine solche Tabelle angelegt, alle Objekte einer Klasse verweisen auf dieselbe Tabelle. (Bei Mehrfachvererbung sind mehrere Tabellen pro Klasse notwendig).
 
@@ -5823,7 +5827,7 @@ p->f1(5);
 // Effektiv ausgeführter Code
 p->vtblptr.f1(p, 5)
 \end{CCode}
-Es wird also nicht direkt die Funktion f1() aufgerufen, sondern es wird über den vtblptr in der Tabelle der virtuellen Funktionen die Adresse der effektiven Funktion geholt, und diese wird ausgeführt. Der Aufruf einer virtuellen Funktion kostet also einen zusätzlichen Zugriff auf die Tabelle der virtuellen Funktionen. Ausser bei sehr kurzen Funktionen ist dieser Zugriff meist vernachlässigbar. Es kann auch durchaus sinnvoll sein, in einem Interrupthandler virtuelle Funktionen zu benutzen, insbesondere wenn dadurch ein switch() oder ein Vektortabellenzugriff im Handler eingespart werden kann.
+Es wird also nicht direkt die Funktion \CodeStyle{f1()} aufgerufen, sondern es wird über den vtblptr in der Tabelle der virtuellen Funktionen die Adresse der effektiven Funktion geholt, und diese wird ausgeführt. Der Aufruf einer virtuellen Funktion kostet also einen zusätzlichen Zugriff auf die Tabelle der virtuellen Funktionen. Ausser bei sehr kurzen Funktionen ist dieser Zugriff meist vernachlässigbar. Es kann auch durchaus sinnvoll sein, in einem Interrupthandler virtuelle Funktionen zu benutzen, insbesondere wenn dadurch ein \CodeStyle{switch()} oder ein Vektortabellenzugriff im Handler eingespart werden kann.
 
 Bei Mehrfachvererbung und bei virtueller Vererbung sind je nach Kontext weitere Indirektionen sowie Offsetkorrekturen des this-Pointers notwendig, welche zusätzliche Rechenzeit benötigen. 
  
@@ -5900,7 +5904,7 @@ Könnte die Klasse Derived vom Compiler wie folgt realisiert werden:
 	
 	};
 \end{CCode}
-In den Tabellen der virtuellen Funktionen sind die Adressen der entsprechenden Methoden abgelegt, sowie die notwendigen Korrekturen für den this pointer. In dem BasePtr ist die Adresse des Basisklasseteils abgelegt.
+In den Tabellen der virtuellen Funktionen sind die Adressen der entsprechenden Methoden abgelegt, sowie die notwendigen Korrekturen für den this Pointer. In dem BasePtr ist die Adresse des Basisklasseteils abgelegt.
 
 Der Zugriff auf Elemente der Basisklasse und der Aufruf einer virtuellen Methode würde in diesem Fall zu folgendem Code führen:
 \begin{CCode}
@@ -5923,7 +5927,7 @@ p->vtblptr.f1(p + p->vtblptr.DerivedOffsetKorrekturForf1, 5)
 \subsection{RTTI (Runtime Type Information)}
 Für die Runtime-Type-Information werden zusätzliche Inforamtionen für polymorphe Klassen abgelegt. Diese Information kann in die virtuelle Funktionstabelle integriert werden, oder die virtuelle Funktionstabelle wird um einen Eintrag auf die Typeninformation erweitert. Auf jeden Fall wird für jede Klasse zusätzlicher Speicher für diese Informationen benötigt. Insbesondere muss auch die ganze Vererbungshierarchie abgebildet werden.
 
-Ausser beim expliziten Zugriff auf die Typeninformation mit typeid() hat die RTTI keinen Einfluss auf das Laufzeitverhalten.
+Ausser beim expliziten Zugriff auf die Typeninformation mit \CodeStyle{typeid()} hat die RTTI keinen Einfluss auf das Laufzeitverhalten.
 
 \subsection{Dynamic Cast}
 Um einen Dynamic Cast durchführen zu können, muss zur Laufzeit überprüft werden, ab das betroffene Objekt tatsächlich vom gewünschten Typ, oder davon abgeleitet ist. Dazu müssen die RTTI-Informationen der Vererbungshierarchie entlang untersucht werden. Dies kann je nach Vererbungshierarchie unterschiedlich lange dauern. Somit sollte dieses Feature in zeitkritischen Bereichen oder bei strengen Anforderungen an den Determinismus (Vorhersagbares Zeitverhalten) nicht verwendet werden.
@@ -5970,7 +5974,7 @@ t1 = operator+(a, b);    // t1 ist temporaeres Objekt
 t2 = operator+(t1, c);   // t2 ist temporaeres Objekt
 x.operator=(t2);
 \end{CCode}
-Nebst den beiden Temporaries t1 und t2 werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
+Nebst den beiden Temporaries \CodeStyle{t1} und \CodeStyle{t2} werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
 
 Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
 Mit den in \CppVers{11} eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \autoref{subsec:RValueRefs}).
@@ -5983,13 +5987,13 @@ Innerhalb von interruptroutinen sollte grundsätzlich auf Exceptions verzichtet w
 
 Auch das Erzeugen von Objekten sollte innerhalb von Interrupts unterlassen werden, da auf jeden Fall die Konstruktoren (Rechenzeit) ausgeführt werden, und bei dynamischer Speicherverwaltung zusätzlich noch Speicher alloziert werden muss. Ebenso ist das Löschen von Objekten zu vermeiden.
 
-Virtuelle Funktionen können innerhalb von Interruptroutinen verwendet werden, man muss sich einfach bewusst sein, dass diese zusätzliche Indirektion Rechenzeit kostet. (Aber möglicherweise einen Switch() oder einen Callback erspart. Um virtuelle Funktionen einsetzen zu können, muss aber zuerst von der (statischen) Interuptfunktion eine Methode von einem Objekt aufgerufen werden.
+Virtuelle Funktionen können innerhalb von Interruptroutinen verwendet werden, man muss sich einfach bewusst sein, dass diese zusätzliche Indirektion Rechenzeit kostet. (Aber möglicherweise einen \CodeStyle{switch()} oder einen Callback erspart. Um virtuelle Funktionen einsetzen zu können, muss aber zuerst von der (statischen) Interuptfunktion eine Methode von einem Objekt aufgerufen werden.
 (Eine Interuptfunktion kann nur eine globale Funktion oder eine statische Methode sein, da diese von der Hardware, ohne Kenntnisse eines Objektes, aufgerufen wird.) 
 
 In Multithreadingumgebungen muss sichergestellt werden, dass Konstruktoren, Destruktoren und Memorymanagement Threadsafe sind, ansonsten dürfen innerhalb von Threads keine neuen Objekte erzeugt werden. Ein Thread darf zudem \emph{nie} mit einer Exception beendet werden (ausser das verwendete OS kann mit Exceptions umgehen). Vor dem Threadende müssen somit immer alle Exceptions aufgefangen werden (Dazu den gesammten Thread-Code in Try-Catch einschliessen.). 
 
 \section{Persistenz}
-Wenn Objekte ihren Zustand bei einem Stromausfall (Ausschalten) behalten sollen, spricht man von Persistenz. Dazu kann man Konstruktoren entwerfen, welche ihre Daten aus einem Dateisystem, FLASH-Speicher oder Akku-gepuffertem RAM holen, und entsprechende Funktionen, welche dieses Daten bei Bedarf auf diese nichtflüchtigen Medien speichern. Placement new() oder eigene new/delete Operatoren können auch benutzt werden, um Objekte in persistentem Speicher zu erzeugen, wobei bei jedem Systemstart geprüft werden muss, ob der Speicherinhalt noch gültig ist, bevor er wieder verwendet wird.  
+Wenn Objekte ihren Zustand bei einem Stromausfall (Ausschalten) behalten sollen, spricht man von Persistenz. Dazu kann man Konstruktoren entwerfen, welche ihre Daten aus einem Dateisystem, FLASH-Speicher oder Akku-gepuffertem RAM holen, und entsprechende Funktionen, welche dieses Daten bei Bedarf auf diese nichtflüchtigen Medien speichern. Placement new() oder eigene \CodeStyle{new}/\CodeStyle{delete} Operatoren können auch benutzt werden, um Objekte in persistentem Speicher zu erzeugen, wobei bei jedem Systemstart geprüft werden muss, ob der Speicherinhalt noch gültig ist, bevor er wieder verwendet wird.  
 
 \section{Embedded \Cpp}
 Im Jahre 1996 schloss sich eine Gruppe von Mikrocontrollerherstellern und Compilerbauer zum \OviIndex{Embedded \Cpp Technical Commitee} zusammen, mit dem Ziel ein für Embedded Systeme optimiertes \Cpp Subset unter dem Namen \OviIndex{Embedded \Cpp} zu standardisieren. Die Sprache sollte ein echtes Subset von \Cpp sein, bei welchem alle für Embeddedsysteme ungeeignete Sprachelemente entfernt wurden.
@@ -5998,15 +6002,15 @@ Die Sprache basiert auf dem Standard \CppVers{98}, es werden aber folgende Eleme
 \begin{itemize}
 	 \item  Mehrfachvererbung
    \item  Virtuelle Basisklassen
-   \item  Run-time type information (typeid)
-   \item  Neue Typecast-Syntax (\lstinline{static_cast, dynamic_cast, reinterpret_cast and const_cast})
-   \item  Das Schlüsselword mutable
+   \item  Run-time type information (\CodeStyle{typeid})
+   \item  Neue Typecast-Syntax (\CodeStyle{static_cast, dynamic_cast, reinterpret_cast and const_cast})
+   \item  Das Schlüsselword \CodeStyle{mutable}
    \item  Namensbreiche
    \item  Exceptions
    \item  Templates
 \end{itemize}
 
-Allerdings gibt es seit 2002 keine Aktualisierungen von embedded \Cpp mehr, es wird dennoch von
+Allerdings gibt es seit 2002 keine Aktualisierungen von Embedded \Cpp mehr, es wird dennoch von
 einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigestellt, einen Standard-Compiler zu verwenden, und je nach Anwendung und Limitationen des Zielsystems auf gewisse \Cpp-Elemente zu verzichten. Möglicherweise können spezialisierte Embedded-\Cpp Compiler besser optimieren und effizienteren Code generieren weil bestimmte Sprachmittel überhaupt nicht unterstützt werden müssen.
 
 Ein Embedded-\Cpp Programm ist ein Subset von Standard \Cpp und lässt sich mit jedem standardkonformen \Cpp Compiler übersetzen.
@@ -6648,14 +6652,14 @@ Siehe \autoref{subsubsect:ControlAutoMember}
 	 \item Geänderte Definiton von POD (plain old data)
    \item Template Alias
    \item Gelockerte Restriktionen bei Unions
-   \item Neuer Datentyp long long int
+   \item Neuer Datentyp \CodeStyle{long long int}
    \item Static Assertions
-   \item Sizeof auch bei Klassenmembern ohne ein effektives Objekt möglich
+   \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
    \item Alignementkontrolle bei Objekten
    \item Einfacher Support für Garbagecollection
    \item Attribute
    \item Unterstützung von Multithreading
-	 \item Operator noexcept()  zum prüfen ob ein Ausdruck eine Exception werfen könnte
+	 \item Operator \CodeStyle{noexcept()} zum prüfen ob ein Ausdruck eine Exception werfen könnte
    \item Standardlibrary um Tupletypen erweitert
    \item Standardlibrary um Hashtabellen erweitert
    \item Standardlibrary um Regular expressions erweitert
@@ -6679,14 +6683,14 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \begin{itemize}
 	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
 	 \item Alternative Typendeduktion bei Deklarationen
-   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser try, goto, asm, label und static oder uninitialisierte Variablen benutzt werden.
+   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.
    \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden.
    \item Aggregate Member initialisierung
    \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001)
    \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000
    \item Generische Lambdafunktionen
    \item Lambda capture expressions
-   \item Attribute [[deprecated]] zum Markieren von obsoleten Schnittstellenelementen.
+   \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen.
    \item Kleinere Erweiterungen der Standardlibrary
 	
 \end{itemize}
@@ -6694,23 +6698,23 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \section{\CppVers{17}}
 Im Dezember 2017 publiziert.
 \begin{itemize}
-    \item Addition of a default text message for static\_assert
+    \item Addition of a default text message for \CodeStyle{static_assert}
 
-    \item Addition of std::string\_view, a non-owning reference to a character sequence or string-slice, which is read-only
+    \item Addition of \CodeStyle{std::string_view}, a non-owning reference to a character sequence or string-slice, which is read-only
 
     \item Removal of trigraphs
 
-    \item Allow typename in a template template parameter
+    \item Allow \CodeStyle{typename} in a template template parameter
 
     \item New rules for auto deduction from braced-init-list
 
-    \item std::uncaught\_exceptions, as a replacement of std::uncaught\_exception
+    \item \CodeStyle{std::uncaught_exceptions}, as a replacement of \CodeStyle{std::uncaught_exception}
 
     \item Nested namespace definition
 
     \item Attributes for namespaces and enumerators
 		
-		\item New standard attributes [[fallthrough]], [[maybe\_unused]] and [[nodiscard]]
+		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}
 
     \item UTF-8 character literals
 		
@@ -6720,48 +6724,48 @@ Im Dezember 2017 publiziert.
 
     \item Folding expressions
 
-    \item New insertion functions for std::map and std::unordered\_map
+    \item New insertion functions for \CodeStyle{std::map} and \CodeStyle{std::unordered_map}
 
     \item Uniform container access
 
     \item Definition of ''contiguous iterators''
 
-    \item Removal of some deprecated types and functions like std::auto\_ptr, std::random\_shuffle or old function adaptors
+    \item Removal of some deprecated types and functions like \CodeStyle{std::auto_ptr}, \CodeStyle{std::random_shuffle} or old function adaptors
 
-    \item A file system library based on boost::filesystem
+    \item A file system library based on \CodeStyle{boost::filesystem}
 
     \item Parallel versions of STL algorithms
 
     \item Additional mathematical special functions
 
-    \item Most of Library Fundamentals TS I (e.g. std::optional, std::any)
+    \item Most of Library Fundamentals TS I (e.g. \CodeStyle{std::optional}, \CodeStyle{std::any})
 
-    \item std::variant, a type-safe union container
+    \item \CodeStyle{std::variant}, a type-safe union container
 
-    \item A compile-time static if with the form if constexpr(expression)
+    \item A compile-time static if with the form \CodeStyle{if constexpr(expression)}
 
-    \item Structured bindings, allowing auto [a, b] = getTwoReturnValues(); (Siehe \autoref{subsubsect:StructuredBindings})
+    \item Structured bindings, allowing \CodeStyle{auto [a, b] = getTwoReturnValues();} (Siehe \autoref{subsubsect:StructuredBindings})
 
-    \item Initializers in if and switch statements (if (init; condition) and switch (init; condition))
+    \item Initializers in \CodeStyle{if} and \CodeStyle{switch} statements (\CodeStyle{if (init; condition)} and \CodeStyle{switch (init; condition)})
 
     \item Guaranteed copy elision by compilers in some cases
 
     \item Some extensions on aligned memory allocation
 
-    \item Template deduction of constructors, allowing pair(5.0, false) instead of pair<double,bool>(5.0, false) (Siehe \autoref{subsection:AutomatischeTemplateparametererkennung})
+    \item Template deduction of constructors, allowing \CodeStyle{pair(5.0, false)} instead of \CodeStyle{pair<double,bool>(5.0, false)} (Siehe \autoref{subsection:AutomatischeTemplateparametererkennung})
 
     \item Inline variables, which allows the definition of variables in header files
     
     
-    \item template <auto>
+    \item \CodeStyle{template <auto>}
     \item A weaker version of fixed order-of-evaluation for expressions 
     \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
     
     \item \CppVers{17} is based on C11 instead of C99
-    \item destroy(\_at|\_n), uninitialized\_move(\_n), uninitialized\_value\_construct(\_n), uninitialized\_default\_construct(\_n)
-    \item Splicing for map<>,unordered\_map<>, set<>, and unordered\_set<>
+    \item \CodeStyle{destroy(_at|_n), uninitialized_move(_n), uninitialized_value_construct(_n), uninitialized_default_construct(_n)}
+    \item Splicing for \CodeStyle{map<>,unordered_map<>, set<>}, and \CodeStyle{unordered_set<>}
     \item Reserve std[0-9]+ for future standard libraries
-		\item Value of \_\_cplusplus changed to 201703L
+		\item Value of \CodeStyle{__cplusplus} changed to 201703L
 
 \end{itemize}
 
@@ -7018,7 +7022,7 @@ Datei Testerb.cpp
  
 \section{Resourcenverwaltung mit Smart Pointer, Unique Pointer, Shared Pointer}  \label{sec:Smartpointer}
 Korrektes Resourcenmanagement ist in \Cpp essenziell, erfordert jedoch vom Programmierer sorgfältiges und diszipliniertes Arbeiten und klare Schnittstellendefinitionen. Besonders im Zusammenhang mit der Weitergabe von Pointer an andere Objekte/Methoden ist nicht immer klar, wer jetzt für das Freigeben der Resource zuständig ist.
-Nachfolgend wird der Einsatz und die prinzipielle Funktion von \OviIndex{Smart Pointer}, \OviIndex{Unique Pointer} und \OviIndex{Shared Pointer} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden. Achtung, der vorgestellte Code ist vereinfacht und soll nur das Prinzip darstellen, er ist nich für den Einsatz in produktivem Code geeignet. Dazu sollen die entsprechenden Tempaltes aus der Standardlibrary verwendet werden.
+Nachfolgend wird der Einsatz und die prinzipielle Funktion von \OviIndex{Smart Pointer}, \OviIndex{Unique Pointer} und \OviIndex{Shared Pointer} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden. Achtung, der vorgestellte Code ist vereinfacht und soll nur das Prinzip darstellen, er ist nicht für den Einsatz in produktivem Code geeignet. Dazu sollen die entsprechenden Templates aus der Standardlibrary verwendet werden.
 
 \subsection{Problemfälle in der Resourcenverwaltung}
 Hier ein paar Beispiele für Problemfälle:
@@ -7216,7 +7220,7 @@ int main(int argc, char*argv[])
 
 Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
 
-Seit \CppVers{14} können Objekte direkt mit \OviIndex{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in make\_unique versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
+Seit \CppVers{14} können Objekte direkt mit \CodeStyle{make_unique()}\index{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_unique()} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
 \begin{CCode}
 
 
@@ -7349,7 +7353,7 @@ int main(int argc, char*argv[])
    }                    
 }
 \end{CCode}
-Objekte können auch direkt mit \OviIndex{make\_shared} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in make\_shared versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer und effizienter.
+Objekte können auch direkt mit \CodeStyle{make_shared}\index{make\_shared} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_shared} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer und effizienter.
 \begin{CCode}
 
 
@@ -7387,30 +7391,30 @@ Um überladene Funktionen zu unterscheiden werden die Funktionsnamen vom \Cpp Com
 dies wird als \OviIndex{Name mangling} bezeichnet.
 Der C Compiler hingegen benutzt direkt die Funktionsnamen. Für den Linker sind deshalb C und  \Cpp Module nicht kompatibel. 
 
-Die Funktion int TuWas(int a, float Zahl, char *Text) könnte
-in  \Cpp zum Beispiel als \_Z5TuWasifpc codiert werden.
+Die Funktion \CodeStyle{int TuWas(int a, float Zahl, char *Text)} könnte
+in  \Cpp zum Beispiel als \CodeStyle{_Z5TuWasifpc} codiert werden.
 
 Um dieses  \OviIndex{mangling} zu unterdrücken, kann in  \Cpp 
-der Deklaration ein \emph{extern ''C''} vorangestellt werden.
+der Deklaration ein \CodeStyle{extern "C"} vorangestellt werden.
 
 
 Will man innerhalb eines Projektes Module mit C Code und Module mit
 \Cpp Code mischen, müssen im \Cpp Teil Funktionen, welche auch vom C-Teil
 genutzt werden sollen, 
-mit dem Zusatz \emph{extern ''C''} deklariert werden, sonst können sie
+mit dem Zusatz \CodeStyle{extern "C"} deklariert werden, sonst können sie
 von C aus nicht aufgerufen werden. Auch die Prototypen der
-C Funktionen müssen mit \emph{extern ''C''} deklariert werden, sonst
+C Funktionen müssen mit \CodeStyle{extern "C"} deklariert werden, sonst
 können sie vom \Cpp Teil nicht aufgerufen werden.
 
 (Also alle Funktionen die von C und \Cpp gemeinsam benutzt
-werden, müssen für den \Cpp Compiler mit \emph{extern ''C''}
+werden, müssen für den \Cpp Compiler mit \CodeStyle{extern "C"}
 deklariert werden, hingegen darf der C Compiler \emph{kein}
-extern ''C'' sehen, da er dies nicht kennt.)
+\CodeStyle{extern "C"} sehen, da er dies nicht kennt.)
 
 Um trotzdem nicht zwei verschiedene Headerdateien für
 C und \Cpp zu haben, setzt man bedingte Compilierung ein,
-dazu wird das vom \Cpp Compiler standardmässig definierte Makro \_\_cplusplus zur
-bedingten Compilierung (Mittles \#ifdef) benutzt.
+dazu wird das vom \Cpp Compiler standardmässig definierte Makro \CodeStyle{__cplusplus} zur
+bedingten Compilierung (Mittles \CodeStyle{#ifdef}) benutzt.
  
 
 Gewöhnliche Strukturen (Ohne Methoden und Vererbung) 
@@ -7425,11 +7429,11 @@ Methoden können somit von C aus nicht aufgerufen werden,
 dazu müssen Schnittstellenfunktionen in  \Cpp
 geschrieben werden.
 
-Man kann jedoch die Adressen von Objekten als void-Pointer
-an C übergeben, und diese void-Pointer auch wieder
-an \Cpp Code weitergeben. Diese void-Pointer müssen anschliessend in \Cpp in den
+Man kann jedoch die Adressen von Objekten als \CodeStyle{void}-Pointer
+an C übergeben, und diese \CodeStyle{void}-Pointer auch wieder
+an \Cpp Code weitergeben. Diese \CodeStyle{void}-Pointer müssen anschliessend in \Cpp in den
 original Pointertypen zurück gecastet werden. Dieser Weg ist aber fehleranfaellig,
-da der Programmierer dafür verantwortlich ist, dass der void-Pointer auch tatsaechlich
+da der Programmierer dafür verantwortlich ist, dass der \CodeStyle{void}-Pointer auch tatsaechlich
 die Adresse des erwarteten Objektes enthält, ansonsten
 ist mit undefiniertem Verhalten zu rechnen. 
 
