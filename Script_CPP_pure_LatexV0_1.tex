@@ -20,6 +20,8 @@
 %/*  C++ Runtime, Startup (init, global ctors, global dtors                   */
 %/*  C++ Internas, Effizienz (vtables, exceptions)                            */
 %/*                                                                           */
+%/* sYSTEMATISCH cONST VERWENDEN WO SINNVOLL (rEFERENCEN UND POINTER)         */
+%/*                                                                           */
 %/* Exception/Virtual/ctor/dtor im Multithreading/interruptkontext            */
 %/* Persistenz / HW-Abstraktion                                               */
 %/*                                                                           */
@@ -2428,19 +2430,19 @@ class Complex {
    float r, i;
    public:
    Complex (int n_r, int n_i) : r(n_r), i(n_i) {};
-   Complex & Operator += (Complex &b) {r += b.r; i += b.i; return *this; };
-   Complex & Operator -= (Complex &b) {r -= b.r; i -= b.i; return *this; };
-   friend Complex operator +(Complex &a, Complex &b)
-   friend Complex operator -(Complex &a, Complex &b)
+   Complex & Operator += (const Complex &b) const {r += b.r; i += b.i; return *this; };
+   Complex & Operator -= (const Complex &b) const {r -= b.r; i -= b.i; return *this; };
+   friend Complex operator +(const Complex &a, const Complex &b)
+   friend Complex operator -(const Complex &a, const Complex &b)
    // To Do: A lot of other operands
 };
 
-inline Complex operator +(Complex &a, Complex &b) 
+inline Complex operator +(const Complex &a, const Complex &b) 
 {
    return Complex(a.r + b.r, a.i + b.i);
 }
 
-inline Complex operator -(Complex &a, Complex &b) 
+inline Complex operator -(const Complex &a, const Complex &b) 
 {
    return Complex(a.r - b.r, a.i - b.i);
 }
@@ -3066,16 +3068,16 @@ class Complex {
 
    public:
 
-   Complex(T r, T i) : Real( r ), Imaginaer( i ) {};
-   Complex(T r)        : Real( r ), Imaginaer( 0 ) {};
-   Complex()             : Real( 0 ), Imaginaer( 0 ) {};
+   Complex(T r, T i)    : Real( r ), Imaginaer( i ) {};
+   Complex(T r)         : Real( r ), Imaginaer( 0 ) {};
+   Complex()            : Real( 0 ), Imaginaer( 0 ) {};
 
-   Complex operator +(const Complex &s) {return Complex (Real+s.Real, 
+   Complex operator +(const Complex &s) const {return Complex (Real+s.Real, 
                                                          Imaginaer+s.Imaginaer); };
-   Complex operator -(const Complex &s) {return Complex(Real-s.Real, 
+   Complex operator -(const Complex &s) const {return Complex(Real-s.Real, 
                                                          Imaginaer-s.Imaginaer); };
-   T GetReal() {return Real;};
-   T GetImaginaer() {return Imaginaer;};
+   T GetReal() const {return Real;};
+   T GetImaginaer() const {return Imaginaer;};
 };
 \end{CCode}
 
@@ -4543,6 +4545,21 @@ class Demo {
   
   f2(q);                    // Kein temporaeres Objekt, normaler
                             // Kopierkonstruktor wird verwendet
+ 
+\end{CCode}
+
+Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
+\begin{CCode}
+
+  Demo q(xyz);
+  
+  f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
+                            // betrachten), Movekonstruktor wird verwendet
+                            
+  q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
+                            // keine Resourcen mehr, kann gefaehrlich sein 
+                            
+  q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
  
 \end{CCode}
 

@@ -12,13 +12,13 @@ MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
 NormalPos.right=889
-NormalPos.bottom=485
+NormalPos.bottom=371
 Class=LaTeXView
 Document=Script_CPP_pure_LatexV0_1.tex
 
 [Frame0_View0,0]
-TopLine=1615
-Cursor=60411
+TopLine=15
+Cursor=1873
 
 [SessionInfo]
 FrameCount=1
