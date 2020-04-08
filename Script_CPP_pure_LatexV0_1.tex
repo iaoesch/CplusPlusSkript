@@ -1210,6 +1210,17 @@ Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei l
 Funktionen ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
 
+Wenn Inlinefunktionen über Pointer oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Funktion direkt aufgerufen wird) 
+
+\begin{CCode}
+// in Header-Datei
+
+inline int Square(int i)     // Inline Methoden können auch in der 
+{                            // implementationsdatei (.cpp) definiert
+   return i*i;               // werden, dann aber nur innerhalb dieser
+                             // Datei ab Definitionspunkt verwendet werden.
+}
+\end{CCode}
 
 \chapter{Klassen}
 \section{Was sind Klassen}
@@ -1740,7 +1751,7 @@ StudentClass *sp;
 char Buffer[sizeof (StudentClass)];
 
 // Das Objekt im speziellen Speicherbereich erzeugen
-sp = new() StudentClass("Hans");
+sp = new(Buffer) StudentClass("Hans");
 
 // Weiterer Code
 
