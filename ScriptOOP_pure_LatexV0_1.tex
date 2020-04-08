@@ -179,7 +179,7 @@
 \renewcommand{\footrulewidth}{0.5pt}
 
 \setlength{\parskip}{1ex plus0.5ex minus0.3ex} 
-\newcommand{\Cpp}{C{\tt ++} }
+\newcommand{\Cpp}{C{\texttt ++} }
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
 
@@ -346,7 +346,7 @@ Es beinhaltet eine Einführung in die objektorientierte Denkweise und stellt eine
 \cleardoublepage
 \tableofcontents
 \chapter{Zu diesem Skript}
-Dieses Skript ist eine Einführung in die Objekt Orientierten Programmierung (OOP) mit Schwergewicht auf dem Objekt Orientierten Design (OOD).
+Dieses Skript ist eine Einführung in die Objekt Orientierte Programmierung (OOP) mit Schwergewicht auf dem Objekt Orientierten Design (OOD).
 
 Im ersten Teil wird das grundsätzliche Konzept der Objektorientierung behandelt. Hier werden die Ideen der objektorientierten Denkweise und der Unterschied zu den herkömmlichen Software-Entwicklungs-Methoden erläutert. 
 
@@ -354,7 +354,7 @@ Althergebrachte Design- und Analysemethoden wie Struktogramme oder Flussdiagramm
 
 Dieser Kurs dient nur als Basis, um OOP zu verstehen. Um OOP wirklich anwenden zu können ist die Arbeit mit grösseren Projekten und das Studium weiterführender Literatur unumgänglich.
 
-Das Grundlagenkapitel basiert ursprünglich auf Auszügen des dem Skriptes \emph{OOP mit Java} von \emph{Chris Hübsch}.
+Das Grundlagenkapitel basiert ursprünglich auf Auszügen des Skriptes \emph{OOP mit Java} von \emph{Chris Hübsch}.
 
 \chapter{Einführung}
 Beim objektorientierten Programmieren wird ein völlig anderer Ansatz als bei der
@@ -1750,8 +1750,8 @@ In Bild \ref{fig:Paketdiagramm} ist ein Paketdiagramm für unseren Billetautomate
 %Hinweis: 	Objekte, resp. Klassen lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Objekte haben oft einen Namen. 
 
 Es soll ein Mikrocontrollersystem mit einer Klassenbibliothek abstrahiert werden. Das System besteht aus acht LED sowie acht Schalter, welche parallel an den Bus angeschlossen sind, und als Bytewert gelesen resp. geschrieben werden. Weiter besitzt der Mikrocontroller einen Timer, welcher gestartet und gestoppt werden kann und periodisch Interrupts auslöst. Die Periodendauer kann über einen 32-Bit Wert mit einer Auflösung von 100ns eingestellt werden. Weiter besitzt der Controller vier UART, welche ebenfalls Interrupts auslösen können und das einstellen der Baudrate, der Wortbreite und einer Parität erlauben. Jedem Uart sind 2 GPIO-Anschlüsse für TxD und RxD zugewiesen. Alle Interruptquellen werden durch einen Interruptkontroller gesteuert, welcher jeden Interrupt individuell zulassen oder sperren kann, zudem kann hier die Interruptquelle bei einem auftretenden Interrupt abgefragt werden.
-Weiter besitzt der Kontroller 10 Ports (a-j) mit jeweils 16 GPIOs (General Purpose Input/Outputs). Jeder GPIO kann als Eingang, Ausgang oder Spezialfunktion verwendet werden (Z.B RxD und TxD eines UART). ,  
-Vier dieser GPIO-Pins sind je mit einer LED verbunden (Zusätzlich zu den 8 BUS-Led's), und weitere 3 GPIOs sind mit Tastern verbunden.
+Weiter besitzt der Kontroller 10 Ports (a-j) mit jeweils 16 GPIOs (General Purpose Input/Outputs, 0-15). Jeder GPIO kann als Eingang, Ausgang oder Spezialfunktion verwendet werden (Z.B RxD und TxD eines UART).   
+Vier dieser GPIO-Pins sind jeweils mit einer LED verbunden (Zusammen mit den 8 BUS-Leds gibt es somit 12 LEDs im System), und weitere 3 GPIOs sind mit Tastern verbunden.
   
 \begin{enumerate}
 \item Welche Objekte kann man aus dieser Beschreibung ableiten?
@@ -1776,7 +1776,7 @@ Hinweis: 	Objekte, resp. Klassen lassen sich in einer Spezifikation leicht finde
 Die Beschreibung des Mikrocontrollersystems geht wie folgt weiter: 
 
 ...Ein GPIO-Manager verwaltet die vorhandenen GPIOs. Es können GPIOs belegt und freigegeben werden. Die GPIOs können konfiguriert (Input, Output oder Spezialfunktion) und ihr Zustand gesetzt oder gelesen werden.
-Die Uarts können konfiguriert (Ein oder Ausgeschaltet, Baudrate, Wortbreite und Interruptmodus gesetzt) werden, weiter können Daten in die UART geschrieben oder daraus gelesen werden. 
+Die Uarts können konfiguriert werden (Ein oder Ausgeschaltet, Baudrate, Wortbreite und Interruptmodus gesetzt), weiter können Daten in die UART geschrieben oder daraus gelesen werden. 
 Der Zustand der Taster und Schalter kann abgefragt, und der Zustand der LEDs kann gesetzt werden.
 Beim Interruptkontroller können spezifische Interrupts erlaubt oder gesperrt werden. Zudem soll für jede Interruptquelle ein Interrupthandler hinterlegt oder entfernt werden können. 
 
@@ -1797,7 +1797,7 @@ Hinweis: 	In einer Spezifikation kann man Attribute oft an Adjektiven ausmachen.
 %\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
 %\end{enumerate}
 Die Klassenbibliothek des Mikrokontrollersystems aus Aufgabe 1 und 2 soll erweitert werden. Bei den UARTs soll ein Handler hinterlegt werden können welcher automatisch aufgerufen wird, wenn der UART Daten empfängt, oder bereit ist, weitere Daten zu senden. Beim Timer soll ein Manager hinzugefügt werden, bei welchem beliebig viele Handler registriert werden können, welche periodisch oder einmal nach einer bestimmten Zeit aufgerufen werden (Zeitdauer und Moduls für jeden Handler individuell festlegbar).
-Zusatzaufgabe: Basierend auf diesen Timerfunktionen können nun auch blinkende LEDs und bei Tastendruck automatisch aufgerufene Handler realisiert werden. Weiter sollen remote LEDs und Schalter/Taster zur Verfügung gestellt werden, also Schalter und Taster auf einem anderen System, auf welche via serielle Schnittstelle (UART) zugegriffen werden kann, oder lokale Schalter und LEDs auf welche von einam anderen System aus zugegriffen werden kann. 
+Zusatzaufgabe: Basierend auf diesen Timerfunktionen können nun auch blinkende LEDs und bei Tastendruck automatisch aufgerufene Handler realisiert werden. Weiter sollen remote LEDs und Schalter/Taster zur Verfügung gestellt werden, also Schalter und Taster auf einem anderen System, auf welche via serielle Schnittstelle (UART) zugegriffen werden kann, oder lokale Schalter und LEDs auf welche von einem anderen System aus zugegriffen werden kann. 
 
    
 \begin{enumerate}

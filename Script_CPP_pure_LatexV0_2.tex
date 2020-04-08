@@ -18,7 +18,7 @@
 %/*                                                                           */
 %/*                                                                           */
 %/*  To DO:                                                                   */
-%/*                                                                           */
+%/*     [[nodiscard]]                                                                      */
 %/*  C++ Runtime, Startup (init, global ctors, global dtors                   */
 %/*  C++ Internas, Effizienz (vtables, exceptions)                            */
 %/*                                                                           */
@@ -67,7 +67,7 @@
 %\usepackage[left=2.5cm,right=2.5cm,top=1cm,bottom=1cm,includeheadfoot]{geometry}
 %alte Rechtschreibung
 \usepackage{german}
-\usepackage[german]{babel}
+%\usepackage[german]{babel}
 \usepackage{color}
 \usepackage{color,listings}
 \usepackage{framed}
@@ -267,6 +267,8 @@ tab=\rightarrowfill}
 \end{framed}
 }
 
+\newcommand{\CodeIndex}[1]{\lstinline{#1}\index{#1}}
+
 % Eigene Umgebung fuer Tabelle mit C-Code
 \newenvironment{CodeTable}{
 \noindent
@@ -364,8 +366,8 @@ In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und 
 In diesem Dokument werden die wichtigsten Sprachkonstrukte von \Cpp kurz vorgestellt. Weitergehende und ausführliche Sprachbeschreibungen finden sich in gängiger Literatur oder im Internet. Die Sprache C wird in den nachfolgenden Kapiteln als bekannt vorausgesetzt, und Sprachmittel von \Cpp welche identisch zu C sind werden
 nur knapp abgehandelt.
 
-\emph{Achtung,} viele in \OviIndex{C99} neu eingeführte Features werden vom offiziellen \Cpp98 Standard nicht
-unterstützt! (Sind aber in vielen Compilern trotzdem zum Teil verfügbar) 
+\emph{Achtung,} viele in \OviIndex{C99/C11} neu eingeführte Features haben noch keinen Eingang in den offiziellen \CppVers{17} Standard 
+gefunden (Da teilweise auch nicht zweckmässig)! (Sind aber in vielen Compilern trotzdem zum Teil verfügbar) 
 
 \section{Ein einfaches \Cpp Programm}
 \begin{CCode}
@@ -384,7 +386,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als static deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in C++11 eingeführten Lambdafunktionen () (Siehe \autoref{subsec:LambdaFunctions}) 
+ein Modul zu beschränken, muss diese als \lstinline{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
 
 \section{Bezeichner und reservierte Namen}
 Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
@@ -512,9 +514,9 @@ Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen w
 
  
 
-\subsection{Beispiel eines kleinen C++-Projektes}
+\subsection{Beispiel eines kleinen \Cpp-Projektes}
 
-Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse SayHello vom Modul sayhello.cpp und muss deshalb die Headerdatei sayhello.h mit '\#include' einbinden. In dieser Headerdatei sind die Schnittstellen der gleichnamigen Klasse deklariert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als static deklariert.
+Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \lstinline{SayHello} vom Modul sayhello.cpp und muss deshalb die Headerdatei sayhello.h mit '\#include' einbinden. In dieser Headerdatei sind die Schnittstellen der gleichnamigen Klasse deklariert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \lstinline{static} deklariert.
 
 \begin{center}
 { \footnotesize
@@ -610,7 +612,7 @@ void SayHello::SayGreeting()                   \linebreak[4]
 
 
 \section{Kommentare}
-\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge //, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit /* eingeleitet und endet mit */. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
+\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \lstinline{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \lstinline{/*} eingeleitet und endet mit \lstinline{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
 \begin{CCode}
 // Ein Zeilenkommentar
 /* dieser Kommentar
@@ -652,31 +654,31 @@ Es gibt zwei Formen für den Includebefehl:
 \#include <......> sucht die Datei im Systemverzeichnis des Compilers und allfälligen weiteren vom Benutzer angegebenen Verzeichnissen. Diese Form wird für Bibliotheksfunktionen verwendet.
 \#include ''.....'' sucht zuerst im gleichen Verzeichnis in welchem die cpp Datei liegt, und dann in denselben Verzeichnissen wie \#include <...>. Diese Form wird für Projektbezogene Dateien (Vom Benutzer selbst geschriebene Dateien) eingesetzt. 
 
-Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \_\_FILE\_\_, \_\_LINE\_\_, \_\_DATE\_\_, \_\_TIME\_\_, \_\_cplusplus und weitere. \_\_cplusplus ist definiert, wenn ein \Cpp Compiler compiliert.
+Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \lstinline{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \lstinline{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
 
-\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie const, constexpr und inline-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
+\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \lstinline{const, constexpr} und \lstinline{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
 
 \section{Datentypen}
 \subsection{Einfache Datentypen}
-Neben den bereits von C bekannten Datentypen wie char, int float usw. gibt es in \Cpp den Datentypen bool für die logischen Werte true und false. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
+Neben den bereits von C bekannten Datentypen wie \lstinline{char, int float} usw. gibt es in \Cpp den Datentypen \lstinline{bool} für die logischen Werte \lstinline{true} und \lstinline{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
 
 Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
 
 
 \subsection{Zeiger und Referenzen}
-\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
+\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \lstinline{&}. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit \lstinline{*} \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
-Seit C++11 gibt es rValueReferenzen, welche effizienteren Umgang mit Temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \&\& bei der Definition.
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \lstinline{&&} bei der Definition.
 
-In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie shared oder unique. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \lstinline{shared} oder \lstinline{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
 Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
 
 Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
 
-Siehe \autoref{sec:Smartpointer} zu Detailierteren Informationen über Smart-Pointer.
+Siehe \autoref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
 
 
 \begin{CCode}
@@ -816,10 +818,10 @@ Beispiel zu Einsatz von shared Pointer:
 \label{subsec:RValueRefs}
 \autoref{subsec:RValueRefs}
 
-\OviIndex{RValue Referenzen} werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
+\OviIndex{RValue Referenzen} werden durch \lstinline{T &&r} (im Gegensatz zu \lstinline{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
 
-Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
 
 Beispiel:
 \begin{CCode}
@@ -865,7 +867,7 @@ Beispiel:
 	
 \end{CCode}
 
-Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
+Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
 \begin{CCode}
 	
 	Demo q(xyz);
@@ -882,7 +884,7 @@ Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen u
 
 
 \subsection{Konstantheit (const)}
-Variablen und Objekte, die nur gelesen werden dürfen, kann man als \OviIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
+Variablen und Objekte, die nur gelesen werden dürfen, kann man als \CodeIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
 
 \begin{CCode}
 	int a;
@@ -924,7 +926,7 @@ Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übe
 	f2(ci); // Ok f2 kann i nicht aendern
 \end{CCode}
 
-Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als const deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit const kann man eine Methode also überladen.
+Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als \lstinline{const} deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit \lstinline{const} kann man eine Methode also überladen.
 \begin{CCode}
 	class MyClass {
 		
@@ -960,8 +962,8 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 	}
 \end{CCode}
 
-Seit \Cpp11 können mit dem Schlüsselwort \OviIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind fast alle Anweisungen erlaubt). Details siehe \autoref{subsubsect:constexpr}.
+Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \lstinline{constexpr}-Funktionen durften nebst der \lstinline{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 
 Beispiel
 \begin{CCode}
@@ -992,9 +994,9 @@ Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
 aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
 (z. B. ein statischer Zugriffszähler) modifiziert.
 
-Für diese Fälle kann ein Attribut als \OviIndex{mutable} gekennzeichnet werden. 
-Attribute mit dem Qualifizierer mutable dürfen, im Gegensatz zu 'normalen'
-Attributen, von const Methoden verändert werden.
+Für diese Fälle kann ein Attribut als \CodeIndex{mutable} gekennzeichnet werden. 
+Attribute mit dem Qualifizierer \lstinline{mutable} dürfen, im Gegensatz zu 'normalen'
+Attributen, von \lstinline{const} Methoden verändert werden.
 
 
 \begin{CCode}
@@ -1023,7 +1025,7 @@ Attributen, von const Methoden verändert werden.
 \end{CCode}
 
 Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
-alles konstant ist. Mutable sollte nur in gut begründeten Ausnahmefällen
+alles konstant ist. \lstinline{Mutable} sollte nur in gut begründeten Ausnahmefällen
 eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
 nicht ändert, aber interne Verwaltungsinformation geändert werden
 muss. 
@@ -1036,7 +1038,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
 
 \subsection{Typsicherere Enummerationen (Seit \Cpp11)}
 \label{subsubsect:TypsichererEnum}
-Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
+Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \lstinline{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
 
 Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
 mehrere Enums dieselben Bezeichner verwenden.   
@@ -1067,7 +1069,7 @@ Neue Syntax:
  \subsection{Initialisiererlisten (Seit \Cpp11)}
  \label{subsubsect:Initialisiererlisten}
  \index{Initialisiererlisten}
- Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
+ Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \lstinline{std::initializer_list} entgegennimmt.
  
  Beispiel:
  \begin{CCode}
@@ -1082,20 +1084,20 @@ Neue Syntax:
  	
  \end{CCode}
  
- Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
+ Das Template \lstinline{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
  
  
  \subsection{Weitere Datentypen}
- Weiter gibt es struct und Enums wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden.
- Klassen werden in einem eigen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
+ Weiter gibt es \lstinline{struct} und \lstinline{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden.
+ Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
  
   \section{Literale}
- Zu den bereits von C bekannten Literalen kommen die bool-Literale true und false, binäre Literale, der Nullzeiger-Typ nullptr (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale \lstinline{true} und \lstinline{false}, binäre Literale, der Nullzeiger-Typ \lstinline{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
  
  \subsubsection{Nullpointer (Seit \Cpp11)}
  \label{subsubsect:nullptr}
- Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
- Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
+ Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
+ Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \lstinline{nullptr} besitzt sogar einen eigenen Datentypen (\lstinline{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \lstinline{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \lstinline{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \lstinline{std::nullptr_t} kann dies umgangen werden.
  
  \begin{CCode}
  	class StrangeClass {
@@ -1279,8 +1281,8 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). Delete darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
-Dynamische Arrays werden am Besten mit std::vector realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
+Mit \lstinline{new} kann dynamisch Speicher reserviert werden, und mit \lstinline{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \lstinline{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \lstinline{new} allozierte Speicherblock muss mit \lstinline{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). \lstinline{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
+Dynamische Arrays werden am Besten mit \lstinline{std::vector} realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
 
 \begin{CCode}
 int *Memory;            // Ein Zeiger auf int definieren
@@ -1338,12 +1340,12 @@ void ConsumeElement(std::unique_ptr<int> e) {
 
 \end{CCode}
 
-Der aktuelle C++ Standard schreibt 3 Varianten für new vor, wobei der Programmierer durch Überladen weitere Varianten hinzufügen, oder bestehende ersetzen kann. die Standardvarianten sind:
+Der aktuelle \Cpp Standard schreibt 3 Varianten für \lstinline{new} vor, wobei der Programmierer durch Überladen weitere Varianten hinzufügen, oder bestehende ersetzen kann. die Standardvarianten sind:
 
 \begin{enumerate}
-	\item das einfache new, dieses erzeugt ein Objekt oder wirft eine std::bad\_alloc Exception wenn der Speicher nicht reserviert werden konnte.
-	\item das new(std::nothrow), dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefaellen verwendet werden, das Exception werfende new führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
-	\item das placement new, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich. Achtung, mit placement new allozierte Speicherblöcke dürfen nicht mit delete freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
+	\item das einfache \lstinline{new}, dieses erzeugt ein Objekt oder wirft eine \lstinline{std::bad_alloc Exception} wenn der Speicher nicht reserviert werden konnte.
+	\item das \lstinline{new(std::nothrow)}, dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefällen verwendet werden, das Exception werfende \lstinline{new} führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
+	\item das placement \lstinline{new}, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich. Achtung, mit placement \lstinline{new} allozierte Speicherblöcke dürfen nicht mit \lstinline{delete} freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
 \end{enumerate}
  
 Beispiele:
@@ -1388,9 +1390,9 @@ aptr->~A();
 \end{CCode}
 
 \section{Ein- und Ausgabe}
-Bildschirmausgaben laufen über (das Objekt) \OviIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \OviIndex{cin} gelesen werden. Um cin oder cout benutzen zu können muss das entsprechende Headerfile mittels \#include <iostream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
-Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich std abgelegt sind, müssen Bibliotheksfunktionen
-und Objekte mit dem prefix std:: (z. B. std::cin) oder 'using namespace std' zugänglich gemacht werden.
+Bildschirmausgaben laufen über (das Objekt) \CodeIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \CodeIndex{cin} gelesen werden. Um \lstinline{cin} oder \lstinline{cout} benutzen zu können muss das entsprechende Headerfile mittels \lstinline{#include <iostream>} eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
+Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich \lstinline{std} abgelegt sind, müssen Bibliotheksfunktionen
+und Objekte mit dem prefix \lstinline{std::} (z. B. \lstinline{std::cin}) oder '\lstinline{using namespace std}' zugänglich gemacht werden.
 
 \begin{CCode}
 #include <iostream>
@@ -1552,7 +1554,7 @@ int main(int argc, char *argv[])
 %
  %
 \section{Hauptprogramm}
-Jedes lauffähige \Cpp Programm muss eine Funktion main() enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente argc und argv enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
+Jedes lauffähige \Cpp Programm muss eine Funktion \lstinline{main()} enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente \lstinline{argc} und \lstinline{argv} enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
 
 \begin{CCode}
 #include <iostream>
@@ -1564,7 +1566,7 @@ int main(int argc, char *argv[])
 } 
 \end{CCode}
 
-Vor dem Aufruf von main() werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von main() werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
+Vor dem Aufruf von \lstinline{main()} werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von \lstinline{main()} werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
 
 \chapter{Variablen}
 \section{Definition von Variablen}
@@ -1584,7 +1586,7 @@ char c;          // Eine Zeichenvariable definieren (8 Bit)
 \subsection{Automatische Typerkennung}
 \label{subsubsect:AutomatischeTyperkennung}
 \index{Automatische Typerkennung}
-Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort \OviIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort \lstinline{auto} benutzt. Mit dem Schlüsselwort \CodeIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
 \begin{CCode}
 	
 	auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
@@ -1661,7 +1663,7 @@ int main()
 Felder sehen so aus wie bei den meisten anderen Programmiersprachen. Achtung, die Zählung der Elemente beginnt bei 0! Zudem werden die Bereichsgrenzen nicht überprüft, man kann also ohne Probleme über die Grenzen eines Arrays hinaus zugreifen, was aber über kurz oder lang zu Systemabstürzen oder unvorhersehbarem Verhalten führt (Negative Indices sind auch möglich). Arrays sind eigentlich nichts anders als konstante Zeiger die auf einen für das Array reservierten Speicherblock zeigen.
 
 Die Arraygrösse muss ein zur Compilezeit berechenbarer Wert sein. Variable Length Arrays sind im
-offiziellen \Cpp Standard (\Cpp 98) nicht enthalten (Wurden in C99 neu eingeführt).
+offiziellen \Cpp Standard (\CppVers{17}) nicht enthalten (Wurden in C99 neu eingeführt).
 
 \begin{CCode}
 char s[100];
@@ -1712,7 +1714,7 @@ if (c > 0) {
 }
 \end{CCode}
 
-Seit \Cpp17 können if (und switch) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
+Seit \Cpp17 können \lstinline{if} (und \lstinline{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 if (int a = 7; b > c) {
    c = a;
@@ -1750,7 +1752,7 @@ do {
  
 \section{for()}
 Die For-Schlaufe ist etwas komplizierter, sie besteht aus 3 Teilen:
-	for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)
+	\lstinline{for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)}
 Die Initialisierungsbefehle werden vor Beginn der Schlaufe einmal ausgeführt. Die Schlaufe wird solange ausgeführt wie die Eintrittsbedingung wahr ist, die Prüfung wird zu Beginn der Schlaufe ausgeführt. Die Repetitionsanweisung wird jeweils am Schlaufenende durchgeführt.
 \begin{CCode}
 c = 0;
@@ -1811,11 +1813,11 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 	
 \end{CCode}
 
-Dies funktioniert für Arrays und alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
+Dies funktioniert für Arrays und alle Objekte, welche \lstinline{begin()} und\lstinline{ end()} definiert haben, wobei \lstinline{begin()} und \lstinline{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
 
 
 \section{switch()}
-Auswahlanweisung, der Programmfluss wird bei demjenigen case - Statement weitergeführt, welches mit dem Wert der switch-Anweisung übereinstimmt. Es können nur Konstanten bei den Case Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein break oder das Ende der Struktur trifft. Wenn nach einem case Statement kein break steht, fährt das Programm mit den Anweisungen des nächsten case weiter. (Dies sollte jedoch vermieden werden). Der Defaultfall kann weggelassen werden.
+Auswahlanweisung, der Programmfluss wird bei demjenigen \lstinline{case} - Statement weitergeführt, welches mit dem Wert der \lstinline{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \lstinline{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \lstinline{break} oder das Ende der Struktur trifft. Wenn nach einem \lstinline{case} Statement kein \lstinline{break} steht, fährt das Programm mit den Anweisungen des nächsten \lstinline{case} weiter. (Dies sollte jedoch vermieden werden). Falls kein \lstinline{case} zutrifft, wird beim \lstinline{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
 \begin{CCode}
 switch (i) {
   case 1: std::cout << "Eins" << std::endl;
@@ -1829,7 +1831,7 @@ switch (i) {
 }
 \end{CCode}
 
-Seit \Cpp17 können switch (und if) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das switch-Statement und die dazugehörigen Blöcke beschränkt:
+Seit \Cpp17 können \lstinline{switch} (und \lstinline{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \lstinline{switch}-Statement (resp. \lstinline{if}-Statement) und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 switch (int a = 7; b) {
    case 1: c = a;
@@ -1846,9 +1848,9 @@ switch (SomeClass SomeObject = GetTheObject(); SomeObject.Value()) {
 
 
 \section{Funktionen}
-Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als void deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (const).
+Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \lstinline{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\lstinline{const}).
 
-Mit 'return x' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit 'return' oder 'return x' kann eine Funktion auch vor ihrem Ende verlassen werden.
+Mit '\lstinline{return x}' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit '\lstinline{return}' oder '\lstinline{return x}' kann eine Funktion auch vor ihrem Ende verlassen werden.
 
 
 \begin{CCode}
@@ -1933,12 +1935,12 @@ void Afunction(int a, char *b = NULL, int c = 17);  // Prototyp
 \end{CCode}
 
 \subsection{Inline-Funktionen}
-Kurze und oft benutzte Funktionen können als \OviIndex{inline} definiert werden (Üblicherweise
+Kurze und oft benutzte Funktionen können als \CodeIndex{inline} definiert werden (Üblicherweise
 wird die ganze Funktion samt Code in diesem Fall in der Headerdatei definiert). Solche Funktionen
 werden (Soweit möglich) vom Compiler an der Aufrufstelle in den Code eingefügt, und nicht
 aufgerufen. Dies führt zu effizienterem und schnellerem Code, kann dafür mehr
 Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei langen
-Funktionen ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
+Funktionen ist \lstinline{inline} nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
  
 Wenn Inlinefunktionen über Pointer aufgerufen oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Funktion direkt aufgerufen wird) 
@@ -2017,8 +2019,8 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 
 
 \subsection{constexpr Funktionen (Seit \Cpp11)}
-Seit \Cpp11 können mit dem Schlüsselwort \OviIndex{constexpr} Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind fast alle Anweisungen erlaubt). Details siehe \autoref{subsubsect:constexpr}.
+Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \lstinline{constexpr}-Funktionen durften neben der \lstinline{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 
 \subsection{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
 \label{subsec:LambdaFunctions}
@@ -2029,11 +2031,11 @@ Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 	[capture](parameters)->return_type{body}
 \end{CCode}
 
-Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
 
-\emph{Parameter} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
+\emph{Parameters} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
-\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
+\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das \lstinline{return}-Statement definiert oder \lstinline{void} wenn kein \lstinline{return}-Statement vorhanden ist. 
 
 \emph{Body} enthält den Code der Funktion.
 
@@ -2066,10 +2068,12 @@ Beispiele
 	);
 \end{CCode}
 Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
-Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
+Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \lstinline{auto} oder \lstinline{decltype} die Variablendefinition.
 
 \chapter{Überladen von Operatoren}
-\index{Überladen von Operatoren}\OviIndex{Operatoren} ( + - * / etc.) gelten in \Cpp als normale Funktionen mit dem Namen operator x, wobei für x jeweils der gewünschte Operator eingesetzt wird. Im speziellen können diese Operatoren für eigene Typen (Also Klassen, resp. Objekte überladen werden)
+\index{Überladen von Operatoren}\OviIndex{Operatoren} ( \lstinline{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \lstinline{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
+\section{Vollständig überladbare Operatoren}
+Die \OviIndex{Operatoren} ( Binäre: \lstinline{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \lstinline{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \lstinline{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. 
 
 \begin{CCode}
 	class Complex {
@@ -2112,28 +2116,28 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 	}
 \end{CCode}
 
-\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (friend-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, muss man beachten, dass der erste Operand immer ein Objekt sein muss.
-Der Ausdruck a + b enspricht somit den Ausdrücken a.operator +(b) oder operator +(a, b), man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
+\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (\lstinline{friend}-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, ist zu beachten, dass der erste Operand immer ein Objekt sein muss.
+Der Ausdruck \lstinline{a + b} entspricht somit den Ausdrücken \lstinline{a.operator +(b)} oder \lstinline{operator +(a, b)}, man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
 
 Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
-Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialitaet. Um Post (i++) und Pre (++i)
-auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
+Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialität. Um Post (\lstinline{i++}) und Pre (\lstinline{++i})
+auseinanderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 
 {
 	\centering
 	\begin{tabular}{ll}
-		prefix (++i): &operator++()\\
-		postfix (i++):&operator++(int)\\
-		prefix (-{}-i): &operator-{}-()\\
-		postfix (i-{}-):&operator-{}-(int)\\
+		prefix (\lstinline!++i!): &\lstinline!operator++()!\\
+		postfix (\lstinline!i++!):&\lstinline!operator++(int)!\\
+		prefix (\lstinline!--i!): &\lstinline!operator--()!\\
+		postfix (\lstinline!i--!):&\lstinline!operator--(int)!\\
 	\end{tabular}
 	
-	Das int Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
+	Das \lstinline{int} Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
 }   
 
-Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn wann immer möglich konstante Referenzen benutzt werden)
+Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn, wann immer möglich, konstante Referenzen benutzt werden)
 
-Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale new/delete, oder der Operator new/delete für eine bestimmte Klasse überladen werden:
+Die Operatoren \lstinline{new} und \lstinline{delete} lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale \lstinline{new}/\lstinline{delete}, oder der Operator \lstinline{new}/\lstinline{delete} für eine bestimmte Klasse überladen werden:
 
 \begin{CCode}
 	class SpecialMemory {
@@ -2171,19 +2175,26 @@ Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sic
 	
 \end{CCode}
 
-Dabei muss beachtet werden, dass sämtliche globalen Varianten von new für eine Klasse verdeckt werden, sobald auch nur eine Variante
-von new in dieser Klasse neu definiert wird.
+Dabei muss beachtet werden, dass sämtliche globalen Varianten von \lstinline{new} für eine Klasse verdeckt werden, sobald auch nur eine Variante
+von \lstinline{new} in dieser Klasse neu definiert wird.
 
-Eine eigene Speicherverwaltung wird nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
+Eine eigene Speicherverwaltung wird üblicherweise nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
 
-Es ist auch möglich, das Placement-new zu überladen, oder neue Versonen von new mit anderen Argumentenlisten zu definieren.
+Es ist auch möglich, das Placement-\lstinline{new} zu überladen, oder neue Versonen von \lstinline{new} mit anderen Argumentenlisten zu definieren.
+\section{Überladbare Operatoren mit veränderter Funktionalität}
+Der Operator \lstinline{->()} ist ein unärer Operator und muss wieder einen Pointer auf ein Objekt zurückliefern, auf welchen erneut \lstinline{->} mit dem original Membernamen angewendet wird (Wobei möglicherweise erneut ein überladener \lstinline{operator ->} zum Zuge kommen kann).
+Die Operatoren \lstinline{&&, ||} und \lstinline{,} verlieren ihre speziellen Auswertungsregeln, es werden immer beide Operanden ausgewertet, so wie bei den restlichen binären Operatoren (Üblicherweise wird bei \lstinline{&&} und \lstinline{||} nur der erste Operand ausgewertet, wenn dadurch das Ergebnis schon klar ist, und beim \lstinline{,} wird üblicherweise der erste Operand zuerst ausgewertet. 
+\section{Nicht überladbare Operatoren}
+Die folgenden Operatoren sind grundsätzlich nicht überladbar:
+\lstinline{:: . .* sizeof alignof typeid ?:}
+
 
 \section{Benutzerdefinierte Literale (Seit \Cpp11)}
 \index{Benutzerdefinierte Literale}
 \label{subsubsect:BenutzerdefinierteLiterale}
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
 
-Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
+Numerische Literale können dabei als Strings, als \lstinline{unsigned long long} oder als \lstinline{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
 \begin{CCode}
 	// Erhaelt einen String mit der Zeichenkette vor dem Suffix
@@ -4751,7 +4762,7 @@ Die Standarbibliothek ist eine umfangreiche Klassen- und Templatesammlung, ähnli
 Sie stellt unter anderem Elemente aus der vormaligen STL (Datenhaltung und Datenverarbeitung), Strings, Ein- Ausgabe über Streams, Numerische Funktionen, Zufallszahlen, Multithreading und Reguläre Ausdrücke zur Verfügung. Einige dieser Aspekte werden in den nachfolgenden Kapiteln näher vorgestellt.   
 \section{Strings}
 \label{sect:strings}
-\OviIndex{Strings} werden in C++ in Form der Klasse string unterstützt. Diese Klasse
+\OviIndex{Strings} werden in \Cpp in Form der Klasse string unterstützt. Diese Klasse
 bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
 das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
 vereinfacht.
@@ -4976,6 +4987,8 @@ Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implemen
 %In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map sowie einige Algorithmen vorgestellt:
 
 \subsection{Kurzübersicht zu den Iteratoren aus der \Cpp - Standardbibliothek}
+\label{subsect:Iteratoren}
+
 Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen ++ und * definiert sind. Bidirektionale Iteratoren bieten noch -{}- an, und Random-Access-Iteratoren haben weiter die Operatoren [] und += definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
 
 Mögliche Implementationen von Iteratoren:
@@ -5226,7 +5239,7 @@ Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperat
 \subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
 \subsubsection{for\_each()}
 Der wohl einfachste Algorithmus ist for\_each. Mit \OviIndex{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. for\_each benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer oder ein Objekt mit überladenem () operator.
-Die Funktion oder der Operator() wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \OviIndex{mem\_fn()} aus der Standardlibrary benutzt werden (Vor C++1 \OviIndex{mem\_fun()}).
+Die Funktion oder der Operator() wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \OviIndex{mem\_fn()} aus der Standardlibrary benutzt werden (Vor \CppVers{11} \OviIndex{mem\_fun()}).
 \begin{CCode}
 
 #include <algorithm>
@@ -5534,7 +5547,7 @@ int main()
 
 \end{CCode}
 
-Anstelle von std::launch::async kann async() auch std::launch::deferred übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald get() aufgerufen wird (get() ruft somit die übergebene Funktion auf). Wenn async() ohne eine dieser Policies aufgerufen wird (std::async(HardWorkingFunction, 1, 10000) ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von get() ausgeführt wird.
+Anstelle von \lstinline{std::launch::async} kann async() auch \lstinline{std::launch::deferred} übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald \lstinline{get()} aufgerufen wird (\lstinline{get()} ruft somit die übergebene Funktion auf). Wenn \lstinline{async()} ohne eine dieser Policies aufgerufen wird (\lstinline{std::async(HardWorkingFunction, 1, 10000)} ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von \lstinline{get()} ausgeführt wird.
 
 \subsection{Mutex und conditional Variables}
 Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex} und \OviIndex{Conditional Variables} zur Verfügung, sowie dazugehörende Manipulationsfunktionen.
@@ -5542,7 +5555,7 @@ Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mu
 \subsection{Atomic}
 \OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt) durchgeführt werden, und damit Race Konditionen vermieden werden können.
 
-\chapter{C++ in Embedded Systemen}
+\chapter{\Cpp in Embedded Systemen}
 \section{Startup Code}
 
 Im Vergleich zu C muss der Startupcode von  \Cpp wesentlich mehr Arbeit leisten. Bei
@@ -5960,7 +5973,7 @@ x.operator=(t2);
 Nebst den beiden Temporaries t1 und t2 werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
 
 Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
-Mit den in C++11 eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \autoref{subsec:RValueRefs}).
+Mit den in \CppVers{11} eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \autoref{subsec:RValueRefs}).
 
 \section{Interrupt und Multithreading}
 
@@ -5978,29 +5991,29 @@ In Multithreadingumgebungen muss sichergestellt werden, dass Konstruktoren, Dest
 \section{Persistenz}
 Wenn Objekte ihren Zustand bei einem Stromausfall (Ausschalten) behalten sollen, spricht man von Persistenz. Dazu kann man Konstruktoren entwerfen, welche ihre Daten aus einem Dateisystem, FLASH-Speicher oder Akku-gepuffertem RAM holen, und entsprechende Funktionen, welche dieses Daten bei Bedarf auf diese nichtflüchtigen Medien speichern. Placement new() oder eigene new/delete Operatoren können auch benutzt werden, um Objekte in persistentem Speicher zu erzeugen, wobei bei jedem Systemstart geprüft werden muss, ob der Speicherinhalt noch gültig ist, bevor er wieder verwendet wird.  
 
-\section{Embedded C++}
-Im Jahre 1996 schloss sich eine Gruppe von Mikrocontrollerherstellern und Compilerbauer zum \OviIndex{Embedded C++ Technical Commitee} zusammen, mit dem Ziel ein für Embedded Systeme optimiertes C++ Subset unter dem Namen \OviIndex{Embedded C++} zu standardisieren. Die Sprache sollte ein echtes Subset von C++ sein, bei welchem alle für Embeddedsysteme ungeeignete Sprachelemente entfernt wurden.
-Die Sprache basiert auf dem standard C++98, es werden aber folgende Elemente nicht unterstützt:
+\section{Embedded \Cpp}
+Im Jahre 1996 schloss sich eine Gruppe von Mikrocontrollerherstellern und Compilerbauer zum \OviIndex{Embedded \Cpp Technical Commitee} zusammen, mit dem Ziel ein für Embedded Systeme optimiertes \Cpp Subset unter dem Namen \OviIndex{Embedded \Cpp} zu standardisieren. Die Sprache sollte ein echtes Subset von \Cpp sein, bei welchem alle für Embeddedsysteme ungeeignete Sprachelemente entfernt wurden.
+Die Sprache basiert auf dem Standard \CppVers{98}, es werden aber folgende Elemente nicht unterstützt:
 
 \begin{itemize}
 	 \item  Mehrfachvererbung
    \item  Virtuelle Basisklassen
    \item  Run-time type information (typeid)
-   \item  Neue Typecast-Syntax (static\_cast, dynamic\_cast, reinterpret\_cast and const\_cast)
+   \item  Neue Typecast-Syntax (\lstinline{static_cast, dynamic_cast, reinterpret_cast and const_cast})
    \item  Das Schlüsselword mutable
    \item  Namensbreiche
    \item  Exceptions
    \item  Templates
 \end{itemize}
 
-Allerdings gibt es seit 2002 keine Aktualisierungen von embedded C++ mehr, es wird dennoch von
-einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigestellt, einen Standard-Compiler zu verwenden, und je nach Anwendung und Limitationen des Zielsystems auf gewisse C++-Elemente zu verzichten. Möglicherweise können spezialisierte Embedded-C++ Compiler besser optimieren und effizienteren Code generieren weil bestimmte Sprachmittel überhaupt nicht unterstützt werden müssen.
+Allerdings gibt es seit 2002 keine Aktualisierungen von embedded \Cpp mehr, es wird dennoch von
+einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigestellt, einen Standard-Compiler zu verwenden, und je nach Anwendung und Limitationen des Zielsystems auf gewisse \Cpp-Elemente zu verzichten. Möglicherweise können spezialisierte Embedded-\Cpp Compiler besser optimieren und effizienteren Code generieren weil bestimmte Sprachmittel überhaupt nicht unterstützt werden müssen.
 
-Ein Embedded-C++ Programm ist ein subset von standard C++ und lässt sich mit jedem standardkonformen C++ Compiler übersetzen.
+Ein Embedded-\Cpp Programm ist ein Subset von Standard \Cpp und lässt sich mit jedem standardkonformen \Cpp Compiler übersetzen.
 
 \chapter{Standardisierungen}
-\section{\Cpp11}
-\index{c++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige dieser Neuerungen zusammenfassend aufgeführt.
+\section{\CppVers{11}}
+\index{C++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige dieser Neuerungen zusammenfassend aufgeführt.
 
 \subsection{Neuerungen}
 \begin{itemize}
@@ -6332,7 +6345,7 @@ Siehe \autoref{subsubsect:VereinfachteObjektkonstruktion}
 
 \item{Kontrolliertes Überschreiben von Funktionen},
 %\label{subsubsect:KontrolliertesUeberschreiben}
-\autoref{subsubsect:KontrolliertesUeberschreiben}
+Siehe \autoref{subsubsect:KontrolliertesUeberschreiben}
 %Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
 %
 %Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
@@ -6357,7 +6370,7 @@ Siehe \autoref{subsubsect:VereinfachteObjektkonstruktion}
 
 \item{Nullpointer},
 %\label{subsubsect:nullptr}
-\autoref{subsubsect:nullptr}
+Siehe \autoref{subsubsect:nullptr}
 %Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
 %Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
 %
@@ -6657,9 +6670,9 @@ Siehe \autoref{subsubsect:ControlAutoMember}
 
 
 
-\section{\Cpp 14}
+\section{\CppVers{14}}
 \index{C++ 14}
-Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Dieser bietet einige kleinere Verbesserungen sowie Korrekturen an \Cpp 11 an.
+Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Dieser bietet einige kleinere Verbesserungen sowie Korrekturen an \CppVers{11} an.
  
 
 \subsection{Neuerungen}
@@ -6678,7 +6691,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 	
 \end{itemize}
 
-\section{\Cpp 17}
+\section{\CppVers{17}}
 Im Dezember 2017 publiziert.
 \begin{itemize}
     \item Addition of a default text message for static\_assert
@@ -6711,7 +6724,7 @@ Im Dezember 2017 publiziert.
 
     \item Uniform container access
 
-    \item Definition of "contiguous iterators"
+    \item Definition of ''contiguous iterators''
 
     \item Removal of some deprecated types and functions like std::auto\_ptr, std::random\_shuffle or old function adaptors
 
@@ -6744,7 +6757,7 @@ Im Dezember 2017 publiziert.
     \item A weaker version of fixed order-of-evaluation for expressions 
     \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
     
-    \item C++17 is based on C11 instead of C99
+    \item \CppVers{17} is based on C11 instead of C99
     \item destroy(\_at|\_n), uninitialized\_move(\_n), uninitialized\_value\_construct(\_n), uninitialized\_default\_construct(\_n)
     \item Splicing for map<>,unordered\_map<>, set<>, and unordered\_set<>
     \item Reserve std[0-9]+ for future standard libraries
@@ -6752,7 +6765,7 @@ Im Dezember 2017 publiziert.
 
 \end{itemize}
 
-\section{\Cpp 20}
+\section{\CppVers{20}}
 Bereits in der Planungs- und Diskussionsphase.
 
 
@@ -6899,7 +6912,7 @@ Datei Test.cpp
 \begin{CodeTable}
 \lstinline$#include "Auto.hpp"$&	Einbinden der Header-Datei (Klassen Deklaration) Auto.hpp. Wir wollen Objekte vom Typ Auto verwenden. Mit '''' eingegrenzte Dateien werden zuerst im lokalen Projektverzeichnis gesucht.\\
 \lstinline$#include <iostream>$&	Einbinden der Header-Datei iostream. Dabei handelt es sich um eine Systembibliothek, die Ein- und Ausgabefunktionen über die Konsole (Tastatur/Bildschirm) zur Verfügung stellt (cin und cout).\\
-\lstinline$int main(int argc, char *argv[])$&	Hauptprogramm eines jeden C/C++ Projektes. (Jede C/C++ Programm muss eine Funktion main() besitzen, diese wird automatisch beim Start des Programms aufgerufen.\\
+\lstinline$int main(int argc, char *argv[])$&	Hauptprogramm eines jeden C/\Cpp Projektes. (Jede C/\Cpp Programm muss eine Funktion \lstinline$main()$ besitzen, diese wird automatisch beim Start des Programms aufgerufen.\\
 \lstinline${$&\\
 \lstinline$   Auto MeinAuto(100);$&	Erzeugen eines lokalen Auto Objektes mit dem Namen MeinAuto, und dem Initialisierungswert 100 (Gewicht)\\
 \lstinline$   Auto *DeinAuto;	$&Definieren eines Zeigers auf ein Auto Objekt\\
@@ -6984,7 +6997,7 @@ Datei Testerb.cpp
 \begin{CodeTable}
 \lstinline$   #include "LuxusAuto.hpp"	$&Einbinden der Header-Datei LuxusAuto.hpp. Wir wollen Objekte vom Typ LuxusAuto verwenden. .\\
 \lstinline$   #include <iostream>	$&Einbinden der Header-Datei iostream. \\
-\lstinline$   int main(int argc, char *argv[])	$&Hauptprogramm eines jeden C/C++ Projektes\\
+\lstinline$   int main(int argc, char *argv[])	$&Hauptprogramm eines jeden C/\Cpp Projektes\\
 \lstinline$   {$&\\
 \lstinline$      LuxusAuto MeinAuto(100, 20);	$&Erzeugen eines lokalen LuxusAuto Objektes mit dem Namen MeinAuto, und dem Initialisierungswert 100 (Gewicht) und 20 (Temperatur)\\
 \lstinline$      Auto *DeinAuto;	$&Definieren eines Zeigers auf ein Auto Objekt\\
@@ -7203,7 +7216,7 @@ int main(int argc, char*argv[])
 
 Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
 
-Seit C++14 können Objekte direkt mit \OviIndex{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in make\_unique versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
+Seit \CppVers{14} können Objekte direkt mit \OviIndex{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in make\_unique versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
 \begin{CCode}
 
 

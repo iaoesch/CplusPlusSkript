@@ -3,10 +3,10 @@ Type=TeXnicCenterProjectInformation
 Version=4
 
 [ProjectInfo]
-MainFile=Script_CPP_pure_LatexV0_1.tex
+MainFile=Script_CPP_pure_LatexV0_2.tex
 UseBibTeX=0
 UseMakeIndex=1
 ActiveProfile=LaTeX ⇨ PDF
 ProjectLanguage=de
-ProjectDialect=CH
+ProjectDialect=CH_frami
 
