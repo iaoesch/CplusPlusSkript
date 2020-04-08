@@ -10,6 +10,8 @@
 %/*               01.01.2010  IO UML / CPP separated                          */
 %/*               01.01.2013  IO C++11, Enbedded added                        */
 %/*               05.11.2015  IO new actualized                               */
+%/*               16.02.2018  IO actualized, prefer managed resources         */
+%/*               18.02.2018  IO C11 inicht mehr separat, sonderin entsprechende Kapitel integriert         */
 %/*                                                                           */
 %/*                                                                           */
 %/*  File       : ScriptOOPLatexv0_1.tex                                      */
@@ -148,7 +150,7 @@
 %\renewcommand{\headrulewidth}{0.5pt}
 
 %Fußzeile links bzw. innen
-\ifoot{Version 1.3\hspace{2ex} I. Oesch}
+\ifoot{Version 1.4\hspace{2ex} I. Oesch}
 %\fancyfoot[L]{Version 1.3\hspace{2ex} I. Oesch}
 %Fußzeile mittig
 \cfoot{\today}
@@ -163,6 +165,7 @@
 
 %Eigene Befehle
 \newcommand{\Cpp}{C{\texttt{++}} }
+\newcommand{\CppVers}[1]{C{\texttt{++}}{#1} }
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
 
@@ -383,6 +386,118 @@ In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlo
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
 ein Modul zu beschränken, muss diese als static deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in C++11 eingeführten Lambdafunktionen () (Siehe \autoref{subsec:LambdaFunctions}) 
 
+\section{Bezeichner und reservierte Namen}
+Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
+
+Bezeichner welche mit einem Unterstrich gefolgt von einem Grossbuchsteben beginnen, oder zwei aufeinanderfolgende Unterstriche enthalten (Irgendwo im Namen) sind in jeden Kontext reserviert, Bezeichner, welche mit einem Unterstrich beginnen dürfen nicht im globalen Namensbereich verwendet werden.
+
+Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
+(Mit TS markierte Elemente sind experimentelle Erweiterungen und könnten in einem späteren Standard integriert werden.):
+
+
+\OviIndex{Schlüsselwörter} von \Cpp
+\begin{multicols}{4}
+%\begin{itemize}[label={}]
+\begin{description}
+\item alignas {\tiny (\Cpp11)}
+\item alignof {\tiny (\Cpp11)}
+\item and
+\item and\_eq\
+\item asm
+\item atomic\_cancel {\tiny (TS)}
+\item atomic\_commit {\tiny (TS)}
+\item atomic\_noexcept {\tiny (TS)}
+\item auto
+\item bitand
+\item bitor
+\item bool
+\item break
+\item case
+\item catch
+\item char
+\item char16\_t {\tiny (\Cpp11)}
+\item char32\_t {\tiny (\Cpp11)}
+\item class
+\item compl
+\item concept {\tiny (\Cpp20)}
+\item const
+\item constexpr {\tiny (\Cpp11)}
+\item const\_cast
+\item continue
+\item co\_await {\tiny (TS)}
+\item co\_return {\tiny (TS)}
+\item co\_yield {\tiny (TS)}
+\item decltype {\tiny (\Cpp11)}
+\item default
+\item delete
+\item do
+\item double
+\item dynamic\_cast
+\item else
+\item enum
+\item explicit
+\item export
+\item extern
+\item false
+\item float
+\item for
+\item friend
+\item goto
+\item if
+\item import {\tiny (TS)}
+\item inline
+\item int
+\item long
+\item module {\tiny (TS)}
+\item mutable
+\item namespace
+\item new
+\item noexcept {\tiny (\Cpp11)}
+\item not
+\item not\_eq
+\item nullptr {\tiny (\Cpp11)}
+\item operator
+\item or
+\item or\_eq
+\item private
+\item protected
+\item public
+\item register
+\item reinterpret\_cast
+\item requires {\tiny (\Cpp20)}
+\item return
+\item short
+\item signed
+\item sizeof
+\item static
+\item static\_assert {\tiny (\Cpp11)}
+\item static\_cast
+\item struct
+\item switch
+\item synchronized {\tiny (TS)}
+\item template
+\item this
+\item thread\_local {\tiny (\Cpp11)}
+\item throw
+\item true
+\item try
+\item typedef
+\item typeid
+\item typename
+\item union
+\item unsigned
+\item using
+\item virtual
+\item void
+\item volatile
+\item wchar\_t
+\item while
+\item xor
+\item xor\_eq 
+\end{description}
+\end{multicols}
+
+
 \section{Module}
 Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
 
@@ -406,7 +521,7 @@ Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cp
 \parbox[t]{6cm}{sayhello.hpp}
 
 \fbox{\parbox[t]{6cm}{
-\tt
+\ttfamily
 \begin{flushleft}
 \#ifndef SAYHELLO\_HPP                     \linebreak[4]
 \#define SAYHELLO\_HPP                     \linebreak[4]
@@ -435,7 +550,7 @@ class SayHello \{                          \linebreak[4]
 \parbox[t]{6cm}{sayhello.cpp}
 
 \fbox{\parbox[t]{6cm}{
-\tt
+\ttfamily
 \begin{flushleft}
 \colorbox{Mygray}{\#include ''sayhello.hpp''   \linebreak[4]}
                                                \linebreak[4]
@@ -449,7 +564,7 @@ int main(int argc, char *argv[])               \linebreak[4]
 }}
 \hfill
 \fbox{\parbox[t]{6cm}{
-\tt
+\ttfamily
 \begin{flushleft}
 \#include <iostream>                           \linebreak[4]
 \colorbox{Mygray}{\#include ''sayhello.hpp''   \linebreak[4]}
@@ -506,6 +621,8 @@ void SayHello::SayGreeting()                   \linebreak[4]
 \section{Präprozessorbefehle}
 Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
 
+%#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
+
 \begin{CCode}
 #include "test.h"   // der wohl wichtigste Befehl, fuegt die angegebene Datei an 
                     // dieser Stelle in den Code ein.
@@ -514,8 +631,6 @@ Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich
 #else               // Kommentar behandelt, also vom Compiler ignoriert
 ...
 #endif
-
-%#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
 
 #ifdef DEBUG        // Bedingte Kompilierung
 ... // Wird nur compiliert wenn Makro Debug definiert ist
@@ -540,6 +655,515 @@ Es gibt zwei Formen für den Includebefehl:
 Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \_\_FILE\_\_, \_\_LINE\_\_, \_\_DATE\_\_, \_\_TIME\_\_, \_\_cplusplus und weitere. \_\_cplusplus ist definiert, wenn ein \Cpp Compiler compiliert.
 
 \emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie const, constexpr und inline-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
+
+\section{Datentypen}
+\subsection{Einfache Datentypen}
+Neben den bereits von C bekannten Datentypen wie char, int float usw. gibt es in \Cpp den Datentypen bool für die logischen Werte true und false. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
+
+Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
+
+
+\subsection{Zeiger und Referenzen}
+\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
+Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
+Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
+
+Seit C++11 gibt es rValueReferenzen, welche effizienteren Umgang mit Temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \&\& bei der Definition.
+
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie shared oder unique. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+
+Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
+
+Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
+
+Siehe \autoref{sec:Smartpointer} zu Detailierteren Informationen über Smart-Pointer.
+
+
+\begin{CCode}
+	int j, k, l;    // Drei Integer Variablen definieren
+	int &r = j;     // Eine Referenz auf j definieren
+	int *ptr;       // Ein Zeiger auf int definieren
+	
+	j = 100;        // Werte an j, k und l Zuweisen
+	k = 200;
+	l = 300;
+	
+	std::cout << r;      // Wert ausgeben der von r referenziert wird (j)
+	
+	ptr = &k;       // Addresse von k an Ptr zuweisen
+	std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+	
+	ptr = &l;       // Addresse von l an Ptr zuweisen
+	std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+	
+	void DoSomething(int &a, const int &b) 
+	{
+		a = b + 3; // b ist const Referenz, also nur lesbar
+		// a ist auch schreibbar
+	}
+	
+	void DoSomethingElse(int &&a) // rValueReferenzen
+	{
+	}
+	
+	
+	DoSomething(j, k); // j wird von DoSomething veraendert
+\end{CCode}
+
+Beispiel zu Einsatz von unique Pointer:
+\begin{CCode}
+	
+	#include <memory>  // definiton von unique_ptr
+	
+	std::unique_ptr<A> f(int i) 
+	{
+		return std::make_unique<A>(i);   // UniquePointer erzeugt Objekt und übernimmt Verwaltung
+	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+	
+	void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
+	{
+		// Do something;   
+	} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
+	
+	int TestUnique(int argc, char*argv[])
+	{
+		std::unique_ptr<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
+		
+		f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
+		// wird gelöscht, ohne seinen Inhalt weitergegeben zu 
+		// haben -> Destruktor von UniquePointer loescht
+		// Objekt auf welches der UniquePointer zeigt.  
+		
+		spwrong = f(13);       // Zuweisung verboten
+		
+		std::unique_ptr<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
+		// sp1 uebergeben bevor der zurueckgegebene UniquePointer 
+		// gelöscht wird -> Destruktor von UniquePointer loescht
+		// nichts 
+		
+		sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
+		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+		
+		try {
+			std::unique_ptr<A> p = std::make_unique<A>(12);
+			g(p);              // Kopie Verboten
+			
+			g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
+			// (Movekonstruktor)
+			
+			g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
+			// p verliert Besitz von Objekt und wird zu nullptr
+			
+			std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
+			
+			std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
+			// zuweisen
+			
+			// Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
+			//                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
+		} catch(...) {  
+		}                    
+	}
+\end{CCode}
+Beispiel zu Einsatz von shared Pointer:
+\begin{CCode}
+	#include <memory>  // definiton von shared_ptr
+	std::shared_ptr<A> f(int i) 
+	{
+		return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
+	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+	
+	void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
+	{
+		// Do something;   
+	} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
+	// und Objekt freigegeben falls counter 0 wird.
+	
+	int Test(int argc, char*argv[])
+	{
+		std::shared_ptr<A> sp1;
+		
+		f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
+		// wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
+		// -> Destruktor von Sharedpointer loescht
+		// Objekt auf welches der Sharedpointer zeigt falls counter
+		// 0 wird.  
+		
+		sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
+		// uebergeben bevor der zurueckgegebene Sharedpointer 
+		// gelöscht wird -> Destruktor von Sharedpointer
+		// dekrementiert counter, aber loescht nichts 
+		
+		sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
+		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+		
+		try {
+			std::shared_ptr<A> p = std::make_shared<A>(12);
+			g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
+			// counter wird inkrementiert, p ist weiterhin gueltig
+			std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
+			// kopiert, counter wird inkrementiert, sp1 ist weiterhin 
+			// gueltig
+			// Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
+			//                    freigegeben wann auch immer der letzte Pointer darauf
+			// ungueltig wird  
+		} catch(...) {  
+		}                    
+	}
+\end{CCode}
+
+\subsubsection{RValue Referenzen (Seit \Cpp11)}
+\label{subsec:RValueRefs}
+\autoref{subsec:RValueRefs}
+
+\OviIndex{RValue Referenzen} werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
+Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
+
+Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+
+Beispiel:
+\begin{CCode}
+	
+	
+	class Demo {
+		// ...
+		Demo(const Demo &Src);            // Kopierkonstruktor
+		Demo(Demo&&Src);                  // Move-Konstruktor
+		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
+		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
+	};	
+	
+	
+	Demo f1() {
+		
+		...
+		
+		return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
+		// Hier kommt Move-Konstruktor zum Zug
+		// Welcher Inhalt vom temporaeren Objekt
+		// uebernimmt statt kopiert
+		
+	}
+	
+	void f2(Demo d) {
+		
+		...
+		
+	}
+	
+	
+	f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
+	// Hier kommt Move-Konstruktor zum Zug
+	// Welcher Inhalt vom temporaeren Objekt
+	// uebernimmt statt kopiert
+	
+	
+	Demo q(xyz);
+	
+	f2(q);                    // Kein temporaeres Objekt, normaler
+	// Kopierkonstruktor wird verwendet
+	
+\end{CCode}
+
+Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
+\begin{CCode}
+	
+	Demo q(xyz);
+	
+	f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
+	// betrachten), Movekonstruktor wird verwendet
+	
+	q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
+	// keine Resourcen mehr, kann gefaehrlich sein 
+	
+	q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
+	
+\end{CCode}
+
+
+\subsection{Konstantheit (const)}
+Variablen und Objekte, die nur gelesen werden dürfen, kann man als \OviIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
+
+\begin{CCode}
+	int a;
+	const int ci = 4;   // Konstante, kann nicht geaendert werden
+	a = ci + 3;         // OK, nur lesen
+	ci = 19;            // Error, aendern nicht erlaubt
+\end{CCode}
+
+Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übergeben werden, sonst wäre es ja möglich, die Konstantheit zu umgehen. Nichtkonstante Objekte dürfen jederzeit an Zeiger oder Referenzen auf konstante Objekte zugewiesen werden.
+\begin{CCode}
+	int a;
+	const int ci = 4;     // Konstante, kann nicht geaendert werden
+	const int &cr = ci;   // Referenz auf konstantes int, zeigt auf ci, alles OK
+	const int *cptr;      // Zeiger auf konstantes int
+	int * const ccp = &a; // Konstanter Zeiger auf int (const muss nach * sein)
+	int *ptr;             // Zeiger auf int
+	int &r = ci;          // Error, ci koennte sonst via r geaendert werden
+	const int &cra = a;   // Referenz auf konstantes int, zeigt auf a, alles OK
+	cr = 19;              // Error, aendern nicht erlaubt
+	cra = 17;             // Error, aendern nicht erlaubt (cra ist konstante Referenz)
+	ptr = &ci;            // Error, ci ist konstant, *ptr nicht
+	cptr = &ci;           // Ok (Zeiger selbst ist nicht konstant)
+	*cptr = 4;            // Error, Zeiger zeigt auf Konstant
+	cptr++;               // Ok (Zeiger selbst ist nicht konstant)
+	*ccp = 4;             // Ok, Zeiger zeigt auf nicht konstant)
+	ccp++;                // Error Zeiger ist konstant
+	
+	void f1(int &i) 
+	{ 
+		i++; 
+	}
+	
+	void f2(const int &i) 
+	{ 
+		i++; // Error, i ist Referenz auf konstantes int
+	}
+	
+	f1(ci); // Error, Argument von f1 ist nich konstant, koennte i aendern
+	f2(ci); // Ok f2 kann i nicht aendern
+\end{CCode}
+
+Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als const deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit const kann man eine Methode also überladen.
+\begin{CCode}
+	class MyClass {
+		
+		int i;
+		
+		public:
+		int  Test(void);         // Nur-Lese Methode, aber nicht als const deklariert
+		int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
+		void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
+	};
+	
+	int MyClass::Test(void) 
+	{ 
+		return (i == 0);
+	}
+	
+	int MyClass::Read(void) const
+	{ 
+		i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
+		return i;   // Ok, i wird nur gelesen
+	}
+	
+	void MyClass::Write(int n) 
+	{ 
+		i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
+	}
+	
+	void f1(const MyClass& mc)    // f1 veraendert Argument nicht 
+	{
+		int i = mc.Read();  //Ok, Read() ist Konstant, nur lesen
+		int j = mc.Test();  //Error, Test() ist nicht Konstant
+		mc.Write();         //Error, Write() ist nicht Konstant 
+	}
+\end{CCode}
+
+Seit \Cpp11 können mit dem Schlüsselwort \OviIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind fast alle Anweisungen erlaubt). Details siehe \autoref{subsubsect:constexpr}.
+
+Beispiel
+\begin{CCode}
+	
+	constexpr int GetLength() 
+	{
+		return 15;
+	}
+	
+	int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
+	
+	constexpr int MakeDouble(int x) 
+	{
+		return x * 2;
+	}
+	
+	int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
+	
+	
+	constexpr double Erdanziehung = 9.81;
+	constexpr double MondAnziehung = Erdanziehung / 6.0;
+\end{CCode}
+
+
+
+\subsubsection{Umgehung der Konstantheit (Mutable)}
+Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
+aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
+(z. B. ein statischer Zugriffszähler) modifiziert.
+
+Für diese Fälle kann ein Attribut als \OviIndex{mutable} gekennzeichnet werden. 
+Attribute mit dem Qualifizierer mutable dürfen, im Gegensatz zu 'normalen'
+Attributen, von const Methoden verändert werden.
+
+
+\begin{CCode}
+	class MyClass {
+		
+		mutable int NumberOfReadAccesses;
+		int i;
+		
+		public:
+		int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
+		void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
+	};
+	
+	int MyClass::Read(void) const
+	{ 
+		NumberOfReadAccesses++;  // OK, mutable darf von const-Methode geaendert werden 
+		i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
+		return i;   // Ok, i wird nur gelesen
+	}
+	
+	void MyClass::Write(int n) 
+	{ 
+		i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
+	}
+	
+\end{CCode}
+
+Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
+alles konstant ist. Mutable sollte nur in gut begründeten Ausnahmefällen
+eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
+nicht ändert, aber interne Verwaltungsinformation geändert werden
+muss. 
+
+Eine mögliche Anwendung wäre ein Proxy-Objekt, das beim Lesen
+effektiv Daten von einer Datei in einen lokalen Cache lädt, oder die
+Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
+ändert seinen Wert schliesslich nicht.
+
+
+\subsection{Typsicherere Enummerationen (Seit \Cpp11)}
+\label{subsubsect:TypsichererEnum}
+Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
+
+Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
+mehrere Enums dieselben Bezeichner verwenden.   
+
+Neue Syntax:
+\begin{CCode}
+	
+	enum class Aufzaehlung {
+		Item1,
+		Item2,
+		Item3 = 100,
+		Item4         // Erhaelt den Wert 101 
+	};
+	
+	int i = Aufzaehlung::Item2;          // Compilerfehler
+	
+	Aufzaehlung a = Item1;               // Compilerfehler
+	Aufzaehlung a = Aufzaehlung::Item1;  // OK
+	a = 12;                              // Compilerfehler
+	
+	if (a == 17)                         // Compilerfehler
+	
+	// Angabe der gewuenschte Datengrösse
+	enum class Enum2 : unsigned int {Item1, Item2};
+	
+\end{CCode}
+ 
+ \subsection{Initialisiererlisten (Seit \Cpp11)}
+ \label{subsubsect:Initialisiererlisten}
+ \index{Initialisiererlisten}
+ Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
+ 
+ Beispiel:
+ \begin{CCode}
+ 	
+ 	class DemoClass {
+ 		public:
+ 		DemoClass(std::initializer_list<int> list);
+ 	};
+ 	
+ 	
+ 	DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
+ 	
+ \end{CCode}
+ 
+ Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
+ 
+ 
+ \subsection{Weitere Datentypen}
+ Weiter gibt es struct und Enums wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden.
+ Klassen werden in einem eigen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
+ 
+  \section{Literale}
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale true und false, binäre Literale, der Nullzeiger-Typ nullptr (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
+ 
+ \subsubsection{Nullpointer (Seit \Cpp11)}
+ \label{subsubsect:nullptr}
+ Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
+ Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
+ 
+ \begin{CCode}
+ 	class StrangeClass {
+ 		public:
+ 		void DoSomething(float *p);
+ 		void DoSomething(int *p);
+ 	};
+ 	
+ 	StrangeClass sc;
+ 	int a;
+ 	
+ 	sc.DoSomething(&a);
+ 	sc.DoSomething(nullptr); // Error float* or int* ???
+ 	
+ 	
+ 	class LessStrangeClass {
+ 		public:
+ 		void DoSomething(float *p);
+ 		void DoSomething(int *p);
+ 		void DoSomething(std::nulptr_t p);  // Variant for nullptr
+ 	};
+ 	
+ 	LessStrangeClass lsc;
+ 	int a;
+ 	
+ 	lsc.DoSomething(&a);
+ 	lsc.DoSomething(nullptr); // ok, std::nulptr_t
+ 	
+ 	
+ 	
+ 	
+ \end{CCode}
+ 
+ 
+ 
+ 
+ 
+ \subsection{Erweiterte Stringliterale (Seit \Cpp11)}
+ \label{subsubsect:erweiterteStringliterale}
+ Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
+ 
+ 
+ \begin{CCode}
+ 	u8"Ein UTF-8 String"  // hat den Typ const char[]
+ 	u"Ein UTF-16 String"  // hat den Typ const char16_t[]
+ 	U"Ein UTF-32 String"  // hat den Typ const char32_t[]
+ \end{CCode}
+ 
+ Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
+ \begin{CCode}
+ 	u8"Ein spezielles UTF-8 Zeichen: \u2018" 
+ 	u"Ein spezielles UTF-16 Zeichen: \u2018" 
+ 	U"Ein spezielles UTF-32 Zeichen: \U00002018"  
+ \end{CCode}
+ 
+ Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+ 
+ Beispiel:
+ \begin{CCode}
+ 	R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
+ 	
+ 	// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
+ 	R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
+ \end{CCode}
+ 
+ R und U können auch kombiniert werden.
+ 
+ 
  
 
 \section{Operatoren}
@@ -642,7 +1266,7 @@ Operator&	Beschreibung&	Beispiel\\
 \end{tabular}
 
 \section{Blöcke}
-Mit den geschweiften Klammern { } werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
+Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
 \begin{CCode}
 {
   int a, b, c;
@@ -655,7 +1279,8 @@ Mit den geschweiften Klammern { } werden in C/\Cpp mehrere Anweisungen zu einem 
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). Delete darf auf NULL-Pointer angewendet werden, diese werden ignoriert. 
+Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). Delete darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
+Dynamische Arrays werden am Besten mit std::vector realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
 
 \begin{CCode}
 int *Memory;            // Ein Zeiger auf int definieren
@@ -667,6 +1292,16 @@ Memory[4] = 17;         // Ein Element im Feld beschreiben
 
 delete[] Memory;        // Speicher wieder freigeben
 
+// In den meisten Faellen besser ist jedoch der Einsatz eines Vectors
+//
+// #include<vector>
+//
+// std::vector<int> MyVector(200); // Erstellen eines Vectors von 200 int-werten
+// MyVector[4] = 17;               // Ein Element im Vector beschreiben
+//
+// Delete ist nicht notwendig, der Speicher wird automatisch freigegeben
+// wenn der Vector nicht mehr verwendet wird
+
 Memory = new int;       // Platz fuer einen einzelnen int reservieren und 
                         // Zeiger darauf zeigen lassen
 
@@ -674,6 +1309,10 @@ Memory = new int;       // Platz fuer einen einzelnen int reservieren und
 
 delete Memory;          // und Speicher wieder freigeben
 
+
+// Beispiel fuer den Einsatz von unique_ptr
+
+#include <memory>  // definiton von unique_ptr
 
 void ConsumeElement(std::unique_ptr<int> e) {
    // do something with e
@@ -770,7 +1409,7 @@ int main(int argc, char *argv[])
 } 
 \end{CCode}
 
-\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren.
+\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren. (Siehe \autoref{sect:DateiEinAusgabe})
 
 %\section{Datei Ein- und Ausgabe}
 %\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
@@ -925,6 +1564,8 @@ int main(int argc, char *argv[])
 } 
 \end{CCode}
 
+Vor dem Aufruf von main() werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von main() werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
+
 \chapter{Variablen}
 \section{Definition von Variablen}
 Eine Variablendefinition muss immer die Form
@@ -940,6 +1581,26 @@ float b = 3.14;  // Eine Ganzahlige Variable definieren
 char c;          // Eine Zeichenvariable definieren (8 Bit)
 \end{CCode}
 
+\subsection{Automatische Typerkennung}
+\label{subsubsect:AutomatischeTyperkennung}
+\index{Automatische Typerkennung}
+Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort \OviIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+\begin{CCode}
+	
+	auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
+	
+	auto Magic = 5;  // Magic erhält den Typ int
+	
+	
+	decltype(Magic) OtherMagicVariable = 0; // Selber Typ wie Magic
+	
+	for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
+		...
+	}
+		
+\end{CCode}
+
+
 \section{Felder (Arrays)}
 Felder sehen so aus wie bei den meisten anderen Programmiersprachen. Achtung, die Zählung der Elemente beginnt bei 0! Zudem werden die Bereichsgrenzen nicht überprüft, man kann also ohne Probleme über die Grenzen eines Arrays hinaus zugreifen, was aber über kurz oder lang zu Systemabstürzen oder unvorhersehbarem Verhalten führt (Negative Indices sind auch möglich). Arrays sind eigentlich nichts anders als konstante Zeiger die auf einen für das Array reservierten Speicherblock zeigen.
 
@@ -954,7 +1615,7 @@ s[13] = 'f';
 s[99] = 'z'; // Letztes Element (!)
 \end{CCode}
 
-In \Cpp sollten jedoch Container wie z. B. Vector (Siehe \autoref{subsect:Vector} verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und überall eingesetzt werden können wo auch Arrays erwartet werden. Im gegensatz zu Arrays sind sie aber dynamisch (Ihre Grösse kann zur Laufzeit verändert werden), und sie bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
+In \Cpp sollten jedoch Container wie z. B. Vector (Siehe \autoref{subsect:Vector} verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und fast überall eingesetzt werden können wo auch Arrays erwartet werden. Im Gegensatz zu Arrays sind sie aber dynamisch (Ihre Grösse kann zur Laufzeit verändert werden), und sie bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
 
 \begin{CCode}
 #include<vector>
@@ -973,280 +1634,6 @@ MyVector[21] = 66.4;          //ueberschreibt den Wert des 22.ten Elementes
 
 \end{CCode}
 
-
-
-\section{Zeiger und Referenzen}
-\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
-Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
-Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
-
-Seit C++11 gibt es rValueReferenzen, welche effizienteren Umgang mit Temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}.
-
-In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie shared oder unique. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
-
-Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
-
-Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
-
-Siehe \autoref{sec:Smartpointer} zu Detailierteren Informationen über Smart-Pointer.
- 
-
-\begin{CCode}
-int j, k, l;    // Drei Integer Variablen definieren
-int &r = j;     // Eine Referenz auf j definieren
-int *ptr;       // Ein Zeiger auf int definieren
-
-j = 100;        // Werte an j, k und l Zuweisen
-k = 200;
-l = 300;
-
-std::cout << r;      // Wert ausgeben der von r referenziert wird (j)
-
-ptr = &k;       // Addresse von k an Ptr zuweisen
-std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
-
-ptr = &l;       // Addresse von l an Ptr zuweisen
-std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
-
-void DoSomething(int &a, const int &b) 
-{
-   a = b + 3; // b ist const Referenz, also nur lesbar
-              // a ist auch schreibbar
-}
-
-DoSomething(j, k); // j wird von DoSomething veraendert
-\end{CCode}
-
-Beispiel zu Einsatz von unique Pointer:
-\begin{CCode}
-
-#include <memory>  // definiton von unique_ptr
-
-std::unique_ptr<A> f(int i) 
-{
-   return std::make_unique<A>(i);   // UniquePointer erzeugt Objekt und übernimmt Verwaltung
-}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
-
-void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
-{
-   // Do something;   
-} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
-
-int TestUnique(int argc, char*argv[])
-{
-   std::unique_ptr<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
- 
-   f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
-                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu 
-                         // haben -> Destruktor von UniquePointer loescht
-                         // Objekt auf welches der UniquePointer zeigt.  
-
-  spwrong = f(13);       // Zuweisung verboten
-  
-  std::unique_ptr<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
-                         // sp1 uebergeben bevor der zurueckgegebene UniquePointer 
-                         // gelöscht wird -> Destruktor von UniquePointer loescht
-                         // nichts 
-      
-  sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
-  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-
-   try {
-      std::unique_ptr<A> p = std::make_unique<A>(12);
-      g(p);              // Kopie Verboten
-                         
-      g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
-                                       // (Movekonstruktor)
-                                      
-      g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
-                               // p verliert Besitz von Objekt und wird zu nullptr
-
-      std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
-                       
-      std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
-                                            // zuweisen
-
-      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
-      //                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
-   } catch(...) {  
-   }                    
-}
-\end{CCode}
-Beispiel zu Einsatz von shared Pointer:
-\begin{CCode}
-#include <memory>  // definiton von shared_ptr
-std::shared_ptr<A> f(int i) 
-{
-   return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
-}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
-
-void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
-{
-   // Do something;   
-} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
-  // und Objekt freigegeben falls counter 0 wird.
-
-int Test(int argc, char*argv[])
-{
-   std::shared_ptr<A> sp1;
-
-   f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
-                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
-                         // -> Destruktor von Sharedpointer loescht
-                         // Objekt auf welches der Sharedpointer zeigt falls counter
-                         // 0 wird.  
-
-  sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
-                         // uebergeben bevor der zurueckgegebene Sharedpointer 
-                         // gelöscht wird -> Destruktor von Sharedpointer
-                         // dekrementiert counter, aber loescht nichts 
-    
-  sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
-  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-
-   try {
-      std::shared_ptr<A> p = std::make_shared<A>(12);
-      g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
-                         // counter wird inkrementiert, p ist weiterhin gueltig
-      std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
-                         // kopiert, counter wird inkrementiert, sp1 ist weiterhin 
-                         // gueltig
-      // Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
-      //                    freigegeben wann auch immer der letzte Pointer darauf
-                         // ungueltig wird  
-   } catch(...) {  
-   }                    
-}
-\end{CCode}
-
-
-
-
-\section{Konstantheit (const)}
-Variablen und Objekte, die nur gelesen werden dürfen, kann man als \OviIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
-
-\begin{CCode}
-int a;
-const int ci = 4;   // Konstante, kann nicht geaendert werden
-a = ci + 3;         // OK, nur lesen
-ci = 19;            // Error, aendern nicht erlaubt
-\end{CCode}
-
-Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übergeben werden, sonst wäre es ja möglich, die Konstantheit zu umgehen. Nichtkonstante Objekte dürfen jederzeit an Zeiger oder Referenzen auf konstante Objekte zugewiesen werden.
-\begin{CCode}
-int a;
-const int ci = 4;     // Konstante, kann nicht geaendert werden
-const int &cr = ci;   // Referenz auf konstantes int, zeigt auf ci, alles OK
-const int *cptr;      // Zeiger auf konstantes int
-int * const ccp = &a; // Konstanter Zeiger auf int (const muss nach * sein)
-int *ptr;             // Zeiger auf int
-int &r = ci;          // Error, ci koennte sonst via r geaendert werden
-const int &cra = a;   // Referenz auf konstantes int, zeigt auf a, alles OK
-cr = 19;              // Error, aendern nicht erlaubt
-cra = 17;             // Error, aendern nicht erlaubt (cra ist konstante Referenz)
-ptr = &ci;            // Error, ci ist konstant, *ptr nicht
-cptr = &ci;           // Ok (Zeiger selbst ist nicht konstant)
-*cptr = 4;            // Error, Zeiger zeigt auf Konstant
-cptr++;               // Ok (Zeiger selbst ist nicht konstant)
-*ccp = 4;             // Ok, Zeiger zeigt auf nicht konstant)
-ccp++;                // Error Zeiger ist konstant
-
-void f1(int &i) 
-{ 
-   i++; 
-}
-
-void f2(const int &i) 
-{ 
-   i++; // Error, i ist Referenz auf konstantes int
-}
-
-f1(ci); // Error, Argument von f1 ist nich konstant, koennte i aendern
-f2(ci); // Ok f2 kann i nicht aendern
-\end{CCode}
-
-Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als const deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit const kann man eine Methode also überladen.
-\begin{CCode}
-class MyClass {
-
-int i;
-
-  public:
-    int  Test(void);         // Nur-Lese Methode, aber nicht als const deklariert
-    int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
-    void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
-};
-
-int MyClass::Test(void) 
-{ 
-   return (i == 0);
-}
-
-int MyClass::Read(void) const
-{ 
-   i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
-   return i;   // Ok, i wird nur gelesen
-}
-
-void MyClass::Write(int n) 
-{ 
-   i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
-}
-
-void f1(const MyClass& mc)    // f1 veraendert Argument nicht 
-{
-   int i = mc.Read();  //Ok, Read() ist Konstant, nur lesen
-   int j = mc.Test();  //Error, Test() ist nicht Konstant
-   mc.Write();         //Error, Write() ist nicht Konstant 
-}
-\end{CCode}
-
-\section{Umgehung der Konstantheit (Mutable)}
-Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
-aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
-(z. B. ein statischer Zugriffszähler) modifiziert.
-
-Für diese Fälle kann ein Attribut als \OviIndex{mutable} gekennzeichnet werden. 
-Attribute mit dem Qualifizierer mutable dürfen, im Gegensatz zu 'normalen'
-Attributen, von const Methoden verändert werden.
-
-
-\begin{CCode}
-class MyClass {
-
-mutable int NumberOfReadAccesses;
-int i;
-
-  public:
-    int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
-    void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
-};
-
-int MyClass::Read(void) const
-{ 
-   NumberOfReadAccesses++;  // OK, mutable darf von const-Methode geaendert werden 
-   i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
-   return i;   // Ok, i wird nur gelesen
-}
-
-void MyClass::Write(int n) 
-{ 
-   i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
-}
-
-\end{CCode}
- 
-Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
-alles konstant ist. Mutable sollte nur in gut begründeten Ausnahmefällen
-eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
-nicht ändert, aber interne Verwaltungsinformation geändert werden
-muss. 
-
-Eine mögliche Anwendung wäre ein Proxy-Objekt, das beim Lesen
-effektiv Daten von einer Datei in einen lokalen Cache lädt, oder die
-Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
-ändert seinen Wert schliesslich nicht.
- 
 
 
 \chapter{Kontrollstrukturen}
@@ -1268,6 +1655,22 @@ if (c > 0) {
   c = -c;
 }
 \end{CCode}
+
+Seit \Cpp17 können if (und switch) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
+\begin{CCode}
+if (int a = 7; b > c) {
+   c = a;
+} else {
+   b = a;
+}
+
+if (SomeClass SomeObject = GetTheObject(); SomeObject.IsValid() == true) {
+  SomeObject.DoSomething();
+} else {
+  // Do something else
+}
+\end{CCode}
+
 \section{while(), do while()}
 Die Schlaufe wird solange ausgeführt wie die while-Bedingung wahr ist.
 \begin{CCode}
@@ -1336,7 +1739,24 @@ while (j < 19) {
 \end{CCode}
 Geschrieben werden
 
-Seit C++11 gibt es die erweiterte Forschlaufe \autoref{subsec:AutomaticForLoop}, um über Container zu iterieren. 
+\subsection{Automatische For-Schlaufe (Seit \Cpp11)}
+\label{subsec:AutomaticForLoop}
+
+Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
+
+\begin{CCode}
+	int Elemente[5] = {1, 2, 3, 4, 5};
+	int Summe = 0;
+	
+	// Ueber alle Elemente iterieren
+	for (int &r : Elemente) {
+		Summe += r;
+	}
+	
+\end{CCode}
+
+Dies funktioniert für Arrays und alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
+
 
 \section{switch()}
 Auswahlanweisung, der Programmfluss wird bei demjenigen case - Statement weitergeführt, welches mit dem Wert der switch-Anweisung übereinstimmt. Es können nur Konstanten bei den Case Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein break oder das Ende der Struktur trifft. Wenn nach einem case Statement kein break steht, fährt das Programm mit den Anweisungen des nächsten case weiter. (Dies sollte jedoch vermieden werden). Der Defaultfall kann weggelassen werden.
@@ -1352,6 +1772,22 @@ switch (i) {
       break;
 }
 \end{CCode}
+
+Seit \Cpp17 können switch (und if) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das switch-Statement und die dazugehörigen Blöcke beschränkt:
+\begin{CCode}
+switch (int a = 7; b) {
+   case 1: c = a;
+   case 2: b = a;
+}
+
+switch (SomeClass SomeObject = GetTheObject(); SomeObject.Value()) {
+  case 1: SomeObject.DoSomething();
+	        break;
+					
+  case 2: SomeObject.DoSomethingDifferent();
+}
+\end{CCode}
+
 
 \section{Funktionen}
 Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als void deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (const).
@@ -1461,9 +1897,268 @@ inline int Square(int i)     // Inline Methoden können auch in der
 }
 \end{CCode}
 
+
+\subsection{Überladen von Funktionen}
+Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden.
+\begin{CCode}
+int max(int a, int b)
+{
+   if (a > b) {
+      return a;
+   } else {
+      return b;
+   }
+}
+
+float max(float a, float b)
+{
+   if (a > b) {
+      return a;
+   } else {
+      return b;
+   }
+}
+
+int main (int argc, char *argv[])
+{
+   int x, y;
+   float q, r;
+   q = max(x, y) // Ruft max() fuer int auf (Rueckgabewert hat keinen Einfluss 
+                 // auf Auswahl)
+   x = max(q, r) // Ruft max() fuer float auf (Rueckgabewert hat keinen Einfluss 
+                 // auf Auswahl)
+}
+\end{CCode}
+
+\subsection{Alternative Funktionsdefinition (Seit \Cpp11)}
+\label{subsubsect:Alternative Funktionsdefinition}
+
+Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
+
+\begin{CCode}
+	
+	// Der Rückgabetyp ist, was auch immer der Ergebnistyp der Addition von x und y ist
+	template<class T1, class T2>
+	auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) {return x + y;}
+	
+	// Geht auch bei 'gewoehnlichen' Funktionen:
+	
+	auto f1(int x, int y) -> float // Rueckgabewert ist float
+	{
+	}
+	
+	class Demo {
+		auto MemberFunktion(int x, int y) -> int; // Rueckgabewert ist int
+	};
+	
+	auto Demo::MemberFunktion(int x, int y) -> int // Rueckgabewert ist int
+	{
+		return x + y;
+	}
+	
+\end{CCode}
+
+
+
+\subsection{constexpr Funktionen (Seit \Cpp11)}
+Seit \Cpp11 können mit dem Schlüsselwort \OviIndex{constexpr} Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind fast alle Anweisungen erlaubt). Details siehe \autoref{subsubsect:constexpr}.
+
+\subsection{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
+\label{subsec:LambdaFunctions}
+\OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
+
+Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
+\begin{CCode}
+	[capture](parameters)->return_type{body}
+\end{CCode}
+
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
+
+\emph{Parameter} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
+
+\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
+
+\emph{Body} enthält den Code der Funktion.
+
+Beispiele
+\begin{CCode}
+	
+	[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
+	[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
+	[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
+	[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
+	[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
+	[&q, r](int& x) { q += r*++x; }    // Zugriff auf die Variablen q und r der
+	// definierenden Funktion erlauben
+	// Einsatzbeispiel
+	std::vector<int> Liste;
+	int Total = 0;
+	for (int i=0; i<5; ++i) {
+		Liste.push_back(i);
+	}
+	
+	// for_each wird als drittes Argument eine Lambda-Funktion (Eigentlich ein
+	// Zeiger darauf) übergeben.  
+	// for_each ruft fuer jedes Element in der Liste diese Lambda-Funktion
+	// auf, das aktuelle Element wird jeweils in x uebergeben. Der lambda-Funktion 
+	// wird zudem der Zugriff auf die Variable Total erlaubt.  
+	
+	std::for_each( begin(Liste), end(Liste), [&Total](int x) {
+		Total += x;
+	}
+	);
+\end{CCode}
+Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
+Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
+
+\chapter{Überladen von Operatoren}
+\index{Überladen von Operatoren}\OviIndex{Operatoren} ( + - * / etc.) gelten in \Cpp als normale Funktionen mit dem Namen operator x, wobei für x jeweils der gewünschte Operator eingesetzt wird. Im speziellen können diese Operatoren für eigene Typen (Also Klassen, resp. Objekte überladen werden)
+
+\begin{CCode}
+	class Complex {
+		float r, i;
+		public:
+		Complex (int n_r, int n_i) : r(n_r), i(n_i) {};
+		Complex & Operator += (const Complex &b) {r += b.r; i += b.i; return *this; };
+		Complex & Operator -= (const Complex &b)  {r -= b.r; i -= b.i; return *this; };
+		friend Complex operator +(const Complex &a, const Complex &b)
+		friend Complex operator -(const Complex &a, const Complex &b)
+		// To Do: A lot of other operands
+	};
+	
+	inline Complex operator +(const Complex &a, const Complex &b) 
+	{
+		return Complex(a.r + b.r, a.i + b.i);
+	}
+	
+	inline Complex operator -(const Complex &a, const Complex &b) 
+	{
+		return Complex(a.r - b.r, a.i - b.i);
+	}
+	
+	
+	int main(int argc, char *argv[]) 
+	{
+		// Create some Complex Objects
+		Complex x(1, 0);
+		Complex y(0, 1);
+		Complex z(0, 0);
+		Complex q(0, 0);
+		
+		// Do some Complex Operations 
+		z = x + y;   // is same as z = operator +(x, y)
+		q = z - y;   // is same as q = operator -(x, y)
+		z += x;      // is same as z.operator +=(x)
+		q = z - x + y;  // is same as q = operator -(z, operator +(x, y))
+		
+		return 0;
+	}
+\end{CCode}
+
+\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (friend-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, muss man beachten, dass der erste Operand immer ein Objekt sein muss.
+Der Ausdruck a + b enspricht somit den Ausdrücken a.operator +(b) oder operator +(a, b), man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
+
+Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
+Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialitaet. Um Post (i++) und Pre (++i)
+auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
+
+{
+	\centering
+	\begin{tabular}{ll}
+		prefix (++i): &operator++()\\
+		postfix (i++):&operator++(int)\\
+		prefix (-{}-i): &operator-{}-()\\
+		postfix (i-{}-):&operator-{}-(int)\\
+	\end{tabular}
+	
+	Das int Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
+}   
+
+Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn wann immer möglich konstante Referenzen benutzt werden)
+
+Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale new/delete, oder der Operator new/delete für eine bestimmte Klasse überladen werden:
+
+\begin{CCode}
+	class SpecialMemory {
+		float r, i;
+		public:
+		
+		// A lot of methods
+		
+		// Our overloaded new and delete
+		void *operator new (size_t size) {
+			// some Magic to get memory
+			// in a better way than new usually does
+			
+			return AdressOfNewMemory;
+		};
+		
+		void *operator new[] (size_t size) {
+			// some Magic to get memory
+			// in a better way than new usually does
+			
+			return AdressOfNewMemory;
+		};
+		
+		void  operator delete(void *pMem, size_t size) {
+			
+			// Release the given memory
+		};
+		
+		void  operator delete[](void *pMem, size_t size) {
+			
+			// Release the given memory
+		};
+		
+	};
+	
+\end{CCode}
+
+Dabei muss beachtet werden, dass sämtliche globalen Varianten von new für eine Klasse verdeckt werden, sobald auch nur eine Variante
+von new in dieser Klasse neu definiert wird.
+
+Eine eigene Speicherverwaltung wird nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
+
+Es ist auch möglich, das Placement-new zu überladen, oder neue Versonen von new mit anderen Argumentenlisten zu definieren.
+
+\section{Benutzerdefinierte Literale (Seit \Cpp11)}
+\index{Benutzerdefinierte Literale}
+\label{subsubsect:BenutzerdefinierteLiterale}
+Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
+
+Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
+
+\begin{CCode}
+	// Erhaelt einen String mit der Zeichenkette vor dem Suffix
+	OutputType operator "" _Magic(const char * literal_string); 
+	
+	OutputType operator "" _kg(unsigned long long); // Erhaelt den Integerwert des Literals
+	OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
+	
+	x = 15_kg; // ruft den Operator "" _kg mit dem Wert 15 auf, Rueckgabewert wird x zugewiesen
+\end{CCode}
+
+Die Operatorfunktionen können dabei einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern).
+
+Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
+
+\begin{CCode}
+	OutputType operator "" _suffix(const char     * StringValues, size_t StringLaenge);
+	OutputType operator "" _suffix(const wchar_t  * StringValues, size_t StringLaenge);
+	OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaenge);
+	OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
+\end{CCode}
+
+Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
+
+
+
+
 \chapter{Klassen}
+\label{sect:Klassen}
 \section{Was sind Klassen}
-Eine \OviIndex{Klasse} unter \Cpp  entspricht im wesentlichen einer Struktur in C oder einem Record in Pascal. Nur dass auch die Funktionen (Methoden), die mit den Daten (Attribute) der Klasse arbeiten zu der Klasse hinzugefügt werden und nicht davon separiert sind.
+Eine \OviIndex{Klasse} unter \Cpp  entspricht im wesentlichen einer Struktur in C, nur dass auch die Funktionen (Methoden), die mit den Daten (Attribute) der Klasse arbeiten zu der Klasse hinzugefügt werden und nicht davon separiert sind. Somit werden die Daten und die dazugehörigen Funktionen zu einer Einheit.
 
 Also wird aus folgendem Code unter C:
 \begin{CCode}
@@ -1564,7 +2259,7 @@ int main(int argc, char *argv[]) {
 
 Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, sobald eine Klasse eine virtuelle Methode besitzt, muss üblicherweise auch ein virtueller Destruktor definiert werden (Siehe \autoref{subsec:VirtualFunctions})
+Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen zu aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, sobald eine Klasse eine virtuelle Methode besitzt, muss üblicherweise auch ein virtueller Destruktor definiert werden (Siehe \autoref{subsec:VirtualFunctions})
 
 
 \subsection{Konstruktoren}
@@ -1699,7 +2394,7 @@ MyClass f2()
 \end{CCode}
 
 \subsection{C11 Move-Construktor}
-Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt.
+Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
                 MyClass(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
@@ -1709,7 +2404,7 @@ Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueR
 
 \subsection{Zuweisungsoperator}
 In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (operator =()), dieser wird jedesmal aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (*this) zurückliefern. Der Zuweisungsoperator kann
-für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes gelöscht (Überschrieben) und durch neue Werte ersetzt wird.
+für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes gelöscht (Überschrieben) und durch neue Werte ersetzt wird. Der Zuweisungsoperator sollte Fail-Safe sein, d.h. auch wenn Exceptions auftreten, sollte die Zuweisung funktioneren, resp. es sollten gar keine Exceptions auftreten.
 
 \begin{CCode}
 class MyClass {
@@ -1734,20 +2429,34 @@ MyClass b;
 
 a = b;      // Aufruf des Zuweisungsoperators
 
+// Error safe variant:
+MyClass &MyClass::operator =(MyClass Source)
+{
+   if (this != &Source) {
+      swap(Source);  // Swap muss definiert sein, tauscht sicher zwei Objekte
+   }                 // (Swap ruft einfach swap fuer alle Member auf) 
+   return *this;
+}
+
+MyClass a;
+MyClass b;
+
+a = b;      // Aufruf des Zuweisungsoperators
+
 
 \end{CCode}
 
 \subsection{C11 Move-Zuweisungsoperator}
-Unter C11 gibt es neu den Movezuweisungsoperator (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt.
+Unter C11 gibt es neu den Movezuweisungsoperator (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
-                MyClass & MyClass::operator=(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
+                MyClass & MyClass::operator=(MyClass &&Source);  // Move-Movezuweisungsoperator (&& und kein const)
    ...
 
 \end{CCode}
 
 \subsection{Destruktor}
-Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden.
+Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden. (Basisklassen mit virtuellen Funktionen sollten immer einen virtuellen Destruktor definieren, auch wenn er nichts zu tun hat).
 \begin{CCode}
 class MyClass {
   int k, j;
@@ -1789,6 +2498,64 @@ int main(int argc, char *argv[])
 
 Achtung: Umwandlungsoperatoren sollten sehr zurückhaltend eingesetzt werden, da sonst viele inkompatible Zuweisungen plötzlich erlaubt werden, und viele Flüchtigkeitsfehler vom Compiler nicht mehr erkannt werden können.
 Es kann auch vorkommen, dass unerwartete Umwandlungen geschehen und man generell den Überblick über die möglichen Umwandlungen verliert. 
+Deshalb empfiehlt es sich, Umwandlungsoperatoren als explizit zu definieren (Seit \Cpp11 möglich), damit wird der automatische Aufruf unterdrückt.
+
+\subsubsection{Explizite Umwandlungsoperatoren (Seit \Cpp11)}
+\label{subsubsect:ExpliziteUmwandlungsoperatoren}
+Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
+
+\subsection{Vereinfachte Objektkonstruktion (Seit \Cpp11)}
+\label{subsubsect:VereinfachteObjektkonstruktion}
+\index{Vereinfachte Objektkonstruktion}
+Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
+
+\begin{CCode}
+class Demo  {
+    int x;
+ 
+public:
+    Demo(int _x) : x(_x) {}
+    Demo() : Demo(42) {}    // Ruft bestehenden Konstruktor auf
+};
+
+
+class Example : public Demo {
+
+    using Demo::Demo; // Konstruktoren von Demo uebernehmen
+};
+
+
+class Test {
+public:
+    Test() {}   // Setzt x auf den Defaultwert 5 (Siehe unten)       
+    Test(int _x) : x(_x) {} // Setzt x auf den uebergebenen Wert 
+ 
+private:
+    int x = 5;  // Jeder Konstuktor setzt diesen Wert auf 5, ausser es sei
+		            // im Konstruktor etwas anderes definiert
+		
+}
+\end{CCode}
+
+
+\subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen (Seit \Cpp11)}
+\label{subsubsect:ControlAutoMember}
+Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
+
+\begin{CCode}
+class Demo {
+    Demo() = default;                       // Den Defaultkonstruktor anfordern.
+    Demo(const Demo&) = delete;             // Den Kopierkonstruktor verbieten.
+    Demo & operator=(const Demo&) = delete; // Den Zuweisungsoperator verbieten.
+    void f(double i);                    
+    void f(int) = delete;                   // f darf nicht mit int aufgerufen 
+                                            // werden
+    template<class T> void f(T) = delete;   // f mit irgend etwas anderem als 
+		                                        // double aufrufen ist verboten
+};
+
+\end{CCode}
+Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
 
 
 \section{Zugriffsrechte}
@@ -1800,8 +2567,8 @@ Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubut
 
 Eine Zugriffsberechtigung ist innerhalb der Klassendeklaration für alle nachfolgenden Klassenmember gültig bis eine andere Zugriffsberechtigung eingestellt wird.
 
-\section{Friendfunktionen}
-\index{Friendfunktionen}Möchte man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben, ohne diese Member als public zu definieren, kann diese Funktion oder Klasse als \OviIndex{friend} deklariert werden:
+\section{Friendfunktionen, Friend Klassen}
+\index{Friendfunktionen}\index{Friend klassen} Möchte man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben, ohne diese Member als public zu definieren, kann diese Funktion oder Klasse als \OviIndex{friend} deklariert werden:
 
 \begin{CCode}
 class MyClass {
@@ -1827,7 +2594,7 @@ friend class BigBrother;            // Alle Methoden der Klasse BigBrother
 
 Achtung, die Klasse gibt anderen das Recht auf sie zuzugreifen, und nicht umgekehrt. Die friend Deklaration muss deshalb immer in der betroffenen Klasse stehen. Mit friend kann man den Zugriffsschutz für eine bestimmte Funktion oder Klasse ausschalten. Eine Klasse kann beliebig viele Friends deklarieren.
 Man sollte damit aber zurückhaltend umgehen, da damit das Prinzip der Kapselung verletzt wird.
-In vielen Fällen ist es jedoch sinnvoller, ein bestimmtes Element als Friend zu deklarieren
+In einigen Fällen ist es jedoch sinnvoller, ein bestimmtes Element als Friend zu deklarieren
 als eine Menge von Set- und Get-Methoden einzubauen, da mit unnötigen Set- und Get-Methoden
 die Kapselung erst recht durchbrochen wird.
 Achtung, Templates als friend zu deklarieren ist gefährlich, dadurch werden alle aktuellen und zukunftigen, dem Template entsprechenden Funktionen und Methoden Zugriffsberechtigung erhalten.
@@ -1891,11 +2658,14 @@ inline void A::DoSomething()  // Inline Methoden können mit dem Schluesselwort
 
 Achtung: Für statische Attribute muss neben der Deklaration in der Klasse explizit eine Variable definiert werden, üblicherweise in der dazugehörigen Implementationsdatei, welche auch den Code für die Methoden dieser Klasse enthält. 
 
+Const static Member vom integer oder enum Typen werden direkt in der Klasse initialisiert und benötigen keine Definition, ausser die Adresse der Variable wird irgendwo verwendet. Mit constexpr können auch andere Typen als konstante Member definiert werden, müssen dabei aber mit konstanten Ausdrücken initialisiert werden. 
+
 \begin{CCode}
 class A {
    private:
    int i;
    static int Count;   // Zaehlt anzahl Objekte
+	 const static int MaxCount = 99;
    
    public:
    A(int _i) : i(_i) { Count++; };      //Konstruktor, zaehlt Objekte
@@ -1908,6 +2678,9 @@ class A {
 int A::Count = 0;   // Definiere und initialisiere statische Member-Variable 
                     // Nur an einem Platz im ganzen Programm, normalerweise
                     // im .cpp-Modul der Klasse
+										
+const int A::MaxCount; // Erlaubt, aber nicht notwendig, solange Adresse
+                       // von MaxCount nirgends verwendet.  										
 
 A a1(1), a2(2), a3(3);   // Einige Objekte erzeugen
 int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
@@ -2049,8 +2822,26 @@ Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit new erzeugt
 Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp. des Programms. 
 
 Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+\begin{CCode}
 
-Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt, und gelöscht wenn das übergeordnete Objekt gelöscht wird (Jeweils durch Aufruf des entsprechenden Konstruktors oder Destruktors. Soll für das untergeordnete Objekt ein Konstruktor mit Parametern aufgerufen werden, so muss dieser in der Initialisiererliste des übergeordneten Objektes aufgeführt werden.
+  #include <memory>  // definiton von unique_ptr
+
+  void f() 
+	{
+	   // Objekt erzeugen und Smartpointer zuweisen
+     std::unique_ptr<Student> q = std::make_unique<Student>("Fritz", 28); 
+	  
+			....
+			
+		
+  }  // kein delete noetig, smartpointer loescht objekt automatisch
+	   // wenn Gueltigkeitsbereich verlassen wird
+
+
+\end{CCode}
+
+
+Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt, und gelöscht wenn das übergeordnete Objekt gelöscht wird (Jeweils durch Aufruf des entsprechenden Konstruktors oder Destruktors.) Soll für das untergeordnete Objekt ein Konstruktor mit Parametern aufgerufen werden, so muss dieser in der Initialisiererliste des übergeordneten Objektes aufgeführt werden.
 Beispiel:
 
 \begin{CCode}
@@ -2065,15 +2856,73 @@ class StudentClass {
 Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch die übergeordneten Klasse erledigt werden (Meist im Konstruktor), und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde.
 Beispiel:
 \begin{CCode}
+
 class StudentClass {
    int Alter;
    AdressClass *Adresse; // Eingebettetes Objekt, wird via Zeiger referenziert und 
                          // muss deshalb dynamisch erzeugt werden (Normalerweise
                          // im Konstruktor) und geloescht werden (Im Destruktor).  
+   StudentClass() : Adresse(new AdressClass("Holzweg")) {};   // Objekt erzeugen                   
                                               
    ~StudentClass()  {delete Adresse;}; // Resourcen Freigeben, im Falle eines
                                        // Nullpointers macht delete nichts
 };
+\end{CCode}
+
+Mit unique pointer:
+\begin{CCode}
+#include <memory>  // definiton von unique_ptr
+
+class StudentClass {
+   int Alter;
+   std::unique_ptr<AdressClass> Adresse; // Eingebettetes Objekt, wird via
+                                         // unique_Zeiger referenziert und 
+                                         // muss deshalb dynamisch erzeugt 
+                                         // werden (Normalerweise im Konstruktor) 
+                                         // das loeschen wird vom unique_ptr erledigt.  
+                                              
+   StudentClass() : Adresse(std::make_unique<AdressClass>("Holzweg")) {};   // Objekt erzeugen                   
+                                              
+   ~StudentClass()  {};                // Resourcen Freigeben automatisch durch unique_ptr
+	                                     // Destruktor koennte hier auch weggelassen werden
+};
+\end{CCode}
+
+\subsection{Vereinheitlichte Initialisierung (Seit \Cpp11)}
+\label{subsubsect:VereinheitlichteInitialisierung}
+Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
+passende Konstruktor aufgerufen (falls vorhanden).
+
+Beispiel:
+\begin{CCode}
+	
+	class DemoClass {
+		
+		private:
+		int a;
+		float b;	
+		
+		public:
+		DemoClass(int _a, float _b) : a(_a), b(_b) {};
+		
+	};
+	
+	
+	DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
+	DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
+	
+	// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
+	
+	DemoClass f() {
+		return {2, 2.7f};
+	}
+	
+	void f2(DemoClass c) {
+	}
+	
+	f2({5, 1.23f});
+	
+	
 \end{CCode}
 
 \section{Placement new}
@@ -2084,6 +2933,7 @@ Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objekes in einem vo
 StudentClass *sp;
 
 // Speicherplatz erzeugen (Koennte auch eine hardcodierte Adresse sein)
+// Darauf Achten dass Alignementanforderungen des Objektes erfuellt sind 
 char Buffer[sizeof (StudentClass)];
 
 // Das Objekt im speziellen Speicherbereich erzeugen
@@ -2489,6 +3339,32 @@ int main (int argc, char *argv[])
 \end{CCode}
 
 
+\subsection{Kontrolliertes Überschreiben von Funktionen (seit \Cpp11)}
+\label{subsubsect:KontrolliertesUeberschreiben}
+
+Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
+
+Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
+
+\begin{CCode}
+class Basisklasse {
+    public:
+    virtual void ModifizierbareFunktion(float);
+    virtual void NichtWeiterUeberschreibbareFunktion(float) final;
+};
+ 
+class Abgeleitet : Basisklasse {
+    public:
+    virtual void ModifizierbareFunktion(int) override; // Fehler, keine passende Methode in 
+		                                                   // der Basisklasse (int statt float verwendet)
+    virtual void NichtWeiterUeberschreibbareFunktion(float);// Fehler, darf nicht ueberschrieben werden
+		
+};
+
+
+\end{CCode}
+
+
 \NextPagePlease
 
 \subsubsection{Beispiel für Polymorphismus}
@@ -2587,156 +3463,13 @@ int main (int argc, char *argv[])
 \end{CodeTable}
 
 
-\chapter{Weitere Sprachelemente}
-
-\section{Überladen von Funktionen}
-Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden.
-\begin{CCode}
-int max(int a, int b)
-{
-   if (a > b) {
-      return a;
-   } else {
-      return b;
-   }
-}
-
-float max(float a, float b)
-{
-   if (a > b) {
-      return a;
-   } else {
-      return b;
-   }
-}
-
-int main (int argc, char *argv[])
-{
-   int x, y;
-   float q, r;
-   q = max(x, y) // Ruft max() fuer int auf (Rueckgabewert hat keinen Einfluss 
-                 // auf Auswahl)
-   x = max(q, r) // Ruft max() fuer float auf (Rueckgabewert hat keinen Einfluss 
-                 // auf Auswahl)
-}
-\end{CCode}
-
- 
-\section{Überladen von Operatoren}
-\index{Überladen von Operatoren}\OviIndex{Operatoren} ( + - * / etc.) gelten in \Cpp als normale Funktionen mit dem Namen operator x, wobei für x jeweils der gewünschte Operator eingesetzt wird. Im speziellen können diese Operatoren für eigene Typen (Also Klassen, resp. Objekte überladen werden)
-
-\begin{CCode}
-class Complex {
-   float r, i;
-   public:
-   Complex (int n_r, int n_i) : r(n_r), i(n_i) {};
-   Complex & Operator += (const Complex &b) {r += b.r; i += b.i; return *this; };
-   Complex & Operator -= (const Complex &b)  {r -= b.r; i -= b.i; return *this; };
-   friend Complex operator +(const Complex &a, const Complex &b)
-   friend Complex operator -(const Complex &a, const Complex &b)
-   // To Do: A lot of other operands
-};
-
-inline Complex operator +(const Complex &a, const Complex &b) 
-{
-   return Complex(a.r + b.r, a.i + b.i);
-}
-
-inline Complex operator -(const Complex &a, const Complex &b) 
-{
-   return Complex(a.r - b.r, a.i - b.i);
-}
-
-
-int main(int argc, char *argv[]) 
-{
-   // Create some Complex Objects
-   Complex x(1, 0);
-   Complex y(0, 1);
-   Complex z(0, 0);
-   Complex q(0, 0);
-
-   // Do some Complex Operations 
-   z = x + y;   // is same as z = operator +(x, y)
-   q = z - y;   // is same as q = operator -(x, y)
-   z += x;      // is same as z.operator +=(x)
-   q = z - x + y;  // is same as q = operator -(z, operator +(x, y))
- 
-   return 0;
-}
-\end{CCode}
-
-\OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (friend-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, muss man beachten, dass der erste Operand immer ein Objekt sein muss.
-Der Ausdruck a + b enspricht somit den Ausdrücken a.operator +(b) oder operator +(a, b), man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
-
-Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
-Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialitaet. Um Post (i++) und Pre (++i)
-auseinenderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
-
-{
-	\centering
-		\begin{tabular}{ll}
-      prefix (++i): &operator++()\\
-      postfix (i++):&operator++(int)\\
-      prefix (-{}-i): &operator-{}-()\\
-      postfix (i-{}-):&operator-{}-(int)\\
-		\end{tabular}
-   
-   Das int Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
-}   
- 
-Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn wann immer möglich konstante Referenzen benutzt werden)
- 
-Die Operatoren new und delete lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale new/delete, oder der Operator new/delete für eine bestimmte Klasse überladen werden:
-
-\begin{CCode}
-class SpecialMemory {
-   float r, i;
-   public:
-  
-   // A lot of methods
-
-   // Our overloaded new and delete
-    void *operator new (size_t size) {
-       // some Magic to get memory
-       // in a better way than new usually does
-    
-       return AdressOfNewMemory;
-    };
-    
-    void *operator new[] (size_t size) {
-       // some Magic to get memory
-       // in a better way than new usually does
-    
-       return AdressOfNewMemory;
-    };
-    
-    void  operator delete(void *pMem, size_t size) {
-    
-       // Release the given memory
-    };
-    
-    void  operator delete[](void *pMem, size_t size) {
-    
-       // Release the given memory
-    };
-    
-};
-
-\end{CCode}
-
-Dabei muss beachtet werden, dass sämtliche globalen Varianten von new für eine Klasse verdeckt werden, sobald auch nur eine Variante
-von new in dieser Klasse neu definiert wird.
-
-Eine eigene Speicherverwaltung wird nur dann eingesetzt, wenn die Standardversion den Anforderungen nicht genügt (Zu Langsam, Spezielle Speicherblöcke wie Akkugepuffertes RAM oder Shared Memory benötigt...).
-
-Es ist auch möglich, das Placement-new zu überladen, oder neue Versonen von new mit anderen Argumentenlisten zu definieren.
-
+%\chapter{Weitere Sprachelemente}
 
 
  
+ 
 
-\section{Ausnahmebehandlung (Exceptions)}
+\chapter{Ausnahmebehandlung (Exceptions)}
 Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
 
 Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit throw() eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
@@ -2749,8 +3482,10 @@ Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Excep
 von der Funktion ausgelöst werden können. Ein fehlendes throw() Statement bedeutet, dass diese
 Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres throw() bedeutet, dass die
 Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
-Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Dashalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
+Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden try/catch Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
+
+Seit \Cpp11 sollte noexcept(true) oder noexcept anstelle von throw() verwendet werden, um anzuzeigen dass eine Funktion keine Exception werfen kann. (Wenn sie es dennoch tut, wird nach wie vor das Programm sofort mit terminate() beendet). 
 
 Beispiel:
 \begin{CCode}
@@ -2768,13 +3503,19 @@ int ThrowAnything(int x) // Can throw any exception
   ...
 }
 
+//deprecated, use noexcept
 int ThrowNothing(int x) trow() // Can throw no exception, must catch all
 {                              // internal generated exception
   ...
 }
 
+int ThrowNothing(int x) noexcept(true) // Can throw no exception, must catch all
+{                              // internal generated exception
+  ...
+}
 
-int SquareRoot(int x) throw(NegativeSquareRootErrorClass)  {
+// Avoid throw spezifications whenever possible
+int SquareRoot(int x) /* throw(NegativeSquareRootErrorClass) */ { 
    if (x < 0) {
       throw (NegativeSquareRootErrorClass());
    }
@@ -2783,14 +3524,16 @@ int SquareRoot(int x) throw(NegativeSquareRootErrorClass)  {
    return (result);
 }
 
-int Inverse(int x) throw(DivideByZerroErrorClass) {
+// Avoid throw spezifications whenever possible
+int Inverse(int x) /* throw(DivideByZerroErrorClass) */ {
    if (x == 0) {
       throw(DivideByZerroErrorClass());
    }
    return (1/x);
 }
 
-int f(int x1, int x2) throw(NegativeSquareRootErrorClass){
+// Avoid throw spezifications whenever possible
+int f(int x1, int x2) /* throw(NegativeSquareRootErrorClass) */ {
    int Result;
    try {
       int r1 = Inverse(x1);
@@ -2824,6 +3567,36 @@ int main (int argc, char *argv[]) {
 }
 \end{CCode}
 
+Es kann auch eine ganze Funktion oder die Initialisiererliste in einen Funktions-Try-Block eingeschlossen werden, damit können auch Exceptions aus der Initialisiererliste gefangen werden:
+
+\begin{CCode}
+
+// Gewoehnliche Funktion/Methode
+void f(int y) try {
+
+   
+  // Normaler Funtionsrumpf mit Code  
+	
+}
+catch (DivideByZerroErrorClass &e) {
+   ....
+}
+
+// Konstruktor mit Initialisiererliste
+Demo::Demo(int y) try : Base(y), Member(y/2) {
+
+   
+  // Normaler Konstruktorrumpf mit Code  
+	
+}
+catch (DivideByZerroErrorClass &e) {
+   ....
+}
+
+
+
+
+\end{CCode}
 
 Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (new) ist der Benutzer hingegen selbst zuständig (Durch entsprechende catch throw Anweisungen).
 
@@ -2859,7 +3632,7 @@ void f(int y) {
 }
 \end{CCode}
 
-\section{Laufzeit Typinformation (RTTI run-time type information)}
+\chapter{Laufzeit Typinformation (RTTI run-time type information)}
 \index{RTTI}
 \index{run-time type information}
 \index{Laufzeit Typinformation}
@@ -2934,45 +3707,75 @@ Code zu erzeugen, dazu sind die virtuellen Funktionen da. In gewissen
 speziellen Notfällen ist es manchmal notwendig, auf typeid
 zurückzugreifen.
 
-\section{Typumwandlungen (Casts)}
+\chapter{Typumwandlungen (Casts)}
 In \Cpp gibt es mehrere Möglichkeiten, um Typen ineinander umzuwandeln. Einerseits
 der aus C 'geerbte' \OviIndex{Castoperator} (Z. B. (int) ), der aber nicht mehr benutzt
 werden sollte, andererseits die neuen, flexibleren Castoperatoren dynamic\_cast<>(), static\_cast<>(), const\_cast<>() und reinterpret\_cast<>(). 
 
+\paragraph*{cast type() und (type)}
+Mit dem Castoperator kann wie mit dem aus C bekannten (cast) eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht entweder aus einem Typnamen in Klammern, gefolgt von einem umzuwandelnden Ausdruck, oder einem Typnamen gefolgt von dem umzuwandelnden Ausdruck in Klammern (Funktionsaufrufsyntax).
 
-\paragraph*{reinterpret\_cast<>() und (cast)}
-Mit dem Castoperator \OviIndex{reinterpret\_cast<>()} kann wie mit dem aus C bekannten (cast) eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht aus dem Schlüsselwort reinterpret\_cast und einem in spitzen Klammern eingeschlossenen gültigen Datentyp. Der Castoperator wird wie ein Funktionsaufruf benutzt und hat eine entsprechend hohe Priorität. Bei der Umwandlung wird versucht, denn Wert
-der Daten soweit wie möglich zu erhalten, was aber oft nicht möglich ist, wenn ein grösserer Datentyp in einen kleineren gezwängt wird. Grundsätzlich kann aber mit dem Castoperator jeder skalare Typ (Zeiger und arithmetische Typen) in jeden anderen skalaren Typen umgewandelt werden.
+Wann immer ein C-Style-Cast auftritt, versucht der Compiler casts in der folgenden Priorität durchzuführen:
+ 
+\begin{itemize}
+	 \item const\_cast<new\_type>(expression);
+\item static\_cast<new\_type>(expression), mit Erweiterungen: Zeiger oder Referenzen auf eine abgeleitete Klasse dürfen zusätzlich in einen Zeiger oder eine Referenz zu einer eindeutigen Basisklasse umgewandelt werden (Und umgekehrt), auch wenn die Basisklasse nicht zugreifbar ist (Somit wird der private Spezifizierer bei der Vererbung ignoriert). Dasselbe gilt für Memberpointer und memberpointer auf nichtvirtuelle Basisklassen.
+\item static\_cast ( mit Erweiterungen) gefolgt von const\_cast;
+\item  reinterpret\_cast<new\_type>(expression);
+\item  reinterpret\_cast gefolgt von const\_cast.
+\end{itemize}
+Dabei wird die erste mögliche Variante ausgewählt.
+
 \begin{CCode}
 class D {...};
 
 int a,    *ip;
 float f,  *fp;
 D     d,  *dp;
+const D   *cdp;    // Zeiger auf konstantes D
+     
+
+
+a = (int)   f;  // OK
+a = int(f);     // OK
+f = (float) a;  // OK
+f = float(a);   // OK
+d = (D)     a;  // Fehler, D ist nicht skalar
+
+f  = (float) ip; // Fehler, wandelt Adresse in float um
+ip = (int *) f;  // Fehler, wandelt float in Adresse um
+dp = (D*)    ip; // OK, Zeiger duerfen ineinander umgewandelt werden
+dp = (D*)   cdp; // OK, Zeiger const darf weggecastet werden
+dp = (D*)    a;  // OK, aber vermutlich sinnlos, wandelt int in Adresse um
+\end{CCode}
+
+\paragraph*{reinterpret\_cast<>()}
+Mit dem Castoperator \OviIndex{reinterpret\_cast<>()} kann wie mit dem aus C bekannten (cast) eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht aus dem Schlüsselwort reinterpret\_cast und einem in spitzen Klammern eingeschlossenen gültigen Datentyp. Der reinterpret\_cast<>() wird wie ein Funktionsaufruf benutzt und hat eine entsprechend hohe Priorität. Bei der Umwandlung wird versucht, denn Wert
+der Daten soweit wie möglich zu erhalten, was aber oft nicht möglich ist, wenn ein grösserer Datentyp in einen kleineren gezwängt wird. Grundsätzlich kann aber mit dem reinterpret\_cast<>() jeder skalare Typ (Zeiger und arithmetische Typen) in jeden anderen skalaren Typen umgewandelt werden. Verboten sind entfernen von const oder volatile, sowie Umwandlungen von Fliesskommatypen nach Zeigern und umgekehrt. implementationsabhängig ist die Umwandlung von Funktionszeiger auf andere Zeiger und umgekehrt. 
+\begin{CCode}
+class D {...};
+
+int a,    *ip;
+float f,  *fp;
+D     d,  *dp;
+const D   *cdp;    // Zeiger auf konstantes D
 
 // Mit dem neuen reinterpret_cast<>()
 a = reinterpret_cast<int>(f);     // OK
 f = reinterpret_cast<float>(a);   // OK
 d = reinterpret_cast<D>(a);       // Fehler, D ist nicht skalar
  
-f  = reinterpret_cast<float>(pi); // OK, aber sinnlos, wandelt Adresse in float um
-pi = reinterpret_cast<int *>(f);  // OK, aber sinnlos, wandelt float in Adresse um
+f  = reinterpret_cast<float>(ip); // Fehler, wandelt Adresse in float um
+ip = reinterpret_cast<int *>(f);  // Fehler, wandelt float in Adresse um
 dp = reinterpret_cast<D*>(ip);    // OK, Zeiger duerfen ineinander umgewandelt
                                   //     werden
-dp = reinterpret_cast<D*>(f);     // OK, aber sinnlos, wandelt float in Adresse um
+dp = reinterpret_cast<D*>(cdp);   // Fehler, const darf nicht entfernt werden
+dp = reinterpret_cast<D*>(a);     // OK, aber vermutlich sinnlos, wandelt int in Adresse um
 
-// Dasselbe mit dem (cast) aus C
-a = (int)   f;  // OK
-f = (float) a;  // OK
-d = (D)     a;  // Fehler, D ist nicht skalar
 
-f  = (float) pi; // OK, aber sinnlos, wandelt Adresse in float um
-pi = (int *) f;  // OK, aber sinnlos, wandelt float in Adresse um
-dp = (D*)    ip; // OK, Zeiger duerfen ineinander umgewandelt werden
-dp = (D*)    f;  // OK, aber sinnlos, wandelt float in Adresse um
 \end{CCode}
 
-\paragraph*{static\_cast<>()}Mit dem Castoperator \OviIndex{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie int und float, oder zwischen verschiedenen Zeigertypen. Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt ist nicht möglich. Diese Variante ist sicherer, und
+\paragraph*{static\_cast<>()}Mit dem Castoperator \OviIndex{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie int und float, oder zwischen verschiedenen Zeigertypen. Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt ist nicht möglich, und const kann ebenfalls nicht weggecastet werden. Diese Variante ist sicherer, und
 dem reinterpret\_cast<>() wann immer möglich vorzuziehen.
 \begin{CCode}
 class D {...};
@@ -2980,15 +3783,17 @@ class D {...};
 int a,    *ip;
 float f,  *fp;
 D     d,  *dp;
+const D   *cdp;    // Zeiger auf konstantes D
 
 a = static_cast<int>(f);      // OK
 f = static_cast<float>(a);   // OK
 d = static_cast<D>(a);       // Fehler, D ist nicht skalar
  
-f  = static_cast<float>(pi);  // Fehler, Zeiger nach Numerisch ist nicht moeglich
-pi = static_cast<int *>(f);   // Fehler, Numerisch nach Zeiger ist nicht moeglich
+a  = static_cast<float>(ip);  // Fehler, Zeiger nach Numerisch ist nicht moeglich
+ip = static_cast<int *>(a);   // Fehler, Numerisch nach Zeiger ist nicht moeglich
 dp = static_cast<D*>(ip);     // OK, Zeiger dürfen ineinander umgewandelt werden
-dp = reinterpret_cast<D*>(f); // Fehler, Numerisch nach Zeiger ist nicht moeglich
+dp = static_cast<D*>(cdp);    // Fehler, const darf nicht entfernt werden
+dp = reinterpret_cast<D*>(a); // Fehler, Numerisch nach Zeiger ist nicht moeglich
 \end{CCode}
 
 \paragraph*{const\_cast<>()}Mit dem \OviIndex{Castoperator const\_cast<>()} kann die Konstantheit (const) und die Volatilität (volatile) entfernt werden. Weitergehende Umwandlungen sind nicht möglich.
@@ -3009,7 +3814,7 @@ f  = const_cast<float>(cf);   // OK, nur const entfernt
 dp = const_cast<D*>(cdp);     // OK, nur const entfernt
 \end{CCode}
 
-\paragraph*{dynamic\_cast<>()}Mit dem Castoperator \OviIndex{dynamic\_cast<>()} können Zeiger und Referenzen auf Objekte innerhalb der Vererbungshierarchie ineinander umgewandelt werden. Dabei wird aber zu Laufzeit geprüft, ab das betroffene Objekt zum neuen Typ passt, sonst wird eine Exception geworfen (Referenzen) oder ein Nullzeiger geliefert (Zeiger). Das heisst für eine erfolgreiche Umwandlung muss das betroffene Objekt tatsächlich der gewünschten Klasse angehören, oder davon abgeleitet sein.
+\paragraph*{dynamic\_cast<>()}Mit dem Castoperator \OviIndex{dynamic\_cast<>()} können Zeiger und Referenzen auf Objekte innerhalb der Vererbungshierarchie ineinander umgewandelt werden. Dabei wird aber zu Laufzeit geprüft, ab das betroffene Objekt zum neuen Typ passt, sonst wird eine Exception geworfen (Referenzen) oder ein Nullzeiger geliefert (Zeiger). Das heisst für eine erfolgreiche Umwandlung muss das betroffene Objekt tatsächlich der gewünschten Klasse angehören, oder davon abgeleitet sein. const kann nicht weggecastet werden.
 \begin{CCode}
 class Y {...};
 class A {...};
@@ -3029,8 +3834,11 @@ C *pc = &c;
 D *pd = &d;
 Y *py = &y;
 
+A const *cpa = &a;
+
 A *p = &c;
-pc = p;                     // Compiler-Fehler, Zeiger passen nicht
+pc = p;                      // Compiler-Fehler, Zeiger passen nicht
+pc = dynamic_cast<C *>(cpa); // Compiler-Fehler, const entfernt
 pc = dynamic_cast<C *>(p)   // OK, p zeigt tatsaechlich auf ein C
 p  = &d;
 pc = dynamic_cast<C *>(p)   // OK, p zeigt auf etwas von C abgeleitetes
@@ -3044,7 +3852,7 @@ pc = dynamic_cast<C *>(py); // Runtime-Fehler, py zeigt auf nichts C-aehnliches
 dynamic\_cast<>() setzt Polymorphismus voraus, d.h. mindestens eine Funktion
 von beiden beteiligten Klassen muss virtuell sein.
  
-\section{Namensbereiche (Namespaces)}
+\chapter{Namensbereiche (Namespaces)}
 \OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit kann man eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
 
 Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
@@ -3122,7 +3930,7 @@ BernerFachhochschule::Print();
 
 Es können auch \OviIndex{anonyme Namensbereiche} definiert werden, alle in
 einem anonymen Namensbereich definierten Elemente sind nur
-innerhalb der definierenden Übersetzungseineheit (Source-Datei)
+innerhalb der definierenden Übersetzungseinheit (Source-Datei)
 verfügbar. Dies entspricht in etwa dem Prinzip von static in C.   
 
 \begin{CCode}
@@ -3136,6 +3944,37 @@ namespace {
 // von anderen Modulen benutzt werden
 
 \end{CCode}
+ 
+ \chapter{constexpr (Seit \Cpp11)}
+ \label{subsubsect:constexpr}
+ Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
+ Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser try, goto, asm, label und static oder uninitialisierte Variablen benutzt werden.).
+ 
+ Beispiel
+ \begin{CCode}
+ 	
+ 	constexpr int GetLength() 
+ 	{
+ 		return 15;
+ 	}
+ 	
+ 	int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
+ 	
+ 	constexpr int MakeDouble(int x) 
+ 	{
+ 		return x * 2;
+ 	}
+ 	
+ 	int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
+ 	
+ 	
+ 	constexpr double Erdanziehung = 9.81;
+ 	constexpr double MondAnziehung = Erdanziehung / 6.0;
+ \end{CCode}
+ 
+ Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+ 
+ Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
  
 
 \chapter{Templates (Schablonen)}
@@ -3303,7 +4142,8 @@ Falls die Klasse Complex auch den > operator definiert hätte, könnte das Maximum
 cb = Maximum< Complex<int>  > (ca, cb);
 \end{CCode}
 
-(Auf das Leerzeichen zwischen den beiden > > achten, sonst wäre es der Schiebeoperator !)
+(Vor \Cpp11 muss  den beiden > > achten, sonst wäre es der Schiebeoperator !)
+
 
 Es sind auch Templates mit mehreren verschiedenen Typen möglich:
 
@@ -3683,10 +4523,136 @@ namespace hacker {
 }
 \end{CCode}
 
+\section{Template mit variabler Argumentenanzahl (Seit \Cpp11)}
+\label{subsubsect:TemplateVarArg}
+
+Neu können Templates Variable Argumentenlisten haben.
+\begin{CCode}
+	template<typename... Values> class tuple;
+\end{CCode}
+
+Ein einfaches Beispiel:
+\begin{CCode}
+	template <typename... BasisKlassen> class VariableKlasse : public BasisKlassen... {
+		public:
+		
+		// Konstruktor (Mit variabler Argumentenliste)
+		VariableKlasse (const BasisKlassen&... Quellen) : BasisKlassen(Quellen)... {};
+		
+	};
+\end{CCode}
+Mit typename... P oder class... P wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit ... abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
+Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
+Der Operator sizeof...(P) liefert die Anzahl Elemente im Pack als konstanten Integerwert.
+
+Die folgende Zeile
+\begin{CCode}
+	typedef VariableKlasse<Klasse1, Klasse2, Klasse3> KombinierteKlasse;
+\end{CCode}
+
+Entspricht folgender Klassendefinition:
+\begin{CCode}
+	class KombinierteKlasse : public Klasse1, Klasse2, Klasse3 {
+		public:
+		
+		// Konstruktor (Parameterliste von Variadic Template wird expandiert)
+		KombinierteKlasse (const Klasse1 &Quelle1, const Klasse2 &Quelle2, const Klasse3 &Quelle3) : Klasse1(Quelle1), Klasse2(Quelle2), Klasse3(Quelle3) {}
+	};
+\end{CCode}
+
+Und benutzt würde das ganze folgendermassen:
+\begin{CCode}
+	
+	/* Erzeugen von Objekten der Klassen Klasse1 bis Klasse5 */
+	
+	Klasse1 obj1;
+	Klasse2 obj2;
+	Klasse3 obj3;
+	Klasse4 obj4;
+	Klasse5 obj5;
+	
+	
+	KombinierteKlasse MeinObjekt(obj1, obj2, obj3);
+	
+	VariableKlasse<Klasse1, Klasse2, Klasse3, Klasse4, Klasse5> WeiteresObjekt(obj1, obj2, obj3, obj4, obj5);
+	
+\end{CCode}
+
+
+Ein weiteres Beispiel:
+
+Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor, welcher
+sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
+für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \&\& müsste
+noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward() eingebaut werden).  
+\begin{CCode}
+	template<typename T>
+	class Wraper {
+		private:
+		T Member;
+		
+		public:
+		template<typename... Args>
+		Wraper(Args&&... args) : Member(args...) {};
+		
+		// Perfect forwarding:
+		// Wraper(Args&&... args) : Member(std::forward<Args>(args)...) {};
+		
+	};
+	
+	
+	class Demo1
+	{
+		int   i;
+		float f;
+		
+		public:
+		Demo1(int ni, float nf) : i(ni), f(nf) {};
+	};
+	
+	class Demo2
+	{
+		long   l;
+		double d;
+		short  s;
+		
+		public:
+		Demo2(long nl, double nd, short ns) : l(nl), d(nd), s(ns) {};
+	};
+	
+	
+	int main()
+	{
+		
+		Wraper<Demo1> w1(10, 4.5f);
+		
+		short s = 17;
+		Wraper<Demo2> w2(13L, 13.3, s);
+		
+		return 0;
+	}
+	
+\end{CCode}
+
+\section{Template-Verschachtelung $>>$ (Seit \Cpp11)}
+\label{subsubsect:TemplateVerschatelung}
+Bei \OviIndex{verschachtelten Templates} wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden. Vor \Cpp11 musste ein Leerzeichen zwischen zwei schliessende Templateklammern gesetzt werden ($> >$), sonst wurde dies als Schiebeoperator interpretiert.
+ 
+\section{extern Templates (Seit \Cpp11)}
+\label{subsubsect:externTemplates}
+Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
+
+
+\begin{CCode}
+	extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
+\end{CCode}
+
+
 \chapter{Die Standardbibliothek}
 Die Standarbibliothek ist eine umfangreiche Klassen- und Templatesammlung, ähnlich der Standardlibrary von C.
 Sie stellt unter anderem Elemente aus der vormaligen STL (Datenhaltung und Datenverarbeitung), Strings, Ein- Ausgabe über Streams, Numerische Funktionen, Zufallszahlen, Multithreading und Reguläre Ausdrücke zur Verfügung. Einige dieser Aspekte werden in den nachfolgenden Kapiteln näher vorgestellt.   
 \section{Strings}
+\label{sect:strings}
 \OviIndex{Strings} werden in C++ in Form der Klasse string unterstützt. Diese Klasse
 bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
 das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
@@ -3730,6 +4696,7 @@ String gelesen, oder in einen String geschrieben wird:
 \end{CCode}
 
 \section{Datei Ein- und Ausgabe}
+\label{sect:DateiEinAusgabe}
 \OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
 
 Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
@@ -4609,6 +5576,7 @@ Bei Mehrfachvererbung und bei virtueller Vererbung sind je nach Kontext weitere 
  
 
 \subsection{Virtuelle Vererbung}
+\label{sec:virtuelle-vererbung}
 
 Bei der virtuellen Vererbung wird ein versteckter Zeiger auf die Basisklasse
 eingeführt, und alle Zugriffe auf die Basisklasse erfolgen über diesen Zeiger. Zudem
@@ -4791,602 +5759,639 @@ einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigest
 Ein Embedded-C++ Programm ist ein subset von standard C++ und lässt sich mit jedem standardkonformen C++ Compiler übersetzen.
 
 \chapter{Standardisierungen}
-\section{\Cpp 11}
-\index{c++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige Neuerungen aufgeführt.
+\section{\Cpp11}
+\index{c++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige dieser Neuerungen zusammenfassend aufgeführt.
 
 \subsection{Neuerungen}
-\subsubsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
-\label{subsec:RValueRefs}
-
-\OviIndex{RValue Referenzen} werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
-Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
-
-Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
-
-Beispiel:
-\begin{CCode}
-
-
-class Demo {
-		// ...
-		Demo(const Demo &Src);            // Kopierkonstruktor
-		Demo(Demo&&Src);                  // Move-Konstruktor
-		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
-		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
-	};	
-  
-  
-  Demo f1() {
-  
-     ...
-     
-     return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
-                            // Hier kommt Move-Konstruktor zum Zug
-                            // Welcher Inhalt vom temporaeren Objekt
-                            // uebernimmt statt kopiert
-   
-  }
-
-  void f2(Demo d) {
-  
-     ...
-   
-  }
-  
-  
-  f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
-                            // Hier kommt Move-Konstruktor zum Zug
-                            // Welcher Inhalt vom temporaeren Objekt
-                            // uebernimmt statt kopiert
-  
-  
-  Demo q(xyz);
-  
-  f2(q);                    // Kein temporaeres Objekt, normaler
-                            // Kopierkonstruktor wird verwendet
- 
-\end{CCode}
-
-Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
-\begin{CCode}
-
-  Demo q(xyz);
-  
-  f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
-                            // betrachten), Movekonstruktor wird verwendet
-                            
-  q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
-                            // keine Resourcen mehr, kann gefaehrlich sein 
-                            
-  q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
- 
-\end{CCode}
-
-\subsubsection{constexpr}
-Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten.
-
-Beispiel
-\begin{CCode}
-
-constexpr int GetLength() 
-{
-   return 15;
-}
- 
-int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
-
-constexpr int MakeDouble(int x) 
-{
-   return x * 2;
-}
-
-int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
-
-
-constexpr double Erdanziehung = 9.81;
-constexpr double MondAnziehung = Erdanziehung / 6.0;
-\end{CCode}
-
-Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
-
-Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
-
-\subsubsection{extern Templates}
-Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
-
-
-\begin{CCode}
-extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
-\end{CCode}
-
-\subsubsection{Initialisiererlisten}
-\index{Initialisiererlisten}
-Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
-
-Beispiel:
-\begin{CCode}
-
-class DemoClass {
-   public:
-   DemoClass(std::initializer_list<int> list);
-};
-
-
-DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
-
-\end{CCode}
-
-Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
-
-\subsubsection{Vereinheitlichte Initialisierung}
-Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
-passende Konstruktor aufgerufen (falls vorhanden).
-
-Beispiel:
-\begin{CCode}
-
-class DemoClass {
-
-	 private:
-	 int a;
-	 float b;	
-
-   public:
-   DemoClass(int _a, float _b) : a(_a), b(_b) {};
-	 
-};
-
-
-DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
-DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
-
-// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
-
-DemoClass f() {
-   return {2, 2.7f};
-}
-
-void f2(DemoClass c) {
-}
-
-f2({5, 1.23f});
-
-
-\end{CCode}
-
-\subsubsection{Automatische Typerkennung}
-\index{Automatische Typerkennung}
-Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort \OviIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
-\begin{CCode}
-
-auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
-
-auto Magic = 5;  // Magic erhält den Typ int
-
-
-decltype(Magic) OtherMagicVariable = 0; // Selber Typ wie Magic
-
-for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
-   ...
-}
-
-
-
-
-\end{CCode}
-
-\subsubsection{Automatische For-Schlaufe}
-\label{subsec:AutomaticForLoop}
-
-Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
-
-\begin{CCode}
-int Elemente[5] = {1, 2, 3, 4, 5};
-int Summe = 0;
-
-// Ueber alle Elemente iterieren
-for (int &r : Elemente) {
-    Summe += r;
-}
-
-\end{CCode}
-
-Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
-
-\subsubsection{Anonyme Funktionen (Lambda Funktionen)}
-\label{subsec:LambdaFunctions}
-\OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
-
-Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
-\begin{CCode}
-[capture](parameters)->return_type{body}
-\end{CCode}
-
-Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
-
-\emph{Parameter} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
-
-\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
-
-\emph{Body} enthält den Code der Funktion.
-
-Beispiele
-\begin{CCode}
-
-[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
-[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
-[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
-[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
-[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
-[&q, r](int& x) { q += r*++x; }    // Zugriff auf die Variablen q und r der
-                                   // definierenden Funktion erlauben
-// Einsatzbeispiel
-std::vector<int> Liste;
-int Total = 0;
-for (int i=0; i<5; ++i) {
-   Liste.push_back(i);
-}
-
-// for_each wird als drittes Argument eine Lambda-Funktion (Eigentlich ein
-// Zeiger darauf) übergeben.  
-// for_each ruft fuer jedes Element in der Liste diese Lambda-Funktion
-// auf, das aktuelle Element wird jeweils in x uebergeben. Der lambda-Funktion 
-// wird zudem der Zugriff auf die Variable Total erlaubt.  
-
-std::for_each( begin(Liste), end(Liste), [&Total](int x) {
-                                            Total += x;
-                                         }
-						 );
-\end{CCode}
-Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
-Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
-
-\subsubsection{Alternative Funktionsdefinition}
-
-Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
-
-\begin{CCode}
-
-// Der Rückgabetyp ist, was auch immer der Ergebnistyp der Addition von x und y ist
-template<class T1, class T2>
-  auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) {return x + y;}
-
-// Geht auch bei 'gewoehnlichen' Funktionen:
-
-auto f1(int x, int y) -> float // Rueckgabewert ist float
-{
-}
-
-class Demo {
-    auto MemberFunktion(int x, int y) -> int; // Rueckgabewert ist int
-};
- 
-auto Demo::MemberFunktion(int x, int y) -> int // Rueckgabewert ist int
-{
-    return x + y;
-}
-
-\end{CCode}
-
-
-\subsubsection{Vereinfachte Objektkonstruktion}
-\index{Vereinfachte Objektkonstruktion}
-Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
-
-\begin{CCode}
-class Demo  {
-    int x;
- 
-public:
-    Demo(int _x) : x(_x) {}
-    Demo() : Demo(42) {}    // Ruft bestehenden Konstruktor auf
-};
-
-
-class Example : public Demo {
-
-    using Demo::Demo; // Konstruktoren von Demo uebernehmen
-};
-
-
-class Test {
-public:
-    Test() {}   // Setzt x auf den Defaultwert 5 (Siehe unten)       
-    Test(int _x) : x(_x) {} // Setzt x auf den uebergebenen Wert 
- 
-private:
-    int x = 5;  // Jeder Konstuktor setzt diesen Wert auf 5, ausser es sei
-		            // im Konstruktor etwas anderes definiert
-		
-}\end{CCode}
-
-
-\subsubsection{Kontrolliertes Überschreiben von Funktionen}
-
-Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
-
-Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
-
-\begin{CCode}
-class Basisklasse {
-    public:
-    virtual void ModifizierbareFunktion(float);
-    virtual void NichtWeiterUeberschreibbareFunktion(float) final;
-};
- 
-class Abgeleitet : Basisklasse {
-    public:
-    virtual void ModifizierbareFunktion(int) override; // Fehler, keine passende Methode in 
-		                                                   // der Basisklasse (int statt float verwendet)
-    virtual void NichtWeiterUeberschreibbareFunktion(float);// Fehler, darf nicht ueberschrieben werden
-		
-};
-
-
-\end{CCode}
-
-\subsubsection{Nullpointer}
-Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
-Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
-
-\begin{CCode}
-class StrangeClass {
-    public:
-    void DoSomething(float *p);
-    void DoSomething(int *p);
-};
-
-StrangeClass sc;
-int a;
-
-sc.DoSomething(&a);
-sc.DoSomething(nullptr); // Error float* or int* ???
-
-
-class LessStrangeClass {
-    public:
-    void DoSomething(float *p);
-    void DoSomething(int *p);
-    void DoSomething(std::nulptr_t p);  // Variant for nullptr
-};
-
-LessStrangeClass lsc;
-int a;
-
-lsc.DoSomething(&a);
-lsc.DoSomething(nullptr); // ok, std::nulptr_t
-
-
-
-
-\end{CCode}
-  
-
-\subsubsection{Typsicherere Enummerationen}
-Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
-
-Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
-mehrere Enums dieselben Bezeichner verwenden.   
-
-Neue Syntax:
-\begin{CCode}
-
-enum class Aufzaehlung {
-    Item1,
-    Item2,
-    Item3 = 100,
-    Item4         // Erhaelt den Wert 101 
-};
-
-int i = Aufzaehlung::Item2;          // Compilerfehler
-
-Aufzaehlung a = Item1;               // Compilerfehler
-Aufzaehlung a = Aufzaehlung::Item1;  // OK
-a = 12;                              // Compilerfehler
-
-if (a == 17)                         // Compilerfehler
- 
-// Angabe der gewuenschte Datengrösse
-enum class Enum2 : unsigned int {Item1, Item2};
-
-\end{CCode}
-
-\subsubsection{Template-Verschachtelung $>>$}
-Bei \OviIndex{verschachtelten Templates} wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
-
-\subsubsection{Explizite Umwandlungsoperatoren}
-Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
-
-\subsubsection{Template mit variabler Argumentenanzahl}
-
-Neu können Templates Variable Argumentenlisten haben.
-\begin{CCode}
-template<typename... Values> class tuple;
-\end{CCode}
-
-Ein einfaches Beispiel:
-\begin{CCode}
-template <typename... BasisKlassen> class VariableKlasse : public BasisKlassen... {
-public:
-
-    // Konstruktor (Mit variabler Argumentenliste)
-    VariableKlasse (const BasisKlassen&... Quellen) : BasisKlassen(Quellen)... {};
-    
-};
-\end{CCode}
-Mit typename... P oder class... P wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit ... abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
-Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
-Der Operator sizeof...(P) liefert die Anzahl Elemente im Pack als konstanten Integerwert.
-
-Die folgende Zeile
-\begin{CCode}
-typedef VariableKlasse<Klasse1, Klasse2, Klasse3> KombinierteKlasse;
-\end{CCode}
-
-Entspricht folgender Klassendefinition:
-\begin{CCode}
-class KombinierteKlasse : public Klasse1, Klasse2, Klasse3 {
-public:
-
-    // Konstruktor (Parameterliste von Variadic Template wird expandiert)
-    KombinierteKlasse (const Klasse1 &Quelle1, const Klasse2 &Quelle2, const Klasse3 &Quelle3) : Klasse1(Quelle1), Klasse2(Quelle2), Klasse3(Quelle3) {}
-};
-\end{CCode}
-
-Und benutzt würde das ganze folgendermassen:
-\begin{CCode}
-
-/* Erzeugen von Objekten der Klassen Klasse1 bis Klasse5 */
-
-Klasse1 obj1;
-Klasse2 obj2;
-Klasse3 obj3;
-Klasse4 obj4;
-Klasse5 obj5;
-
-
-KombinierteKlasse MeinObjekt(obj1, obj2, obj3);
-
-VariableKlasse<Klasse1, Klasse2, Klasse3, Klasse4, Klasse5> WeiteresObjekt(obj1, obj2, obj3, obj4, obj5);
-
-\end{CCode}
-
-
-Ein weiteres Beispiel:
-
-Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor, welcher
-sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
-für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \&\& müsste
-noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward() eingebaut werden).  
-\begin{CCode}
-template<typename T>
-class Wraper {
-   private:
-   T Member;
-
-   public:
-   template<typename... Args>
-   Wraper(Args&&... args) : Member(args...) {};
-  
-   // Perfect forwarding:
-   // Wraper(Args&&... args) : Member(std::forward<Args>(args)...) {};
-
-
-};
-
-
-class Demo1
-{
-    int   i;
-    float f;
-
-    public:
-    Demo1(int ni, float nf) : i(ni), f(nf) {};
-};
-
-class Demo2
-{
-    long   l;
-    double d;
-    short  s;
-
-    public:
-    Demo2(long nl, double nd, short ns) : l(nl), d(nd), s(ns) {};
-};
-
-
-int main()
-{
-
-    Wraper<Demo1> w1(10, 4.5f);
-
-    short s = 17;
-    Wraper<Demo2> w2(13L, 13.3, s);
-
-
-    return 0;
-}
-
-\end{CCode}
-
-
-\subsubsection{Erweiterte Stringliterale}
-Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
-
-\begin{CCode}
-u8"Ein UTF-8 String"  // hat den Typ const char[]
-u"Ein UTF-16 String"  // hat den Typ const char16_t[]
-U"Ein UTF-32 String"  // hat den Typ const char32_t[]
-\end{CCode}
-
-Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
-\begin{CCode}
-u8"Ein spezielles UTF-8 Zeichen: \u2018" 
-u"Ein spezielles UTF-16 Zeichen: \u2018" 
-U"Ein spezielles UTF-32 Zeichen: \U00002018"  
-\end{CCode}
-
-Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
-
-Beispiel:
-\begin{CCode}
-R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
-
-// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
-R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
-\end{CCode}
-
-R und U können auch kombiniert werden.
-
-\subsubsection{Benutzerdefinierte Literale}
-\index{Benutzerdefinierte Literale}
-Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
-
-Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
-
-\begin{CCode}
-// Erhaelt einen String mit der Zeichenkette vor dem Suffix
-OutputType operator "" _Magic(const char * literal_string); 
-
-OutputType operator "" _kg(unsigned long long); // Erhaelt den Integerwert des Literals
-OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
-\end{CCode}
-
-Die Operatorfunktionen können dabei einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern).
-
-Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
-
-\begin{CCode}
-OutputType operator "" _suffix(const char     * StringValues, size_t StringLaenge);
-OutputType operator "" _suffix(const wchar_t  * StringValues, size_t StringLaenge);
-OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaenge);
-OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
-\end{CCode}
-
-Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
-
-\subsubsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen}
-Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
-
-\begin{CCode}
-class Demo {
-    Demo() = default;                       // Den Defaultkonstruktor anfordern.
-    Demo(const Demo&) = delete;             // Den Kopierkonstruktor verbieten.
-    Demo & operator=(const Demo&) = delete; // Den Zuweisungsoperator verbieten.
-    void f(double i);                    
-    void f(int) = delete;                   // f darf nicht mit int aufgerufen 
-                                            // werden
-    template<class T> void f(T) = delete;   // f mit irgend etwas anderem als 
-		                                        // double aufrufen ist verboten
-};
-
-\end{CCode}
-Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
-
-\subsection{Weitere Neuerungen}
-
 \begin{itemize}
+
+\item {RValue Referenzen und Move Konstruktor / Move Zuweisung},
+%\subsubsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
+%\label{subsec:RValueRefs}
+Siehe \autoref{subsec:RValueRefs}
+
+%\OviIndex{RValue Referenzen} werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
+%Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
+%
+%Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+%
+%Beispiel:
+%\begin{CCode}
+%
+%
+%class Demo {
+%		// ...
+%		Demo(const Demo &Src);            // Kopierkonstruktor
+%		Demo(Demo&&Src);                  // Move-Konstruktor
+%		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
+%		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
+%	};	
+%  
+%  
+%  Demo f1() {
+%  
+%     ...
+%     
+%     return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
+%                            // Hier kommt Move-Konstruktor zum Zug
+%                            // Welcher Inhalt vom temporaeren Objekt
+%                            // uebernimmt statt kopiert
+%   
+%  }
+%
+%  void f2(Demo d) {
+%  
+%     ...
+%   
+%  }
+%  
+%  
+%  f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
+%                            // Hier kommt Move-Konstruktor zum Zug
+%                            // Welcher Inhalt vom temporaeren Objekt
+%                            // uebernimmt statt kopiert
+%  
+%  
+%  Demo q(xyz);
+%  
+%  f2(q);                    // Kein temporaeres Objekt, normaler
+%                            // Kopierkonstruktor wird verwendet
+% 
+%\end{CCode}
+%
+%Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
+%\begin{CCode}
+%
+%  Demo q(xyz);
+%  
+%  f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
+%                            // betrachten), Movekonstruktor wird verwendet
+%                            
+%  q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
+%                            // keine Resourcen mehr, kann gefaehrlich sein 
+%                            
+%  q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
+% 
+%\end{CCode}
+
+\item{constexpr},
+%\label{subsubsect:constexpr}
+Siehe \autoref{subsubsect:constexpr}
+%Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
+%Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind fast alle Anweisungen erlaubt).
+%
+%Beispiel
+%\begin{CCode}
+%
+%constexpr int GetLength() 
+%{
+%   return 15;
+%}
+% 
+%int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
+%
+%constexpr int MakeDouble(int x) 
+%{
+%   return x * 2;
+%}
+%
+%int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
+%
+%
+%constexpr double Erdanziehung = 9.81;
+%constexpr double MondAnziehung = Erdanziehung / 6.0;
+%\end{CCode}
+%
+%Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+%
+%Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+
+\item{extern Templates},
+%\label{subsubsect:externTemplates}
+Siehe \autoref{subsubsect:externTemplates}
+%Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
+%
+%
+%\begin{CCode}
+%extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
+%\end{CCode}
+
+\item{Initialisiererlisten},
+%\label{subsubsect:Initialisiererlisten}
+Siehe \autoref{subsubsect:Initialisiererlisten}
+%\index{Initialisiererlisten}
+%Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
+%
+%Beispiel:
+%\begin{CCode}
+%
+%class DemoClass {
+%   public:
+%   DemoClass(std::initializer_list<int> list);
+%};
+%
+%
+%DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
+%
+%\end{CCode}
+%
+%Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
+
+\item{Vereinheitlichte Initialisierung},
+%\label{subsubsect:VereinheitlichteInitialisierung}
+Siehe \autoref{subsubsect:VereinheitlichteInitialisierung}
+%Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
+%passende Konstruktor aufgerufen (falls vorhanden).
+%
+%Beispiel:
+%\begin{CCode}
+%
+%class DemoClass {
+%
+%	 private:
+%	 int a;
+%	 float b;	
+%
+%   public:
+%   DemoClass(int _a, float _b) : a(_a), b(_b) {};
+%	 
+%};
+%
+%
+%DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
+%DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
+%
+%// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
+%
+%DemoClass f() {
+%   return {2, 2.7f};
+%}
+%
+%void f2(DemoClass c) {
+%}
+%
+%f2({5, 1.23f});
+%
+%
+%\end{CCode}
+
+\item{Automatische Typerkennung},
+%\label{subsubsect:AutomatischeTyperkennung}
+Siehe \autoref{subsubsect:AutomatischeTyperkennung}
+%\index{Automatische Typerkennung}
+%Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort \OviIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
+%\begin{CCode}
+%
+%auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
+%
+%auto Magic = 5;  // Magic erhält den Typ int
+%
+%
+%decltype(Magic) OtherMagicVariable = 0; // Selber Typ wie Magic
+%
+%for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
+%   ...
+%}
+%
+%
+%
+%
+%\end{CCode}
+
+\item{Automatische For-Schlaufe},
+%\label{subsec:AutomaticForLoop}
+\autoref{subsec:AutomaticForLoop}
+
+%Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
+%
+%\begin{CCode}
+%int Elemente[5] = {1, 2, 3, 4, 5};
+%int Summe = 0;
+%
+%// Ueber alle Elemente iterieren
+%for (int &r : Elemente) {
+%    Summe += r;
+%}
+%
+%\end{CCode}
+%
+%Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
+
+\item{Anonyme Funktionen (Lambda Funktionen)},
+%\label{subsec:LambdaFunctions}
+Siehe \autoref{subsec:LambdaFunctions}
+%\OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
+%
+%Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
+%\begin{CCode}
+%[capture](parameters)->return_type{body}
+%\end{CCode}
+%
+%Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
+%
+%\emph{Parameter} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
+%
+%\emph{-\textgreater return\_type} definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
+%
+%\emph{Body} enthält den Code der Funktion.
+%
+%Beispiele
+%\begin{CCode}
+%
+%[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
+%[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
+%[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
+%[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
+%[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
+%[&q, r](int& x) { q += r*++x; }    // Zugriff auf die Variablen q und r der
+%                                   // definierenden Funktion erlauben
+%// Einsatzbeispiel
+%std::vector<int> Liste;
+%int Total = 0;
+%for (int i=0; i<5; ++i) {
+%   Liste.push_back(i);
+%}
+%
+%// for_each wird als drittes Argument eine Lambda-Funktion (Eigentlich ein
+%// Zeiger darauf) übergeben.  
+%// for_each ruft fuer jedes Element in der Liste diese Lambda-Funktion
+%// auf, das aktuelle Element wird jeweils in x uebergeben. Der lambda-Funktion 
+%// wird zudem der Zugriff auf die Variable Total erlaubt.  
+%
+%std::for_each( begin(Liste), end(Liste), [&Total](int x) {
+%                                            Total += x;
+%                                         }
+%						 );
+%\end{CCode}
+%Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
+%Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
+
+\item{Alternative Funktionsdefinition},
+%\label{subsubsect:Alternative Funktionsdefinition}
+Siehe \autoref{subsubsect:Alternative Funktionsdefinition}
+
+%Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
+%
+%\begin{CCode}
+%
+%// Der Rückgabetyp ist, was auch immer der Ergebnistyp der Addition von x und y ist
+%template<class T1, class T2>
+%  auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) {return x + y;}
+%
+%// Geht auch bei 'gewoehnlichen' Funktionen:
+%
+%auto f1(int x, int y) -> float // Rueckgabewert ist float
+%{
+%}
+%
+%class Demo {
+%    auto MemberFunktion(int x, int y) -> int; // Rueckgabewert ist int
+%};
+% 
+%auto Demo::MemberFunktion(int x, int y) -> int // Rueckgabewert ist int
+%{
+%    return x + y;
+%}
+%
+%\end{CCode}
+
+
+\item{Vereinfachte Objektkonstruktion},
+%\label{subsubsect:VereinfachteObjektkonstruktion}
+Siehe \autoref{subsubsect:VereinfachteObjektkonstruktion}
+%\index{Vereinfachte Objektkonstruktion}
+%Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
+%
+%\begin{CCode}
+%class Demo  {
+%    int x;
+% 
+%public:
+%    Demo(int _x) : x(_x) {}
+%    Demo() : Demo(42) {}    // Ruft bestehenden Konstruktor auf
+%};
+%
+%
+%class Example : public Demo {
+%
+%    using Demo::Demo; // Konstruktoren von Demo uebernehmen
+%};
+%
+%
+%class Test {
+%public:
+%    Test() {}   // Setzt x auf den Defaultwert 5 (Siehe unten)       
+%    Test(int _x) : x(_x) {} // Setzt x auf den uebergebenen Wert 
+% 
+%private:
+%    int x = 5;  // Jeder Konstuktor setzt diesen Wert auf 5, ausser es sei
+%		            // im Konstruktor etwas anderes definiert
+%		
+%}\end{CCode}
+%
+
+\item{Kontrolliertes Überschreiben von Funktionen},
+%\label{subsubsect:KontrolliertesUeberschreiben}
+\autoref{subsubsect:KontrolliertesUeberschreiben}
+%Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
+%
+%Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
+%
+%\begin{CCode}
+%class Basisklasse {
+%    public:
+%    virtual void ModifizierbareFunktion(float);
+%    virtual void NichtWeiterUeberschreibbareFunktion(float) final;
+%};
+% 
+%class Abgeleitet : Basisklasse {
+%    public:
+%    virtual void ModifizierbareFunktion(int) override; // Fehler, keine passende Methode in 
+%		                                                   // der Basisklasse (int statt float verwendet)
+%    virtual void NichtWeiterUeberschreibbareFunktion(float);// Fehler, darf nicht ueberschrieben werden
+%		
+%};
+%
+%
+%\end{CCode}
+
+\item{Nullpointer},
+%\label{subsubsect:nullptr}
+\autoref{subsubsect:nullptr}
+%Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
+%Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
+%
+%\begin{CCode}
+%class StrangeClass {
+%    public:
+%    void DoSomething(float *p);
+%    void DoSomething(int *p);
+%};
+%
+%StrangeClass sc;
+%int a;
+%
+%sc.DoSomething(&a);
+%sc.DoSomething(nullptr); // Error float* or int* ???
+%
+%
+%class LessStrangeClass {
+%    public:
+%    void DoSomething(float *p);
+%    void DoSomething(int *p);
+%    void DoSomething(std::nulptr_t p);  // Variant for nullptr
+%};
+%
+%LessStrangeClass lsc;
+%int a;
+%
+%lsc.DoSomething(&a);
+%lsc.DoSomething(nullptr); // ok, std::nulptr_t
+%
+%	
+%
+%
+%
+%\end{CCode}
+%  
+
+\item{Typsicherere Enummerationen},
+%\label{subsubsect:TypsichererEnum}
+Siehe \autoref{subsubsect:TypsichererEnum}
+%Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
+%
+%Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
+%mehrere Enums dieselben Bezeichner verwenden.   
+%
+%Neue Syntax:
+%\begin{CCode}
+%
+%enum class Aufzaehlung {
+%    Item1,
+%    Item2,
+%    Item3 = 100,
+%    Item4         // Erhaelt den Wert 101 
+%};
+%
+%int i = Aufzaehlung::Item2;          // Compilerfehler
+%
+%Aufzaehlung a = Item1;               // Compilerfehler
+%Aufzaehlung a = Aufzaehlung::Item1;  // OK
+%a = 12;                              // Compilerfehler
+%
+%if (a == 17)                         // Compilerfehler
+% 
+%// Angabe der gewuenschte Datengrösse
+%enum class Enum2 : unsigned int {Item1, Item2};
+%
+%\end{CCode}
+%
+\item{Template-Verschachtelung $>>$},
+%\label{subsubsect:TemplateVerschatelung}
+Siehe \autoref{subsubsect:TemplateVerschatelung}
+%Bei \OviIndex{verschachtelten Templates} wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
+
+\item{Explizite Umwandlungsoperatoren},
+%\label{subsubsect:ExpliziteUmwandlungsoperatoren}
+Siehe \autoref{subsubsect:ExpliziteUmwandlungsoperatoren}
+%Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
+
+\item{Template mit variabler Argumentenanzahl},
+%\label{subsubsect:TemplateVarArg}
+Siehe \autoref{subsubsect:TemplateVarArg}
+
+%Neu können Templates Variable Argumentenlisten haben.
+%\begin{CCode}
+%template<typename... Values> class tuple;
+%\end{CCode}
+%
+%Ein einfaches Beispiel:
+%\begin{CCode}
+%template <typename... BasisKlassen> class VariableKlasse : public BasisKlassen... {
+%public:
+%
+%    // Konstruktor (Mit variabler Argumentenliste)
+%    VariableKlasse (const BasisKlassen&... Quellen) : BasisKlassen(Quellen)... {};
+%    
+%};
+%\end{CCode}
+%Mit typename... P oder class... P wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit ... abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
+%Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
+%Der Operator sizeof...(P) liefert die Anzahl Elemente im Pack als konstanten Integerwert.
+%
+%Die folgende Zeile
+%\begin{CCode}
+%typedef VariableKlasse<Klasse1, Klasse2, Klasse3> KombinierteKlasse;
+%\end{CCode}
+%
+%Entspricht folgender Klassendefinition:
+%\begin{CCode}
+%class KombinierteKlasse : public Klasse1, Klasse2, Klasse3 {
+%public:
+%
+%    // Konstruktor (Parameterliste von Variadic Template wird expandiert)
+%    KombinierteKlasse (const Klasse1 &Quelle1, const Klasse2 &Quelle2, const Klasse3 &Quelle3) : Klasse1(Quelle1), Klasse2(Quelle2), Klasse3(Quelle3) {}
+%};
+%\end{CCode}
+%
+%Und benutzt würde das ganze folgendermassen:
+%\begin{CCode}
+%
+%/* Erzeugen von Objekten der Klassen Klasse1 bis Klasse5 */
+%
+%Klasse1 obj1;
+%Klasse2 obj2;
+%Klasse3 obj3;
+%Klasse4 obj4;
+%Klasse5 obj5;
+%
+%
+%KombinierteKlasse MeinObjekt(obj1, obj2, obj3);
+%
+%VariableKlasse<Klasse1, Klasse2, Klasse3, Klasse4, Klasse5> WeiteresObjekt(obj1, obj2, obj3, obj4, obj5);
+%
+%\end{CCode}
+%
+%
+%Ein weiteres Beispiel:
+%
+%Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor, welcher
+%sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
+%für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \&\& müsste
+%noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward() eingebaut werden).  
+%\begin{CCode}
+%template<typename T>
+%class Wraper {
+%   private:
+%   T Member;
+%
+%   public:
+%   template<typename... Args>
+%   Wraper(Args&&... args) : Member(args...) {};
+%  
+%   // Perfect forwarding:
+%   // Wraper(Args&&... args) : Member(std::forward<Args>(args)...) {};
+%
+%
+%};
+%
+%
+%class Demo1
+%{
+%    int   i;
+%    float f;
+%
+%    public:
+%    Demo1(int ni, float nf) : i(ni), f(nf) {};
+%};
+%
+%class Demo2
+%{
+%    long   l;
+%    double d;
+%    short  s;
+%
+%    public:
+%    Demo2(long nl, double nd, short ns) : l(nl), d(nd), s(ns) {};
+%};
+%
+%
+%int main()
+%{
+%
+%    Wraper<Demo1> w1(10, 4.5f);
+%
+%    short s = 17;
+%    Wraper<Demo2> w2(13L, 13.3, s);
+%
+%
+%    return 0;
+%}
+%
+%\end{CCode}
+%
+
+\item{Erweiterte Stringliterale},
+%\label{subsubsect:erweiterteStringliterale}
+Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
+(Siehe \autoref{subsubsect:erweiterteStringliterale})
+
+%\begin{CCode}
+%u8"Ein UTF-8 String"  // hat den Typ const char[]
+%u"Ein UTF-16 String"  // hat den Typ const char16_t[]
+%U"Ein UTF-32 String"  // hat den Typ const char32_t[]
+%\end{CCode}
+%
+%Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
+%\begin{CCode}
+%u8"Ein spezielles UTF-8 Zeichen: \u2018" 
+%u"Ein spezielles UTF-16 Zeichen: \u2018" 
+%U"Ein spezielles UTF-32 Zeichen: \U00002018"  
+%\end{CCode}
+%
+%Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+%
+%Beispiel:
+%\begin{CCode}
+%R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
+%
+%// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
+%R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
+%\end{CCode}
+%
+%R und U können auch kombiniert werden.
+
+\item{Benutzerdefinierte Literale},
+%\index{Benutzerdefinierte Literale}
+%\label{subsubsect:BenutzerdefinierteLiterale}
+Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}.
+%Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
+%
+%Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
+%
+%\begin{CCode}
+%// Erhaelt einen String mit der Zeichenkette vor dem Suffix
+%OutputType operator "" _Magic(const char * literal_string); 
+%
+%OutputType operator "" _kg(unsigned long long); // Erhaelt den Integerwert des Literals
+%OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
+%\end{CCode}
+%
+%Die Operatorfunktionen können dabei einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern).
+%
+%Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
+%
+%\begin{CCode}
+%OutputType operator "" _suffix(const char     * StringValues, size_t StringLaenge);
+%OutputType operator "" _suffix(const wchar_t  * StringValues, size_t StringLaenge);
+%OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaenge);
+%OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
+%\end{CCode}
+%
+%Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
+
+\item{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen},
+Siehe \autoref{subsubsect:ControlAutoMember}
+%Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
+%
+%\begin{CCode}
+%class Demo {
+%    Demo() = default;                       // Den Defaultkonstruktor anfordern.
+%    Demo(const Demo&) = delete;             // Den Kopierkonstruktor verbieten.
+%    Demo & operator=(const Demo&) = delete; // Den Zuweisungsoperator verbieten.
+%    void f(double i);                    
+%    void f(int) = delete;                   // f darf nicht mit int aufgerufen 
+%                                            // werden
+%    template<class T> void f(T) = delete;   // f mit irgend etwas anderem als 
+%		                                        // double aufrufen ist verboten
+%};
+%
+%\end{CCode}
+%Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
+
+%\subsection{Weitere Neuerungen}
+
+%\begin{itemize}
 	 \item Geänderte Definiton von POD (plain old data)
    \item Template Alias
    \item Gelockerte Restriktionen bei Unions
@@ -5397,6 +6402,7 @@ Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würd
    \item Einfacher Support für Garbagecollection
    \item Attribute
    \item Unterstützung von Multithreading
+	 \item Operator noexcept()  zum prüfen ob ein Ausdruck eine Exception werfen könnte
    \item Standardlibrary um Tupletypen erweitert
    \item Standardlibrary um Hashtabellen erweitert
    \item Standardlibrary um Regular expressions erweitert
@@ -5420,7 +6426,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \begin{itemize}
 	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
 	 \item Alternative Typendeduktion bei Deklarationen
-   \item Gelockerte Einschränkungen für Constexpressions
+   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser try, goto, asm, label und static oder uninitialisierte Variablen benutzt werden.
    \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden.
    \item Aggregate Member initialisierung
    \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001)
@@ -5433,7 +6439,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \end{itemize}
 
 \section{\Cpp 17}
-Bereits in der Entwicklungsphase
+Im Dezember 2017 publiziert.
 \begin{itemize}
     \item Addition of a default text message for static\_assert
 
@@ -5450,8 +6456,12 @@ Bereits in der Entwicklungsphase
     \item Nested namespace definition
 
     \item Attributes for namespaces and enumerators
+		
+		\item New standard attributes [[fallthrough]], [[maybe\_unused]] and [[nodiscard]]
 
     \item UTF-8 character literals
+		
+		\item Hexadecimal floating-point literals
 
     \item Constant evaluation for all non-type template arguments
 
@@ -5494,11 +6504,11 @@ Bereits in der Entwicklungsphase
     \item Template argument deduction for class templates
     \item template <auto>
     \item Guaranteed copy elision
-    \item A weaker version of fixed order-of-evaluation for expressions (see Chandler's tweet and Alisdair's tweet)
+    \item A weaker version of fixed order-of-evaluation for expressions 
     \item constexpr if
     \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
-    \item Inline variables (see the design paper)
-    \item Structured bindings (see the design paper)
+    \item Inline variables 
+    \item Structured bindings 
     \item if (init; condition) and switch (init; condition)
 
     \item C++17 is based on C11 instead of C99
@@ -5506,8 +6516,13 @@ Bereits in der Entwicklungsphase
     \item destroy(\_at|\_n), uninitialized\_move(\_n), uninitialized\_value\_construct(\_n), uninitialized\_default\_construct(\_n)
     \item Splicing for map<>,unordered\_map<>, set<>, and unordered\_set<>
     \item Reserve std[0-9]+ for future standard libraries
+		\item Value of \_\_cplusplus changed to 201703L
 
 \end{itemize}
+
+\section{\Cpp 20}
+Bereits in der Planungs- und Diskussionsphase.
+
 
 \appendix
 \chapter{Anhang}
