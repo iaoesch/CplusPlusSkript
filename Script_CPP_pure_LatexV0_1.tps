@@ -17,8 +17,8 @@ Class=LaTeXView
 Document=Script_CPP_pure_LatexV0_1.tex
 
 [Frame0_View0,0]
-TopLine=5139
-Cursor=205697
+TopLine=1615
+Cursor=60411
 
 [SessionInfo]
 FrameCount=1

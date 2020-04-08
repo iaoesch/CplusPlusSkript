@@ -91,6 +91,7 @@
 %Umlaute ermöglichen
 \usepackage[latin1]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{textcomp}
 \usepackage{makeidx}
 
@@ -255,7 +256,7 @@ tab=\rightarrowfill}
 \vspace*{\fill}
 \begin{center}
 {
-\fontsize{200pt}{240pt}\selectfont
+\fontsize{40pt}{48pt}\selectfont
 \textbf{
 \MyTitle
 }
@@ -284,23 +285,25 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 \today
 
-%16. Februar 2013
+
 
 \tiny
 
-18. Februar 2011
-
-19. Februar 2010
-
-8. Januar 2007
-
-20. Oktober 2005
-
-17. Oktober 2004 
-
-12. Dezember 2001
-
-5. 	März 2001
+%22. Februar 2016
+%16. Februar 2013
+%18. Februar 2011
+%
+%19. Februar 2010
+%
+%8. Januar 2007
+%
+%20. Oktober 2005
+%
+%17. Oktober 2004 
+%
+%12. Dezember 2001
+%
+%5. 	März 2001
 
 \normalsize
 
@@ -885,7 +888,7 @@ s[99] = 'z'; // Letztes Element (!)
 \end{CCode}
 
 \section{Zeiger und Referenzen}
-\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}.
+\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \&. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit * \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
@@ -1001,7 +1004,7 @@ aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
 (z. B. ein statischer Zugriffszähler) modifiziert.
 
 Für diese Fälle kann ein Attribut als \OviIndex{mutable} gekennzeichnet werden. 
-Attribute mit dem Qualifizierer dürfen, im Gegensatz zu 'normalen'
+Attribute mit dem Qualifizierer mutable dürfen, im Gegensatz zu 'normalen'
 Attributen, von const Methoden verändert werden.
 
 
@@ -1241,7 +1244,7 @@ Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei l
 Funktionen ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
 
-Wenn Inlinefunktionen über Pointer oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Funktion direkt aufgerufen wird) 
+Wenn Inlinefunktionen über Pointer aufgerufen oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Funktion direkt aufgerufen wird) 
 
 \begin{CCode}
 // in Header-Datei
@@ -1373,7 +1376,7 @@ class MyClass {
 };
 \end{CCode}
 
-Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerweise über die \OviIndex{Initialisiererliste}. Die Initialisiererliste wird durch ein ':' eingeleitet, die Attribute werden mit der Konstruktorsyntax initialisiert (Attributname(Wert1, Wert2, ....) ). Basisklassen und eingebettete Klassen ohne Defaultkonstruktor sowie Referenzen können \emph{nur} über die Initialisiererliste initialisiert werden.
+Die \OviIndex{Initialisierung} der Attribute erfolgt beim Konstruktor normalerweise über die \OviIndex{Initialisiererliste}. Die Initialisiererliste wird durch ein ':' eingeleitet, die Attribute werden mit der Konstruktorsyntax initialisiert (Attributname(Wert1, Wert2, ....) ). Basisklassen und eingebettete Klassen ohne Defaultkonstruktor sowie Referenzen können \emph{nur} über die Initialisiererliste initialisiert werden. Die Elemente in der Initialisiererliste werden in derselben Reihenfolge initialisiert, wie sie in der Klassendeklaration erscheinen, und sollten in der Initialisiererlist auch in dieser Reihenfolge aufgeführt werden.
 
 \begin{CCode}
    MyClass::MyClass(void) : k(13), j(2)
@@ -1446,6 +1449,10 @@ void f2(MyClass m)
 
 \subsection{Copy-Construktor}
 Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
+
+Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Konstruktor der Basisklasse(n)
+in der Initialisiererliste aufgeführt werden, sonst wird der Defaultkonstruktor benutzt, was üblicherweise nicht zum gewünschten Resultat führt.
+
 \begin{CCode}
 class MyClass {
   int k, j;
@@ -1454,6 +1461,36 @@ class MyClass {
                 MyClass(const MyClass &Source);  // Copy-Konstruktor
    ...
 };
+
+
+void f1(MyClass y) 
+{
+   ...
+}
+
+MyClass f2() 
+{
+   MyClass w;
+   
+   ...
+   
+   return w;            // ruft implizit Kopierkonstruktor auf
+}
+
+   
+
+   MyClass m;          
+
+   MyClass m2 = m;     // ruft implizit Kopierkonstruktor auf
+
+   MyClass m3(m);      // ruft explizit Kopierkonstruktor auf
+
+   MyClass m4 = f2();  // ruft implizit Kopierkonstruktor auf
+
+   f1(m)               // ruft implizit Kopierkonstruktor auf
+
+   MyClass m5 = MyClass(m);  // ruft 2 mal implizit Kopierkonstruktor auf
+
 \end{CCode}
 
 \subsection{C11 Move-Construktor}
@@ -1461,7 +1498,7 @@ Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueR
 
 \subsection{Zuweisungsoperator}
 In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (operator =()), dieser wird jedesmal aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (*this) zurückliefern. Der Zuweisungsoperator kann
-für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes geloescht (Ueberschrieben) und durch neue Werte ersetzt wird.
+für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes gelöscht (Überschrieben) und durch neue Werte ersetzt wird.
 
 \begin{CCode}
 class MyClass {
@@ -1481,12 +1518,21 @@ MyClass &MyClass::operator =(const MyClass &Source)
    return *this;
 }
 
+MyClass a;
+MyClass b;
+
+a = b;      // Aufruf des Zuweisungsoperators
+
+
 \end{CCode}
+
+\subsection{C11 Move-Zuweisungsoperator}
+Unter C11 gibt es neu den Movezuweisungsoperator (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporarys erlaubt.
 
 \subsection{Destruktor}
 Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse aufweist, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden.
-\begin{CCode}
-class MyClass {
+\begin{CCode}9:45
+11:45c12:45l17:00ass MyClass {
   int k, j;
   public:
    ...
@@ -1588,6 +1634,9 @@ Speicherplatz benötigen, da der Code an jeder Aufrufstelle eingefügt wird. Bei l
 Methoden ist inline nicht sinnvoll, da der Geschwindigkeitsgewinn minimal, dafür
 der Speicherverbrauch gross ist.
 
+Wenn Inlinemethoden über Pointer aufgerufen oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei denen die Methode direkt aufgerufen wird) 
+
+
 \begin{CCode}
 class A {
    
@@ -1621,6 +1670,8 @@ inline void A::DoSomething()  // Inline Methoden können auch
  
 \section{Statische Member}
 \OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Auf statische Member wird über die Klasse mit dem Scope-Resolutions-Operator ('::') zugegriffen.
+
+Achtung: Für statische Attribute muss neben der Deklaration in der Klasse explizit eine Variable definiert werden, üblicherweise in der dazugehörigen Implementationsdatei, welche auch den Code für die Methoden dieser Klasse enthält. 
 
 \begin{CCode}
 class A {
@@ -1666,6 +1717,11 @@ void Auto::SetGewicht(int Gewicht)
                             //  Funktionsparametern zu verwenden, da der
                             //  Parameter das Attribut verdeckt
 }
+
+Auto a;
+
+a.SetGewicht(g);  // Wird vom Compiler zu SetGewicht(&a, g); uebersetzt,
+                  // &a landet im this-Pointer 
 \end{CCode}
  
 \section{Zeiger auf Elemente (Memberpointer)}
@@ -3797,7 +3853,7 @@ Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führ
 RValue Referenzen werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
 
-Mit RValue Referenzen können nun Temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des Temporären Objektes die 'Entwendeten' Daten nicht löscht).
+Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim Move-Konstruktor wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
 
 Beispiel:
 \begin{CCode}
@@ -3809,7 +3865,37 @@ class Demo {
 		Demo(Demo&&Src);                  // Move-Konstruktor
 		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
 		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
-	};	 
+	};	
+  
+  
+  Demo f1() {
+  
+     ...
+     
+     return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
+                            // Hier kommt Move-Konstruktor zum Zug
+                            // Welcher Inhalt vom temporaeren Objekt
+                            // uebernimmt statt kopiert
+   
+  }
+
+  void f2(Demo d) {
+  
+     ...
+   
+  }
+  
+  
+  f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
+                            // Hier kommt Move-Konstruktor zum Zug
+                            // Welcher Inhalt vom temporaeren Objekt
+                            // uebernimmt statt kopiert
+  
+  
+  Demo q(xyz);
+  
+  f2(q);                    // Kein temporaeres Objekt, normaler
+                            // Kopierkonstruktor wird verwendet
  
 \end{CCode}
 
