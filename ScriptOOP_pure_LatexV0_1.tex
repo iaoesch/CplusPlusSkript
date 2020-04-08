@@ -821,7 +821,7 @@ Die Auswahl der effektiv aufgerufenen Methode wird als \OviIndex{Bindung} bezeic
 
 \paragraph{Frühe Bindung}
 \label{FrueheBindung}
-Bei der \OviIndex{frühen Bindung} wird bereits wärend der Übersetzung vom Compiler entschieden und festgelegt, welche Methode aufgerufen wird. Damit können nur Methoden des erwarteten Objektes benutzt werden, Objekte von abgeleiteten Klassen werden wie Objekte der Basisklasse behandelt. Dieses Verhalten entspricht der gewöhnlichen Prozeduralen Programmierung, auch nicht virtuelle Methoden in  \Cpp werden so behandelt.
+Bei der \OviIndex{frühen Bindung} wird bereits während der Übersetzung vom Compiler entschieden und festgelegt, welche Methode aufgerufen wird. Damit können nur Methoden des erwarteten Objektes benutzt werden, Objekte von abgeleiteten Klassen werden wie Objekte der Basisklasse behandelt. Dieses Verhalten entspricht der gewöhnlichen Prozeduralen Programmierung, auch nicht virtuelle Methoden in  \Cpp werden so behandelt.
 
 % abgeleitetwährend der Compilierung entschieden, welche Methode auszuführen ist. Es werden letztendlich die Methoden der Oberklasse verwendet, da ja nicht abzusehen ist, ob und welche abgeleitete Klasse in der Variablen gespeichert sein könnte. (Beispiel: Pascal mit Objekten, \Cpp ohne virtuelle Methoden) 
 
@@ -1737,10 +1737,22 @@ In Bild \ref{fig:Paketdiagramm} ist ein Paketdiagramm für unseren Billetautomate
 
 \chapter{Übungen}
 \section*{Übung 1}
-Es soll ein Netzwerkverwaltungssystem entwickelt werden. Bei einer Besichtigung vor Ort ergibt sich folgende Beschreibung: 
+%Es soll ein Netzwerkverwaltungssystem entwickelt werden. Bei einer Besichtigung vor Ort ergibt sich folgende Beschreibung: 
+%
+%Das Netzwerk besteht aus den Gruppen Forschung, Verwaltung und Unterricht. In jeder Gruppe sind mehrere Computer enthalten. Dabei gibt es verschiedene Modelle (SparcStation, Intel-PC, PowerPC, Macintosh). An einigen Rechnern sind ein oder zwei Drucker angeschlossen. Im Netzwerk bekommt jeder Rechner einen Namen (Newton, Einstein, Dirac, DaVinci, Renken, Kopernikus, Gallilei, Archimedes, ...). Ein Rechner besteht aus einer CPU (mit eindeutiger Seriennummer), einer Festplatte (SCSI oder IDE) bestimmter Kapazität und RAM in einer gewisser Grösse. Ausserdem gehören noch Tastatur und Maus zu jedem Rechner... 
+%
+%\begin{enumerate}
+%\item Welche Objekte kann man aus dieser Beschreibung ableiten?
+%\item Welche Klassen kann man daraus gewinnen? 
+%\item Welche Beziehungen gibt es zwischen diesen Klassen? 
+%\end{enumerate}
+%
+%Hinweis: 	Objekte, resp. Klassen lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Objekte haben oft einen Namen. 
 
-Das Netzwerk besteht aus den Gruppen Forschung, Verwaltung und Unterricht. In jeder Gruppe sind mehrere Computer enthalten. Dabei gibt es verschiedene Modelle (SparcStation, Intel-PC, PowerPC, Macintosh). An einigen Rechnern sind ein oder zwei Drucker angeschlossen. Im Netzwerk bekommt jeder Rechner einen Namen (Newton, Einstein, Dirac, DaVinci, Renken, Kopernikus, Gallilei, Archimedes, ...). Ein Rechner besteht aus einer CPU (mit eindeutiger Seriennummer), einer Festplatte (SCSI oder IDE) bestimmter Kapazität und RAM in einer gewisser Grösse. Ausserdem gehören noch Tastatur und Maus zu jedem Rechner... 
-
+Es soll ein Mikrocontrollersystem mit einer Klassenbibliothek abstrahiert werden. Das System besteht aus acht LED sowie acht Schalter, welche parallel an den Bus angeschlossen sind, und als Bytewert gelesen resp. geschrieben werden. Weiter besitzt der Mikrocontroller einen Timer, welcher gestartet und gestoppt werden kann und periodisch Interrupts auslöst. Die Periodendauer kann über einen 32-Bit Wert mit einer Auflösung von 100ns eingestellt werden. Weiter besitzt der Controller vier UART, welche ebenfalls Interrupts auslösen können und das einstellen der Baudrate, der Wortbreite und einer Parität erlauben. Jedem Uart sind 2 GPIO-Anschlüsse für TxD und RxD zugewiesen. Alle Interruptquellen werden durch einen Interruptkontroller gesteuert, welcher jeden Interrupt individuell zulassen oder sperren kann, zudem kann hier die Interruptquelle bei einem auftretenden Interrupt abgefragt werden.
+Weiter besitzt der Kontroller 10 Ports (a-j) mit jeweils 16 GPIOs (General Purpose Input/Outputs). Jeder GPIO kann als Eingang, Ausgang oder Spezialfunktion verwendet werden (Z.B RxD und TxD eines UART). ,  
+Vier dieser GPIO-Pins sind je mit einer LED verbunden (Zusätzlich zu den 8 BUS-Led's), und weitere 3 GPIOs sind mit Tastern verbunden.
+  
 \begin{enumerate}
 \item Welche Objekte kann man aus dieser Beschreibung ableiten?
 \item Welche Klassen kann man daraus gewinnen? 
@@ -1751,23 +1763,46 @@ Hinweis: 	Objekte, resp. Klassen lassen sich in einer Spezifikation leicht finde
 
 
 \section*{Übung 2}
-Die Beschreibung der Rechnergruppen geht wie folgt weiter: 
+%Die Beschreibung der Rechnergruppen geht wie folgt weiter: 
+%
+%...Jede Gruppe verwaltet eine Liste über die darin installierten Rechner. Es können Rechner entfernt und hinzugefügt werden. Von jedem Rechner-Typ gibt es eine bestimmte Anzahl, die ermittelt werden kann. Ein Rechner hat einen Namen, der abgefragt und geändert werden kann. Von jeder Komponente kann Hersteller und Produktnummer abgefragt werden. 
+%
+%\begin{enumerate}
+%\item Für die Klassen aus Übung 2 sollen Attribute und Methoden identifiziert werden. 
+%\end{enumerate}
+%
+%Hinweis: 	In einer Spezifikation kann man Attribute oft an Adjektiven ausmachen. Verben deuten auf eine Methode hin.
 
-...Jede Gruppe verwaltet eine Liste über die darin installierten Rechner. Es können Rechner entfernt und hinzugefügt werden. Von jedem Rechner-Typ gibt es eine bestimmte Anzahl, die ermittelt werden kann. Ein Rechner hat einen Namen, der abgefragt und geändert werden kann. Von jeder Komponente kann Hersteller und Produktnummer abgefragt werden. 
+Die Beschreibung des Mikrocontrollersystems geht wie folgt weiter: 
+
+...Ein GPIO-Manager verwaltet die vorhandenen GPIOs. Es können GPIOs belegt und freigegeben werden. Die GPIOs können konfiguriert (Input, Output oder Spezialfunktion) und ihr Zustand gesetzt oder gelesen werden.
+Die Uarts können konfiguriert (Ein oder Ausgeschaltet, Baudrate, Wortbreite und Interruptmodus gesetzt) werden, weiter können Daten in die UART geschrieben oder daraus gelesen werden. 
+Der Zustand der Taster und Schalter kann abgefragt, und der Zustand der LEDs kann gesetzt werden.
+Beim Interruptkontroller können spezifische Interrupts erlaubt oder gesperrt werden. Zudem soll für jede Interruptquelle ein Interrupthandler hinterlegt oder entfernt werden können. 
 
 \begin{enumerate}
 \item Für die Klassen aus Übung 2 sollen Attribute und Methoden identifiziert werden. 
 \end{enumerate}
 
 Hinweis: 	In einer Spezifikation kann man Attribute oft an Adjektiven ausmachen. Verben deuten auf eine Methode hin.
+
+
  
 \NextPagePlease 
 \section*{Übung 3}
-Eine Fahrzeugverleihfirma besitzt Sportwagen, Limousinen, Caravans und Camper. Die Fahrzeuge können ausgeliehen, gefahren und zurückgebracht werden. Kunden können jeweils höchstens ein Fahrzeug ausleihen. Es gibt Stammkunden und Neukunden. Neukunden müssen ein Depot hinterlegen. Von jedem Kunden müssen Adresse und Alter bekannt sein. Bei jedem Fahrzeug sind Farbe, Alter, Marke und Anzahl Sitzplätze, sowie der Mietpreis abgelegt. Bei Sportwagen wird auch die Spitzengeschwindigkeit angegeben, Bei Caravans der Laderaum, beim Camper die nutzbare Wohnfläche. Bei Stammkunden wird das Umsatztotal vermerkt, um Rabatte geben zu können. Für jeden Mitarbeiter der Firma wird das durch ihn erzielte Umsatztotal festgehalten. Die Mitarbeiter werden mit Namen und Adresse erfasst. Einige Mitarbeiter werden als Kundenbetreuer eingesetzt, sie sind zusätzlich für Grosskunden zuständig. Grosskunden sind Kunden mit besonders hohem Umsatz. Für jede Fahrzeugausleihe wird ein Mietvertrag erstellt.
+%Eine Fahrzeugverleihfirma besitzt Sportwagen, Limousinen, Caravans und Camper. Die Fahrzeuge können ausgeliehen, gefahren und zurückgebracht werden. Kunden können jeweils höchstens ein Fahrzeug ausleihen. Es gibt Stammkunden und Neukunden. Neukunden müssen ein Depot hinterlegen. Von jedem Kunden müssen Adresse und Alter bekannt sein. Bei jedem Fahrzeug sind Farbe, Alter, Marke und Anzahl Sitzplätze, sowie der Mietpreis abgelegt. Bei Sportwagen wird auch die Spitzengeschwindigkeit angegeben, Bei Caravans der Laderaum, beim Camper die nutzbare Wohnfläche. Bei Stammkunden wird das Umsatztotal vermerkt, um Rabatte geben zu können. Für jeden Mitarbeiter der Firma wird das durch ihn erzielte Umsatztotal festgehalten. Die Mitarbeiter werden mit Namen und Adresse erfasst. Einige Mitarbeiter werden als Kundenbetreuer eingesetzt, sie sind zusätzlich für Grosskunden zuständig. Grosskunden sind Kunden mit besonders hohem Umsatz. Für jede Fahrzeugausleihe wird ein Mietvertrag erstellt.
+%
+%\begin{enumerate}
+%\item Überlegen Sie sich ein paar Anwendungsfälle für dieses Umfeld.
+%\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
+%\end{enumerate}
+Die Klassenbibliothek des Mikrokontrollersystems aus Aufgabe 1 und 2 soll erweitert werden. Bei den UARTs soll ein Handler hinterlegt werden können welcher automatisch aufgerufen wird, wenn der UART Daten empfängt, oder bereit ist, weitere Daten zu senden. Beim Timer soll ein Manager hinzugefügt werden, bei welchem beliebig viele Handler registriert werden können, welche periodisch oder einmal nach einer bestimmten Zeit aufgerufen werden (Zeitdauer und Moduls für jeden Handler individuell festlegbar).
+Zusatzaufgabe: Basierend auf diesen Timerfunktionen können nun auch blinkende LEDs und bei Tastendruck automatisch aufgerufene Handler realisiert werden. Weiter sollen remote LEDs und Schalter/Taster zur Verfügung gestellt werden, also Schalter und Taster auf einem anderen System, auf welche via serielle Schnittstelle (UART) zugegriffen werden kann, oder lokale Schalter und LEDs auf welche von einam anderen System aus zugegriffen werden kann. 
 
+   
 \begin{enumerate}
-\item Überlegen Sie sich ein paar Anwendungsfälle für dieses Umfeld.
-\item Entwerfen Sie ein Klassendiagramm für dieses Projekt.
+\item Könnten zur Lösung dieser Aufgabe Designpattern eingesetzt werden?
+\item Erweitern Sie das Klassendiagramm aus Aufgabe 2 für dieses Projekt.
 \end{enumerate}
 
 
