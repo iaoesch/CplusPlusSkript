@@ -3353,7 +3353,7 @@ Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschieded. Dieser führ
 Nachfolgend werden einige Neurungen aufgeführt.
 
 \section{Sprachumfang}
-\subsection{RValue References und Move Constructor}
+\subsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
 
 RValue Referenzen werden durch T &&r (im Gegensatz zu T &r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
@@ -3486,6 +3486,275 @@ for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
 
 \end{CCode}
 
+\subsection{Automatische For-Schlaufe}
+
+Eine Forschlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
+
+\begin{CCode}
+int Elements[5] = {1, 2, 3, 4, 5};
+int Summe = 0;
+
+// Ueber alle Elemente iterieren
+for (int &r : Elemente) {
+    Summe += r;
+}
+
+\end{CCode}
+
+Dies funktioniert für alle Objekte, welche begin() und end() definiert haben, wobei begin() und end()  Iteratoren zurückliefern müssen.
+
+\subsection{Anonyme Funktionen (Lambda Funktionen)}
+
+Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich als Vergleichsfunktionen und ähnliches.
+
+Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
+\begin{CCode}
+[capture](parameters)->return_type{body}
+\end{CCode}
+
+Mit Capture kann der Funktion zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion uebereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die Capture-Liste darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten variablen nicht mehr existieren.
+
+Parameter ist die parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. bei einer Parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
+
+->return_type definiert den Typ des Rückgabewertes, dieser Teil kann weggelassen werden, dann wird der Rückgabetyp durch das return-Statement definiert oder void wenn kein return-Statement vorhanden ist. 
+
+Body enthält den Code der Funktion.
+
+Beispiele
+\begin{CCode}
+
+[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
+[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
+[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
+[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
+[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
+[&q, r](int& x) { q += r*++x; }    // Zugriff auf die Variablen q und r der
+                                   // definierenden Funktion erlauben
+// Einsatzbeispiel
+std::vector<int> Liste;
+int Total = 0;
+for (int i=0; i<5; ++i) {
+   Liste.push_back(i);
+}
+
+// for_each wird als drittes Argument eine Lambda-Funktion (Eigentlich ein
+// Zeiger darauf) übergeben.  
+// for_each ruft fuer jedes Element in der Liste diese Lambda-Funktion
+// auf, das aktuelle Element wird jeweils in x uebergeben. Der lambda-Funktion 
+// wird zudem der Zugriff auf die Variable Total erlaubt.  
+
+std::for_each( begin(Liste), end(Liste), [&Total](int x) {
+                                            Total += x;
+                                         }
+						 );
+\end{CCode}
+Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
+Containern) abgespeichert werden. Dabei erleichtert die Automatische Typerkennung mit den Schlüsselworten auto oder decltype die Variablendefinition.
+
+\subsection{Anonyme Funktionen (Alternative Funktionsdefinition}
+
+Der Rückgabetyo von Funktionen kann neu auch nach der Argumentenliste angegebenm werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
+
+\begin{CCode}
+
+// Der Rückgabetyp ist, was auch immer der Ergebnistyp der Addition von x und y ist
+template<class T1, class T2>
+  auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) {return x + y;}
+
+// Geht auch bei 'gewoehnlichen' Funktionen:
+
+auto f1(int x, int y) -> float // Rueckgabewert ist float
+{
+}
+
+class Demo {
+    auto MemberFunktion(int x, int y) -> int; // Rueckgabewert ist int
+};
+ 
+auto Demo::MemberFunktion(int x, int y) -> int // Rueckgabewert ist int
+{
+    return x + y;
+}
+
+\end{CCode}
+
+
+\subsection{Vereinfachte Objektkonstruktion}
+
+Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können Defaultwerte für Membervariablen festgelegt werden.
+
+\begin{CCode}
+class Demo  {
+    int x;
+ 
+public:
+    Demo(int _x) : x(_x) {}
+    Demo() : Demo(42) {}    // Ruft bestehenden Konstruktor auf
+};
+
+
+class Example : public Demo {
+
+    using Demo::Demo; // Konstruktoren von Demo uebernehmen
+};
+
+
+class Test {
+public:
+    Test() {}   // Setzt x auf den Defaultwert 5 (Siehe unten)       
+    Test(int _x) : x(_x) {} // Setzt x auf den uebergebenen Wert 
+ 
+private:
+    int x = 5;  // Jeder Konstuktor setzt diesen Wert auf 5, ausser es sei
+		            // im Konstruktor etwas anderes definiert
+		
+}\end{CCode}
+
+
+\subsection{Kontrolliertes überschreiben von Funktionen}
+
+Mit den Bezeichnern override und final kann das versehentliche überschreiben
+/ nicht-überschreiben von Methoden verhindert werden. diese Beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eien spezielle Bedeutung. 
+
+Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
+
+\begin{CCode}
+class Basisklasse {
+    public:
+    virtual void ModifizierbareFunktion(float);
+    virtual void NichtWeiterUeberschreibbareFunktion(float) final;
+};
+ 
+class Abgeleitet : Basisklasse {
+    public:
+    virtual void ModifizierbareFunktion(int) override; // Fehler, keine passende Methode in 
+		                                                   // der Basisklasse (int statt float verwendet)
+    virtual void NichtWeiterUeberschreibbareFunktion(float);// Fehler, darf nicht ueberschrieben werden
+		
+};
+
+
+\end{CCode}
+
+\subsection{Nullpointer}
+Neu gibt es ein Schlüsselwort für den Nullpointer: nullptr
+Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden.
+
+\subsection{Typsicherere Enummerationen}
+Neu gibt es einen Typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp angegeben werden (Speicherbedarf fuer einen Enum-Wert).
+
+Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
+mehrere Enums dieselben Bezeichner verwenden.   
+
+Neue Syntax:
+\begin{CCode}
+
+enum class Aufzaehlung {
+    Item1,
+    Item2,
+    Item3 = 100,
+    Item4         // Erhaelt den Wert 101 
+};
+
+int i = Aufzaehlung::Item2;          // Compilerfehler
+
+Aufzaehlung a = Item1;               // Compilerfehler
+Aufzaehlung a = Aufzaehlung::Item1;  // OK
+a = 12;                              // Compilerfehler
+
+if (a == 17)                         // Compilerfehler
+ 
+// Angabe der gewuenschte Datengrösse
+enum class Enum2 : unsigned int {Item1, Item2};
+
+\end{CCode}
+
+\subsection{Template-Verschachtelung >>}
+Bei verschachtelten Templates wird >> als Schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
+
+\subsection{Explizite Umwandlungsoperatoren}
+Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch Aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als Expliziter Einsatz)
+
+\subsection{Template mit variabler Argumentenanzahl}
+
+Neu können Templates Variable Argumentenlisten haben.
+\begin{CCode}
+template<typename... Values> class tuple;
+\end{CCode}
+
+\subsection{Erweiterte Stringliterale}
+Neu können auch UTF-Codierte Stringliterale definiert werden, dazu werden die Prefixes u8, u und U verwendet.
+
+\begin{CCode}
+u8"Ein UTF-8 String"  // hat den Typ const char[]
+u"Ein UTF-16 String"  // hat den Typ const char16_t[]
+U"Ein UTF-32 String"  // hat den Typ const char32_t[]
+\end{CCode}
+
+Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
+\begin{CCode}
+u8"Ein spezielles UTF-8 Zeichen: \u2018" 
+u"Ein spezielles UTF-16 Zeichen: \u2018" 
+U"Ein spezielles UTF-32 Zeichen: \U00002018"  
+\end{CCode}
+
+Zudem können Escape-Freie Raw-Strings definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "Begrenzung( und )Begrenzung" eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"\textbackslash ) enthalten. 'Begrenzung kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+
+Beispiel:
+\begin{CCode}
+R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
+// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
+R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
+\end{CCode}
+
+R und U könne auch kombiniert werden.
+
+\subsection{Benutzerdefinierte Literale}
+
+Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen.
+
+Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche überladen werden muss:
+
+\begin{CCode}
+OutputType operator "" _Magic(const char * literal_string); // Erhaelt einen String mit der Zeichenkette vor dem Suffix
+OutputType operator "" _kg(unsigned long long);    // Erhaelt den Integerwert des Literals
+OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
+\end{CCode}
+
+Die Operatorfunktionen können dabe einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix _kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern.
+
+Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
+
+\begin{CCode}
+OutputType operator "" _suffixconst char     * StringValues,  size_t StringLaenge);
+OutputType operator "" _suffix(const wchar_t  * StringValues, size_t StringLaenge);
+OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaenge);
+OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
+\end{CCode}
+
+Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal.
+
+
+\subsection{Multithreading Unterstützung}
+Neu wird Multithreading unterstützt
+
+
+\subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen}
+Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
+
+\begin{CCode}
+class Demo {
+    Demo() = default;                        // Den Defaultkonstruktor anfordern.
+    Demo(const Demo&) = delete;              // Den Kopierkonstruktor verbieten.
+    Demo & operator=(const Demo&) = delete;  // Den Zuweisungsoperator verbieten.
+    void f(double i);                    
+    void f(int) = delete;                    // f darf nicht mit int aufgerufen werden
+    template<class T> void f(T) = delete;    // f mit irgend etwas anderem als double
+		                                         // aufrufen ist verboten
+};
+
+\end{CCode}
+Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
 
 
 
