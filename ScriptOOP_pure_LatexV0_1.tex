@@ -293,16 +293,17 @@ Es beinhaltet eine Einführung in die objektorientierte Denkweise und stellt eine
 \cleardoublepage
 \tableofcontents
 \chapter{Zu diesem Skript}
-Dieses Skript ist eine Einführung in die Objekt Orientierte Programmierung (OOP), es behandelt zwei grundlegende Aspekte der objektorientierten Programmierung.
+Dieses Skript ist eine Einführung in die Objekt Orientierten Programmierung (OOP) mit Schwergewicht auf dem Objekt Orientierten Design (OOD).
 
-Im ersten Teil werden die zugrundeliegenden Ideen der Objektorientierung behandelt. Hier werden das Konzept und die Grundlagen der objektorientierten Denkweise und der Unterschied zu den herkömmlichen Methoden erläutert. 
+Im ersten Teil wird das grundsätzliche Konzept der Objektorientierung behandelt. Hier werden die Ideen der objektorientierten Denkweise und der Unterschied zu den herkömmlichen Software-Entwicklungs-Methoden erläutert. 
 
-Der zweite Teil stellt die dazugehörigen Analyse- und Design-Methoden vor. Bekannte Designmethoden wie Struktogramme oder Flussdiagramme sind für OOP nicht einsetzbar, es müssen andere Methoden verwendet werden. Es wird eine Einführung in die UML (Unified Modeling Language) gegeben, wobei aber nur einige der verschiedenen Modelle betrachtet werden
+Althergebrachte Design- und Analysemethoden wie Struktogramme oder Flussdiagramme sind für OOP nicht einsetzbar, es müssen andere Methoden verwendet werden. In der OO-Welt hat sich dafür die UML (Unified Modeling Language) durchgesetzt. Im zweiten Teil wird eine Einführung in die UML (Unified Modeling Language) gegeben, wobei aber nur einige ausgewählte der verschiedenen Modelle betrachtet werden
 
 Im Unterricht werden diese Teile soweit möglich parallel zueinander abgehandelt. Dieser Kurs dient nur als Basis, um OOP zu verstehen. Um OOP wirklich anwenden zu können ist die Arbeit mit grösseren Projekten und das Studium weiterführender Literatur unumgänglich.
 
 \chapter{Einführung}
-Objektorientiert ist noch immer ein Schlagwort, das man oft hört, sich aber meist nicht viel darunter vorstellen kann. Objektorientiert zu Programmieren heisst nicht, eine bestimmte Programmiersprache zu verwenden, es ist viel mehr eine andere Denkweise, ein anderer Ansatz um Programme zu entwerfen. (Es ist im Prinzip sogar möglich, in Assembler objektorientiert zu Programmieren, es wäre nur sehr aufwendig).
+Beim objektorientierten Programmieren wird ein völlig anderer Ansatz als bei der
+sequentiellen Programmierung verfolgt. Hier stehen neu die Daten und ihre Beziehungen untereinander im Vordergrund, und nicht mehr ein Ablauf. Objektorientiert zu Programmieren heisst nicht, eine bestimmte Programmiersprache zu verwenden, es ist viel mehr eine andere Denkweise, ein anderer Ansatz um Programme zu entwerfen. (Es ist im Prinzip sogar möglich, in Assembler objektorientiert zu Programmieren, es wäre nur sehr aufwendig).
 \section{Geschichtliches, Motivation}
 Softwareprojekte wurden seit Beginn der Informatik ständig grösser und komplexer, und entsprechend haben sich auch die Anforderungen an die Designmethoden geändert.
 Mit den im Laufe der Zeit gewonnen Erfahrungen bei der Softwareentwicklung haben sich deshalb auch die Softwaredesignmethoden weiterentwickelt. Am Anfang stand der kompakte, meist unstrukturierte 'Spaghetticode', der sich über prozedurale und modulare Programmierung nun unter anderem zum objektorientierten Ansatz weiterentwickelt hat. 
@@ -319,17 +320,22 @@ Beim objektorientierten Entwurf sucht man zuerst alle am Problem beteiligten Obj
 
 Funktionsaufrufe resp. Methodenaufrufe werden in der Literatur oft als '\OviIndex{Botschaften}' an ein Objekt bezeichnet. (Z. B. Objekt A sendet die Botschaft 'ZeichneDich()' an Objekt B).
 
-Häufig hört oder liest man, dass eine Klasse ein \OviIndex{Abstrakter Datentyp} (ADT) sei, aber das ist nicht in jedem Fall mathematisch korrekt, es hängt von der Art der Klasse ab. Abstrakte Klassen, bei denen alle Methoden rein virtuell sind, können als ADT bezeichnet werden.
+Gelegentlich werden Klassen auch als \OviIndex{Abstrakter Datentyp} (ADT) bezeichnet, aber das ist nicht völlig korrekt, es hängt von der Art der Klasse ab. Abstrakte Klassen, bei denen alle Methoden rein virtuell sind, können als ADT bezeichnet werden.
 
 (Ein ADT ist eine mathematisch genaue Beschreibung der Eigenschaften und der Funktion eines Datentyps, aber es wird nichts darüber gesagt, wie der ADT realisiert wird, es handelt sich nur um eine präzise Beschreibung, die es einem erlaubt, den Datentyp zu nutzen, ohne seine Realisierung zu kennen. Mit der Beschreibung eines ADT ist es andererseits auch möglich, einen Typ zu implementieren, der genau diesen Vorgaben entspricht, und überall dort eingesetzt werden kann, wo ein solcher ADT vorgesehen ist).
 
 \chapter{OO Prinzipien}
-Objekt orientiertes\r Design (OOD) und Objekt orientierte Programmierung (OOP) sind Vorgehensweisen zum Lösuen von Problemen. 
-OOD ist eine Modellierungsmethode, die sich im Laufe der Zeit entwickelt hat. Eine ihrer Grundlagen war die strukturierte Programmierung. Deshalb wird auch das Wort ''orientiert'' verwendet. In vielen dieser ''orientierten'' Sprachen gibt es noch sehr viele Elemente aus der strukturierten Programmierung (z.B. \Cpp mit struct oder Pascal mit record). Selbst die verschiedenen Methoden zum Festlegen des Programmablaufes oder primitive Datentypen stammen aus der strukturierten Programmierung. Reine Objekt-Sprachen (z.B. SmallTalk) realisieren diese Funktionalität nur mit Methoden und es gibt nur noch Objekte.
+Objekt orientierte Analyse, Objekt orientorter \r Design (OOD) und Objekt orientierte Programmierung (OOP) sind grundsätlich Methoden und Vorgehensweisen zum Lösen von Problemen in der Softwareentwicklung. 
 
-Da sich die OOP aus der strukturierten Programmierung entwickelt hat, stellt sich die Frage, warum es dann die strukturierte Programmierung überhaupt noch gibt. Darauf lässt sich antworten, dass jede Methode ihre Einsatzgebiete hat, für die sie besser geeignet ist als die andere.
+Diese Methoden haben sich im Laufe der Zeit über die Modulare Programmierung aus der strukturierten Programmierung entwickelt. Dabei betrachtet man ein System als eine Menge von Objekten, die durch Zusammenarbeit die Aufgabe des Systems erfüllen.
 
-In den Nachfolgenden Kapitel sind die wichtigsten Prinzipien der OOP kurz aufgeführt.
+Reine Objektsprachen wie Smalltalk bestehen nur noch aus Klassen, Objekten und Ihren Methoden. Dises Sprachen haben sich bisher noch nicht durchgesetzt, die am häufigsten eingesetzten Sprachen haben ihren Ursprung nach wie vor in der strukturierten und sequentiellen Programmierung. Deshalb werden diese Sprachen auch als Objekt orientiert bezeichnet, da sie sich am Objektmodell orientieren, aber nach wie vor Konstrukte aus 
+den strukturierten Sprache unterstützen.
+
+Auch wenn das Einsatzgebiet der Objektorientierten Programmierung ständig zunimmt, wird die strukturierte Programmierung weiterhin eingesetzt. Je nach Einsatzgebiet sollte man
+einfach die besser geeignete Methode einsetzen.
+
+In den nachfolgenden Kapitel sind die wichtigsten Prinzipien der OOP kurz aufgeführt.
 
 \section{Abstraktion}
 Durch \OviIndex{Abstraktion} werden die wesentlichen Eigenschaften eines Objektes erfasst. Die unwesentlichen
@@ -338,7 +344,7 @@ erlaubt eine von den Details losgelöste Sicht. Es wird genau beschrieben, \emph{
 tun ist, aber nicht \emph{wie}. 
 
 \section{Kapselung}
-Wie in der Einführung schon dargestellt, ist einer der zentralen Aspekte der OOP, Daten mit den zugehörigen Funktionen zusammenzuführen und gegen Aussen möglichst zu verstecken. Diesen Prozess bezeichnet man als \OviIndex{Kapselung}, die daraus resultierende Datenstruktur nennt sich Klasse. Eine Variable oder Konstante, die auf dieser Datenstruktur basiert, nennt sich eine Instanz der Klasse. Der wesentliche Unterschied einer Klasse des OOP zu den schon bekannten Datenstrukturen (z.B. ein struct in C oder einem RECORD in Pascal) ist, dass eine Klasse zusätzlich zu den Daten auch weitreichende Funktionalitäten übernehmen kann. Dadurch wird sie zu einem Datentyp, der zu den Inhalten (den Daten) auch die Möglichkeiten spezifiziert, mit ihnen umzugehen (die Funktionen). 
+Wie in der Einführung schon dargestellt, ist einer der zentralen Aspekte der OOP, Daten mit den zugehörigen Funktionen zusammenzuführen und gegen Aussen möglichst zu verstecken. Diesen Prozess bezeichnet man als \OviIndex{Kapselung}, die daraus resultierende Datenstruktur nennt sich Klasse. Eine Variable oder Konstante, die auf dieser Datenstruktur basiert, nennt sich eine Instanz der Klasse. Der wesentliche Unterschied einer Klasse des OOP zu den schon bekannten Datenstrukturen (z.B. ein struct in C oder einem RECORD in Pascal) ist, dass eine Klasse zusätzlich zu den Daten üblicherweise auch weitreichende Funktionalitäten übernimmt. Dadurch wird sie zu einem Datentyp, der zu den Inhalten (den Daten) auch die Möglichkeiten spezifiziert, mit ihnen umzugehen (die Funktionen). 
 
 Die Daten einer Klasse werden dabei als \OviIndex{Elemente} oder \OviIndex{Attribute}, und die Funktionen als \OviIndex{Elementfunktionen} oder \OviIndex{Methoden} bezeichnet. Normalerweise sind die Attribute (Daten) eines Objektes von aussen nicht direkt zugänglich, sondern werden gegen Aussen gekapselt. Auf die Daten kann nur indirekt über Zugriffsfunktionen zugegriffen werden. Somit ist die interne Repräsentation der Daten Sache des Objektes, sie geht sonst niemanden etwas an.
 
@@ -347,9 +353,9 @@ Beim Erzeugen eines Objektes wird dieses üblicherweise automatisch initialisiert
 \NextPagePlease
 \section{Vererbung}
 Der dritte wichtige Aspekt der OOP ist die Möglichkeit der \OviIndex{Vererbung}. Um nicht jedesmal eine komplett neue Klasse entwerfen zu müssen, kann man festlegen, dass eine Klasse alle Elemente und Methoden einer bereits existierenden Klasse 'erben' soll, d.h. die neue Klasse enthält von vornherein schon alle Attribute und Methoden dieser Klasse.
-Die Attribute und Methoden der neuen Klasse können anschliessend um weitere ergänzt oder bei Bedarf auch überschrieben (überschreiben = für die neue Klasse neu definiert) werden. 
+Die Attribute und Methoden der neuen Klasse können anschliessend um weitere ergänzt werden, Methoden können bei Bedarf auch überschrieben (überschreiben = für die neue Klasse neu definiert) werden. 
 
-Damit wird eine Beziehung wie z.B. 'ein Apfel ist eine Frucht' realisiert, durch zusätzliche Elemente und Methoden wird die neue Klasse genauer spezifiziert, dieser Vorgang wird als '\OviIndex{Spezialisieren}' bezeichnet. Die alte Klasse wird dabei als \OviIndex{Basisklasse} bezeichnet, die neue als abgeleitete Klasse und die Beziehungsstruktur, die durch die Vererbung entsteht, als \OviIndex{Klassenhierarchie}. 
+Durch die Vererbung wird eine Beziehung wie z.B. 'ein Apfel ist eine Frucht' realisiert, durch zusätzliche Elemente und Methoden wird die neue Klasse genauer spezifiziert, dieser Vorgang wird als '\OviIndex{Spezialisieren}' bezeichnet. Die alte Klasse wird dabei als \OviIndex{Basisklasse} bezeichnet, die neue als abgeleitete Klasse und die Beziehungsstruktur, die durch die Vererbung entsteht, als \OviIndex{Klassenhierarchie}. 
 
 Man kann auch den umgekehrten Weg gehen, indem man \OviIndex{Gemeinsamkeiten} von Klassen in einer \OviIndex{Oberklasse} (Basisklasse) zusammenfasst (und anschliessend von dieser erbt). Man spricht in diesem Fall von \OviIndex{Generalisierung}.
 
@@ -477,18 +483,28 @@ int main(int argc, char *argv[])
 
 \chapter {OOA/OOD Grundlagen}
 In diesem Kapitel wird vertieft auf wichtige Eigenschaften der OO eingegangen.
-\section	{Objekt und Klasse} 
-Eine OO-Welt ist durch eine Menge von Objekten gekennzeichnet, die miteinander in Beziehung stehen. Ein \OviIndex{Objekt} ist durch Fähigkeiten bzw. Verhalten und einen Zustand gekennzeichnet. Die Fähigkeiten werden als \OviIndex{Methoden} implementiert, und der Zustand wird in den \OviIndex{Attributen} aufbewahrt. 
+\section	{Objekte} 
+Ein System in der Objekt orientierten Welt besteht aus einer Menge von Objekten, die durch Zusammenarbeit die Funktionalitaet des Systems liefern. 
 
-Zwei Beispiele für Objekte:
+Ein \OviIndex{Objekt} besitzt gewisse Fähigkeiten, ein bestimmtes Verhalten, einen Zustand und eine Identität. Die Fähigkeiten und das Verhalten werden durch \OviIndex{Methoden} realisiert, der Zustand des Objektes wird in seinen \OviIndex{Attributen} aufbewahrt.
+Die Identität ergibt sich aus der Tatsache, das jedes Objekt ein eigenständiges Individuum ist, das sich von jedem anderen Objekt unterscheiden lässt (Speicherort, Name, Zustand...).  
+
+Ein Beispiel für ein aus der 'echten' Welt inspiriertes Objekt:
+(A) kennzeichnet Attribute, (M) kennzeichnet Methoden.
 \begin{quote}
-	Ein \emph{Auto} hat einen bestimmen Hersteller, wurde an einem bestimmten Tag produziert, hat Fahrzeug- und Motornummern, gehört jemandem, hat eine Farbe und einen Kilometerstand auf dem Tacho... 
-	
-	Ein \emph{Bankkonto} hat einen Kontostand, einen Inhaber und wird bei einem bestimmten Kreditinstitut geführt. 
+		Ein \emph{Hund} hat einen Namen (A), einen Besitzer (A), eine Fellfarbe (A), eine Augenfarbe (A), eine Herkunft (A), er kann bellen (M), Kunststücke vorführen (M) und Diebe fangen (M).  
 \end{quote}
 
-Objekte lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Häufig haben Objekte auch einen Namen. 
-Finden sich mehrere Objekte, die gleiche Attributarten und Methoden besitzen, so kann man diese zu einer \OviIndex{Klasse} abstrahieren. Eine Klasse ist also ein Prototyp für eine Gruppe von Objekten.
+Ein Beispiel für ein eher abstraktes Objekt:
+(A) kennzeichnet Attribute, (M) kennzeichnet Methoden.
+\begin{quote}
+	Eine \emph{Matrix} in einem Mathematikprogramm hat einen Variablenamen (A), eine Zeilenzahl (A), eine Spaltenzahl (A), eine Menge von Werten (A), sie kann Modifiziert werden (M), mit anderen Matrizen verrechnet werden (M), ausgegeben (M), gespeichert (M) oder geladen (M) werden.
+\end{quote}
+
+In einer Beschreibung deuten Substantive oft auf Objekte hin, adjektive und beschreibende Substantive auf Attribute und Verben auf Methoden.
+
+%Objekte lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Häufig haben Objekte auch einen Namen. 
+%Finden sich mehrere Objekte, die gleiche Attributarten und Methoden besitzen, so kann man diese zu einer \OviIndex{Klasse} abstrahieren. Eine Klasse ist also ein Prototyp für eine Gruppe von Objekten.
 
 \OviIndex{Objektorientiert} zu Denken entspricht eigentlich der natürlichen Vorgehensweise. Wir beschäftigen uns tagtäglich mit Objekten, ihren Eigenschaften und Fähigkeiten. Unsere ganze Umwelt besteht aus Objekten, die miteinander in Beziehung stehen. Als einfaches Beispiel eines ein Objektes nehmen wir ein Feuerzeug:
 
@@ -506,8 +522,20 @@ Ein Feuerzeug hat die \emph{Eigenschaften} Farbe, Brenndauer, Grösse und Gewicht
 Ein Feuerzeug hat die \emph{Fähigkeiten} (oder Funktionen) Eine Flamme zu entzünden, Die Flamme wieder zu löschen und Treibstoff nachzutanken. Ein Feuerzeug kann erzeugt (hergestellt) werden, und auch wieder vernichtet werden.
 Diese Fähigkeiten werden als \emph{Methoden} des Objektes / der Klasse Feuerzeug bezeichnet.
 
+\section	{Klassen} 
 
-Eine Klasse ist die Beschreibung solcher Objekte. Bestimmte Objekte gehören somit zu einer bestimmten Klasse. Zu einer Klasse können beliebig viele Objekte gehören. Bei unserem Beispiel könnten wir ein rotes, ein grünes und ein blaues Feuerzeug besitzen.
+Um Struktur in die Menge der Objekt zu bringen, werden Objekte klassifiziert, indem sie Klassen zugeordnet werden. Eine Klasse beschreibt ein einzelnes Objekt oder eine Gruppe von Objekten, die alle die gleichen Arten von Eigenschaften und Fähigkeiten haben. Aber jedes Objekt hat individuelle Werte für diese Eigenschaften. Durch eine Klasse werden die Objekte abstrahiert, eine Klasse beschreibt somit eine Menge von gleichartigen Objekten.
+
+%Sie besuchen eine Zoohandlung und sehen Meerschweinchen
+
+% haben n zuEine Klasse ist
+%Objekte lassen sich in einer Spezifikation leicht finden, indem man nach Substantiven sucht. Häufig haben Objekte auch einen Namen. 
+%Finden sich mehrere Objekte, die gleiche Attributarten und Methoden besitzen, so kann man diese zu einer \OviIndex{Klasse} abstrahieren. Eine Klasse ist also ein Prototyp für eine Gruppe von Objekten.
+
+Jedes Objekt gehört zu einer bestimmten Klasse. Zu einer Klasse können jedoch beliebig viele Objekte gehören. 
+
+Bei unserem Beispiel könnten wir ein rotes, ein grünes und ein blaues Feuerzeug besitzen,
+die alle zur Klasse Feuerzeug gehören.
 
 Unter UML (Unified Modeling Language) könnte diese Klasse wie folgt aussehen:
 
@@ -550,35 +578,119 @@ class FeuerZeug {
 \end{CCode}
 
 
-Das Erzeugen eines neuen Objektes ist üblicherweise eine \OviIndex{Klassenmethode}, das heisst dass diese Methode nicht auf Objekte angewendet werden kann, sondern eine Methode der Klasse ist. Man fordert also bei der Klasse ein neues Objekt vom Typ der Klasse an. Klassenmethoden und \OviIndex{Klassenattribute} werden in der UML-Notation durch unterstreichen dargestellt.
+%Das Erzeugen eines neuen Objektes ist üblicherweise eine \OviIndex{Klassenmethode}, das heisst dass diese Methode nicht auf Objekte angewendet werden kann, sondern eine Methode der Klasse ist. Man fordert also bei der Klasse ein neues Objekt vom Typ der Klasse an. Klassenmethoden und \OviIndex{Klassenattribute} werden in der UML-Notation durch unterstreichen dargestellt.
 
-Wenn man ein Objekt nicht über die Klasse erzeugen könnte, wäre es unmöglich, jemals auch nur ein Objekt zu erzeugen. Denn man müsste zum Erzeugen des ersten Objektes bereits ein Objekt haben, das es aber nicht gibt, weil man ja noch kein Objekt dieser Art erzeugt hat...
+%Wenn man ein Objekt nicht über die Klasse erzeugen könnte, wäre es unmöglich, jemals auch nur ein Objekt zu erzeugen. Denn man müsste zum Erzeugen des ersten Objektes bereits ein Objekt haben, das es aber nicht gibt, weil man ja noch kein Objekt dieser Art erzeugt hat...
+
+\subsection{Attribute (Elemente, Member)} 
+
+Die \OviIndex{Attribute} beschreiben ein Objekt und dessen Zustand. Jedes Objekt einer Klasse hat eigene Werte für seine Attribute, welche auch vom Objekt selbst verwaltet werden. Die Attribute eines Objektes sollten nicht von aussen zugänglich sein, nur die Methoden des Objektes sollten Zugriff auf dessen Attribute haben.
+
+Durch diese Kapselung der Attribute gegen aussen ist sichergestellt, dass Attribute nicht unkontrolliert geändert werden können. Zudem kann so die interne Repräsentation der Atribute geändert werden, ohne dass dies Auswirkungen auf andere Klassen hat, einzig die eigenen Methoden müssen allenfalls angepasst werden.
+
+Attribute sind sozusagen private Variablen des Objektes, in denen es Informationen
+ablegen kann, die gegen Aussen nicht direkt sichtbar sind.
+
+%Atrtrei, n
+
+% eines Objektes sind im allgemeinen nicht von aussen zugänglich (dafür sind die Methoden da!). Ein Attribut entspricht einer Variablen in der strukturierten Programmierung, jedoch sind Attribute ebenfalls an Objekte gebunden (mit Ausnahme von Klassenattributen). Weil Attribute nicht öffentlich sind, hat das einzelne Objekt eine bessere Kontrolle über die Werte, die in den Attributen abgelegt werden, zudem kann die Art, wie die Attribute abgelegt werden verändert werden, ohne das andere Klassen davon betroffen sind, es sind nur Änderungen an der eigenen Klasse nötig. Dies führt zu sicherem und gleichzeitig flexiblem Code.  
+
+%\begin{framedquote}
+%\OviIndex{Attribute} speichern den Zustand von Objekten und sind verborgen.\\ 
+%\OviIndex{Methoden} realisieren Funktionaliät der Objekte und werden durch Botschaften von anderen Objekten aktiviert. 
+%\end{framedquote}
+
+\subsection{Methoden (Memberfunktionen, Botschaften)} 
+
+Über die Methoden stellt ein Objekt seine Dienste gegen aussen zur Verfügung. Methoden sehen zwar aus wie Funktionen aus der strukturierten Programmierung, und haben auch dieselbe Funktionsprinzip. Im Gegensatz zu gewöhnlichen Funktionen werden Methoden auf ein Objekt angewandt, eine Methode wirkt also immer auf ein Objekt ein. Die Methode hat dabei Zugriff auf alle Attribute und andere Methoden dieses Objektes. Der Aufruf einer \OviIndex{Methode} wird auch als Senden einer \OviIndex{Botschaft} bezeichnet. Statt \emph{Die Methode zeichnen() des Objekts wird aufgerufen} sagt man auch \emph{Die Botschaft zeichnen wird an das Objekt gesendet}.
+
+Erst mit den Methoden wird das Objekt zum Leben erweckt und kann dynamisch mit seiner Umwelt interagieren. Ein Softwaresystem besteht aus vielen Objekten, und erst durch die gegenseitige Kommunikation via Methoden können die Objekte gemeinsam die Funktionalität des Systems liefern.
+
+Die Menge aller Methoden, die ein Objekt gegen Aussen zur Verfügung stellt, definiert seine Schnittstelle, und über diese Schnittstelle können dem Objekt befehle erteilt, oder Dienste vom Objekt in Anspruch genommen werden. 
+
+Ein Objekt kann auch private Methoden besitzen, die nur vom Objekt
+selbst, oder anderen Objekten derselben Klasse benutzt werden können.
+
+Methoden können Rückgabewerte und Parameter besitzen, eine Methode wird durch Ihren Namen und die Menge und Art ihrer Parameter identifiziert. Jede Methode hat eine eindeutige Kennung, diese wird als \OviIndex{Signatur} bezeichnet. Diese Signatur setzt sich aus dem Methodennamen, dem Klassennamen des Objektes sowie der Parameterliste (Typ und Reichenfolge der Argumente) zusammen. Somit kann es in einem OOP-System mehrere Methoden mit dem gleichen Namen geben, solange sie zu unterschiedlichen Klassen gehören, oder unterschiedliche Parameterlisten besitzen.
+
+
+\subsection{Klassenmember (Statische Member)} 
+--------------------------------------------------------
+Üblicherweise sind Attribute und Methoden an ein Objekt gebunden, und können nur zusammen mit einem Objekt exixtieren oder benutzt werden.
+Es ist aber auch möglich, \OviIndex{Klassen-Attributen} und \OviIndex{Klassen-Methoden} zu definieren. Diese sind 
+nicht an ein Objekt gebunden, sondern gehören zur Klasse. Klassen-Attribute und Klassen-Methoden können benutzt werden, ohne dass ein Objekt existiert. 
+
+Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Sie gehören sozusagen allen Objekten gemeinsam, und sind deshalb nicht bei einem individuellen Objekt abgelegt.
+
+Klassenmethoden werden eingesetzt, wenn die Methode nicht auf ein Objekt angwendet wird, sondern eher von genereller Natur ist. Insbesondere kann damit verhindert werden, extra ein Objekt erzeugen zu müssen, nur um eine Methode aufzurufen die eigentlich gar kein Objekt benötigt.
+
+Ein Beispiel wäre eine Methode, die ausgibt wieviel Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. (Wenn der Zähler als normales Attribut realisiert würde, gäbe es soviele Zähler wie Objekte und der Zähler müsste immer in allen im Moment existierenden Objekten nachgeführt werden.) 
+
+Klassenmethoden und Klassenattribute werden in der UML-Notation durch unterstreichen dargestellt.
 
  
-\section{Botschaften und Attribute} 
-Ein einzelnes Objekt kann nicht die Leistung eines gesamten Systems erbringen. (Würde es das können, dann wäre beim Entwurf ein Fehler gemacht worden.) Ein System arbeitet dadurch, dass verschiedene Objekte miteinander kommunizieren und damit Dienste von anderen Objekten in Anspruch nehmen oder diese Objekte verändern. 
-
-Ein Objekt tritt mit einem andern in Kontakt, indem es diesem eine \OviIndex{Botschaft} sendet (Das heisst, eine \OviIndex{Methode} des anderen Objektes aufruft). Welche Botschaften ein Objekt versteht, wird durch seine \OviIndex{Schnittstelle} (Interface) definiert. Das \OviIndex{Interface} besteht aus einer Reihe von Methoden. Der Unterschied zwischen einer Methode und einer gewöhnlichen Funktion der strukturierten Programmierung besteht darin, dass eine Methode an ein bestimmtes Objekt gebunden ist (mit Ausnahme von Klassenmethoden, welche an eine Klasse gebunden sind).
-
-Methoden sind zumeist öffentlich bekannt und können von anderen Objekten aufgerufen werden. Durch diesen Aufruf wird eine Botschaft übermittelt. Die Implementation der Methoden ist dem Sender der Botschaft nicht bekannt. Eine Botschaft (Methode) kann auch Parameter besitzen. Bezeichner und Reihenfolge sowie Typ der Parameter bilden die \OviIndex{Signatur} der Methode (Signatur = Eindeutige Kennzeichnung). 
-
-Die \OviIndex{Attribute} eines Objektes sind im allgemeinen nicht von aussen zugänglich (dafür sind die Methoden da!). Ein Attribut entspricht einer Variablen in der strukturierten Programmierung, jedoch sind Attribute ebenfalls an Objekte gebunden (mit Ausnahme von Klassenattributen). Weil Attribute nicht öffentlich sind, hat das einzelne Objekt eine bessere Kontrolle über die Werte, die in den Attributen abgelegt werden, zudem kann die Art, wie die Attribute abgelegt werden verändert werden, ohne das andere Klassen davon betroffen sind, es sind nur Änderungen an der eigenen Klasse nötig. Dies führt zu sicherem und gleichzeitig flexiblem Code.  
-
-\begin{framedquote}
-\OviIndex{Attribute} speichern den Zustand von Objekten und sind verborgen.\\ 
-\OviIndex{Methoden} realisieren Funktionaliät der Objekte und werden durch Botschaften von anderen Objekten aktiviert. 
-\end{framedquote}
-
-Attribute und Methoden können auch an Klassen gebunden werden anstatt an ein konkretes Objekt. Man spricht dann auch von \OviIndex{Klassen-Attributen} und \OviIndex{Klassen-Methoden}. Diese werden vorwiegend verwendet, um Dienste zu realisieren, die für alle Objekte dieser Klasse gleich sind und sich nicht auf ein bestimmtes Objekt beziehen, oder es semantisch ungünstig wäre extra ein Objekt anzulegen. (Damit wird vermieden, dass extra zur Ausführung einer bestimmten Methode ein Objekt angelegt werden muss, nur um es anschliessend wieder zu vernichten). Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Ein Beispiel wäre eine Methode, die ausgibt wieviel Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. Klassenmethoden und Klassenattribute werden in der UML-Notation durch unterstreichen dargestellt.
+ 
+%Attribute und Methoden können auch an Klassen gebunden werden anstatt an ein konkretes Objekt. Man spricht dann auch von. Diese werden vorwiegend verwendet, um Dienste zu realisieren, die für alle Objekte dieser Klasse gleich sind und sich nicht auf ein bestimmtes Objekt beziehen, oder es semantisch ungünstig wäre extra ein Objekt anzulegen. (Damit wird vermieden, dass extra zur Ausführung einer bestimmten Methode ein Objekt angelegt werden muss, nur um es anschliessend wieder zu vernichten).  
 
 \begin{quote}
-Die Methode zum Erzeugen einer neuen \OviIndex{Instanz} einer Klasse ist in echten Objekt-Sprachen immer eine Klassenmethode. Eine Möglichkeit zum Mitzählen der Instanzen einer Klasse würde ebenfalls als Klassen-Methode und Klassen-Attribut realisiert werden. Den Zähler für die Anzahl Objekte sollte es ja nur einmal geben, und nicht in jedem Objekt einzeln, sonst wäre es kaum möglich, alle Zähler in allen Objekten aktuell zu halten.	 
+Zum Erzeugen eines neuen Objektes muss eine Klassenmethode benuzt werden. Ansonsten müsste man zum Erzeugen eines neuen Objektes bereits ein Objekt haben, und zum Erzeugen dieses Objektes hätte man auch schon ein Objekt benötigt usw...
 \end{quote} 
+ 
+%\subsection{Methoden (Memberfunktionen, Botschaften)} 
 
-\section{Vererbung, Aggregation, Assoziation} 
-Mit \OviIndex{Vererbung}, Assoziation und Aggregation bringt man die Beziehungen der Klassen untereinander zum Ausdruck.
+%Über die Methoden stellt ein Objekt seine Dienste gegen aussen zur Verfügung. Methoden sehen zwar aus wie Funktionen aus der strukturierten Programmierung, und haben auch dieselbe Funktionsprinzip. Im Gegensatz zu gewöhnlichen Funktionen werden Methoden auf ein Objekt angewandt, eine Methode wirkt also immer auf ein Objekt ein. Die Methode hat dabei Zugriff auf alle Attribute und andere Methoden dieses Objektes. Der Aufruf einer \OviIndex{Methode} wird auch als Senden einer \OviIndex{Botschaft} bezeichnet. Statt \emph{Die Methode zeichnen() des Objekts wird aufgerufen} sagt man auch \emph{Die Botschaft zeichnen wird an das Objekt gesendet}.
+
+%Erst mit den Methoden wird das Objekt zum Leben erweckt und kann dynamisch mit seiner Umwelt interagieren. Ein Softwaresystem besteht aus vielen Objekten, und erst durch die gegenseitige Kommunikation via Methoden können die Objekte gemeinsam die Funktionalität des Systems liefern.
+
+%Die Menge aller Methoden, die ein Objekt gegen Aussen zur Verfügung stellt, definiert seine Schnittstelle. 
+---------------------------------------
+
+Objekte 
+Klassen
+-Attribute
+-Methoden
+-Statische Member
+Beziehungen
+-Vererbung
+--Generalisation
+--Spezialisierung
+--Polymorphismus
+---Bindung
+-Assoziation
+--Navigation
+--Aggregation
+--Komposition
+%tzalität.  Ein einzelnes Objekt kann nicht die Leistung eines gesamten Systems erbringen. (Würde es das können, dann wäre beim Entwurf ein Fehler gemacht worden.) Ein System arbeitet dadurch, dass verschiedene Objekte miteinander kommunizieren und damit Dienste von anderen Objekten in Anspruch nehmen oder diese Objekte verändern. 
+
+%Ein Objekt tritt mit einem andern in Kontakt, indem es diesem eine \OviIndex{Botschaft} sendet (Das heisst, eine \OviIndex{Methode} des anderen Objektes aufruft). Welche Botschaften ein Objekt versteht, wird durch seine \OviIndex{Schnittstelle} (Interface) definiert. Das \OviIndex{Interface} besteht aus einer Reihe von Methoden. Der Unterschied zwischen einer Methode und einer gewöhnlichen Funktion der strukturierten Programmierung besteht darin, dass eine Methode an ein bestimmtes Objekt gebunden ist (mit Ausnahme von Klassenmethoden, welche an eine Klasse gebunden sind).
+
+%Methoden sind zumeist öffentlich bekannt und können von anderen Objekten aufgerufen werden. Durch diesen Aufruf wird eine Botschaft übermittelt. Die Implementation der Methoden ist dem Sender der Botschaft nicht bekannt. Eine Botschaft (Methode) kann auch Parameter besitzen. Bezeichner und Reihenfolge sowie Typ der Parameter bilden die \OviIndex{Signatur} der Methode (Signatur = Eindeutige Kennzeichnung). 
+
+%Die \OviIndex{Attribute} eines Objektes sind im allgemeinen nicht von aussen zugänglich (dafür sind die Methoden da!). Ein Attribut entspricht einer Variablen in der strukturierten Programmierung, jedoch sind Attribute ebenfalls an Objekte gebunden (mit Ausnahme von Klassenattributen). Weil Attribute nicht öffentlich sind, hat das einzelne Objekt eine bessere Kontrolle über die Werte, die in den Attributen abgelegt werden, zudem kann die Art, wie die Attribute abgelegt werden verändert werden, ohne das andere Klassen davon betroffen sind, es sind nur Änderungen an der eigenen Klasse nötig. Dies führt zu sicherem und gleichzeitig flexiblem Code.  
+
+%\begin{framedquote}
+%\OviIndex{Attribute} speichern den Zustand von Objekten und sind verborgen.\\ 
+%\OviIndex{Methoden} realisieren Funktionaliät der Objekte und werden durch Botschaften von anderen Objekten aktiviert. 
+%\end{framedquote}
+
+%Attribute und Methoden können auch an Klassen gebunden werden anstatt an ein konkretes Objekt. Man spricht dann auch von \OviIndex{Klassen-Attributen} und \OviIndex{Klassen-Methoden}. Diese werden vorwiegend verwendet, um Dienste zu realisieren, die für alle Objekte dieser Klasse gleich sind und sich nicht auf ein bestimmtes Objekt beziehen, oder es semantisch ungünstig wäre extra ein Objekt anzulegen. (Damit wird vermieden, dass extra zur Ausführung einer bestimmten Methode ein Objekt angelegt werden muss, nur um es anschliessend wieder zu vernichten). Ein Klassenattribut ist eine Art globales Attribut, welches sich alle Objekte dieser Klasse gemeinsam teilen. Ein Beispiel wäre eine Methode, die ausgibt wieviel Objekte der entsprechenden Klasse bisher erzeugt wurden; den dazugehörigen Zähler würde man als Klassenattribut realisieren. Klassenmethoden und Klassenattribute werden in der UML-Notation durch unterstreichen dargestellt.
+
+%\begin{quote}
+%Die Methode zum Erzeugen einer neuen \OviIndex{Instanz} einer Klasse ist in echten Objekt-Sprachen immer eine Klassenmethode. Eine Möglichkeit zum Mitzählen der Instanzen einer Klasse würde ebenfalls als Klassen-Methode und Klassen-Attribut realisiert werden. Den Zähler für die Anzahl Objekte sollte es ja nur einmal geben, und nicht in jedem Objekt einzeln, sonst wäre es kaum möglich, alle Zähler in allen Objekten aktuell zu halten.	 
+%\end{quote} 
+
+
+
+
+\section{Beziehungen zwischen Klassen}
+
+Ein Softwaresystem besteht im Normalfall aus einer grösseren Menge von Klassen. Zur Strukturierung dieser Klassenmange sucht man die Beziehungen, welche diese Klassen untereinander haben. Hierarchische Beziehungen werden durch Vererbung zum Ausdruck gebracht. Die Zusammenarbeit zwischen den Klassen wird durch Assoziationen dargestellt.
 
 \subsection{Vererbung}
+Bei der \OviIndex{Vererbung} sucht man nach ähnlichen Klassen und Gemeinsamkeiten zwischen Klassen. Daraus lässt sich eine Art Stammbaum der Klassen entwickeln. Zum Beispiel sind Hunde und Katzen Säugetiere, somit könnte man die Gemeinsamkeiten in eine Oberklasse Säugetiere auslagern. Durch die Vererbung können Methoden und Attribute einer bestehenden Klasse als Basis für eine neue Klasse verwendet werden. Die neue Klasse muss nur noch ihre zusätzliche Funktionalität mit ändern der geerbten Methoden und allenfalls durch zusätzlichen Attribute und Methoden realisieren.
+ 
+\subsubsection{Spezialisierung}
+
 
 \subsubsection{Generalisierung, Spezialisierung, Abstrakte Klassen}
 
