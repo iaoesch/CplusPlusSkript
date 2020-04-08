@@ -43,29 +43,31 @@
 %/*                                                                           */
 %/*                                                                           */
 %/*   
-Visitor pattern
-                                                                        */
-Guten Tag Herr Oesch
-
-Ich arbeite für ein Projekt gerade Ihr UML-Skript durch (Einführung in die OOP) 
-und habe dabei folgende mögliche Korrekturen entdeckt:
-
-Seite 16 (Kapitel 4.3.1.), "Späte Bindung".
-"...Das heisst, dass immer die effektiv zum Objekt gehörende Methode benutzt 
-wird, sofern sie in der abgeleiteten Klasse *überladen *wurde. Wenn die Methode 
-nicht *überladen *wurde.."
-Da sollte meiner Meinung nach zweimal überschrieben, und nicht überladen stehen.
-
-Seite 25 (Kapitel 4.5.1), "Sequenzdiagramm" (Abbildung 4.10).
-Hier fehlt die Beschriftung der 3. Methode (wird wahrscheinlich "Akzeptieren()" 
-sein, dann wären Kollaborationsdiagramm und Sequenzdiagramm konsistent).
-
-Desweiteren bin ich mir nich ganz sicher, ob in Abbildung 4.09 (S.24) nicht auch 
-die Sekretärin eine Assoziation mit der Vertrag-Klasse haben müsste, da sie ja 
-auf die Methode "VertragErzeugen()" zugreift.
-
-Freundliche Grüsse
-Christof Baeriswyl%/*                                                                           */
+%Visitor pattern
+%
+%Kapitel Test rauswerfen
+                                                                        %*/
+%Guten Tag Herr Oesch
+%
+%Ich arbeite für ein Projekt gerade Ihr UML-Skript durch (Einführung in die OOP) 
+%und habe dabei folgende mögliche Korrekturen entdeckt:
+%
+%Seite 16 (Kapitel 4.3.1.), "Späte Bindung".
+%"...Das heisst, dass immer die effektiv zum Objekt gehörende Methode benutzt 
+%wird, sofern sie in der abgeleiteten Klasse *überladen *wurde. Wenn die Methode 
+%nicht *überladen *wurde.."
+%Da sollte meiner Meinung nach zweimal überschrieben, und nicht überladen stehen.
+%
+%Seite 25 (Kapitel 4.5.1), "Sequenzdiagramm" (Abbildung 4.10).
+%Hier fehlt die Beschriftung der 3. Methode (wird wahrscheinlich "Akzeptieren()" 
+%sein, dann wären Kollaborationsdiagramm und Sequenzdiagramm konsistent).
+%
+%Desweiteren bin ich mir nich ganz sicher, ob in Abbildung 4.09 (S.24) nicht auch 
+%die Sekretärin eine Assoziation mit der Vertrag-Klasse haben müsste, da sie ja 
+%auf die Methode "VertragErzeugen()" zugreift.
+%
+%Freundliche Grüsse
+%Christof Baeriswyl%/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
 %/*                                                                           */
@@ -109,6 +111,9 @@ Christof Baeriswyl%/*                                                           
 \usepackage{colortbl}
 \usepackage{float}
 \usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
 %\usepackage{html,makeidx}
 
 \usepackage{graphicx}
@@ -121,6 +126,29 @@ Christof Baeriswyl%/*                                                           
 
 %Kopf- und Fußzeile
 \usepackage{fancyhdr}
+
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={My title},    % title
+    pdfauthor={Author},     % author
+    pdfsubject={Subject},   % subject of the document
+    pdfcreator={Creator},   % creator of the document
+    pdfproducer={Producer}, % producer of the document
+    pdfkeywords={keyword1} {key2} {key3}, % list of keywords
+    pdfnewwindow=true,      % links in new PDF window
+    colorlinks=false,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links (change box color with linkbordercolor)
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan,          % color of external links
+    linkbordercolor={0 0 1}
+}
+
 
 \lstloadlanguages{[ISO]C++}
 
@@ -1489,6 +1517,7 @@ Bild \ref{fig:PaternIteratorBspSeq} zeigt das Sequenzdiagramm für das Durchwande
 \end{figure}
 
 
+\section{Visitor}
 
 
 %\chapter{Einführung in die UML}
@@ -1785,137 +1814,137 @@ Es soll die Steuerungssoftware für einen autonomen Roboter entwickelt werden. De
 
 
 
-\chapter{Systematisches Testen von Software}
-Bevor ein Softwaresystem seinem Verwendungszweck übergeben werden kann, muss verifiziert werden, ob das System seinen Spezifikationen entspricht.
-
-Ein System sollte aber nicht erst am Ende der Entwicklungphase getestet werden, 
-sonst sind viele Fehler nur sehr kostspielig zu beheben.
-
-Es ist also anzustreben, Fehler möglichst frühzeitig zu finden.
-Konzeptionelle Fehler sollten dabei schon in der Analyse/Designphase
-erkannt und behoben werden, da sonst das gesamte Projekt in Frage gestellt wird.
-
-Auch bereits getestete Module sollten wieder überprüft werden, wenn sie in einem neuen Kontext verwendet werden. Auf jeden Fall müssen die Spezifikationen der Module mit den jeweiligen Anforderungen verglichen werden.
-
-Der Absturz der ersten ARIANE 5 im Jahre 1996 ist auf ein ungeprüftes übernehmen von Software der Ariane 4 zurückzuführen. Es wurde Das Trägheitsnavigationssystem der ARIANE 4 übernommen, dabei wurde auf ausführliche Tests verzichtet, da sich das System in der ARIANE 4 jahrelang bewährt hatte. Leider hatte die ARIANE 5 aber eine höhere horizontale Geschwindigkeit, was zu einem 
-Zahlenüberlauf führte, und dies wiederum ziemlich schnell zum Absturz (Resp. kontrollierten Sprengung) der Rakete. Schadensumme: 1.7 Miliarden DM. Wenn das System nicht einfach unbesehen übernommen worden wäre, hätte man das Problem mit grosser Sicherheit erkannt. (Weitere Informationen dazu unter http://www.esa.int/export/esaCP/Pr\_33\_1996\_p\_EN.html)
-
-Viele Fehler äussern sich nicht so spektakulär, aber die Gesamtschadenssumme die jährlich durch nicht sorgfältig durchgeführte \OviIndex{Tests} entsteht dürfte enorm hoch sein. 
-
-Grundsätzlich unterscheidet man zwei Arten von Tests: Statische Tests und
-Funktionstests. 
-
-\section{Statische Tests (Reviews)}
-Zu den \OviIndex{statischen Tests} gehört die \OviIndex{Reviewtechnik}, dabei werden in jeder Phase alle Dokumente kritisch auf Fehler und Inkonsistenzen untersucht. Diese Technik kann auf Diagramme, Spezifikationen, Pflichtenhefte und effektiven Code (Listings) angewendet werden. Dabei wird kein Code ausgeführt, sondern es findet eine reine visuelle Kontrolle statt. 
-
-Ein \OviIndex{Review} wird dabei nach vorher festgelegten Richtlinien (Checklisten) durchgeführt. Es kann genauso auf Einhaltung des Codierungstandards (Komentare, Namensgebung, Verschachtelungstiefe, Funktionsgrösse) wie auf die Codierung selbst geprüft werden.
-
-In einem Review werden gefundene Fehler oder Unstimmigkeiten nicht behoben, sondern nur
-in einem Bericht festgehalten. Anschliessend an das Review können zusammen mit dem Autor Lösungsvorschläge diskutiert werden.
-
-Das Review kann zusammen mit dem Autor, oder auch ohne den Autor des jeweiligen Dokumentes stattfinden. Wichtig, bei einem Review sind weder Schuldzuweisungen noch Verteidigungen angebracht, es werden einfach Erkentnisse sachlich festgehalten.
-In einem Projekt sollte jedes Dokument nach seiner Fertigstellung einem Review
-unterzogen werden.
-
-Ein positiver Seiteneffekt der Reviewtechnik ist zudem die breitere Streuung
-des \OviIndex{Projektwissens} über die Projektmitglieder. Da die Projektmitglieder sich jeweils gegenseitig reviewen, weiss jedes Mitglied ungefähr was das andere macht, dadurch wird es leichter, Aufgaben umzuverteilen und neue Mitarbeiter einzubinden. Zudem wird über das ganze Projekt der Programmierstil einheitlicher, weil man sieht wie andere ihre Arbeit erledigen. 
-
-Wichtig, die Ergebnisse der Reviews dürfen nicht zur Qualifikation der Mitarbeiter verwendet werden, sie dienen nur der Qualitätssicherung innerhalb der Projekte. Sobald sie für Mitarbeiterqualifikation missbraucht werden, verlieren sie ihr Effizienz ('Gefälligkeitsgutachten').
-
-\section{Funktionstests}
-Beim \OviIndex{Funktionstest} wird geprüft, ob ein System oder Teilsystem korrekt funktioniert und seinen Spezifikationen entspricht, also das tut was von ihm gefordert wird. Das Ziel des Tests ist es \emph{Fehler zu finden}.
-
-Es ist wissenschaftlich belegt, das es unmöglich ist, die Fehlerfreiheit eines Programmes zu beweisen. Daraus folgt auch, das vollständiges Testen unmöglich ist. Aber durch systematisches Vorgehen kann man ein optimales Ergebnis erreichen.
-
-\emph{Planloses Ausprobieren ist keine brauchbare und zuverlässige Testmethode}
-
-Testen ist eine kreative und Anspruchsvolle Tätigkeit. Der Tester muss das Produkt gut kennen, und sein Ziel muss sein, Fehler zu finden, nicht die Korrektheit zu bestätigen. Das Testen ist selbst ein Projekt, welches geplantes Vorgehen erfordert. Der Tester muss sich überlegen was getestet werden soll, und wie es getestet werden kann. Er muss sich zudem überlegen, was alles schiefgehen kann.
-
-Für jeden \OviIndex{Testfall} muss definiert werden, in welchem Ausgangszustand das System sein soll, welche Eingabedaten an das System erfolgen, und was die erwartete Reaktion des Systems ist. Tests müssen reproduzierbar sein, d.h. dass der gleiche Test wiederholt ausgeführt werden kann (Nur so kann eine Fehlerbehebung verifiziert werden). Tests können oft automatisiert werden, so dass der Tester von Fleissarbeit entlastet wird. Für Tests muss oft eigene Hard- und Software entwickelt werden.
-
-Wichtig: \OviIndex{Testen} und \OviIndex{Fehlerbehebung} sind zwei verschiedene und getrennte Tätigkeiten. Das Ergebnis eines Tests ist ein \OviIndex{Fehlerprotokoll}, die Fehlerkorrektur erfolgt anschliessend durch den(die) Programmierer aufgrund des Protokolls. Sämtliche Fehlerprotokolle sollten mit der Projektdokumentation archiviert werden.
-
-Für das Amt des Testers eignen sich besonders Leute, die ein grosses Interesse daran haben, möglichst viele Fehler zu finden. Deshalb sind im Allgemeinen die Entwickler des Systems ungeeignet. Besser eignen sich Leute, die das System später Warten oder in Betrieb nehmen müssen, zukünftige Anwender oder Leute aus der Qualitätssicherung.
-
-Es gibt grundsätzlich zwei Methoden für den Funktionstest:
-Whiteboxtest und Blackboxtest.
-
-\subsection{Blackboxtest}
-Beim \OviIndex{Blackboxtest} sind die Interna des Systems unbekannt, das System wird als Blackbox angesehen, und die Tests werden aus den Anforderungen (\OviIndex{Use Cases}) an das System gewonnen. Blackbox Tests werden meistens gegen Ende des Projektes zum Test von \OviIndex{Teilsystemen} und des \OviIndex{Gesamtsystems} eingesetzt. Da Blackboxtests auf den Anforderungen an das System basieren, können die Testfälle parallel zur Entwicklung des Gesamtsystems entworfen werden. Das Testteam muss nicht bis zum Projektende mit der Ausarbeitung der Tests warten. Auch die Abnahme des Systems durch den Auftraggeber erfolgt in der Regel durch Blackbox-Tests.
-
-\subsection{Whiteboxtest}
-Beim \OviIndex{Whitebox} Test sind die Interna das Systems (Programmcode) bekannt. Beim Erstellen der Testfälle wird versucht, möglichst alle \OviIndex{Programmflusspfade} abzudecken, also die Testfälle so zu wählen, dass alle Fälle eines Cases oder einer Verzweigung mindestens einmal durchlaufen werden,
-und dass Schlaufen an ihren Grenzfällen betrieben werden (Einmal, keinmal, maximal). Diese Art von Tests werden vor allem bei \OviIndex{Modultests} eingesetzt.
-
-\subsection{Systematisches erzeugen von Testfällen}
-Da die Anzahl der möglichen Kombinationen von Eingabedaten meist nahezu unendlich ist, muss beim Entwurf von Testfällen systematisch vorgegangen werden um möglichst alle Fälle abzudecken. Ein zufälliges Auswählen von Werten ergibt keinen zuverlässigen Test.
-
-Eine gute Möglichkeit ist die Bildung von \OviIndex{Äquivalenzklassen}. Dabei werden Gruppen von Werten gebildet, von denen man ähnliches Verhalten und ähnliche Ergebnisse erwartet.
-
-Mögliche Klassen wären: 
-
-\begin{itemize}
-	\item Alle positiven Werte
-	\item Alle negativen Werte
-	\item Alle Werte oberhalb/unterhalb des spezifizierten Wertebereichs, 
-	\item Alle Kombinationen wo Wert A grösser als Wert B ist (Bargeldbezug wenn Kontostand kleiner als gewünschter Wert ist) 
-	\item Rückgeld grösser als Geldreservoir ist 
-	\item usw
-\end{itemize}
-
-Anschliessend wählt man die Testfälle so, das Werte aus allen Äquivalenzklassen zum Zuge kommen. Meist werden einige Werte zufällig irgendwo aus der Mitte der jeweiligen Äquivalenzklassen, sowie
-Grenzwerte (Um eins daneben, gehört gerade noch dazu/nicht mehr dazu) der Klassen gewählt.
-
-Damit lässt sich die Menge der Testfälle drastisch reduzieren, ohne die Qualität des Tests massiv zu vermindern. Es ist aber wichtig, gute Äquivalenzklassen zu bilden.
-
- 
-\subsection{Testabbruch}
-
-Die schwierigste Entscheidung beim Testen ist immer, wann die Testphase beendet wird.
-Es gibt im allgemeinen keine Möglichkeit mit Sicherheit zu wissen, wann alle
-Fehler beseitigt sind, also müssen andere Kriterien herangezogen werden.
-
-Einfach eine bestimmte Zeitdauer festzulegen ist sicherlich das schlechteste
-Kriterium.
-
-Bessere Möglichkeiten basieren auf einer \OviIndex{Restfehler-Abschätzung}, d.h.
-versuchen zu schätzen, wieviele Fehler noch übrig sind.
-
-Dazu bietet sich zum einen die Fehlerfinderate an. (Gefundene Fehler pro Zeiteinheit,
-ev. noch nach Schweregrad gewichtet). Der Test wird abgebrochen, wenn die
-Fehlerfinderate eine gewisse Grenze unterschreitet. Diese Grenze wird vor dem
-Testbeginn festgelegt.
-
-Eine anderer Ansatz ist die Kostenrechnung, der Test wird abgebrochen, wenn
-der durchschnittliche Aufwand (Die Kosten) um einen Fehler zu finden,
-eine vorbestimmte Grenze überschreitet.
-
-Eine Möglichkeit, die Restfehler zu schätzen besteht daran, mehrere Gruppen
-unabhängig voneinander dasselbe System testen zu lassen. Aus den Ergebnissen der
-unterschiedlichen Gruppen lassen sich Rückschlüse auf die nicht gefundenen
-Fehler ziehen.
-
-Beispiel:
-
-\begin{center}
-      \begin{tabular}{ll}
-      Von beiden Gruppen gefundene Fehler:&80 \\
-      Nur von Gruppe A gefundene Fehler:  &10   \\
-      Nur von Gruppe B gefundene Fehler:  &8  \\
-      Von keiner Gruppe gefundene Fehler: &??   \\
-      \end{tabular}
-\end{center}
-
-Aus diesen Werten kann man schliessen, dass noch ein unentdeckter Fehler im System steckt.
-
-Idee: Gruppe B hat von den 90 Fehlern der Gruppe A 80 gefunden, die Erfolgsquote von B ist also
-8:9. Wenn man die selbe Erfolgsquote auf die nur von Gruppe B gefundenen Fehler anwendet, ergibt
-sich, dass noch ein Fehler unentdeckt ist.
-
-Diese Methode funktioniert aber nur, wenn beide Gruppen völlig unabhängig voneinander testen (Keine Kommunikation, auch nicht in der Kaffeepause oder nach Feierabend).
-Damit solche Abschätzungen wirklich aussagekraftig sind, muss statistisch korrekt vorgegangen und ausgewertet werden, also die Wahrscheinlichkeitsrechnung herangezogen werden.
-
-
+%\chapter{Systematisches Testen von Software}
+%Bevor ein Softwaresystem seinem Verwendungszweck übergeben werden kann, muss verifiziert werden, ob das System seinen Spezifikationen entspricht.
+%
+%Ein System sollte aber nicht erst am Ende der Entwicklungphase getestet werden, 
+%sonst sind viele Fehler nur sehr kostspielig zu beheben.
+%
+%Es ist also anzustreben, Fehler möglichst frühzeitig zu finden.
+%Konzeptionelle Fehler sollten dabei schon in der Analyse/Designphase
+%erkannt und behoben werden, da sonst das gesamte Projekt in Frage gestellt wird.
+%
+%Auch bereits getestete Module sollten wieder überprüft werden, wenn sie in einem neuen Kontext verwendet werden. Auf jeden Fall müssen die Spezifikationen der Module mit den jeweiligen Anforderungen verglichen werden.
+%
+%Der Absturz der ersten ARIANE 5 im Jahre 1996 ist auf ein ungeprüftes übernehmen von Software der Ariane 4 zurückzuführen. Es wurde Das Trägheitsnavigationssystem der ARIANE 4 übernommen, dabei wurde auf ausführliche Tests verzichtet, da sich das System in der ARIANE 4 jahrelang bewährt hatte. Leider hatte die ARIANE 5 aber eine höhere horizontale Geschwindigkeit, was zu einem 
+%Zahlenüberlauf führte, und dies wiederum ziemlich schnell zum Absturz (Resp. kontrollierten Sprengung) der Rakete. Schadensumme: 1.7 Miliarden DM. Wenn das System nicht einfach unbesehen übernommen worden wäre, hätte man das Problem mit grosser Sicherheit erkannt. (Weitere Informationen dazu unter http://www.esa.int/export/esaCP/Pr\_33\_1996\_p\_EN.html)
+%
+%Viele Fehler äussern sich nicht so spektakulär, aber die Gesamtschadenssumme die jährlich durch nicht sorgfältig durchgeführte \OviIndex{Tests} entsteht dürfte enorm hoch sein. 
+%
+%Grundsätzlich unterscheidet man zwei Arten von Tests: Statische Tests und
+%Funktionstests. 
+%
+%\section{Statische Tests (Reviews)}
+%Zu den \OviIndex{statischen Tests} gehört die \OviIndex{Reviewtechnik}, dabei werden in jeder Phase alle Dokumente kritisch auf Fehler und Inkonsistenzen untersucht. Diese Technik kann auf Diagramme, Spezifikationen, Pflichtenhefte und effektiven Code (Listings) angewendet werden. Dabei wird kein Code ausgeführt, sondern es findet eine reine visuelle Kontrolle statt. 
+%
+%Ein \OviIndex{Review} wird dabei nach vorher festgelegten Richtlinien (Checklisten) durchgeführt. Es kann genauso auf Einhaltung des Codierungstandards (Komentare, Namensgebung, Verschachtelungstiefe, Funktionsgrösse) wie auf die Codierung selbst geprüft werden.
+%
+%In einem Review werden gefundene Fehler oder Unstimmigkeiten nicht behoben, sondern nur
+%in einem Bericht festgehalten. Anschliessend an das Review können zusammen mit dem Autor Lösungsvorschläge diskutiert werden.
+%
+%Das Review kann zusammen mit dem Autor, oder auch ohne den Autor des jeweiligen Dokumentes stattfinden. Wichtig, bei einem Review sind weder Schuldzuweisungen noch Verteidigungen angebracht, es werden einfach Erkentnisse sachlich festgehalten.
+%In einem Projekt sollte jedes Dokument nach seiner Fertigstellung einem Review
+%unterzogen werden.
+%
+%Ein positiver Seiteneffekt der Reviewtechnik ist zudem die breitere Streuung
+%des \OviIndex{Projektwissens} über die Projektmitglieder. Da die Projektmitglieder sich jeweils gegenseitig reviewen, weiss jedes Mitglied ungefähr was das andere macht, dadurch wird es leichter, Aufgaben umzuverteilen und neue Mitarbeiter einzubinden. Zudem wird über das ganze Projekt der Programmierstil einheitlicher, weil man sieht wie andere ihre Arbeit erledigen. 
+%
+%Wichtig, die Ergebnisse der Reviews dürfen nicht zur Qualifikation der Mitarbeiter verwendet werden, sie dienen nur der Qualitätssicherung innerhalb der Projekte. Sobald sie für Mitarbeiterqualifikation missbraucht werden, verlieren sie ihr Effizienz ('Gefälligkeitsgutachten').
+%
+%\section{Funktionstests}
+%Beim \OviIndex{Funktionstest} wird geprüft, ob ein System oder Teilsystem korrekt funktioniert und seinen Spezifikationen entspricht, also das tut was von ihm gefordert wird. Das Ziel des Tests ist es \emph{Fehler zu finden}.
+%
+%Es ist wissenschaftlich belegt, das es unmöglich ist, die Fehlerfreiheit eines Programmes zu beweisen. Daraus folgt auch, das vollständiges Testen unmöglich ist. Aber durch systematisches Vorgehen kann man ein optimales Ergebnis erreichen.
+%
+%\emph{Planloses Ausprobieren ist keine brauchbare und zuverlässige Testmethode}
+%
+%Testen ist eine kreative und Anspruchsvolle Tätigkeit. Der Tester muss das Produkt gut kennen, und sein Ziel muss sein, Fehler zu finden, nicht die Korrektheit zu bestätigen. Das Testen ist selbst ein Projekt, welches geplantes Vorgehen erfordert. Der Tester muss sich überlegen was getestet werden soll, und wie es getestet werden kann. Er muss sich zudem überlegen, was alles schiefgehen kann.
+%
+%Für jeden \OviIndex{Testfall} muss definiert werden, in welchem Ausgangszustand das System sein soll, welche Eingabedaten an das System erfolgen, und was die erwartete Reaktion des Systems ist. Tests müssen reproduzierbar sein, d.h. dass der gleiche Test wiederholt ausgeführt werden kann (Nur so kann eine Fehlerbehebung verifiziert werden). Tests können oft automatisiert werden, so dass der Tester von Fleissarbeit entlastet wird. Für Tests muss oft eigene Hard- und Software entwickelt werden.
+%
+%Wichtig: \OviIndex{Testen} und \OviIndex{Fehlerbehebung} sind zwei verschiedene und getrennte Tätigkeiten. Das Ergebnis eines Tests ist ein \OviIndex{Fehlerprotokoll}, die Fehlerkorrektur erfolgt anschliessend durch den(die) Programmierer aufgrund des Protokolls. Sämtliche Fehlerprotokolle sollten mit der Projektdokumentation archiviert werden.
+%
+%Für das Amt des Testers eignen sich besonders Leute, die ein grosses Interesse daran haben, möglichst viele Fehler zu finden. Deshalb sind im Allgemeinen die Entwickler des Systems ungeeignet. Besser eignen sich Leute, die das System später Warten oder in Betrieb nehmen müssen, zukünftige Anwender oder Leute aus der Qualitätssicherung.
+%
+%Es gibt grundsätzlich zwei Methoden für den Funktionstest:
+%Whiteboxtest und Blackboxtest.
+%
+%\subsection{Blackboxtest}
+%Beim \OviIndex{Blackboxtest} sind die Interna des Systems unbekannt, das System wird als Blackbox angesehen, und die Tests werden aus den Anforderungen (\OviIndex{Use Cases}) an das System gewonnen. Blackbox Tests werden meistens gegen Ende des Projektes zum Test von \OviIndex{Teilsystemen} und des \OviIndex{Gesamtsystems} eingesetzt. Da Blackboxtests auf den Anforderungen an das System basieren, können die Testfälle parallel zur Entwicklung des Gesamtsystems entworfen werden. Das Testteam muss nicht bis zum Projektende mit der Ausarbeitung der Tests warten. Auch die Abnahme des Systems durch den Auftraggeber erfolgt in der Regel durch Blackbox-Tests.
+%
+%\subsection{Whiteboxtest}
+%Beim \OviIndex{Whitebox} Test sind die Interna das Systems (Programmcode) bekannt. Beim Erstellen der Testfälle wird versucht, möglichst alle \OviIndex{Programmflusspfade} abzudecken, also die Testfälle so zu wählen, dass alle Fälle eines Cases oder einer Verzweigung mindestens einmal durchlaufen werden,
+%und dass Schlaufen an ihren Grenzfällen betrieben werden (Einmal, keinmal, maximal). Diese Art von Tests werden vor allem bei \OviIndex{Modultests} eingesetzt.
+%
+%\subsection{Systematisches erzeugen von Testfällen}
+%Da die Anzahl der möglichen Kombinationen von Eingabedaten meist nahezu unendlich ist, muss beim Entwurf von Testfällen systematisch vorgegangen werden um möglichst alle Fälle abzudecken. Ein zufälliges Auswählen von Werten ergibt keinen zuverlässigen Test.
+%
+%Eine gute Möglichkeit ist die Bildung von \OviIndex{Äquivalenzklassen}. Dabei werden Gruppen von Werten gebildet, von denen man ähnliches Verhalten und ähnliche Ergebnisse erwartet.
+%
+%Mögliche Klassen wären: 
+%
+%\begin{itemize}
+	%\item Alle positiven Werte
+	%\item Alle negativen Werte
+	%\item Alle Werte oberhalb/unterhalb des spezifizierten Wertebereichs, 
+	%\item Alle Kombinationen wo Wert A grösser als Wert B ist (Bargeldbezug wenn Kontostand kleiner als gewünschter Wert ist) 
+	%\item Rückgeld grösser als Geldreservoir ist 
+	%\item usw
+%\end{itemize}
+%
+%Anschliessend wählt man die Testfälle so, das Werte aus allen Äquivalenzklassen zum Zuge kommen. Meist werden einige Werte zufällig irgendwo aus der Mitte der jeweiligen Äquivalenzklassen, sowie
+%Grenzwerte (Um eins daneben, gehört gerade noch dazu/nicht mehr dazu) der Klassen gewählt.
+%
+%Damit lässt sich die Menge der Testfälle drastisch reduzieren, ohne die Qualität des Tests massiv zu vermindern. Es ist aber wichtig, gute Äquivalenzklassen zu bilden.
+%
+ %
+%\subsection{Testabbruch}
+%
+%Die schwierigste Entscheidung beim Testen ist immer, wann die Testphase beendet wird.
+%Es gibt im allgemeinen keine Möglichkeit mit Sicherheit zu wissen, wann alle
+%Fehler beseitigt sind, also müssen andere Kriterien herangezogen werden.
+%
+%Einfach eine bestimmte Zeitdauer festzulegen ist sicherlich das schlechteste
+%Kriterium.
+%
+%Bessere Möglichkeiten basieren auf einer \OviIndex{Restfehler-Abschätzung}, d.h.
+%versuchen zu schätzen, wieviele Fehler noch übrig sind.
+%
+%Dazu bietet sich zum einen die Fehlerfinderate an. (Gefundene Fehler pro Zeiteinheit,
+%ev. noch nach Schweregrad gewichtet). Der Test wird abgebrochen, wenn die
+%Fehlerfinderate eine gewisse Grenze unterschreitet. Diese Grenze wird vor dem
+%Testbeginn festgelegt.
+%
+%Eine anderer Ansatz ist die Kostenrechnung, der Test wird abgebrochen, wenn
+%der durchschnittliche Aufwand (Die Kosten) um einen Fehler zu finden,
+%eine vorbestimmte Grenze überschreitet.
+%
+%Eine Möglichkeit, die Restfehler zu schätzen besteht daran, mehrere Gruppen
+%unabhängig voneinander dasselbe System testen zu lassen. Aus den Ergebnissen der
+%unterschiedlichen Gruppen lassen sich Rückschlüse auf die nicht gefundenen
+%Fehler ziehen.
+%
+%Beispiel:
+%
+%\begin{center}
+      %\begin{tabular}{ll}
+      %Von beiden Gruppen gefundene Fehler:&80 \\
+      %Nur von Gruppe A gefundene Fehler:  &10   \\
+      %Nur von Gruppe B gefundene Fehler:  &8  \\
+      %Von keiner Gruppe gefundene Fehler: &??   \\
+      %\end{tabular}
+%\end{center}
+%
+%Aus diesen Werten kann man schliessen, dass noch ein unentdeckter Fehler im System steckt.
+%
+%Idee: Gruppe B hat von den 90 Fehlern der Gruppe A 80 gefunden, die Erfolgsquote von B ist also
+%8:9. Wenn man die selbe Erfolgsquote auf die nur von Gruppe B gefundenen Fehler anwendet, ergibt
+%sich, dass noch ein Fehler unentdeckt ist.
+%
+%Diese Methode funktioniert aber nur, wenn beide Gruppen völlig unabhängig voneinander testen (Keine Kommunikation, auch nicht in der Kaffeepause oder nach Feierabend).
+%Damit solche Abschätzungen wirklich aussagekraftig sind, muss statistisch korrekt vorgegangen und ausgewertet werden, also die Wahrscheinlichkeitsrechnung herangezogen werden.
+%
+%
 
 
 \chapter{Der Unified Process}
