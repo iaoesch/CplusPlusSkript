@@ -3373,9 +3373,100 @@ Dieser Initialisierungsablauf von \Cpp  ist jedoch sehr Compilerabhängig, bei ei
 Zudem muss normalerweise der Linker angewiesen werden, diese Initialisierungsdaten
 aus den einzelnen Modulen zusammenzutragen und am richtigen Ort im Speicher abzulegen.
 
-Nachfolgend als Beispiel, wie es beim Carme-Kit gemacht werden muss:
+Nachfolgend als Beispiel, wie es beim Carme-Kit/Atollic True Studio gemacht werden muss:
+               
+Im Linkerskript muss das zusammenführen der Konstruktoren/Destruktorentabellen (.preinit\_array, 
+ .init\_array, .fini\_array) codiert werden: 
+\begin{CCode}
 
-Initialisierungsfunktion (Muss vor Aufruf von main() aufgerufen werden)
+	/* The program code and other data goes into FLASH */
+	.text :
+	{
+		. = ALIGN(4);
+		*(.text)           /* .text sections (code) */
+		*(.text*)          /* .text* sections (code) */
+		*(.rodata)         /* .rodata sections (constants, strings, etc.)	*/
+		*(.rodata*)        /* .rodata* sections (constants, strings, etc.)	*/
+		*(.glue_7)         /* glue arm to thumb code */
+		*(.glue_7t)        /* glue thumb to arm code */
+		*(.eh_frame)
+
+		KEEP(*(.init))     // Keep verhindert weglassen von unbenutzten Symbolen
+		KEEP(*(.fini))     //
+
+		. = ALIGN(4);
+		_etext = .;        /* define a global symbols at end of code */
+	} >FLASH
+
+	.preinit_array :
+	{
+		PROVIDE_HIDDEN(__preinit_array_start = .);
+		KEEP(*(.preinit_array*))
+		PROVIDE_HIDDEN(__preinit_array_end = .);
+	} >FLASH
+	.init_array :
+	{
+		PROVIDE_HIDDEN(__init_array_start = .);
+		KEEP(*(SORT(.init_array.*)))
+		KEEP(*(.init_array*))
+		PROVIDE_HIDDEN(__init_array_end = .);
+	} >FLASH
+	.fini_array :
+	{
+		PROVIDE_HIDDEN(__fini_array_start = .);
+		KEEP(*(SORT(.fini_array.*)))
+		KEEP(*(.fini_array*))
+		PROVIDE_HIDDEN(__fini_array_end = .);
+	} >RAM           // Wichtig, muss im RAM sein, da zur Laufzeit erstellt
+	
+
+\end{CCode}
+
+Im Startupcode müssen nun die entsprechenden Initialisierungefunktionen (\_\_libc\_init\_array, \_\_libc\_fini\_array und exit) vor und nach dem Aufruf von main() aufgerufen werden:
+   
+\begin{CCode}
+Reset_Handler:
+  /* Copy the data segment initializers from flash to SRAM */
+  MOVS  r1, #0
+  B  LoopCopyDataInit
+
+CopyDataInit:
+  LDR  r3, =_sidata
+  LDR  r3, [r3, r1]
+  STR  r3, [r0, r1]
+  ADDS  r1, r1, #4
+
+LoopCopyDataInit:
+  LDR  r0, =_sdata
+  LDR  r3, =_edata
+  ADDS  r2, r0, r1
+  CMP  r2, r3
+  BCC  CopyDataInit
+  LDR  r2, =_sbss
+  B  LoopFillZerobss
+
+/* Zero fill the bss segment. */
+FillZerobss:
+  MOVS  r3, #0
+  STR  r3, [r2], #4
+
+LoopFillZerobss:
+  LDR  r3, =_ebss
+  CMP  r2, r3
+  BCC  FillZerobss
+
+  BL  SystemInit         /* Call the clock system initialization    */
+  BL  CARME_Init         /* Call the CARME-M4 board initialization  */
+  BL  __libc_init_array  /* Call static constructors                */
+  BL  main               /* Call the application's entry point      */
+  BL  __libc_fini_array 
+  BL  exit               /* Call the static destrucors (exit will not return!) */
+ProgramFinish:
+  B  ProgramFinish       /* while true do nothing                   */
+\end{CCode}
+
+
+Der Code für die Initialisierungsfunktion könnte wie folgt aussehen (Üblicherweise in newlib integriert und nicht selber zu codieren)
 \begin{CCode}
 
 extern unsigned int _ctors_start, _ctors_end; // Vom Linker definierte Symbole, beinhalten 
@@ -3384,7 +3475,8 @@ extern unsigned int _ctors_start, _ctors_end; // Vom Linker definierte Symbole, 
 
 /* _Init_Constructors
  *
- * Diese Funktion ruft alle in der Konstruktorentabelle enthaltenen Konstruktoren auf
+ * Diese Funktion ruft alle in der Konstruktorentabelle enthaltenen 
+ * Konstruktoren auf
  */
 
 
@@ -3401,26 +3493,12 @@ void _Init_Constructors( void ) {
 }
 \end{CCode}
 
-Analog müsste das Ganze nach dem Ende von main() für die Destruktoren gemacht werden, sofern die
+Der Code für den Aufruf der Destruktoren ist nur notwendig, wenn die
 Applikation überhaupt einmal beendet wird. (Wenn das Programm nur durch
 Ausschalten des Gerätes 'beendet' wird, ist der Aufruf der Destruktoren
 nicht notwendig).
 
 
-Zusätzlich muss im Linkerscript das zusammenführen der Konstruktoren/Destruktorentabellen codiert werden: 
-\begin{CCode}
-
-		. = ALIGN(4);	/* advance location counter to the next 32bit boundary*/
-  PROVIDE(_ctors_start = .);   
-  KEEP(*(SORT(.ctors.*)))
-  KEEP(*(.ctors))
-  PROVIDE(_ctors_end = .);
-  PROVIDE(_dtors_start_ = .);
-  KEEP(*(SORT(.dtors.*)))
-  KEEP(*(.dtors))
-  PROVIDE(_dtors_end_ = .);/*		*(.ctors*)	*/			
-
-\end{CCode}
 
  
 \section{Effizienzbetrachtungen}
