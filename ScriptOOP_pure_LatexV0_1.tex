@@ -1519,7 +1519,9 @@ Bild \ref{fig:PaternIteratorBspSeq} zeigt das Sequenzdiagramm für das Durchwande
 
 \section{Visitor}
 
+Mit dem \OviIndex{Visitormuster} können Operationen von den Datenstrukturen getrennt werden. Es erlaubt, auf einfache Weise zu bestehenden Datenstrukturen neue Operationen oder Bearbeitungsmöglichkeiten hinzuzufuegen. Im Gegenzugn erschwert es das Hinzufügen neuer Klassen in die Datenstruktur. Es eignet sich besonders, wenn die Datenstrukturen wenig ändern, aber häufig neue Operationen hinzugefügt werden.
 
+Jedes Datenelement besitzt eine Schnittstelle um Besucher zu empfangen, und Ruft beim Besucher 'seine' Behandlungsmethode auf. So können neue Operationen definiert werden, ohne dass die Datenstrukturen modifiziert werden müssten. Für jede neue Gruppe von zusammengehörigen Operationen wird einfach eine neue Besucherklasse implementiert, welche anschliessend die Datenobjekte Besucht. 
 
 \begin{figure}[h]
 \centering
@@ -1528,6 +1530,19 @@ Bild \ref{fig:PaternIteratorBspSeq} zeigt das Sequenzdiagramm für das Durchwande
 \resizebox{5in}{!}{\input{VisitorLatex.pdf_tex}}
 }
 \end{figure}
+
+Ein Beispiel könnte ein CAD-System sein, bei welchem die Daten in den verschiedensten Dateiformaten exportiert werden können. Für jedes Dateiformat muss einfach eine neue Klasse erstellt werden, ansosnten sind keine Änderungen notwendig. 
+
+\begin{figure}[h]
+\centering
+%\def\svgwidth{\columnwidth}
+\footnotesize{
+\resizebox{5in}{!}{\input{VisitorExample.pdf_tex}}
+}
+\end{figure}
+
+
+
 %\chapter{Einführung in die UML}
 \chapter{Weitere UML-Diagrammarten}
 %\section{Das Klassendiagramm}
