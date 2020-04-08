@@ -17,8 +17,8 @@ Class=LaTeXView
 Document=ScriptOOP_pure_LatexV0_1.tex
 
 [Frame0_View0,0]
-TopLine=2122
-Cursor=100598
+TopLine=2161
+Cursor=102248
 
 [SessionInfo]
 FrameCount=1

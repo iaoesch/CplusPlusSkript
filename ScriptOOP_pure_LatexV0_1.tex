@@ -1512,36 +1512,62 @@ Bild \ref{fig:PaternIteratorBspSeq} zeigt das Sequenzdiagramm für das Durchwande
 \begin{figure}[H]
 	  \centering
 		\includegraphics[trim=0 1.4cm 0 0, clip]{PaternIteratorBspSeq}
-		\caption{Sequenzdiagramm des Datenverwaltung}
+		\caption{Sequenzdiagramm der Datenverwaltung}
 	\label{fig:PaternIteratorBspSeq}
 \end{figure}
 
 
 \section{Visitor}
 
-Mit dem \OviIndex{Visitormuster} können Operationen von den Datenstrukturen getrennt werden. Es erlaubt, auf einfache Weise zu bestehenden Datenstrukturen neue Operationen oder Bearbeitungsmöglichkeiten hinzuzufuegen. Im Gegenzugn erschwert es das Hinzufügen neuer Klassen in die Datenstruktur. Es eignet sich besonders, wenn die Datenstrukturen wenig ändern, aber häufig neue Operationen hinzugefügt werden.
+Mit dem \OviIndex{Visitormuster} können Operationen von den Datenstrukturen getrennt werden. Es erlaubt, auf einfache Weise zu bestehenden Datenstrukturen neue Operationen oder Bearbeitungsmöglichkeiten hinzuzufuegen. Im Gegenzug erschwert es das Hinzufügen neuer Klassen in die Datenstruktur. Es eignet sich besonders, wenn die Datenstrukturen wenig ändern, aber häufig neue Operationen hinzugefügt werden. Als weiterer Vorteil sind zusammengehörende Operationen in einer Klasse konzentriert und nicht über die Datenstrukturen verteilt.
 
-Jedes Datenelement besitzt eine Schnittstelle um Besucher zu empfangen, und Ruft beim Besucher 'seine' Behandlungsmethode auf. So können neue Operationen definiert werden, ohne dass die Datenstrukturen modifiziert werden müssten. Für jede neue Gruppe von zusammengehörigen Operationen wird einfach eine neue Besucherklasse implementiert, welche anschliessend die Datenobjekte Besucht. 
+Jedes Datenelement besitzt eine Schnittstelle um Besucher zu empfangen, und ruft beim Besucher 'seine' Behandlungsmethode auf. So können neue Operationen definiert werden, ohne dass die Datenstrukturen modifiziert werden müssten. Für jede neue Gruppe von zusammengehörigen Operationen wird einfach eine neue Besucherklasse implementiert, welche anschliessend die Datenobjekte Besucht. 
 
-\begin{figure}[h]
+Die Struktur des Visitormusters ist in Bild \ref{fig:PaternVisitorAllg} dargestellt:
+\begin{figure}[H]
 \centering
 %\def\svgwidth{\columnwidth}
 \footnotesize{
 \resizebox{5in}{!}{\input{VisitorLatex.pdf_tex}}
 }
+	\caption{Grundstruktur des Visitormusters}
+	\label{fig:PaternVisitorAllg}
+
 \end{figure}
 
-Ein Beispiel könnte ein CAD-System sein, bei welchem die Daten in den verschiedensten Dateiformaten exportiert werden können. Für jedes Dateiformat muss einfach eine neue Klasse erstellt werden, ansosnten sind keine Änderungen notwendig. 
+Ein Beispiel könnte ein CAD-System sein, bei welchem die Daten in den verschiedensten Dateiformaten exportiert werden können. Für jedes Dateiformat muss einfach eine neue Klasse erstellt werden, ansonsten sind keine Änderungen notwendig. 
 
-\begin{figure}[h]
+Das Visitormuster für die Datenverwaltung könnte wie in Bild \ref{fig:PaternVisitorCAD} aussehen:
+
+\begin{figure}[H]
 \centering
 %\def\svgwidth{\columnwidth}
 \footnotesize{
 \resizebox{5in}{!}{\input{VisitorExample.pdf_tex}}
 }
+	\caption{Klassendiagramm des CAD-Systems}
+	\label{fig:PaternVisitorCAD}
+
 \end{figure}
 
+Das Sequenzdiagramm in Bild \ref{fig:PaternVisitorCADSeq} zeigt, wie eine Zeichnung im PDF-Format abgespeichert wird. Dazu wird ein PDF-Speicherobjekt erzeugt, welches anschliessend alle Element der Zeichnung besucht. Jedes Zeichnungselement ruft beim besuchenden Objekt die zu ihm passende Verarbeitungsmethode auf und sort so dafür, dass es in der PDF-Datei abgespeichert wird.
 
+
+\begin{figure}[H]
+\centering
+%\def\svgwidth{\columnwidth}
+\footnotesize{
+\resizebox{5in}{!}{\input{VisitorExampleSequence.pdf_tex}}
+}
+	\caption{Sequenzdiagramm des CAD-Systems}
+	\label{fig:PaternVisitorCADSeq}
+
+\end{figure}
+
+Um die Daten in einem anderen Format abzuspeichern, muss einfach das entsprechende Speicherobjekt erzeugt werden welches anschliessend alle auszugebenden Elemente besucht.
+
+Weitere mögliche Erweiterungen wären Besucher zum Erstellen von Stücklisten, Generieren von CNC-Daten, Berechnen und Simulieren von Belastungsdaten, Modifizieren von Elementen, die Liste könnte beliebig erweitert werden.
+ 
 
 %\chapter{Einführung in die UML}
 \chapter{Weitere UML-Diagrammarten}
