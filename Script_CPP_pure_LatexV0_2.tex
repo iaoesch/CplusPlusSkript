@@ -63,9 +63,9 @@
 
 %Einstellungen der Seitenränder
 %\usepackage[left=2.5cm,right=2.5cm,top=1cm,bottom=1cm,includeheadfoot]{geometry}
-
 %alte Rechtschreibung
 \usepackage{german}
+\usepackage[german]{babel}
 \usepackage{color}
 \usepackage{color,listings}
 \usepackage{framed}
@@ -91,6 +91,9 @@
 %Kopf- und Fußzeile
 %\usepackage{fancyhdr}
 \usepackage{scrlayer-scrpage}
+
+
+\selectlanguage{german}
 
 %\usepackage[automark,autooneside=false]{scrlayer-scrpage}
 
@@ -273,6 +276,8 @@ tab=\rightarrowfill}
 
 % Level von Inhaltsverzeichnis
 \setcounter{tocdepth}{1}
+
+%\renewcaptionname{german}{\sectionautorefname}{Kap.}
 
 %Jetzt begints...
 
@@ -648,7 +653,7 @@ Mit den geschweiften Klammern { } werden in C/\Cpp mehrere Anweisungen zu einem 
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). Delte darf auf NULL-Pointer angewendet werden, diese werden ignoriert. 
+Mit new kann dynamisch Speicher reserviert werden, und mit delete wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss delete[] verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit new allozierte Speicherblock muss mit delete wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). Delete darf auf NULL-Pointer angewendet werden, diese werden ignoriert. 
 
 \begin{CCode}
 int *Memory;            // Ein Zeiger auf int definieren
@@ -666,6 +671,29 @@ Memory = new int;       // Platz fuer einen einzelnen int reservieren und
 *Memory = 55;           // den int veraendern
 
 delete Memory;          // und Speicher wieder freigeben
+
+
+void ConsumeElement(std::unique_ptr<int> e) {
+   // do something with e
+}  // e wird ungueltig, Objekt auf welches e zeigt wird geloescht
+
+{
+   std::unique_ptr<int> p( new int(42) );   // neues Objekt an Smartpointer
+                                            // uebergeben
+                                            
+   std::unique_ptr<int> q = std::make_unique<int>(42); // Wie oben, aber exceptionsafe
+  
+  
+   std::unique_ptr<int> r = std::move(q); // Objekt von q an r weiterreichen, q ist
+                                          // jetzt ungueltig (nullptr)
+
+   *r = *p   // Wie bei normalen Pointer Zugriff auf referenziertes Objekt
+  
+   ConsumeElement(std::move(p)) // Objekt an Funktion uebergeben, p ist jetzt ungueltig
+          
+                                          
+}  // Blockende, p, q und r werden ungueltig, alloziertes Objekt von r wird 
+   // automatisch freigegeben
 
 \end{CCode}
 
@@ -929,6 +957,8 @@ s[99] = 'z'; // Letztes Element (!)
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
+Seit C++11 gibt es rValueReferenzen, welche effizienteren Umgang mit Temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}
+
 \begin{CCode}
 int j, k, l;    // Drei Integer Variablen definieren
 int &r = j;     // Eine Referenz auf j definieren
@@ -1170,8 +1200,10 @@ while (j < 19) {
 \end{CCode}
 Geschrieben werden
 
+Seit C++11 gibt es die erweiterte Forschlaufe \autoref{subsec:AutomaticForLoop}, um über Container zu iterieren. 
+
 \section{switch()}
-Auswahlanweisung, der Programmfluss wird bei dem case - statement weitergeführt, das mit dem Wert der switch-Anweisung übereinstimmt. Es können nur Konstanten bei den Case Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein break oder das Ende der Struktur trifft. Wenn nach einem case Statement kein break steht, fährt das Programm mit den Anweisungen des nächsten case weiter. (Sollte vermieden werden). Der Defaultfall kann weggelassen werden.
+Auswahlanweisung, der Programmfluss wird bei demjenigen case - Statement weitergeführt, welches mit dem Wert der switch-Anweisung übereinstimmt. Es können nur Konstanten bei den Case Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein break oder das Ende der Struktur trifft. Wenn nach einem case Statement kein break steht, fährt das Programm mit den Anweisungen des nächsten case weiter. (Dies sollte jedoch vermieden werden). Der Defaultfall kann weggelassen werden.
 \begin{CCode}
 switch (i) {
   case 1: std::cout << "Eins" << std::endl;
@@ -1250,7 +1282,7 @@ extern void PrintIt(int a);             // Prototyp, extern zeigt an dass die
 \subsection{Defaultargumente}
 Funktionen können mit \OviIndex{Defaultargumenten} ausgestattet werden. Beim Aufruf
 der Funktion können diese Argumente weggelassen werden, der Kompiler setzt dann
-automatisch die angegebenen Defaultwerte ein. Die Defaultargumente müssen bei der
+automatisch die angegebenen Defaultwerte am Ort des Aufrufes ein. Die Defaultargumente müssen bei der
 Funktionsdeklaration (Prototyp) angegeben werden, nicht aber bei der Definition.
 
 Die Defaultargumente müssen zwingend von hinten nach vorne angegeben werden.
@@ -1338,7 +1370,7 @@ class Datum {
    int Jahr;
 
    void Init(int NewTag, int NewMonat, int NewJahr);
-   void Print();
+   void Print() const;
    void AddDay(int Day);
 };
 \end{CCode}
@@ -1373,7 +1405,7 @@ class Datum {
    int Jahr;
 
         Datum(int NewTag, int NewMonat, int NewJahr); // Konstruktor
-   void Print();
+   void Print() const;
    void AddDay(int Day);
 };
 \end{CCode}
@@ -1396,7 +1428,7 @@ int main(int argc, char *argv[]) {
 
 Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden
+Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, sobald eine Klasse eine virtuelle Methode besitzt, muss üblicherweise auch ein virtueller Destruktor definiert werden (Siehe \autoref{subsec:VirtualFunctions})
 
 
 \subsection{Konstruktoren}
@@ -1531,7 +1563,13 @@ MyClass f2()
 \end{CCode}
 
 \subsection{C11 Move-Construktor}
-Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporarys erlaubt.
+Unter C11 gibt es neu den Movekonstruktor (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt.
+\begin{CCode}
+   ...
+                MyClass(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
+   ...
+
+\end{CCode}
 
 \subsection{Zuweisungsoperator}
 In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (operator =()), dieser wird jedesmal aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (*this) zurückliefern. Der Zuweisungsoperator kann
@@ -1564,12 +1602,18 @@ a = b;      // Aufruf des Zuweisungsoperators
 \end{CCode}
 
 \subsection{C11 Move-Zuweisungsoperator}
-Unter C11 gibt es neu den Movezuweisungsoperator (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporarys erlaubt.
+Unter C11 gibt es neu den Movezuweisungsoperator (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt.
+\begin{CCode}
+   ...
+                MyClass & MyClass::operator=(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
+   ...
+
+\end{CCode}
 
 \subsection{Destruktor}
-Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse aufweist, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden.
-\begin{CCode}9:45
-11:45c12:45l17:00ass MyClass {
+Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden.
+\begin{CCode}
+class MyClass {
   int k, j;
   public:
    ...
@@ -1580,8 +1624,8 @@ Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird imm
 \end{CCode}
 
 \subsection{Umwandlungsoperator}
-\OviIndex{Umwandlungsoperatoren} gehören eigentlich ins Kapitel Operatoren überladen, werden aber hier erwähnt. Wenn ein Objekt in ein anderes umgewandelt werden soll, ist dies entweder mit Konstruktoren oder Umwandlungsoperatoren möglich.
-Wenn man eine automatische Umwandlung einer Klasse A in einen int haben möchte, wenn ein Objekt dieser Klasse einem int zugewiesen wird, müsste folgender Umwandlungsoperator definiert werden:
+\OviIndex{Umwandlungsoperatoren} gehören eigentlich ins Kapitel Operatoren überladen, werden aber hier erwähnt. Wenn ein Objekt in ein anderes umgewandelt werden soll, ist dies entweder mit Konstruktoren oder Umwandlungsoperatoren möglich. Da PODs keine Konstruktoren haben, sind in diesem Fall nur Umwandlungsoperatoren möglich.
+Möchte man eine automatische Umwandlung einer Klasse A in einen int haben, falls ein Objekt dieser Klasse einem int zugewiesen wird, müsste folgender Umwandlungsoperator definiert werden:
 \begin{CCode}
 class A {
    private:
@@ -1590,10 +1634,10 @@ class A {
    
    public:
    A(int _i, int _j) : i(_i), j(_j) {};
-   operator int ();  //Beachten: Keinen Rueckgabetyp angeben!!!
+   operator int () const;  //Beachten: Keinen Rueckgabetyp angeben!!!
 };
 
-A::operator int() //Beachten: Keinen Rueckgabetyp angeben!!!
+A::operator int() const //Beachten: Keinen Rueckgabetyp angeben!!!
 {
    return i+j;
 }
@@ -1618,10 +1662,10 @@ Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubut
 \paragraph{protected:}	Auf dieses Element kann nur von Methoden dieser Klasse und davon abgeleiteten Klassen (sowie von Friendfunktionen) zugegriffen werden. Es wird empfohlen, dieses Zugriffsrecht nur in Ausnahmefällen einzusetzen. Besser private mit Zugriffsmethoden einsetzen.
 \paragraph{private:}	Auf dieses Element kann nur von Methoden dieser Klasse (sowie von Friendfunktionen) zugegriffen werden (Default bei Klassen).
 
-Eine Zugriffsberechtigung ist innerhalb der Klassendeklaration für alle Nachfolgenden Klassenmember gültig bis eine andere Zugriffsberechtigung eingestellt wird.
+Eine Zugriffsberechtigung ist innerhalb der Klassendeklaration für alle nachfolgenden Klassenmember gültig bis eine andere Zugriffsberechtigung eingestellt wird.
 
 \section{Friendfunktionen}
-\index{Friendfunktionen}Wenn man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben will, ohne diese Member als public zu definieren, kann man die Funktion oder Klasse als \OviIndex{friend} deklarieren:
+\index{Friendfunktionen}Möchte man einer Funktion oder einer Klasse Zugriff auf private oder protected Member erlauben, ohne diese Member als public zu definieren, kann diese Funktion oder Klasse als \OviIndex{friend} deklariert werden:
 
 \begin{CCode}
 class MyClass {
@@ -1641,7 +1685,7 @@ friend class BigBrother;            // Alle Methoden der Klasse BigBrother
     MyClass(int new_i, int new_k);
    ~MyClass();
   
-  int Getk();
+  int Getk() const;
 };
 \end{CCode}
 
@@ -1650,6 +1694,7 @@ Man sollte damit aber zurückhaltend umgehen, da damit das Prinzip der Kapselung 
 In vielen Fällen ist es jedoch sinnvoller, ein bestimmtes Element als Friend zu deklarieren
 als eine Menge von Set- und Get-Methoden einzubauen, da mit unnötigen Set- und Get-Methoden
 die Kapselung erst recht durchbrochen wird.
+Achtung, Templates als friend zu deklarieren ist gefährlich, dadurch werden alle aktuellen und zukunftigen, dem Template entsprechenden Funktionen und Methoden Zugriffsberechtigung erhalten.
 
 \section{Vorwärts Deklarationen} 
 \index{Vorwärts Deklarationen}Wenn man Zeiger oder Referenzen auf Objekte definieren/deklarieren will, muss die Klasse nicht vollständig bekannt sein. Solange man nicht auf Attribute oder Methoden der Klasse zugreift, reicht eine einfache Klassendeklaration der Form
@@ -1684,7 +1729,7 @@ class A {
    A(int _i) : i(_i) {};      //Konstruktor, macht nichts (Leerer Funktionsrumpf)
   ~A() {};                    //Destruktor, macht nichts (Leerer Funktionsrumpf)
    
-   int GetI() { return i; };  // Inline Code
+   int GetI() const { return i; };  // Inline Code
    void SetI(int ni) { if (i > 0) {i = ni;};};  // Inline Code
    void SetX(int ni) { 
                        if (i > 0) {   // Inline Code darf auch
@@ -1695,8 +1740,8 @@ class A {
 };
 
 
-inline void A::DoSomething()  // Inline Methoden können auch
-{                             // ausserhalb der Klasse definiert
+inline void A::DoSomething()  // Inline Methoden können mit dem Schluesselwort
+{                             //  inline auch ausserhalb der Klasse definiert
    if (i > 2) {               // werden. (Sollten aber innerhalb 
       i = i * 2;              // der selben Datei definiert werden)
    }
@@ -1706,7 +1751,7 @@ inline void A::DoSomething()  // Inline Methoden können auch
 
  
 \section{Statische Member}
-\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Auf statische Member wird über die Klasse mit dem Scope-Resolutions-Operator ('::') zugegriffen.
+\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Sie können somit such aufgerufen werden, ohne dass ein Objekt von dieser Klasse existiert. Auf statische Member wird über den Klassennamen mit dem Scope-Resolutions-Operator ('::') zugegriffen.
 
 Achtung: Für statische Attribute muss neben der Deklaration in der Klasse explizit eine Variable definiert werden, üblicherweise in der dazugehörigen Implementationsdatei, welche auch den Code für die Methoden dieser Klasse enthält. 
 
@@ -1734,7 +1779,7 @@ int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
 
 
 \section{Der this-Pointer}
-Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) hat implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf die Attribute zugreifen.
+Jede Methode (Auch Konstruktoren, Destruktor und Operatorfunktionen) hat implizit einen vordefinierten Pointer mit dem Namen \OviIndex{this}, dieser zeigt immer auf das Objekt, auf welches die Methode angewendet wurde. Damit hat jede Methode Zugriff auf die Adresse des aktuellen Objektes, und kann im Notfall auch über diesen Zeiger auf dessen Attribute zugreifen.
 
 \begin{CCode}
 class Auto {
@@ -1771,9 +1816,9 @@ die er definiert wurde. Ein Memberzeiger ist also an eine bestimmte Klasse gebun
 class Demo {
    public:
    
-   int  a;
-   int  b;
-   int  c;
+   int  Reserviert;
+   int  Bestand;
+   int  Bestellt;
    char z;
    
    void f1();
@@ -1781,21 +1826,22 @@ class Demo {
    void f3();
 };
 
+Demo   Data[10];
 Demo   x;
 Demo   y;
 Demo *dp = &y;
 
 int    Demo::*MemberPointer;
 
-MemberPointer = &Demo::a;       // Zeigt nun auf a der Klasse Demo 
+MemberPointer = &Demo::Bestand; // Zeigt nun auf Bestand der Klasse Demo 
   
-x.*MemberPointer   = 5;         // Weist x.a 5 zu;
-dp->*MemberPointer = 5;         // Weist y.a 5 zu;
+x.*MemberPointer   = 5;         // Weist x.Bestand 5 zu;
+dp->*MemberPointer = 5;         // Weist y.Bestand 5 zu;
 
-MemberPointer = &Demo::b;       // Zeigt nun auf b der Klasse Demo 
+MemberPointer = &Demo::Bestellt; // Zeigt nun auf Bestellt der Klasse Demo 
 
-x.*MemberPointer   = 6;         // Weist x.b 6 zu;
-dp->*MemberPointer = 6;         // Weist y.b 6 zu;
+x.*MemberPointer   = 6;         // Weist x.Bestellt 6 zu;
+dp->*MemberPointer = 6;         // Weist y.Bestellt 6 zu;
 
 MemberPointer = &Demo::z;       // Fehler, z ist nicht int
 
@@ -1810,12 +1856,28 @@ MemberfPointer = &Demo::f2;     // Zeigt nun auf f2() der Klasse Demo
 
 (x.*MemberfPointer)();          // Ruft die Methode f2() fuer x auf;
 (dp->*MemberfPointer)();        // Ruft die Methode f2() fuer y auf;
+
+
+ int DoSummation(Demo Daten[], int Length, int Demo::*SelectedAttribute) 
+ {
+    int Summ = 0;
+    for (int i = 0; i < Length; i++) {
+       Summ += Daten[i].*SelectedAttribute;
+    }
+    return Summ;
+ }
+ 
+int TotalBestand = DoSummation(Data, 10, &Demo::Bestand);
+int TotalReserviert = DoSummation(Data, 10, &Demo::Reserviert);
+ 
+ 
+ 
 \end{CCode}
 Wie schon bei den 'normalen' Funktionszeigern wird dringend der Gebrauch von
 typedef empfohlen, um den Code lesbarer zu halten. 
 
 \section{Erzeugen von Objekten}
-Unter \Cpp werden Objekte wie gewöhnliche Variablen erzeugt. Ein Objekt ist somit nichts anders als eine Variable vom Typ seiner Klasse.
+Unter \Cpp werden Objekte wie gewöhnliche Variablen erzeugt. Ein Objekt ist somit nichts anders als eine Variable vom Typ seiner Klasse. Beim Erzeugen eines Objektes wird jeweils der passende Konstruktor aufgerufen.
 
 Eine int Variable kann wie folgt erzeugt werden:
 
@@ -1848,11 +1910,11 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 \end{CCode}
 
 Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit new erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
-Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp des Programms. 
+Globale Objekte werden vor Aufruf von main() erzeugt, auch deren Konstruktor wird vor dem Start von main() aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von main() resp. des Programms. 
 
 Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit delete wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
-Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt wird.
+Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt, und gelöscht wenn das übergeordnete Objekt gelöscht wird (Jeweils durch Aufruf des entsprechenden Konstruktors oder Destruktors. Soll für das untergeordnete Objekt ein Konstruktor mit Parametern aufgerufen werden, so muss dieser in der Initialisiererliste des übergeordneten Objektes aufgeführt werden.
 Beispiel:
 
 \begin{CCode}
@@ -1913,11 +1975,11 @@ class MyClass {
     MyClass(int new_i, int new_k);
     ~MyClass();
   
-  void Print();
+  void Print() const;
   void Seti(int new_i) {i = new_i; }; //Inline Methode, Sinnvoll fuer kurze Methoden
   void Setk(int new_k);
-  int Geti() { return (i); };         //Inline Methode, Sinnvoll fuer kurze Methoden
-  int Getk();
+  int Geti() const { return (i); };         //Inline Methode, Sinnvoll fuer kurze Methoden
+  int Getk() const;
 };
 \end{CCode}
 
@@ -1942,17 +2004,17 @@ MyClass:: ~MyClass()
   std::cout << "MyClass destroyed" << std::endl;
 }
 
-void MyClass::Print();
+void MyClass::Print() const
 {
   std::cout << "MyClass : i = " << i << "; k = " << k << std::endl;
 }
 
-void MyClass::Setk(int new_k);
+void MyClass::Setk(int new_k)
 {
   k = new_k;
 }
 
-int MyClass::Getk();
+int MyClass::Getk() const
 {
   return (k)
 }
@@ -2008,9 +2070,9 @@ class ExtendedClass : public MyClass {  // erben von MyClass
     ExtendedClass (int new_i, int new_k, int new_Addit);   // Destruktoren
     ~ExtendedClass ();
   
-  void Print();                   // Methode uberschreiben, muss erweitert werden
+  void Print() const;                   // Methode uberschreiben, muss erweitert werden
   void SetAdditional(int new_a) {Additional= new_a; };  // Zusaetzlich
-  int GetAdditional() { return (Additional); };         // Zusaetzlich
+  int GetAdditional() const { return (Additional); };         // Zusaetzlich
 };
 \end{CCode}
 
@@ -2034,7 +2096,7 @@ ExtendedClass:: ~ExtendedClass()
   std::cout << "ExtendedClass destroyed" << std::endl;
 }
 
-void ExtendedClass::Print();
+void ExtendedClass::Print() const
 {
   MyClass::Print();   // Print Baseclass MyClass
   std::cout << "ExtendedClass : Additional = " << Additional << std::endl;
@@ -2080,9 +2142,9 @@ class ExtendedClass : public MyClass, public AnotherClass{  // Mehrfachvererbung
     ExtendedClass (int new_i, int new_k, int new_Addit);   // Destruktoren
     ~ExtendedClass ();
   
-  void Print();                   // Methode uberschreiben, muss erweitert werden
+  void Print() const;                   // Methode uberschreiben, muss erweitert werden
   void SetAdditional(int new_a) {Additional= new_a; };  // Zusaetzlich
-  int GetAdditional() { return (Additional); };         // Zusaetzlich
+  int GetAdditional() const { return (Additional); };         // Zusaetzlich
 };
 \end{CCode}
 Mehrfachvererbung sollte soweit wie möglich vermieden werden, da sie oft Probleme verursacht. Speziell wenn von beiden Seiten Attribute geerbt werden (Wenn z.B. zwei
@@ -2140,7 +2202,7 @@ cout << d.C::A::x; // gibt 5 aus
 \end{CCode}
 
 
-Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden. Grundsätzlich besser ist aber die Vermeidung
+Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden (Dabei wird ein zusätzlicher versteckter Zeiger eingeführt, welcher auf die Basisklasse zeigt. B und C greifen nun nur über diesen Zeiger auf die Basisklasse zu, wobei B, D und D jeweils nur eine Instanz der Basisklasse besitzen, bei D zeigen die Zeiger von B und von C auf dieselbe Instanz von A)  . Grundsätzlich besser ist aber die Vermeidung
 von Mehrfachvererbung wenn mehr als nur Schnittstellen implementiert werden sollen.
 
 \begin{CCode}
@@ -2150,7 +2212,7 @@ class A {
   void f();
 };
 
-class B : virtuel public A {
+class B : virtual public A {
   public:
   int y;
   void f();
@@ -2188,8 +2250,9 @@ cout << d.C::A::x; // gibt 5 aus
  
 
 \section{Polymorphismus (Virtuelle Funktionen)}
+\label{subsec:VirtualFunctions}
 Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \OviIndex{virtual}, aber nicht bei der Definition (Implementation).
-\emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil unter Umständen sonst der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht derjenige der Basisklasse benutzt werden.
+\emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil ansonsten unter Umständen der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht derjenige der Basisklasse benutzt werden.
 
 Wenn es keinen Sinn macht, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit = 0 in der Deklaration: 'virtual void f(void) = 0'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen.
 \NextPagePlease
@@ -2200,7 +2263,7 @@ class MyClass {
   public:
                 MyClass(int new_k);
   virtual      ~MyClass();
-  virtual  void Print();
+  virtual  void Print() const;
 };
 \end{CCode}
 
@@ -2214,7 +2277,7 @@ class ExtendedClass : public MyClass {  // erben von MyClass
              ExtendedClass (int new_k, int new_Addit);
   virtual   ~ExtendedClass ();     // virtual eigentlich nur noetig wenn von dieser 
                                    // Klasse weiter abgeleitet wird   
-  virtual void Print();            // dito
+  virtual void Print() const;            // dito
 };
 \end{CCode}
 
@@ -2233,7 +2296,7 @@ MyClass:: ~MyClass()
   std::cout << "MyClass destroyed" << std::endl;
 }
 
-void MyClass::Print();
+void MyClass::Print() const
 {
   std::cout << "MyClass : k = " << k << std::endl;
 }
@@ -2252,7 +2315,7 @@ ExtendedClass:: ~ExtendedClass()
 {
   std::cout << "ExtendedClass destroyed" << std::endl;
 }
-void ExtendedClass::Print();
+void ExtendedClass::Print() const
 {
   MyClass::Print();   // Print Baseclass MyClass
   std::cout << "ExtendedClass : Additional = " << Additional << std::endl;
@@ -2430,8 +2493,8 @@ class Complex {
    float r, i;
    public:
    Complex (int n_r, int n_i) : r(n_r), i(n_i) {};
-   Complex & Operator += (const Complex &b) const {r += b.r; i += b.i; return *this; };
-   Complex & Operator -= (const Complex &b) const {r -= b.r; i -= b.i; return *this; };
+   Complex & Operator += (const Complex &b) {r += b.r; i += b.i; return *this; };
+   Complex & Operator -= (const Complex &b)  {r -= b.r; i -= b.i; return *this; };
    friend Complex operator +(const Complex &a, const Complex &b)
    friend Complex operator -(const Complex &a, const Complex &b)
    // To Do: A lot of other operands
@@ -2542,14 +2605,14 @@ Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen beha
 Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit throw() eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
 Mit \OviIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch int, char, ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
-Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler catch(...) fängt jede beliebige Exception. Nach jedem \OviIndex{try}-Block folgt eine Liste von Handlern (catch()). Die Handler werden in der Reihenfolge ihrer Definition durchsucht,  der erste passende Handler wird benutzt, und alle weiteren Handler
-dieser Liste ignoriert. Somit werden alle Handler nach \OviIndex{catch}(...) ignoriert. 
+Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler catch(...) fängt jede beliebige Exception. Nach jedem \OviIndex{try}-Block folgt eine Liste von Handlern (catch()). Die Handler werden in der Reihenfolge ihrer Definition durchsucht, der erste passende Handler wird benutzt, und alle weiteren Handler
+dieser Liste ignoriert, auch wenn einer noch besser passen würde. Somit werden alle Handler nach \OviIndex{catch}(...) ignoriert. 
 
 Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort throw() verwendet. Im throw Statement werden alle Exceptions aufgeführt, welche
 von der Funktion ausgelöst werden können. Ein fehlendes throw() Statement bedeutet, dass diese
 Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres throw() bedeutet, dass die
 Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
-Widersprüche zu reklamieren. Wenn eine Funktion zur Laufzeit versucht, eine nicht deklarierte
+Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Dashalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
 Beispiel:
@@ -2845,7 +2908,8 @@ dynamic\_cast<>() setzt Polymorphismus voraus, d.h. mindestens eine Funktion
 von beiden beteiligten Klassen muss virtuell sein.
  
 \section{Namensbereiche (Namespaces)}
-\OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit kann man eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen.
+\OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit kann man eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
+
 Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
 
 In Bibliothek 1
@@ -2939,8 +3003,8 @@ namespace {
 
 \chapter{Templates (Schablonen)}
 Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
-mächtiges Werkzeug zur verfügung gestellt, welches fast wie eine eigene Sprache wirkt und
-sehr komplexe, veralgemeinerte und typunabhängige Programmierung erlaubt. Mit Templates kann parametrisierbarer Code geschrieben werden, das heisst Code, der unabhängig von Datentypen ist. 
+mächtiges Werkzeug zur Verfügung gestellt, welches fast wie eine eigene Sprache wirkt und
+sehr komplexe, verallgemeinerte und typunabhängige Programmierung erlaubt. Mit Templates kann parametrisierbarer Code geschrieben werden, das heisst Code, der unabhängig von Datentypen ist. 
 
 Der Benutzer eines Templates kann selbst angeben, für welchen Datentyp das Template Code erzeugen soll, er kann dabei auch Datentypen angeben, die bei der Erstellung eines Templates nicht bekannt waren.
 Es können \OviIndex{Funktionstemplate} und \OviIndex{Klassentemplates} erzeugt werden. Achtung, Templates werden normalerweise vollständig in einer Headerdatei definiert, welche vom Anwender des Templates mittels \#include eingebunden werden muss.
@@ -3121,7 +3185,7 @@ class SpeziellKomplizierteKlasse {
 Templates können in ihrer Parameterliste auch konstante
 Werte (int, float, Adressen, ...) enthalten, welche 
 innerhalb des Templates benutzt werden können.
-(Z. B. Arraygrenzen, Adressen von Funktionen,
+(Z. B. Arraygrenzen, Adressen von Funktionen, Hardwareadressen,
  Abbruchkriterium für Iterationen)
  
 Beispiel:
@@ -3138,7 +3202,7 @@ class SpeziellKomplizierteKlasse {
 \subsection{Default Templateparameter}
 \index{Default Templateparameter}
 Wenn ein Template oft für einen bestimmten Typ
-benutzt wird, kann eine Defaultwert für diesen Parameter
+benutzt wird, kann ein Defaultwert für diesen Parameter
 vorgegeben werden:
 
 \begin{CCode}
@@ -3207,10 +3271,10 @@ class Complex <int> {  // Dies ist die Spezialisierung fuer int
    Complex(int r)        : Real( r ), Imaginaer( 0 ) {};
    Complex()             : Real( 0 ), Imaginaer( 0 ) {};
 
-   Complex operator +(const Complex &s) {... besonders effiziente ... ; };
-   Complex operator -(const Complex &s) {... Implementation fuer int Werte ... ; };
-   int GetReal() {return Real;};
-   int GetImaginaer() {return Imaginaer;};
+   Complex operator +(const Complex &s) const {.. besonders effiziente ...  };
+   Complex operator -(const Complex &s) const {.. Implementation fuer int ... };
+   int GetReal() const {return Real;};
+   int GetImaginaer() const {return Imaginaer;};
 };
 \end{CCode}
 
@@ -3253,11 +3317,15 @@ class Complex <T*> {  // Dies ist die Spezialisierung fuer Zeiger
 
    // Liefert normale Complex<T> zurueck, nicht Complex <T*>
    // also ohne Zeiger (Geht sonst nicht...)
-   Complex<T> operator +(const Complex &s) {return Complex (*Real+*(s.Real), *Imaginaer+*(s.Imaginaer)); };
-   Complex<T> operator -(const Complex &s) {return Complex (*Real-*(s.Real), *Imaginaer-*(s.Imaginaer)); };
+   Complex<T> operator +(const Complex &s) const {return Complex (*Real+*(s.Real), 
+                                                           maginaer+*(s.Imaginaer)); 
+                                                 };
+   Complex<T> operator -(const Complex &s) const {return Complex (*Real-*(s.Real), 
+                                                      *Imaginaer-*(s.Imaginaer)); 
+                                                 };
    
-   int GetReal() {return *Real;};
-   int GetImaginaer() {return *Imaginaer;};
+   int GetReal() const {return *Real;};
+   int GetImaginaer() const {return *Imaginaer;};
 };
 \end{CCode}
 
@@ -3381,7 +3449,7 @@ Um innerhalb von Templateklassen Friend-Funktionen zu definieren gibt es drei Va
 \subsubsection{Offen}
 
 Man definiert einfach eine Templatefunktion als Friend. Der Nachteil dieser Variante ist dass hier alle 
-möglichen Templatevarianten als friend anerkannt werden. Ein boesartiger Proegrammierer
+möglichen Templatevarianten als friend anerkannt werden. Ein bösartiger Proegrammierer
 könnte durch eigene Instanzen der Friendfunktion Zugriff auf Internas von Demo1-Instanzen erhalten.
 
 
@@ -3706,7 +3774,7 @@ Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implemen
 %In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map sowie einige Algorithmen vorgestellt:
 
 \subsection{Kurzübersicht zu den Iteratoren aus der \Cpp - Standardbibliothek}
-Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen ++ und * definiert sind. bidirektionale Iteratoren bieten noch -- an, und Random-Access-Iteratoren haben weiter die Operatoren [] und += definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
+Iteratoren sind zeigerähnliche Objekte, auf welche mindestens die Operationen ++ und * definiert sind. Bidirektionale Iteratoren bieten noch -{}- an, und Random-Access-Iteratoren haben weiter die Operatoren [] und += definiert (Und entsprechen damit den gewöhnlichen Zeigern aus C.) 
 
 Mögliche Implementationen von Iteratoren:
 \begin{CCode}
@@ -3739,7 +3807,7 @@ public:
 
 \end{CCode}
 
-Weiter gibt es noch \OviIndex{Einfüge-Iteratoren} (OviIndex{Insert Iterator}), welche die geschriebenen Werte einfach in eine Sequenz einfügen (Inkrement und Dekrement haben bei einem Einfüge-Iterator keine Funktion.) 
+Weiter gibt es noch \OviIndex{Einfüge-Iteratoren} (\OviIndex{Insert Iterator}), welche die geschriebenen Werte einfach in eine Sequenz einfügen (Inkrement und Dekrement haben bei einem Einfüge-Iterator keine Funktion.) 
 
 Hier eine mögliche Implementierung des Insert Iterators (*i++ = Value; soll zum einfügen von Value führen,
 also operator =(operator *(operator++(i)), Value) soll schlussendlich Value einfügen).
@@ -3965,8 +4033,8 @@ Die Funktion oder der Operator() wird für jedes Element in der Sequenz aufgerufe
       int Value;
       
       public:
-      virtual void Print() {std::cout << Value << std::endl;};
-      virtual void Save(std::ofstream &s) {s << Value;};
+      virtual void Print() const {std::cout << Value << std::endl;};
+      virtual void Save(std::ofstream &s) const {s << Value;};
       }
 
    std::list<DataSet *> Daten;
@@ -4009,8 +4077,8 @@ Mithilfe eines Einfüge Iterators (Spezieller Iterator) können die Ergebnisse auc
       int Value;
       
       public:
-      virtual void Print() {std::cout << Value << std::endl;};
-      virtual DataSet *Clone() {return new *this);};
+      virtual void Print() const {std::cout << Value << std::endl;};
+      virtual DataSet *Clone() const {return new *this);};
       }
       
       std::list<DataSet *> Daten;
@@ -4044,7 +4112,7 @@ void swap(T &a, T&b)
 \end{CCode}
 
 Seit  \Cpp11 werden Move-Konstruktor und Move-Zuweisung benutzt, falls
-unterstützt. (Wird durch das template move() ermöglicht) 
+unterstützt. (Wird durch das Template move() ermöglicht) 
 \begin{CCode}
 // Seit C++11
 template <class T> void swap (T& a, T& b)
@@ -4060,7 +4128,7 @@ template <class T, size_t N> void swap (T (&a)[N], T (&b)[N])
 }
 \end{CCode}
 
-Für die meisten Typen der Standardlibrary gibt es überladene Versionen, welche den Tausch effizienter ausführen (Bei Container wird meist der Inhalt ausgetauscht, indem einfach die Pointer auf die Inhalte ausgetauscht werden, der Inhalt muss so nicht bewegt werden). Viele Algorithmen der Standardlibrary nutzen die Swap-Funktin, wenn sie Elemente tauschen müssen, deshalb empfiehlt es sich, auch für eigene Klassen eine optimierte swapfunktion zu schreiben, wenn Algorithmen benutzt werden.
+Für die meisten Typen der Standardlibrary gibt es überladene Versionen, welche den Tausch effizienter ausführen (Bei Container wird meist der Inhalt ausgetauscht, indem einfach die Pointer auf die Inhalte ausgetauscht werden, der Inhalt muss so nicht bewegt werden). Viele Algorithmen der Standardlibrary nutzen die Swap-Funktion, wenn sie Elemente tauschen müssen, deshalb empfiehlt es sich, auch für eigene Klassen eine optimierte swapfunktion zu schreiben, wenn Algorithmen benutzt werden.
 
 \subsubsection{merge()}  
 Mit \OviIndex{merge()} können zwei sortierte Sequenzen so zusammengefügt werden, dass die resultierende Sequenz ebenfalls sortiert ist. Merge benötigt je einen Iterator auf Start und Ende der ersten sowie der zweiten Sequenz und einen Iterator für die resultierende Sequenz.
@@ -4401,6 +4469,97 @@ Es wird also nicht direkt die Funktion f1() aufgerufen, sondern es wird über den
 
 Bei Mehrfachvererbung und bei virtueller Vererbung sind je nach Kontext weitere Indirektionen sowie Offsetkorrekturen des this-Pointers notwendig, welche zusätzliche Rechenzeit benötigen. 
  
+
+\subsection{Virtuelle Vererbung}
+
+Bei der virtuellen Vererbung wird ein versteckter Zeiger auf die Basisklasse
+eingeführt, und alle Zugriffe auf die Basisklasse erfolgen über diesen Zeiger. Zudem
+ist beim Aufruf von virtuellen Funktionen, sowie beim  Aufruf von Funktionen
+der Basisklasse aus abgeleiteten Klassen heraus eine Offsetkorrektur für
+den this-Pointer notwendig (Da die Basisklasse jetzt nicht mehr zuunterst im 
+Speicherlayout der abgeleiteten Klasse liegt).
+   
+Ausgehend von folgendem Codefragment 
+\begin{CCode}
+	class Base {
+	   int x;
+		 int y;
+		
+	public:
+		           Base();
+		  virtual ~Base();
+		
+		  virtual void f1(int x);  
+		  virtual void f2();  
+		  virtual void f3();
+              void g();				
+	
+	};
+	
+	class Derived : virtual public Base {
+      int z;
+		
+		
+	public:
+		           Derived();
+		  virtual ~Derived();
+		
+		  virtual void f1(int x);  
+		  virtual void f2();  
+		  virtual void f4();  
+              void h();				
+	
+	};
+	
+	
+	Base    ObjA();
+	Derived ObjB();
+  
+  z = ObjB.x
+  z = ObjB.z
+
+\end{CCode}
+Könnte die Klasse Derived vom Compiler wie folgt realisiert werden:
+\begin{CCode}
+	
+	class __Derived {
+      
+      VTableType *vtblptr;
+      Base       *BasePtr;  // Zeigt auf BaseImplementation
+      
+      int z;
+		  Base        BaseImplementation;
+		
+	public:
+		           Derived();
+		  virtual ~Derived();
+		
+		  virtual void f1(int x);  
+		  virtual void f2();  
+		  virtual void f4();  
+              void h();				
+	
+	};
+\end{CCode}
+In den Tabellen der virtuellen Funktionen sind die Adressen der entsprechenden Methoden abgelegt, sowie die notwendigen Korrekturen für den this pointer. In dem BasePtr ist die Adresse des Basisklasseteils abgelegt.
+
+Der Zugriff auf Elemente der Basisklasse und der Aufruf einer virtuellen Methode würde in diesem Fall zu folgendem Code führen:
+\begin{CCode}
+
+// C++ Code
+ObjB.z = 5;
+ObjB.x = 7;
+Base *p = &ObjB;
+p->f1(5);
+
+// Effektiv ausgeführter Code
+ObjB.z = 5;
+ObjB.BasePtr->x = 7;
+p = ObjB.BasePtr; (Oder (&ObjB)->BasePtr;)
+p->vtblptr->f1(p + p->vtblptr->DerivedOffsetKorrekturForf1, 5)
+\end{CCode}
+
+
  
 \subsection{RTTI (Runtime Type Information)}
 Für die Runtime-Type-Information werden zusätzliche Inforamtionen für polymorphe Klassen abgelegt. Diese Information kann in die virtuelle Funktionstabelle integriert werden, oder die virtuelle Funktionstabelle wird um einen Eintrag auf die Typeninformation erweitert. Auf jeden Fall wird für jede Klasse zusätzlicher Speicher für diese Informationen benötigt. Insbesondere muss auch die ganze Vererbungshierarchie abgebildet werden.
@@ -4417,9 +4576,10 @@ Beim Exceptionhandling müssen sämtliche Objekte, welche im normalen Programmlauf
 
 Um dies zu erreichen, müsste zur Laufzeit ständig eine Liste nachgeführt werden, in welcher alle noch zu löschenden Objekte eingetragen sind. Da dies den normalen Programmlauf stark verlangsamen würde, gibt es andere Ansätze.
 
-Eine Lösung, welche den normalen Programmlauf nicht beeinträchtigt, ist das Konstruieren einer grossen Tabelle, in welcher für jede Codezeile abgelegt ist, welche Objekte an dieser Stelle bereits erzeugt worden sind. Diese Tabelle wird vom Compiler für jede Funktion während des Compilierens erzeugt, und vom Exceptionhandling beim Auftreten einer Exception konsultiert um festzustellen, welche Objekte noch zu löschen sind. Diese Tabellen belegen zusätzlichen Speicher, bei Speicherknappheit muss möglicherweise auf das Exceptionhandling verzichten.
+Eine Lösung, welche den normalen Programmlauf nicht beeinträchtigt, ist das Konstruieren einer grossen Tabelle, in welcher für jede Codezeile abgelegt ist, welche Objekte an dieser Stelle bereits erzeugt worden sind. Diese Tabelle wird vom Compiler für jede Funktion während des Compilierens erzeugt, und vom Exceptionhandling beim Auftreten einer Exception konsultiert um festzustellen, welche Objekte noch zu löschen sind. Diese Tabellen belegen zusätzlichen Speicher, bei Speicherknappheit muss möglicherweise auf das Exceptionhandling verzichtet werden.
 
-Das Behandeln einer Exception ist ein sehr aufwendiger Prozess, vom Auftreten der Exception ausgehend muss sich das Exceptionhandling durch die umschliessenden Try-Blocks nach aussen vorarbeiten, bis ein Try-Block mit passendem Catch gefunden wird, und dies über Funktionsaufrufe hinweg. Um einen passenden Catch zu finden, müssen zudem die RTTI Informationen durchsucht werden. Deshalb genügt das Exceptionhandling deterministischen Anforderungen normalerweise nicht.
+Das Behandeln einer Exception ist ein sehr aufwendiger Prozess, vom Auftreten der Exception ausgehend muss sich das Exceptionhandling durch die umschliessenden Try-Blocks den Funktionsaufrufen entlang nach aussen vorarbeiten 
+(\OviIndex{Stack unwinding}), bis ein Try-Block mit passendem Catch gefunden wird, und dies über Funktionsaufrufe hinweg. Um einen passenden Catch zu finden, müssen zudem die RTTI Informationen durchsucht werden. Deshalb genügt das Exceptionhandling deterministischen Anforderungen normalerweise nicht.
 
 Zudem darf eine Interruptroutine auf keinen Fall mit einer Exception beendet werden (Der Interrupt kann den normalen Programmfluss ja irgendwo Unterbrechen), wegen des nicht derterministischen Verhalten sollte sogar ganz auf Exceptions in Interruptroutinen verzichtet werden.
 
@@ -4432,9 +4592,9 @@ Auf der Gegenseite wird die Codegrösse beim Benutzen von Inlinefunktionen grösse
 Wenn Inlinefunktionen über Pointer oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei der die Funktion direkt aufgerufen wird) 
 
 \subsection{Templates}
-Ein gut geschriebenes Template sollte nicht mehr Code als handgeschriebener Code erzeugen. Man muss aber beachten, dass ein einfacher Templateaufruf möglicherweise im Hintergrund zum Instanzieren vieler Templates mit dem entsprechenden Code führt. Zudem sind noch nicht alle Linker in der Lage, redundanten Code wieder zu entfernen, wenn dasselbe Template in verschiedenenen Modulen verwendet wird. Grundsätzlich spricht ejdoch nichts gegen den Einsatz von gut geschriebenen Templates, man sollte einfach den Speicherverbrauch im Auge behalten.
+Ein gut geschriebenes Template sollte nicht mehr Code als handgeschriebener Code erzeugen. Man muss aber beachten, dass ein einfacher Templateaufruf möglicherweise im Hintergrund zum Instanzieren vieler Templates mit dem entsprechenden Code führt. Zudem sind noch nicht alle Linker in der Lage, redundanten Code wieder zu entfernen, wenn dasselbe Template in verschiedenenen Modulen verwendet wird. Grundsätzlich spricht jedoch nichts gegen den Einsatz von gut geschriebenen Templates, man sollte einfach den Speicherverbrauch im Auge behalten.
 
-\subsection{Temporäre Objekte (Temporaries)}
+\subsection{Temporäre Objekte (Temporaries)} \label{subsec:Temporaries}
 Temoräre Objekte werden vom Compiler automatisch erzeugt, um Zwischenergebnisse aufzunehmen. Es handelt sich um Objekte, welche bei der Auswertung eines Ausdruckes automatisch erzeugt und wieder gelöscht werden. Auch Parameter und Rückgabewerte von Funktionen erzeugen oft temporäre Objekte. Optimierende Compiler versuchen, Temporaries soweit wie möglich zu vermeiden. Als Programmierer kann man Temporaries vermeiden, wenn man Referenzen statt die Objekte selbst verwendet.
 
 
@@ -4454,6 +4614,7 @@ x.operator=(t2);
 Nebst den beiden Temporaries t1 und t2 werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
 
 Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
+Mit den in C++11 eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \autoref{subsec:RValueRefs}).
 
 \section{Interrupt und Multithreading}
 
@@ -4463,10 +4624,10 @@ Innerhalb von interruptroutinen sollte grundsätzlich auf Exceptions verzichtet w
 
 Auch das Erzeugen von Objekten sollte innerhalb von Interrupts unterlassen werden, da auf jeden Fall die Konstruktoren (Rechenzeit) ausgeführt werden, und bei dynamischer Speicherverwaltung zusätzlich noch Speicher alloziert werden muss. Ebenso ist das Löschen von Objekten zu vermeiden.
 
-Virtuelle Funktionen können innerhalb von Interruptreoutinen verwendet werden, man muss sich einfach bewusst sein, dass diese zusätzliche Indirektion Rechenzeit kostet. (Aber möglicherweise einen Switch() oder einen Callback erspart. Um virtuelle Funktionen einsetzen zu können, muss aber zuerst von der (statischen) Interuptfunktion eine Methode von einem Objekt aufgerufen werden.
+Virtuelle Funktionen können innerhalb von Interruptroutinen verwendet werden, man muss sich einfach bewusst sein, dass diese zusätzliche Indirektion Rechenzeit kostet. (Aber möglicherweise einen Switch() oder einen Callback erspart. Um virtuelle Funktionen einsetzen zu können, muss aber zuerst von der (statischen) Interuptfunktion eine Methode von einem Objekt aufgerufen werden.
 (Eine Interuptfunktion kann nur eine globale Funktion oder eine statische Methode sein, da diese von der Hardware, ohne Kenntnisse eines Objektes, aufgerufen wird.) 
 
-In Multithreadingumgebungen muss Sichergestellt werden, dass Konstruktoren, Destruktoren und Memorymanagement Threadsafe sind, ansonsten dürfen innerhalb von Threads keine neuen Objekte erzeugt werden. Ein Thread darf zudem \emph{nie} mit einer Exception beendet werden (ausser das verwendete OS kann mit Exceptions umgehen). Vor dem Threadende müssen somit immer alle Exceptions aufgefangen werden (Dazu den gesammten Thread-Code in Try-Catch einschliessen.). 
+In Multithreadingumgebungen muss sichergestellt werden, dass Konstruktoren, Destruktoren und Memorymanagement Threadsafe sind, ansonsten dürfen innerhalb von Threads keine neuen Objekte erzeugt werden. Ein Thread darf zudem \emph{nie} mit einer Exception beendet werden (ausser das verwendete OS kann mit Exceptions umgehen). Vor dem Threadende müssen somit immer alle Exceptions aufgefangen werden (Dazu den gesammten Thread-Code in Try-Catch einschliessen.). 
 
 \section{Persistenz}
 Wenn Objekte ihren Zustand bei einem Stromausfall (Ausschalten) behalten sollen, spricht man von Persistenz. Dazu kann man Konstruktoren entwerfen, welche ihre Daten aus einem Dateisystem, FLASH-Speicher oder Akku-gepuffertem RAM holen, und entsprechende Funktionen, welche dieses Daten bei Bedarf auf diese nichtflüchtigen Medien speichern. Placement new() oder eigene new/delete Operatoren können auch benutzt werden, um Objekte in persistentem Speicher zu erzeugen, wobei bei jedem Systemstart geprüft werden muss, ob der Speicherinhalt noch gültig ist, bevor er wieder verwendet wird.  
@@ -4678,6 +4839,7 @@ for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
 \end{CCode}
 
 \subsubsection{Automatische For-Schlaufe}
+\label{subsec:AutomaticForLoop}
 
 Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
 
@@ -5134,6 +5296,80 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 
 \section{\Cpp 17}
 Bereits in der Entwicklungsphase
+\begin{itemize}
+    \item Addition of a default text message for static\_assert
+
+    \item Addition of std::string\_view, a non-owning reference to a character sequence or string-slice, which is read-only
+
+    \item Removal of trigraphs
+
+    \item Allow typename in a template template parameter
+
+    \item New rules for auto deduction from braced-init-list
+
+    \item std::uncaught\_exceptions, as a replacement of std::uncaught\_exception
+
+    \item Nested namespace definition
+
+    \item Attributes for namespaces and enumerators
+
+    \item UTF-8 character literals
+
+    \item Constant evaluation for all non-type template arguments
+
+    \item Folding expressions
+
+    \item New insertion functions for std::map and std::unordered\_map
+
+    \item Uniform container access
+
+    \item Definition of "contiguous iterators"
+
+    \item Removal of some deprecated types and functions like std::auto\_ptr, std::random\_shuffle or old function adaptors
+
+    \item A file system library based on boost::filesystem
+
+    \item Parallel versions of STL algorithms
+
+    \item Additional mathematical special functions
+
+    \item Most of Library Fundamentals TS I (e.g. std::optional, std::any)
+
+    \item std::variant, a type-safe union container
+
+    \item A compile-time static if with the form if constexpr(expression)
+
+    \item Structured bindings, allowing auto [a, b] = getTwoReturnValues();
+
+    \item Initializers in if and switch statements
+
+    \item Guaranteed copy elision by compilers in some cases
+
+    \item Some extensions on aligned memory allocation
+
+    \item Template deduction of constructors, allowing pair(5.0, false) instead of pair<double,bool>(5.0, false)
+
+    \item Inline variables, which allows the definition of variables in header files
+    
+    
+    \item Dynamic memory allocation for over-aligned data
+    \item Template argument deduction for class templates
+    \item template <auto>
+    \item Guaranteed copy elision
+    \item A weaker version of fixed order-of-evaluation for expressions (see Chandler's tweet and Alisdair's tweet)
+    \item constexpr if
+    \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
+    \item Inline variables (see the design paper)
+    \item Structured bindings (see the design paper)
+    \item if (init; condition) and switch (init; condition)
+
+    \item C++17 is based on C11 instead of C99
+    \item variant<>
+    \item destroy(\_at|\_n), uninitialized\_move(\_n), uninitialized\_value\_construct(\_n), uninitialized\_default\_construct(\_n)
+    \item Splicing for map<>,unordered\_map<>, set<>, and unordered\_set<>
+    \item Reserve std[0-9]+ for future standard libraries
+
+\end{itemize}
 
 \appendix
 \chapter{Anhang}
@@ -5182,7 +5418,7 @@ Datei Auto.hpp
 \paragraph{Methoden} \ \\
 \begin{CodeTable}
 \lstinline$     void SetGewicht(int NewGewicht);$&	Methode zum Setzen eines neuen Gewichts, hat keinen Rückgabewert (void) und erwartet als Argument das neue Gewicht.\\
-\lstinline$     int GetGewicht(void);$&	Methode zum Lesen des Gewichts, diese Methode liefert das Gewicht zurück und hat keine Argumente.\\
+\lstinline$     int GetGewicht(void) const;$&	Methode zum Lesen des Gewichts, diese Methode liefert das Gewicht zurück und hat keine Argumente.\\
 \lstinline$};$&	Ende der Deklaration der Klasse Auto\\
 \hhline{-}
 \end{CodeTable}
@@ -5264,7 +5500,7 @@ Der Unterschied zwischen Kopierkonstruktor und Zuweisungsoperator ist, dass beim
 \lstinline$   Gewicht = NewGewicht;$&	Gewicht auf neuen Wert setzen\\
 \lstinline$}$&	Ende des Funktionsrumpfes\\
 
-\lstinline$int Auto::GetGewicht(void)$&	Definition der Methode GetGewicht() der Klasse Auto\\
+\lstinline$int Auto::GetGewicht(void) const$&	Definition der Methode GetGewicht() der Klasse Auto\\
 \lstinline${$&	Beginn des Funktionsrumpfes.\\
 \lstinline$   return (Gewicht);$&	Wert des Gewichts zurückliefern\\
 \lstinline$}$&	Ende des Funktionsrumpfes\\
@@ -5309,7 +5545,7 @@ Datei Luxusauto.hpp
 \lstinline$          LuxusAuto(const LuxusAuto &Original);	$&Kopierkonstruktor, wird automatisch aufgerufen, wenn ein Objekt vom Typ LuxusAuto kopiert wird. Muss sich selbst als Kopie von Original initialisieren.\\
 \lstinline$ LuxusAuto &operator=(const LuxusAuto &Quelle);	$&Wird aufgerufen wenn diesem Objekt ein anderes zugewiesen wird. (Dieses = Neues). Hat als Argument eine Referenz auf das Quell-Objekt.\\
 \lstinline$   void SetTemperatur(int NewTemp);	$&Methode zum Setzen der Temperatur\\
-\lstinline$   int  GetTemperatur(void);	$&Methode zum Lesen der Temperatur\\
+\lstinline$   int  GetTemperatur(void) const;	$&Methode zum Lesen der Temperatur\\
 \lstinline$};$&	\\
 \end{CodeTable}
 
@@ -5349,7 +5585,7 @@ Datei Luxusauto.cpp
 \lstinline$      Temperatur = NewTemp;$&	Temperatur auf neuen Wert setzen\\
 \lstinline$   }	$&Ende des Funktionsrumpfes\\
 
-\lstinline$   int LuxusAuto::GetTemperatur(void)$&	Definition der Methode GetTemperatur()\\
+\lstinline$   int LuxusAuto::GetTemperatur(void) const$&	Definition der Methode GetTemperatur()\\
 \lstinline$   {	$&Beginn des Funktionsrumpfes.\\
 \lstinline$      return (Temperatur);	$&Wert der Temperatur zurückliefern\\
 \lstinline$   }	$&Ende des Funktionsrumpfes\\
@@ -5505,8 +5741,8 @@ class UniquePointer {
   ~UniquePointer() {if (RealObjekt!=0) delete RealObjekt;}; // Loeschen n. Bedarf 
 
    // Resourcen nur mit move uebernehmen (Nicht kopieren!!!)
-   UniquePointer(Smartpointer &&s) : RealObjekt(s.RealObjekt) {s.RealObjekt = 0;};
-   UniquePointer<T> &operator=(Smartpointer &&s) 
+   UniquePointer(UniquePointer &&s) : RealObjekt(s.RealObjekt) {s.RealObjekt = 0;};
+   UniquePointer<T> &operator=(UniquePointer &&s) 
             { 
               if (&s != this) {
                  if (RealObjekt!=0) {
@@ -5518,8 +5754,8 @@ class UniquePointer {
             };
 
    // Normaler Kopierkonstruktor und Zuweisung verbieten
-   UniquePointer(Smartpointer &s) = delete;
-   UniquePointer<T> &operator=(Smartpointer &s) = delete; 
+   UniquePointer(UniquePointer &s) = delete;
+   UniquePointer<T> &operator=(UniquePointer &s) = delete; 
 
 }
 
@@ -5533,6 +5769,11 @@ UniquePointer<A> f(int i)
 {
    return UniquePointer<A>(new A(i));   // UniquePointer übernimmt Verwaltung
 }
+
+void g(UniquePointer<A> q) // UniquePointer übernimmt Verwaltung
+{
+   // Do something;   
+} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
 
 int main(int argc, char*argv[])
 {
@@ -5559,7 +5800,9 @@ int main(int argc, char*argv[])
                          
       g(UniquePointer<A>(new A(12)));  // Kopie von temporary erlaubt 
                                        // (Movekonstruktor)
-
+                                      
+      g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
+                               // p verliert Besitz von Objekt und wird zu nullptr
 
       UniquePointer<A> WrongCopy = sp1;  // Kopie Verboten
                        
@@ -5575,8 +5818,34 @@ int main(int argc, char*argv[])
 
 Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
 
+Seit C++14 können Objekte direkt mit \OviIndex{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in make\_unique versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
+\begin{CCode}
+
+
+// Unsicher
+f(UniquePointer<A>(new A(42)), SomeFunction());
+
+// Koennte vom Compiler zu:
+A *t1 = new A(42);
+int t2 = SomeFunction();   // Koennte Exception werfen -> t1 ginge verloren 
+UniquePointer<A> t3(t1);
+f(t3, t2);
+
+
+// Sicher
+f(std::make_unique<A>(42), SomeFunction());
+
+// Koennte vom Compiler zu:
+UniquePointer<A> t1 = std::make_unique<A>(42); //Erzeugt Objekt mit new und
+                                               // liefert UniquePointer darauf
+int t2 = SomeFunction();   // Koennte Exception werfen -> t1 wuerde geloescht
+                           // und somit das von t1 referenzierte Objekt ebenfalls
+f(t1, t2);
+
+\end{CCode}
+
 \subsection{Lösung mit Shared Pointer}
-Der \OviIndex{Shared Pointer} verhält sich ähnlich wie der Smart Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resourcce verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wannimmer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
+Der \OviIndex{Shared Pointer} verhält sich ähnlich wie der Smart Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede Resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resource verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wannimmer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
 Der Shared Pointer ist somit am universellsten einsetzbar, benötigt aber auch am meisten Resourcen.
 
 \begin{CCode}
@@ -5644,6 +5913,12 @@ Sharedpointer<A> f(int i)
    return Sharedpointer<A>(new A(i));   // Sharedpointer übernimmt Verwaltung
 }
 
+void g(Sharedpointer<A> q) // Sharedpointer übernimmt Verwaltung
+{
+   // Do something;   
+} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
+  // und Objekt freigegeben falls counter 0 wird.
+
 int main(int argc, char*argv[])
 {
    Sharedpointer<A> sp1;
@@ -5669,12 +5944,40 @@ int main(int argc, char*argv[])
       Sharedpointer<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
                          // kopiert, counter wird inkrementiert, sp1 ist weiterhin 
                          // gueltig
-      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
+      // Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
       //                    freigegeben wann auch immer der letzte Pointer darauf
                          // ungueltig wird  
    } catch(...) {  
    }                    
 }
+\end{CCode}
+Objekte können auch direkt mit \OviIndex{make\_shared} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in make\_shared versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer und effizienter.
+\begin{CCode}
+
+
+// Unsicher und ineffizient (Zwei Allokationen)
+f(Sharedpointer<A>(new A(42)), SomeFunction());
+
+// Koennte vom Compiler zu:
+A *t1 = new A(42);         // Speicher fuer A allozieren 
+int t2 = SomeFunction();   // Koennte Exception werfen -> t1 ginge verloren 
+Sharedpointer<A> t3(t1);   // Speicher fuer counter allozieren
+f(t3, t2);
+
+
+// Sicher und effizient (Nur eine Allokation)
+f(std::make_shared<A>(42), SomeFunction());
+
+// Koennte vom Compiler zu:
+Sharedpointer<A> t1 = std::make_shared<A>(42); //Erzeugt Objekt mit new und
+                                               // liefert UniquePointer darauf
+                                               // Counter und Objekt koennen im
+                                               // selben (vergroesserten)  
+                                               // Speicherblock angelegt werden
+int t2 = SomeFunction();   // Koennte Exception werfen -> t1 wuerde geloescht
+                           // und somit das von t1 referenzierte Objekt ebenfalls
+f(t1, t2);
+
 \end{CCode}
 
 
@@ -5694,7 +5997,8 @@ der Deklaration ein \emph{extern ''C''} vorangestellt werden.
 
 
 Will man innerhalb eines Projektes Module mit C Code und Module mit
-\Cpp Code mischen, müssen im \Cpp Teil Funktionen 
+\Cpp Code mischen, müssen im \Cpp Teil Funktionen, welche auch vom C-Teil
+genutzt werden sollen, 
 mit dem Zusatz \emph{extern ''C''} deklariert werden, sonst können sie
 von C aus nicht aufgerufen werden. Auch die Prototypen der
 C Funktionen müssen mit \emph{extern ''C''} deklariert werden, sonst
