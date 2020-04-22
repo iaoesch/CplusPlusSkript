@@ -6770,8 +6770,60 @@ Im Dezember 2017 publiziert.
 \end{itemize}
 
 \section{\CppVers{20}}
-Bereits in der Planungs- und Diskussionsphase.
-
+Bereits in der Planungs- und Diskussionsphase, aber noch nicht verabschiedet.
+ \begin{itemize}
+    \item Feature test macros
+    \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default}
+    \item designated initializers
+    \item init-statements and initializers in range-for
+    \item \CodeStyle{char8_t}
+    \item \CodeStyle{[[no_unique_address]]}
+    \item \CodeStyle{[[likely]]}
+    \item \CodeStyle{[[unlikely]]}
+    \item pack-expansions in lambda captures
+   \item  removed the requirement to use typename to disambiguate types in many contexts
+    \item \CodeStyle{consteval}, \CodeStyle{constinit}
+    \item further relaxed constexpr
+    \item signed integers are 2's complement
+   \item  aggregate initialization using parentheses
+    \item Coroutines
+    \item Modules
+    \item Constraints and concepts
+    \item abbreviated function templates
+    \item DR: array new can deduce array size 
+\end{itemize}
+\begin{itemize}
+    \item  Formatting library
+    \item Calendar and Time Zone library
+    \item \CodeStyle{std::source_location}
+    \item \CodeStyle{std::span}
+    \item \CodeStyle{std::endian}
+    \item array support for s\CodeStyle{td::make_shared}
+   \item  \CodeStyle{std::remove_cvref}
+    \item \CodeStyle{std::to_address}
+    \item floating point and shared\_ptr atomics
+    \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore}
+    \item \CodeStyle{std::jthread} and thread cancellation classes
+    \item <version>
+    \item \CodeStyle{std::osyncstream}
+    \item \CodeStyle{std::u8string} and other \CodeStyle{char8_t} uses
+    \item \CodeStyle{constexpr} for <algorithm>, <utility>, <complex>
+    \item \CodeStyle{std::string(_view)::starts_with} and\CodeStyle{ ends_with}
+    \item \CodeStyle{std::assume_aligned}
+    \item \CodeStyle{std::bind_front}
+    \item \CodeStyle{std::c8rtomb,  std::mbrtoc8}
+    \item \CodeStyle{std::make_obj_using_allocator} etc
+    \item \CodeStyle{std::make_shared_for_overwrite}/\CodeStyle{std::make_unique_for_overwrite}
+    \item heterogeneous lookup in unordered associative containers
+    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument
+    \item \CodeStyle{std::execution::unseq}
+    \item \CodeStyle{std::midpoint and std::lerp}
+    \item \CodeStyle{std::ssize}
+    \item \CodeStyle{std::is_bounded_array}
+    \item Ranges
+    \item uniform container erasure (\CodeStyle{std::erase}/\CodeStyle{std::erase_if})
+    \item Mathematical constants 
+\end{itemize}
 
 \appendix
 \chapter{Anhang}
