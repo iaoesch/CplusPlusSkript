@@ -1632,19 +1632,19 @@ int main()
 {
      double Array[] = {1.2, 2.4, 3.6};
      
-     /* id, name und score werden mit dem passenden Datentypen definiert */
-     /* und mit dem entsprechenden Rückgabewert initialisiert der Rückgabewert */
-     /* muss ein zusammengesetzter Dartentyp mit drei Elementen sein */
+     /* id, name und score werden mit den passenden Datentypen definiert */
+     /* und mit dem entsprechenden Rückgabewert initialisiert. Der Rückgabewert */
+     /* muss ein zusammengesetzter Datentyp mit drei Elementen sein */
      auto [id, name, score] = ReturnMultipleValues();
      cout << id << ":" << name << ":" << score << endl;
      
-     /* Val1 und Val2 werden mit dem passenden Datentypen definiert und mit*/
-     /* dem entsprechenden Membern aus der zugewiesenen Struktur initialisiert */
+     /* Val1 und Val2 werden mit dem passenden Datentypen definiert und mit */
+     /* den entsprechenden Membern aus der zugewiesenen Struktur initialisiert */
      auto [Val1, Val2] = D;
      cout << Val1 << ":" << Val2 << endl;
      
-     /* a1, a2 und a2 werden mit dem passenden Datentypen definiert und mit*/
-     /* dem entsprechenden Elementen aus dem zugewiesenen Array initialisiert */
+     /* a1, a2 und a2 werden mit dem passenden Datentypen definiert und mit */
+     /* den entsprechenden Elementen aus dem zugewiesenen Array initialisiert */
      auto [a1, a2, a3] = Array;
      cout << a1 << ":" << a2 << ":" << a3 << endl;
      return 0;
