@@ -7382,6 +7382,90 @@ f(t1, t2);
 
 \end{CCode}
 
+\subsection{this und Shared Pointer}
+Wenn ein Objekt von einem Shared-pointer verwaltet wird, ist es gefährlich und fehleranfällig, den this-Pointer gegen aussen weiterzugeben. Und es ist definitiv ein Fehler, this in einem Shared-pointer zurückzugeben, da bei jedem Aufruf ein neuer Shared-pointer erzeugt werden würde, und der erste 'sterbende' Shared-pointer würde das Objekt löschen, auch wenn es sonst noch in Gebrauch ist und weitere Shared-Pointer darauf verweisen.
+
+\begin{CCode}
+
+class Troublemaker {
+
+   Troublemaker() { }
+
+
+   // Gefaehrlich, Aufruf erzeugt einen neuen Sharedpointer, so verwalten
+   // mehrere Sharedpointer das Objekt
+   Troublemaker(OtherClass &OtherObject) { 
+                     OtherObject.register(Sharedpointer<Troublemaker>(this)); 
+                  }
+
+    // Gefaehrlich, jeder Aufruf erzeugt einen neuen Sharedpointer, so verwalten
+    // mehrere Sharedpointer das Objekt
+   Sharedpointer<Troublemaker> GetThis() { 
+                     return Sharedpointer<Troublemaker>(this);
+                  }
+  
+   void DoSomething();
+}
+
+int main(int argc, char*argv[])
+{
+   Sharedpointer<Troublemaker> sp1;
+  
+   Sharedpointer<Troublemaker> sp1 = std::make_shared<Troublemaker>();
+
+   {
+      // Jetzt haben wir einen zweiten unabhaengigen shared pointer 
+      // auf dasselbe objekt
+      Sharedpointer<Troublemaker> sp2 = sp1->GetThis();
+      
+   } // Blockende, sp2 stirbt und loescht objekt
+  
+   // sp1 zeigt nun auf geloeschtes objekt
+   sp1->DoSomething(); // Error, sp1 ist ungueltig
+  
+} // sp1 stirbt, objekt wird zum zweiten mal geloescht -> Fehler  
+ 
+\end{CCode}
+
+Das Problem kann mit dem Template std::enable\_shared\_from\_this<...> und seiner Methode shared\_from\_this() umgangen werden. Dazu muss die betreffende Klasse vom Template \linebreak std::enable\_shared\_from\_this<...> erben, entweder direkt oder über Mehrfachvererbung. Als Templateparameter muss dazu die (zu sharende / erbende) Klasse angegeben werden. Die Klasse muss jetzt zwingend von einem Shared Pointer verwaltet werden, und darf keinesfalls auf dem Stack oder als (direkter) Member einer anderen Klasse instanziert werden. 
+
+\begin{CCode}
+
+class NiceGui : public std::enable_shared_from_this<NiceGui> {
+
+   NiceGui() { }
+
+
+   // Ok, Aufruf erzeugt eine Kopie des bestehenden Sharedpointer welcher
+   // das Objekt verwaltet, alle in Ordnung
+   NiceGui(OtherClass &OtherObject) { OtherObject.register(shared_from_this()); }
+
+   // Ok, Aufruf erzeugt eine Kopie des bestehenden Sharedpointer welcher
+   // das Objekt verwaltet, alle in Ordnung
+   Sharedpointer<NiceGui> GetThis() { return shared_from_this();}
+  
+   void DoSomething();
+}
+
+int main(int argc, char*argv[])
+{
+   Sharedpointer<NiceGui> sp1;
+  
+   Sharedpointer<NiceGui> sp1 = std::make_shared<NiceGui>();
+
+   {
+      // Jetzt haben wir einen zweiten gueltigen shared pointer 
+      // auf dasselbe objekt
+      Sharedpointer<NiceGui> sp2 = sp1->GetThis();
+      
+   } // Blockende, sp2 stirbt, loescht das objekt aber nicht
+  
+   // sp1 zeigt weiterhin auf gueltiges objekt
+   sp1->DoSomething(); // Alles ok
+  
+} // sp1 stirbt, objekt wird nun geloescht -> Alles bestens  
+ 
+\end{CCode}
 
 \NextPagePlease 
  
