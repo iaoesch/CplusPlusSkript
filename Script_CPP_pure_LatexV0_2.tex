@@ -1,3 +1,4 @@
+% !TEX encoding = IsoLatin
 %/*****************************************************************************/
 %/*  Module     : OOP-Skript                                     Version 1.1  */
 %/*****************************************************************************/
@@ -53,7 +54,7 @@
 
 
 %Schriftgröße, Layout, Papierformat, Art des Dokumentes
-\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+\documentclass[german,10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
 %\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
 %\documentclass[10pt,a4paper]{report}
 %\usepackage{bookman}
@@ -68,6 +69,7 @@
 %alte Rechtschreibung
 \usepackage{german}
 %\usepackage[german]{babel}
+\selectlanguage{german}
 \usepackage{color}
 \usepackage{color,listings}
 \usepackage{framed}
@@ -94,8 +96,8 @@
 %\usepackage{fancyhdr}
 \usepackage{scrlayer-scrpage}
 
-
 \selectlanguage{german}
+
 
 %\usepackage[automark,autooneside=false]{scrlayer-scrpage}
 
@@ -360,7 +362,7 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 \chapter{Zu diesem Skript}
 Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
-In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Nur gestreift wird insbesondere die Standard-Bibliothek.
+In diesem Kurs geht es um das Kennenlernen der Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf Anwendersicht gelegt, exotischere und eher für Bibliotheksbauer relevante Themen werden beiseite gelassen oder nur kurz erwähnt. Nur gestreift wird insbesondere auch die Standard-Bibliothek.
 
 
 
@@ -388,7 +390,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
+ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in C++ (Anonyme) Namespaces (Siehe \autoref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
 
 \section{Bezeichner und reservierte Namen}
 Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
@@ -419,18 +421,21 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item case
 \item catch
 \item char
+\item char8\_t {\tiny (\Cpp20)}
 \item char16\_t {\tiny (\Cpp11)}
 \item char32\_t {\tiny (\Cpp11)}
 \item class
 \item compl
 \item concept {\tiny (\Cpp20)}
 \item const
+\item consteval {\tiny (\Cpp20)}
 \item constexpr {\tiny (\Cpp11)}
+\item constinit {\tiny (\Cpp20)}
 \item const\_cast
 \item continue
-\item co\_await {\tiny (TS)}
-\item co\_return {\tiny (TS)}
-\item co\_yield {\tiny (TS)}
+\item co\_await {\tiny (\Cpp20)}
+\item co\_return {\tiny (\Cpp20)}
+\item co\_yield {\tiny (\Cpp20)}
 \item decltype {\tiny (\Cpp11)}
 \item default
 \item delete
@@ -448,11 +453,9 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item friend
 \item goto
 \item if
-\item import {\tiny (TS)}
 \item inline
 \item int
 \item long
-\item module {\tiny (TS)}
 \item mutable
 \item namespace
 \item new
@@ -466,6 +469,7 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item private
 \item protected
 \item public
+\item reflexpr {\tiny (TS)}
 \item register
 \item reinterpret\_cast
 \item requires {\tiny (\Cpp20)}
@@ -501,6 +505,23 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \end{description}
 \end{multicols}
 
+Weiter gibt es Bezeichner mit spezieller Bedeutung, welche zwar für Namen von Objekten und Funktionen verwendet werden können, in bestimmten Kontexten jedoch eine besondere Bedeutung haben.
+
+\OviIndex{Bezeichner mit spezieller Bedeutung} von \Cpp
+\begin{multicols}{4}
+%\begin{itemize}[label={}]
+\begin{description}
+\item final {\tiny (\Cpp11))}
+\item import {\tiny (\Cpp20))}
+\item module {\tiny (\Cpp20))}
+\item override {\tiny (\Cpp11))}
+\item transaction\_safe  {\tiny (TS)}
+\item transaction\_safe\_dynamic  {\tiny (TS)}
+
+\end{description}
+\end{multicols}
+
+
 
 \section{Module}
 Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
@@ -514,6 +535,24 @@ Jedes Modul (.cpp) wird vom Compiler selbständig und unabhängig von anderen Modu
 
 Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen werden deshalb meist erst vom Linker erkannt, und mit nicht sehr aufschlussreichen Fehlermeldungen geahndet ('Symbol xyz not found' oder 'Symbol xyz allready defined in Module qwert.cpp').
 
+Mit (\CppVers{20}) steht mit dem Konzept der Module mit den Befehlen import und module eine Alternative zur Verfügung. 
+
+\begin{CCode}
+// helloworld.cpp
+export module helloworld;  // module declaration
+import <iostream>;         // import declaration
+ 
+export void hello() {      // export declaration
+    std::cout << "Hello world!\n";
+}
+
+// main.cpp
+import helloworld;  // import declaration
+ 
+int main() {
+    hello();
+}
+\end{CCode}
  
 
 \subsection{Beispiel eines kleinen \Cpp-Projektes}
@@ -659,6 +698,8 @@ Es gibt zwei Formen für den Includebefehl:
 Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \CodeStyle{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \CodeStyle{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
 
 \emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
+
+Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if, \CodeStyle{inline / constexpr / const} anstelle von makros und defines) 
 
 \section{Datentypen}
 \subsection{Einfache Datentypen}
@@ -3924,6 +3965,7 @@ pc = dynamic_cast<C *>(py); // Runtime-Fehler, py zeigt auf nichts C-aehnliches
 von beiden beteiligten Klassen muss virtuell sein.
  
 \chapter{Namensbereiche (Namespaces)}
+\label{chap:Namespaces}
 \OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit lässt sich eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
 
 Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
@@ -3998,7 +4040,8 @@ BernerFachhochschule::Print();
 
 
 \end{CCode}
-
+\phantomsection
+\label{Chapter:AnonymeNamensbereiche}
 Es können auch \OviIndex{anonyme Namensbereiche} definiert werden, alle in
 einem anonymen Namensbereich definierten Elemente sind nur
 innerhalb der definierenden Übersetzungseinheit (Source-Datei)
@@ -7929,34 +7972,34 @@ P:\HC\D386_O> hc3 i primes.cpp -DLAST=30
 MetaWare High C/C++ Compiler R2.6
 (c) Copyright 1987-94, MetaWare Incorporated
 E "primes.cpp",L16/C63(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<2>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<2>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<3>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<3>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<5>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<5>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<7>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<7>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<11>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<11>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<13>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<13>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<17>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<17>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<19>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<19>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<23>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<23>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<29>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<29>? ("primes.cpp",L2/C25).
 
 P:\HC\D386_O> exit 
 
