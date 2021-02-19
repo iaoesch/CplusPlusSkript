@@ -642,7 +642,7 @@ void SayHello::SayGreeting()                   \linebreak[4]
 \end{center}
 
 \subsection{Beispiel eines kleinen \Cpp-Projektes mit Modulen gemäss \CppVers{20}}
-
+\label{subsubsect:Modules}
 
 Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \CodeStyle{SayHello} vom Modul sayhello.cpp und muss deshalb das Modul  sayhello mit \CodeStyle{import} einbinden. Vom Modul sayhello exportierte Elemente werden mit dem Schlüsselwort \CodeStyle{export} definiert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \CodeStyle{static} deklariert.
 
@@ -1297,7 +1297,7 @@ Neue Syntax:
  R und U können auch kombiniert werden.
  
 \section{Attribute (Seit \CppVers{11})}
-
+\label{subsubsect:Attribute}
 Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
 \CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
 
@@ -1920,6 +1920,8 @@ if (c > 0) {
 }
 \end{CCode}
 
+\phantomsection
+\label{subsubsect:ifoptionalinitialisierer}
 Seit \Cpp17 können \CodeStyle{if} (und \CodeStyle{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 if (int a = 7; b > c) {
@@ -1934,7 +1936,8 @@ if (SomeClass SomeObject = GetTheObject(); SomeObject.IsValid() == true) {
   // Do something else
 }
 \end{CCode}
-
+\phantomsection
+\label{subsubsect:constexprif}
 Mit \CppVers{17} wurde das \CodeIndex{constexpr if} eingeführt, welches bedingte Compilierung ermöglicht. Der Ausdruck des \CodeStyle{constexpr if} muss zur Compilezeit ausgewertet werden können, wenn der Ausdruck \CodeStyle{false} liefert, wird der Code im if-Zweig ignoriert, andernfalls normal compiliert.
 Im Gegensatz zum Präprozessor \#if muss jedoch der Code im  \CodeStyle{constexpr if} syntaktisch korrekt sein, auch wenn er verworfen wird. 
 
@@ -2054,6 +2057,8 @@ switch (i) {
 
 
 
+\phantomsection
+\label{subsubsect:switchoptionalinitialisierer}
 Seit \Cpp17 können \CodeStyle{switch} (und \CodeStyle{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \CodeStyle{switch}-Statement (resp. \CodeStyle{if}-Statement) und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 switch (int a = 7; b) {
@@ -2851,6 +2856,7 @@ class Demo {
 Ohne die beiden letzten \CodeStyle{delete} könnte \CodeStyle{f()} auch mit \CodeStyle{int} aufgerufen werden, \CodeStyle{int} würde in diesem Fall in \CodeStyle{double} umgewandelt werden.
 
 \section{Default Vergleiche (\CppVers{20})}
+\label{subsubsect:DefaultVergleiche}
 \index{Default Vergleiche}
 Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei op einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
 
@@ -6967,8 +6973,8 @@ Siehe \autoref{subsubsect:ControlAutoMember}
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
    \item Alignementkontrolle bei Objekten
    \item Einfacher Support für Garbagecollection
-   \item Attribute
-   \item Unterstützung von Multithreading
+   \item Attribute (Siehe \autoref{subsubsect:Attribute})
+   \item Unterstützung von Multithreading (Siehe \autoref{sect:Multithreading})
 	 \item Operator \CodeStyle{noexcept()} zum prüfen ob ein Ausdruck eine Exception werfen könnte
    \item Standardlibrary um Tupletypen erweitert
    \item Standardlibrary um Hashtabellen erweitert
@@ -6993,7 +6999,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \begin{itemize}
 	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
 	 \item Alternative Typendeduktion bei Deklarationen
-   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.
+   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. (Siehe \autoref{subsubsect:constexpr})
    \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden.
    \item Aggregate Member initialisierung
    \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001)
@@ -7024,7 +7030,8 @@ Im Dezember 2017 publiziert.
 
     \item Attributes for namespaces and enumerators
 		
-		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}
+		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}  (Siehe \autoref{subsubsect:Attribute})
+
 
     \item UTF-8 character literals
 		
@@ -7052,11 +7059,11 @@ Im Dezember 2017 publiziert.
 
     \item \CodeStyle{std::variant}, a type-safe union container
 
-    \item A compile-time static if with the form \CodeStyle{if constexpr(expression)}
+    \item A compile-time static if with the form \CodeStyle{if constexpr(expression)}  (Siehe \autoref{subsubsect:constexprif})
 
     \item Structured bindings, allowing \CodeStyle{auto [a, b] = getTwoReturnValues();} (Siehe \autoref{subsubsect:StructuredBindings})
 
-    \item Initializers in \CodeStyle{if} and \CodeStyle{switch} statements (\CodeStyle{if (init; condition)} and \CodeStyle{switch (init; condition)})
+    \item Initializers in \CodeStyle{if} and \CodeStyle{switch} statements (\CodeStyle{if (init; condition)} and \CodeStyle{switch (init; condition)})  (Siehe \autoref{subsubsect:ifoptionalinitialisierer} und \autoref{subsubsect:switchoptionalinitialisierer})
 
     \item Guaranteed copy elision by compilers in some cases
 
@@ -7080,24 +7087,24 @@ Im Dezember 2017 publiziert.
 \end{itemize}
 
 \section{\CppVers{20}}
-Bereits in der Planungs- und Diskussionsphase, aber noch nicht verabschiedet.
+Seit Dezember 2020 verabschiedet.
  \begin{itemize}
     \item Feature test macros
-    \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default}
+    \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
     \item designated initializers
     \item init-statements and initializers in range-for
     \item \CodeStyle{char8_t}
-    \item \CodeStyle{[[no_unique_address]]}
-    \item \CodeStyle{[[likely]]}
-    \item \CodeStyle{[[unlikely]]}
+    \item Attribute \CodeStyle{[[no_unique_address]]} (Siehe \autoref{subsubsect:Attribute})
+    \item Attribute \CodeStyle{[[likely]]} (Siehe \autoref{subsubsect:Attribute})
+    \item Attribute \CodeStyle{[[unlikely]]} (Siehe \autoref{subsubsect:Attribute})
     \item pack-expansions in lambda captures
    \item  removed the requirement to use typename to disambiguate types in many contexts
-    \item \CodeStyle{consteval}, \CodeStyle{constinit}
-    \item further relaxed constexpr
+    \item \CodeStyle{consteval}, \CodeStyle{constinit} (Siehe \autoref{subsubsect:consteval} und \autoref{subsubsect:constinit})
+    \item further relaxed constexpr (Siehe \autoref{subsubsect:constexpr})
     \item signed integers are 2's complement
    \item  aggregate initialization using parentheses
     \item Coroutines
-    \item Modules
+    \item Modules (Siehe \autoref{subsubsect:Modules})
     \item Constraints and concepts
     \item abbreviated function templates
     \item DR: array new can deduce array size 
@@ -7134,6 +7141,18 @@ Bereits in der Planungs- und Diskussionsphase, aber noch nicht verabschiedet.
     \item uniform container erasure (\CodeStyle{std::erase}/\CodeStyle{std::erase_if})
     \item Mathematical constants 
 \end{itemize}
+
+\section{\CppVers{23}}
+Bereits in der Planungs- und Diskussionsphase.
+ \begin{itemize}
+    \item Planned features for C++23 are library support for coroutines, a modular standard library, executors, and networking. 
+     \item   Literal suffixes for std::size_t and the corresponding signed type
+    \item A member function contains for std::basic_string and std::basic_string_view, to check whether or not the string contains a given substring or character
+    \item A stacktrace library (<stacktrace>), based on Boost.Stacktrace
+    \item A type trait std::is_scoped_enum
+    \item The header <stdatomic.h>, for interoperability with C atomics
+\end{itemize}
+
 
 \appendix
 \chapter{Anhang}
