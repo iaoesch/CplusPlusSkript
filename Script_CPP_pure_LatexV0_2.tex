@@ -1296,7 +1296,61 @@ Neue Syntax:
  
  R und U können auch kombiniert werden.
  
+\section{Attribute (Seit \CppVers{11})}
+
+Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
+\CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
+
+Beispiel:
+ \begin{CCode}
+
+[[gnu::always_inline, gnu::const, gnu::hot, nodiscard]]
+int f(); 
  
+// C++17:
+[[using gnu : const, always_inline, hot]] [[nodiscard]]
+int f[[gnu::always_inline]](); // an attribute may appear in multiple specifiers
+ 
+int f() { return 0; }
+ 
+int main()
+{
+}
+ \end{CCode}
+ 
+Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken, oder dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern.
+
+\begin {tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}%p{0.29\textwidth}|}
+
+\hline
+Attribut&	Beschreibung\\
+\hline
+\lstinline$[[noreturn]] $(\CppVers{11}) &Die Funktion wird nie beendet (Z.B. ein Thread)\\
+\hline
+\lstinline$[[carries_dependency]]$(\CppVers{11})&Erlaubt optimierungen im Speichermanagement\\
+\hline
+\lstinline$[[deprecated]]$(\CppVers{14})&Zeigt an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs)\\
+\hline
+\lstinline$[[deprecated("reason")]]$(\CppVers{14}) &	Zeigt mit Begründung an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs\\
+\hline
+\lstinline$[[fallthrough]]$(\CppVers{17}) &Zeigt an dass ein 'Durchfallen' vom vorherigen in diesen case beim switch() beabsichtigt ist und der Compiler deshalb keine Warnung ausgeben soll \\
+\hline
+\lstinline$[[nodiscard]]$(\CppVers{17})&Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
+\hline
+\lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
+\hline
+\lstinline$[[maybe_unused]]$(\CppVers{17}) &Verhindert eine Compilkerwarnung, wenn dieses Element nirgends verwendet wird (Z.B. unbenutzte Variable)\\
+\hline
+\lstinline$[[likely]]$(\CppVers{20})&Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) wahrscheinlicher als andere ist \\
+\hline
+\lstinline$[[unlikely]]$(\CppVers{20}) &Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) weniger wahrscheinlicher als andere ist \\
+\hline
+\lstinline$[[no_unique_address]]$(\CppVers{20}) &Zeigt an dass ein Member nicht zwingend eine von anderen Membern unterschiedliche Adresse zu haben braucht (Z.B. Eine Membervariable einer leeren Klasse ohne Member belegt so keinen Speicherplatz.\\
+\hline
+\lstinline$[[optimize_for_synchronized]]$(TM TS) &Zeigt an dass diese Funktion für synchronisierte Ausführung optimiert werden soll\\
+\hline
+\end{tabular}
+
  
 
 \section{Operatoren}
@@ -1544,7 +1598,7 @@ aptr->~A();
 \section{Ein- und Ausgabe}
 Bildschirmausgaben laufen über (das Objekt) \CodeIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \CodeIndex{cin} gelesen werden. Um \CodeStyle{cin} oder \CodeStyle{cout} benutzen zu können muss das entsprechende Headerfile mittels \CodeStyle{#include <iostream>} eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
 Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich \CodeStyle{std} abgelegt sind, müssen Bibliotheksfunktionen
-und Objekte mit dem prefix \CodeStyle{std::} (z. B. \CodeStyle{std::cin}) oder '\CodeStyle{using namespace std}' zugänglich gemacht werden.
+und Objekte mit dem prefix \CodeStyle{std::} (z. B. \CodeStyle{std::cin}) oder durch '\CodeStyle{using namespace std}' zugänglich gemacht werden.
 
 \begin{CCode}
 #include <iostream>
@@ -1881,6 +1935,19 @@ if (SomeClass SomeObject = GetTheObject(); SomeObject.IsValid() == true) {
 }
 \end{CCode}
 
+Mit \CppVers{17} wurde das \CodeIndex{constexpr if} eingeführt, welches bedingte Compilierung ermöglicht. Der Ausdruck des \CodeStyle{constexpr if} muss zur Compilezeit ausgewertet werden können, wenn der Ausdruck \CodeStyle{false} liefert, wird der Code im if-Zweig ignoriert, andernfalls normal compiliert.
+Im Gegensatz zum Präprozessor \#if muss jedoch der Code im  \CodeStyle{constexpr if} syntaktisch korrekt sein, auch wenn er verworfen wird. 
+
+\begin{CCode}
+constexpr bool Debug = false;
+
+if constexpr (Debug) {
+    cout << x; 
+} else { 
+    // Do nothing;
+}
+\end{CCode}
+
 \section{while(), do while()}
 Die Schlaufe wird solange ausgeführt wie die while-Bedingung wahr ist.
 \begin{CCode}
@@ -1904,7 +1971,9 @@ do {
  
 \section{for()}
 Die For-Schlaufe ist etwas komplizierter, sie besteht aus 3 Teilen:
-	\CodeStyle{for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)}
+	\CodeStyle{for (Initialisierung;} \linebreak[4]
+	\CodeStyle{Eintrittsprüfbedingung;}
+	\CodeStyle{Repetitionsanweisung)}
 Die Initialisierungsbefehle werden vor Beginn der Schlaufe einmal ausgeführt. Die Schlaufe wird solange ausgeführt wie die Eintrittsbedingung wahr ist, die Prüfung wird zu Beginn der Schlaufe ausgeführt. Die Repetitionsanweisung wird jeweils am Schlaufenende durchgeführt.
 \begin{CCode}
 c = 0;
@@ -1965,23 +2034,25 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 	
 \end{CCode}
 
-Dies funktioniert für Arrays und alle Objekte, welche \CodeStyle{begin()} und\CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
+Dies funktioniert für Arrays und alle Objekte, welche \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
 
 
 \section{switch()}
-Auswahlanweisung, der Programmfluss wird bei demjenigen \CodeStyle{case} - Statement weitergeführt, welches mit dem Wert der \CodeStyle{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \CodeStyle{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \CodeStyle{break} oder das Ende der Struktur trifft. Wenn nach einem \CodeStyle{case} Statement kein \CodeStyle{break} steht, fährt das Programm mit den Anweisungen des nächsten \CodeStyle{case} weiter. (Dies sollte jedoch vermieden werden). Falls kein \CodeStyle{case} zutrifft, wird beim \CodeStyle{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
+Auswahlanweisung, der Programmfluss wird bei demjenigen \CodeStyle{case} - Statement weitergeführt, welches mit dem Wert der \CodeStyle{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \CodeStyle{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \CodeStyle{break} oder das Ende der Struktur trifft. Wenn nach einem \CodeStyle{case} Statement kein \CodeStyle{break} steht, fährt das Programm mit den Anweisungen des nächsten \CodeStyle{case} weiter. (Dies sollte jedoch vermieden werden, wenn dieses Verhalten erwünscht ist, kann dies seit \CppVers{17} mit dem Attribut  \CodeIndex{[[fallthrough]]} als bewusste Entscheidung markiert werden, und entsprechende Compilerwarnungen werden unterdrückt). Falls kein \CodeStyle{case} zutrifft, wird beim \CodeStyle{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
 \begin{CCode}
 switch (i) {
   case 1: std::cout << "Eins" << std::endl;
       break;
   case 2: std::cout << "Zwei" << std::endl;
-      break;
+      [[fallthrough]]; // seit C++17, unterdrueckt Compilerwarnung wenn break fehlt
   case 3: std::cout << "Drei" << std::endl;
       break;
   default: std::cout << "Was anderes" << std::endl;
       break;
 }
 \end{CCode}
+
+
 
 Seit \Cpp17 können \CodeStyle{switch} (und \CodeStyle{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \CodeStyle{switch}-Statement (resp. \CodeStyle{if}-Statement) und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
@@ -2000,7 +2071,7 @@ switch (SomeClass SomeObject = GetTheObject(); SomeObject.Value()) {
 
 
 \section{Funktionen}
-Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \CodeStyle{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\CodeStyle{const}).
+Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, müssen Zeiger oder Referenzen verwendet werden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \CodeStyle{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\CodeStyle{const}).
 
 Mit '\CodeStyle{return x}' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit '\CodeStyle{return}' oder '\CodeStyle{return x}' kann eine Funktion auch vor ihrem Ende verlassen werden.
 
@@ -2173,6 +2244,7 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 \subsection{constexpr Funktionen (Seit \Cpp11)}
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
 \subsection{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
 \label{subsec:LambdaFunctions}
@@ -2225,7 +2297,8 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 \chapter{Überladen von Operatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. 
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<= , \&\& ||} unäre: \CodeStyle{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  von \CppVers{20} lassen sich ebenfalls überladen.
+Die Operatoren \CodeStyle{&&} und \CodeStyle{||} verlieren dabei aber abgekürzte Auswertung und werten immer beide Argumente aus.
 
 \begin{CCode}
 	class Complex {
