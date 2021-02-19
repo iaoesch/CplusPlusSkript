@@ -1,3 +1,4 @@
+% !TEX encoding = IsoLatin
 %/*****************************************************************************/
 %/*  Module     : OOP-Skript                                     Version 1.1  */
 %/*****************************************************************************/
@@ -53,7 +54,7 @@
 
 
 %Schriftgröße, Layout, Papierformat, Art des Dokumentes
-\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+\documentclass[german,10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
 %\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
 %\documentclass[10pt,a4paper]{report}
 %\usepackage{bookman}
@@ -68,6 +69,7 @@
 %alte Rechtschreibung
 \usepackage{german}
 %\usepackage[german]{babel}
+\selectlanguage{german}
 \usepackage{color}
 \usepackage{color,listings}
 \usepackage{framed}
@@ -94,8 +96,8 @@
 %\usepackage{fancyhdr}
 \usepackage{scrlayer-scrpage}
 
-
 \selectlanguage{german}
+
 
 %\usepackage[automark,autooneside=false]{scrlayer-scrpage}
 
@@ -165,7 +167,7 @@
 
 %Eigene Befehle
 \newcommand{\Cpp}{C{\texttt{++}} }
-\newcommand{\CppVers}[1]{C{\texttt{++}}{#1} }
+\newcommand{\CppVers}[1]{C{\texttt{++}}{#1}}
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
 
@@ -360,7 +362,7 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 \chapter{Zu diesem Skript}
 Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
-In diesem Kurs geht es um das Kennenlernen einer objektorientierten Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf die für OOP absolut notwendigen Gebiete gelegt. Nur gestreift wird insbesondere die Standard-Bibliothek.
+In diesem Kurs geht es um das Kennenlernen der Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf Anwendersicht gelegt, exotischere und eher für Bibliotheksbauer relevante Themen werden beiseite gelassen oder nur kurz erwähnt. Nur gestreift wird insbesondere auch die Standard-Bibliothek.
 
 
 
@@ -388,7 +390,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
+ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in C++ (Anonyme) Namespaces (Siehe \autoref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
 
 \section{Bezeichner und reservierte Namen}
 Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
@@ -419,18 +421,21 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item case
 \item catch
 \item char
+\item char8\_t {\tiny (\Cpp20)}
 \item char16\_t {\tiny (\Cpp11)}
 \item char32\_t {\tiny (\Cpp11)}
 \item class
 \item compl
 \item concept {\tiny (\Cpp20)}
 \item const
+\item consteval {\tiny (\Cpp20)}
 \item constexpr {\tiny (\Cpp11)}
+\item constinit {\tiny (\Cpp20)}
 \item const\_cast
 \item continue
-\item co\_await {\tiny (TS)}
-\item co\_return {\tiny (TS)}
-\item co\_yield {\tiny (TS)}
+\item co\_await {\tiny (\Cpp20)}
+\item co\_return {\tiny (\Cpp20)}
+\item co\_yield {\tiny (\Cpp20)}
 \item decltype {\tiny (\Cpp11)}
 \item default
 \item delete
@@ -448,11 +453,9 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item friend
 \item goto
 \item if
-\item import {\tiny (TS)}
 \item inline
 \item int
 \item long
-\item module {\tiny (TS)}
 \item mutable
 \item namespace
 \item new
@@ -466,6 +469,7 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item private
 \item protected
 \item public
+\item reflexpr {\tiny (TS)}
 \item register
 \item reinterpret\_cast
 \item requires {\tiny (\Cpp20)}
@@ -501,6 +505,23 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \end{description}
 \end{multicols}
 
+Weiter gibt es Bezeichner mit spezieller Bedeutung, welche zwar für Namen von Objekten und Funktionen verwendet werden können, in bestimmten Kontexten jedoch eine besondere Bedeutung haben.
+
+\OviIndex{Bezeichner mit spezieller Bedeutung} von \Cpp
+\begin{multicols}{4}
+%\begin{itemize}[label={}]
+\begin{description}
+\item final {\tiny (\Cpp11))}
+\item import {\tiny (\Cpp20))}
+\item module {\tiny (\Cpp20))}
+\item override {\tiny (\Cpp11))}
+\item transaction\_safe  {\tiny (TS)}
+\item transaction\_safe\_dynamic  {\tiny (TS)}
+
+\end{description}
+\end{multicols}
+
+
 
 \section{Module}
 Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
@@ -514,6 +535,24 @@ Jedes Modul (.cpp) wird vom Compiler selbständig und unabhängig von anderen Modu
 
 Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen werden deshalb meist erst vom Linker erkannt, und mit nicht sehr aufschlussreichen Fehlermeldungen geahndet ('Symbol xyz not found' oder 'Symbol xyz allready defined in Module qwert.cpp').
 
+Mit (\CppVers{20}) steht mit dem Konzept der Module mit den Befehlen import und module eine Alternative zur Verfügung. 
+
+\begin{CCode}
+// helloworld.cpp
+export module helloworld;  // module declaration
+import <iostream>;         // import declaration
+ 
+export void hello() {      // export declaration
+    std::cout << "Hello world!\n";
+}
+
+// main.cpp
+import helloworld;  // import declaration
+ 
+int main() {
+    hello();
+}
+\end{CCode}
  
 
 \subsection{Beispiel eines kleinen \Cpp-Projektes}
@@ -601,6 +640,88 @@ void SayHello::SayGreeting()                   \linebreak[4]
 }}
 }
 \end{center}
+
+\subsection{Beispiel eines kleinen \Cpp-Projektes mit Modulen gemäss \CppVers{20}}
+
+
+Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \CodeStyle{SayHello} vom Modul sayhello.cpp und muss deshalb das Modul  sayhello mit \CodeStyle{import} einbinden. Vom Modul sayhello exportierte Elemente werden mit dem Schlüsselwort \CodeStyle{export} definiert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \CodeStyle{static} deklariert.
+
+\begin{center}
+{ \footnotesize
+
+
+\vspace{5ex}
+
+\parbox[t]{6cm}{main.cpp}
+\hfill
+\parbox[t]{6cm}{sayhello.cpp}
+
+\fbox{\parbox[t]{6cm}{
+\ttfamily
+\begin{flushleft}
+\colorbox{Mygray}{import sayhello;   \linebreak[4]}
+                                               \linebreak[4]
+int main(int argc, char *argv[])               \linebreak[4] 
+\{                                             \linebreak[4]
+\hspace*{0.5cm}  SayHello AnObject;            \linebreak[4]
+\hspace*{0.5cm}  AnObject.SaySomething();      \linebreak[4]
+\hspace*{0.5cm}  return 0;                     \linebreak[4]
+\}
+\end{flushleft}
+}}
+\hfill
+\fbox{\parbox[t]{6cm}{
+\ttfamily
+\begin{flushleft}
+\#include <iostream>                           \linebreak[4]
+\colorbox{Mygray}{export module sayhello   \linebreak[4]}
+                                           \linebreak[4]
+
+export class SayHello \{                          \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}private:                    \linebreak[4]
+\hspace*{0.9cm}char *Greeting;             \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}public:                     \linebreak[4]
+\hspace*{0.9cm}SayHello(void);        \linebreak[4]
+\hspace*{0.9cm}void SaySomething(void);    \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}private:                    \linebreak[4]
+\hspace*{0.9cm}void SayGreeting(void);     \linebreak[4]
+\hspace*{0.9cm}void SayWorld(void);        \linebreak[4]
+\}                                         \linebreak[4]
+                                               \linebreak[4]
+static char TheGreeting = ''Hello'';           \linebreak[4]
+                                               \linebreak[4]
+SayHello::SayHello()                      \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   Greeting = TheGreeting;      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SaySomething()                  \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   SayGreeting();               \linebreak[4]
+\hspace*{0.5cm}   std::cout << '' '';          \linebreak[4]
+\hspace*{0.5cm}   SayWorld();                  \linebreak[4]
+\hspace*{0.5cm}   std::cout << std::endl;      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayWorld()                      \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   std::cout << ''World'';      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayGreeting()                   \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   std::cout << Greeting;       \linebreak[4]
+\}
+\end{flushleft}
+}
+}
+}
+
+\end{center}
+
  
 %\fbox{\parbox[t]{5cm}{
 %\CodeStyle$#include "sayhello.h"$\linebreak[4]
@@ -623,6 +744,8 @@ void SayHello::SayGreeting()                   \linebreak[4]
 \end{CCode}
 
 \section{Präprozessorbefehle}
+Der Präprozessor wird in C++ noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
+
 Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
 
 %#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
@@ -660,6 +783,8 @@ Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Co
 
 \emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
 
+Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if und wie erwähnt \CodeStyle{inline / constexpr / const} anstelle von makros  (\#defines)) 
+
 \section{Datentypen}
 \subsection{Einfache Datentypen}
 Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
@@ -676,7 +801,7 @@ Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temp
 
 In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
-Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
+Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
 
 Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
 
@@ -821,9 +946,11 @@ Beispiel zu Einsatz von shared Pointer:
 \autoref{subsec:RValueRefs}
 
 \OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
-Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
+Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
 
 Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+
+Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.
 
 Beispiel:
 \begin{CCode}
@@ -966,6 +1093,8 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Mit \CppVers(20) kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
+
 
 Beispiel
 \begin{CCode}
@@ -1026,7 +1155,7 @@ Attributen, von \CodeStyle{const} Methoden verändert werden.
 	
 \end{CCode}
 
-Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
+Man kann so ein konstantes Objekt schaffen, bei dem dennoch nicht ganz
 alles konstant ist. \CodeStyle{Mutable} sollte nur in gut begründeten Ausnahmefällen
 eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
 nicht ändert, aber interne Verwaltungsinformation geändert werden
@@ -1167,18 +1296,75 @@ Neue Syntax:
  
  R und U können auch kombiniert werden.
  
+\section{Attribute (Seit \CppVers{11})}
+
+Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
+\CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
+
+Beispiel:
+ \begin{CCode}
+
+[[gnu::always_inline, gnu::const, gnu::hot, nodiscard]]
+int f(); 
  
+// C++17:
+[[using gnu : const, always_inline, hot]] [[nodiscard]]
+int f[[gnu::always_inline]](); // an attribute may appear in multiple specifiers
+ 
+int f() { return 0; }
+ 
+int main()
+{
+}
+ \end{CCode}
+ 
+Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken, oder dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern.
+
+\begin {tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}%p{0.29\textwidth}|}
+
+\hline
+Attribut&	Beschreibung\\
+\hline
+\lstinline$[[noreturn]] $(\CppVers{11}) &Die Funktion wird nie beendet (Z.B. ein Thread)\\
+\hline
+\lstinline$[[carries_dependency]]$(\CppVers{11})&Erlaubt optimierungen im Speichermanagement\\
+\hline
+\lstinline$[[deprecated]]$(\CppVers{14})&Zeigt an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs)\\
+\hline
+\lstinline$[[deprecated("reason")]]$(\CppVers{14}) &	Zeigt mit Begründung an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs\\
+\hline
+\lstinline$[[fallthrough]]$(\CppVers{17}) &Zeigt an dass ein 'Durchfallen' vom vorherigen in diesen case beim switch() beabsichtigt ist und der Compiler deshalb keine Warnung ausgeben soll \\
+\hline
+\lstinline$[[nodiscard]]$(\CppVers{17})&Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
+\hline
+\lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
+\hline
+\lstinline$[[maybe_unused]]$(\CppVers{17}) &Verhindert eine Compilkerwarnung, wenn dieses Element nirgends verwendet wird (Z.B. unbenutzte Variable)\\
+\hline
+\lstinline$[[likely]]$(\CppVers{20})&Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) wahrscheinlicher als andere ist \\
+\hline
+\lstinline$[[unlikely]]$(\CppVers{20}) &Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) weniger wahrscheinlicher als andere ist \\
+\hline
+\lstinline$[[no_unique_address]]$(\CppVers{20}) &Zeigt an dass ein Member nicht zwingend eine von anderen Membern unterschiedliche Adresse zu haben braucht (Z.B. Eine Membervariable einer leeren Klasse ohne Member belegt so keinen Speicherplatz.\\
+\hline
+\lstinline$[[optimize_for_synchronized]]$(TM TS) &Zeigt an dass diese Funktion für synchronisierte Ausführung optimiert werden soll\\
+\hline
+\end{tabular}
+
  
 
 \section{Operatoren}
 Unter \Cpp sind die gängigen mathematischen Operatoren wie gewohnt vorhanden:
 
 %\begin {tabular}{|l|l|l|}
-\begin {tabular}{|p{0.23\textwidth}|l|l|}
+\begin {tabular}{|p{0.23\textwidth}|p{0.4\textwidth}|l|}%p{0.29\textwidth}|}
+
 \hline
 Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$+ - * /$&	Addition, Subtraktion, Multiplikation, Division&\lstinline$a = b + c;$\\
+\hline
+\lstinline$+ - $&	Vorzeichen, Negation &\lstinline$a = -b; a = +b;$\\
 \hline
 \lstinline$%$	&Modulo-Operator , liefert den Rest einer Division&	\lstinline$a = b % c;$\\
 \hline
@@ -1192,24 +1378,26 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$!$	&Logisches NOT&\lstinline$if (!(a > b))$\\
 \hline
-\lstinline$&$	&Binäres AND (Bitweise)	&\lstinline$a = b & c;$\\
+\lstinline$&$	&Bitweises AND	&\lstinline$a = b & c;$\\
 \hline
-\lstinline$|$	&Binäres OR (Bitweise)	&\lstinline$a = b | c;$\\
+\lstinline$|$	&Bitweises OR	&\lstinline$a = b | c;$\\
 \hline
-\lstinline$^$	&Binäres XOR (Bitweise)	&\lstinline$a = b ^ c;$\\
+\lstinline$^$	&Bitweises XOR	&\lstinline$a = b ^ c;$\\
 \hline
-\lstinline$~$	&Binäres NOT (Bitweise) (Einerkomplement)	&\lstinline$a = ~c;$\\
+\lstinline$~$	&Bitweises NOT (Einerkomplement)	&\lstinline$a = ~c;$\\
 \hline
-\lstinline$<<$&	Binäres Linksschieben	&\lstinline$a = b << c; // = b * 2$$^c$\\
+\lstinline$<<$&	Bitweises Linksschieben	&\lstinline$a = b << c; // = b * 2$$^c$\\
 \hline
-\lstinline$>>$&	Binäres Rechtsschieben&\lstinline$a = b >> c; // = b / 2$$^c$\\
+\lstinline$>>$&	Bitweises Rechtsschieben&\lstinline$a = b >> c; // = b / 2$$^c$\\
+\hline
+\lstinline$<=>$  (\CppVers{20})& 3-Wege-Vergleich (Spaceship Operator), liefert -1 wenn erster kleiner als zweiter, 0 wenn beide gleich und 1 sonst&\lstinline$a = b <=> c; $\\
 \hline
 \lstinline$>  <  >=  <=  == !=$	&Relationale Operatoren != ist Ungleich	&\lstinline$if (a != b)$\\
 \hline
 \lstinline$=$	&Zuweisungsoperator	&\lstinline$a = 18;$\\
 \hline
 \lstinline$+= -= *= /= %=$\linebreak[4]
-\lstinline$&= |= ^= <<= >>=$	&Kombinierte Zuweisungsoperatoren	&\lstinline$a += 18; // a = a + 18$\\
+\lstinline$&= |= ^= <<= >>=$	&Kombinierte Zuweisungsoperatoren	&\lstinline$a += 18; // a = a + 18$\\ 
 \hline
 \end{tabular}
 
@@ -1245,13 +1433,25 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$(Typ)$&Typumwandlung (Cast), ungeprüft, in \Cpp nicht mehr verwenden&\lstinline$a = (int)b;$\\
 \hline
+\lstinline$Typ(Ausdruck)$&Typumwandlung (Cast), ungeprüft, in \Cpp nicht mehr verwenden&\lstinline$a = int(b);$\\
+\hline
+\lstinline$Typ(v1, v2, ...)$&Typumwandlung via Konstruktor&\lstinline$a = Point(x, y);$\\
+\hline
+\lstinline$Typ{v1, v2, ...}$&Typumwandlung via Konstruktor&\lstinline$a = Point{x, y};$\\
+\hline
 \lstinline$sizeof()$	&Speicherplatzbedarf eines Objektes oder Typs bestimmen&\lstinline$n = sizeof(int);$\\
+\hline
+\lstinline$co_await$ (\CppVers{20})	& Coroutine unterbrechen&\lstinline$co_await f();$\\
+\hline
+\lstinline$co_yield$ (\CppVers{20})	& Coroutine mit Rueckgabewert unterbrechen&\lstinline$co_yield n;$\\
 \hline
 \lstinline$&$	&Adresse eines Objektes bestimmen&\lstinline$p = &b;$\\
 \hline
 \lstinline$*$	&Dereferenzierung, Zeiger dereferenzieren&\lstinline$a = *p;$\\
 \hline
 \lstinline$new Typ$&Neues Objekt dynamisch erzeugen&\lstinline$p = new int;$\\
+\hline
+\lstinline$new Typ[]$&Neues Feld von Objekten dynamisch erzeugen&\lstinline$p = new int[n];$\\
 \hline
 \lstinline$delete$&Dynamisches Objekt zerstören&\lstinline$delete p;$\\
 \hline
@@ -1264,6 +1464,10 @@ Operator&	Beschreibung&	Beispiel\\
 \lstinline$?:$&Auswahloperator&\lstinline$a>b?a:b;$\\
 \hline
 \lstinline$throw$&Ausnahme werfen (Exceptionshandling)&\lstinline$throw a;$\\
+\hline
+\lstinline$noexcept$&Prüft ob Ausdruck eine Ausnahme werfen könnte (Zur Compile Zeit)(Exceptionshandling)&\lstinline$if (noexcept f());$\\
+\hline
+\lstinline$alignof$&Liefert Alignementbedarf einbes Types&\lstinline$x = alignof(int); y = alignof(Point);$\\
 \hline
 \lstinline$,$&Kommaoperator&\lstinline$a = (b,c);$\\
 \hline
@@ -1394,7 +1598,7 @@ aptr->~A();
 \section{Ein- und Ausgabe}
 Bildschirmausgaben laufen über (das Objekt) \CodeIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \CodeIndex{cin} gelesen werden. Um \CodeStyle{cin} oder \CodeStyle{cout} benutzen zu können muss das entsprechende Headerfile mittels \CodeStyle{#include <iostream>} eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
 Da sämtliche Bibliotheksfunktionen von \Cpp im Namensbereich \CodeStyle{std} abgelegt sind, müssen Bibliotheksfunktionen
-und Objekte mit dem prefix \CodeStyle{std::} (z. B. \CodeStyle{std::cin}) oder '\CodeStyle{using namespace std}' zugänglich gemacht werden.
+und Objekte mit dem prefix \CodeStyle{std::} (z. B. \CodeStyle{std::cin}) oder durch '\CodeStyle{using namespace std}' zugänglich gemacht werden.
 
 \begin{CCode}
 #include <iostream>
@@ -1731,6 +1935,19 @@ if (SomeClass SomeObject = GetTheObject(); SomeObject.IsValid() == true) {
 }
 \end{CCode}
 
+Mit \CppVers{17} wurde das \CodeIndex{constexpr if} eingeführt, welches bedingte Compilierung ermöglicht. Der Ausdruck des \CodeStyle{constexpr if} muss zur Compilezeit ausgewertet werden können, wenn der Ausdruck \CodeStyle{false} liefert, wird der Code im if-Zweig ignoriert, andernfalls normal compiliert.
+Im Gegensatz zum Präprozessor \#if muss jedoch der Code im  \CodeStyle{constexpr if} syntaktisch korrekt sein, auch wenn er verworfen wird. 
+
+\begin{CCode}
+constexpr bool Debug = false;
+
+if constexpr (Debug) {
+    cout << x; 
+} else { 
+    // Do nothing;
+}
+\end{CCode}
+
 \section{while(), do while()}
 Die Schlaufe wird solange ausgeführt wie die while-Bedingung wahr ist.
 \begin{CCode}
@@ -1754,7 +1971,9 @@ do {
  
 \section{for()}
 Die For-Schlaufe ist etwas komplizierter, sie besteht aus 3 Teilen:
-	\CodeStyle{for (Initialisierung; Eintrittsprüfbedingung; Repetitionsanweisung)}
+	\CodeStyle{for (Initialisierung;} \linebreak[4]
+	\CodeStyle{Eintrittsprüfbedingung;}
+	\CodeStyle{Repetitionsanweisung)}
 Die Initialisierungsbefehle werden vor Beginn der Schlaufe einmal ausgeführt. Die Schlaufe wird solange ausgeführt wie die Eintrittsbedingung wahr ist, die Prüfung wird zu Beginn der Schlaufe ausgeführt. Die Repetitionsanweisung wird jeweils am Schlaufenende durchgeführt.
 \begin{CCode}
 c = 0;
@@ -1815,23 +2034,25 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 	
 \end{CCode}
 
-Dies funktioniert für Arrays und alle Objekte, welche \CodeStyle{begin()} und\CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
+Dies funktioniert für Arrays und alle Objekte, welche \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
 
 
 \section{switch()}
-Auswahlanweisung, der Programmfluss wird bei demjenigen \CodeStyle{case} - Statement weitergeführt, welches mit dem Wert der \CodeStyle{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \CodeStyle{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \CodeStyle{break} oder das Ende der Struktur trifft. Wenn nach einem \CodeStyle{case} Statement kein \CodeStyle{break} steht, fährt das Programm mit den Anweisungen des nächsten \CodeStyle{case} weiter. (Dies sollte jedoch vermieden werden). Falls kein \CodeStyle{case} zutrifft, wird beim \CodeStyle{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
+Auswahlanweisung, der Programmfluss wird bei demjenigen \CodeStyle{case} - Statement weitergeführt, welches mit dem Wert der \CodeStyle{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \CodeStyle{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \CodeStyle{break} oder das Ende der Struktur trifft. Wenn nach einem \CodeStyle{case} Statement kein \CodeStyle{break} steht, fährt das Programm mit den Anweisungen des nächsten \CodeStyle{case} weiter. (Dies sollte jedoch vermieden werden, wenn dieses Verhalten erwünscht ist, kann dies seit \CppVers{17} mit dem Attribut  \CodeIndex{[[fallthrough]]} als bewusste Entscheidung markiert werden, und entsprechende Compilerwarnungen werden unterdrückt). Falls kein \CodeStyle{case} zutrifft, wird beim \CodeStyle{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
 \begin{CCode}
 switch (i) {
   case 1: std::cout << "Eins" << std::endl;
       break;
   case 2: std::cout << "Zwei" << std::endl;
-      break;
+      [[fallthrough]]; // seit C++17, unterdrueckt Compilerwarnung wenn break fehlt
   case 3: std::cout << "Drei" << std::endl;
       break;
   default: std::cout << "Was anderes" << std::endl;
       break;
 }
 \end{CCode}
+
+
 
 Seit \Cpp17 können \CodeStyle{switch} (und \CodeStyle{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \CodeStyle{switch}-Statement (resp. \CodeStyle{if}-Statement) und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
@@ -1850,7 +2071,7 @@ switch (SomeClass SomeObject = GetTheObject(); SomeObject.Value()) {
 
 
 \section{Funktionen}
-Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, muss man Zeiger oder Referenzen verwenden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \CodeStyle{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\CodeStyle{const}).
+Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, müssen Zeiger oder Referenzen verwendet werden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \CodeStyle{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\CodeStyle{const}).
 
 Mit '\CodeStyle{return x}' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit '\CodeStyle{return}' oder '\CodeStyle{return x}' kann eine Funktion auch vor ihrem Ende verlassen werden.
 
@@ -2023,6 +2244,7 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 \subsection{constexpr Funktionen (Seit \Cpp11)}
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
 \subsection{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
 \label{subsec:LambdaFunctions}
@@ -2075,7 +2297,8 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 \chapter{Überladen von Operatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. 
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
+
 
 \begin{CCode}
 	class Complex {
@@ -2293,7 +2516,7 @@ int main(int argc, char *argv[]) {
 \end{CCode}
 
 
-\section{Konstruktoren / Destruktoren}
+\section{Konstruktoren / Destruktoren / Zuweisungsoperator}
 Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
 Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
 
@@ -2626,6 +2849,76 @@ class Demo {
 
 \end{CCode}
 Ohne die beiden letzten \CodeStyle{delete} könnte \CodeStyle{f()} auch mit \CodeStyle{int} aufgerufen werden, \CodeStyle{int} würde in diesem Fall in \CodeStyle{double} umgewandelt werden.
+
+\section{Default Vergleiche (\CppVers{20})}
+\index{Default Vergleiche}
+Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei op einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
+
+\begin{CCode}
+class Demo {
+
+    bool operator==(const Demo&) = default; // Den Vergleichsoperator als Memberfunktion automatisch erzeugen
+    friend bool operator<=(const Demo&, const Demo&) = default; // Den Vergleichsoperator als Nicht-Memberfunktion automatisch erzeugen
+
+    friend bool operator>(Demo, Demo) = default; // Den Vergleichsoperator als Nicht-Memberfunktion automatisch erzeugen
+    
+};
+\end{CCode}
+
+Dabei ist zu Beachten, dass die Operatoren \CodeStyle{ >, <, >=} und \CodeStyle{<=} auf den Operator \CodeStyle{<=>} zurückgeführt werden, dieser also vorhanden sein muss, entweder explizit definiert, oder via default Deklaration
+
+Analog wird der Operator \CodeStyle{!=} auf den Operator \CodeStyle{==} zurückgeführt.
+
+\subsection{Drei Wege Vergleich (\CppVers{20})}
+\label{subsect:SpaceshipOperator}
+Der \OviIndex{Drei Wege Vergleich}, auch '\OviIndex{Spaceship-Operator}' genannt (\CodeIndex{<=>}) liefert einen Wert < 0 zurück, wenn der erste Operand kleiner als der zweite ist, einen Wert = 0 wenn beide gleich sind und einen Wert > 0 wenn der erste grösser als der zweite ist. Aus dem Drei-Wege-Vergleich lassen sich somit alle anderen Vergleichsoperationen ableiten.
+
+Für eine Klasse kann der Default-Drei-Wege-Vergleich angefordert werden. Dieser wird vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
+
+Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert:
+
+std::strong\_ordering: 
+\begin{itemize}
+\item         std::strong\_ordering::equal if both operands are arithmetically equal,
+\item         std::strong\_ordering::less if the first operand is arithmetically less than the second
+\item         std::strong\_ordering::greater otherwise. 
+\end{itemize}
+
+std::weak\_ordering: 
+\begin{itemize}
+\item         std::weak\_ordering::equivalent  if operands are equal,
+\item         std::weak\_ordering::less if the first operand is less than the second
+\item         std::weak\_ordering::greater otherwise. 
+\end{itemize}
+
+std::partial\_ordering:
+\begin{itemize}
+\item             std::partial\_ordering::less if a is less than b
+\item             std::partial\_ordering::greater if a is greater than b
+\item             std::partial\_ordering::equivalent if a is equivalent to b (-0 <=> +0 is equivalent)
+\item             std::partial\_ordering::unordered  if Values are not comparable (NaN <=> 0)
+\end{itemize}
+
+Der Defaultvergleich wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
+definiert haben.  Der Defaultvergleich greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
+        
+Wenn der Defaultvergleich für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{<=>}) passend überladen werden. 
+
+Sobald für eine Klasse der Operator (\CodeStyle{<=>}) vorhanden ist, werden auch die Operatoren \CodeStyle{< <= >=} und \CodeStyle{>} vom Compiler automatisch erzeugt, wenn sie nicht durch den Benutzer bereits durch überladen definiert wurden.
+
+\subsection{Default == (\CppVers{20})}
+
+Der vom Compiler auf Anfrage automatisch generierte \OviIndex{Default Gleichheitsoperator} (\CodeIndex{==})  vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{==}.  Beim ersten Vergleich der \CodeStyle{false} zurückliefert wird abgebrochen und \CodeStyle{false} als Resultat zurückgeliefert. Wenn alle Vergleiche  \CodeStyle{true} liefern wird ebenfalls \CodeStyle{true} zurückgeliefert.
+
+Der Default Gleichheitsoperator wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits den \CodeStyle{==} Operator definiert haben. Der Default Gleichheitsoperator greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
+
+Wenn der default Operator \CodeStyle{<=>} angefordert wurde, wird der Default \CodeStyle{==} Operator automatisch erzeugt.
+        
+Wenn der Default Gleichheitsoperator für die Klasse nicht angemessen ist, kann der Operator \CodeStyle{==} passend überladen werden. 
+
+Sobald für eine Klasse der Operator \CodeStyle{==} vorhanden ist, wird auch der Operator \CodeStyle{!=} vom Compiler automatisch erzeugt, wenn er nicht durch den Benutzer bereits durch überladen definiert wurde.
+
+
 
 
 \section{Zugriffsrechte}
@@ -3924,6 +4217,7 @@ pc = dynamic_cast<C *>(py); // Runtime-Fehler, py zeigt auf nichts C-aehnliches
 von beiden beteiligten Klassen muss virtuell sein.
  
 \chapter{Namensbereiche (Namespaces)}
+\label{chap:Namespaces}
 \OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit lässt sich eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
 
 Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
@@ -3998,7 +4292,8 @@ BernerFachhochschule::Print();
 
 
 \end{CCode}
-
+\phantomsection
+\label{Chapter:AnonymeNamensbereiche}
 Es können auch \OviIndex{anonyme Namensbereiche} definiert werden, alle in
 einem anonymen Namensbereich definierten Elemente sind nur
 innerhalb der definierenden Übersetzungseinheit (Source-Datei)
@@ -4016,10 +4311,15 @@ namespace {
 
 \end{CCode}
  
- \chapter{constexpr (Seit \CppVers{11})}
+ \chapter{constexpr, consteval, constinit}
+
+Mit \CodeStyle{constexpr} (\CppVers{11}), \CodeStyle{consteval} (\CppVers{20})  und \CodeStyle{constinit} (\CppVers{20})  kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+
+ \section{constexpr (Seit \CppVers{11})}
  \label{subsubsect:constexpr}
  Mit dem Schlüsselwort \CodeIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
- Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.).
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.). Ansonsten dürfen \CodeStyle{constexpr}-Funktionen wie gewöhnliche Funktionen benutzt werden.
+ 
  
  Beispiel
  \begin{CCode}
@@ -4043,10 +4343,20 @@ namespace {
  	constexpr double MondAnziehung = Erdanziehung / 6.0;
  \end{CCode}
  
- Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
  
- Mit \CodeStyle{constexpr} kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+ \section{consteval (Seit \CppVers{20})}
+ \label{subsubsect:consteval}
+Mit \CodeIndex{consteval} können Funktionen definiert werden, welche nur zur Compilezeit ausgeführt werden könnnen, und analog zu \CodeStyle{constexpr} überall dort eingesetzt werden können, wo Konstanten erwartet werden. 
+
+ \section{constinit (Seit \CppVers{20})}
+ \label{subsubsect:constinit}
+\CodeIndex{constinit} dient zur Initialisierung von statischen oder threadlokalen Variablen zur Compilezeit, wobei die Variablen selbst auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.
+
  
+ 
+
+
 
 \chapter{Templates (Schablonen)}
 Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
@@ -8215,34 +8525,34 @@ P:\HC\D386_O> hc3 i primes.cpp -DLAST=30
 MetaWare High C/C++ Compiler R2.6
 (c) Copyright 1987-94, MetaWare Incorporated
 E "primes.cpp",L16/C63(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<2>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<2>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<3>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<3>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<5>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<5>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<7>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<7>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<11>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<11>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<13>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<13>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<17>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<17>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<19>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<19>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<23>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<23>? ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}´ can´t be converted to txpe `D<29>´ ("primes.cpp",L2/C25).
+|    Type `enum{}? can?t be converted to txpe `D<29>? ("primes.cpp",L2/C25).
 
 P:\HC\D386_O> exit 
 
