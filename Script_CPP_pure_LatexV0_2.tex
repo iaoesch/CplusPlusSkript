@@ -2356,10 +2356,10 @@ auseinanderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 {
 	\centering
 	\begin{tabular}{ll}
-		prefix (\CodeStyle!++i!): &\CodeStyle!operator++()!\\
-		postfix (\CodeStyle!i++!):&\CodeStyle!operator++(int)!\\
-		prefix (\CodeStyle!--i!): &\CodeStyle!operator--()!\\
-		postfix (\CodeStyle!i--!):&\CodeStyle!operator--(int)!\\
+		prefix (\CodeStyle{++i}): &\CodeStyle{operator++()}\\
+		postfix (\CodeStyle{i++}):&\CodeStyle{operator++(int)}\\
+		prefix (\CodeStyle{--i}): &\CodeStyle{operator--()}\\
+		postfix (\CodeStyle{i--}):&\CodeStyle{operator--(int)}\\
 	\end{tabular}
 	
 	Das \CodeStyle{int} Argument hat keine Bedeutung, es dient nur zur Unterscheidung der Post- und Prefixversionen
@@ -7145,11 +7145,11 @@ Seit Dezember 2020 verabschiedet.
 \section{\CppVers{23}}
 Bereits in der Planungs- und Diskussionsphase.
  \begin{itemize}
-    \item Planned features for C++23 are library support for coroutines, a modular standard library, executors, and networking. 
-     \item   Literal suffixes for std::size_t and the corresponding signed type
-    \item A member function contains for std::basic_string and std::basic_string_view, to check whether or not the string contains a given substring or character
+    \item Planned features for \CppVers{23} are library support for coroutines, a modular standard library, executors, and networking. 
+     \item   Literal suffixes for std::size\_t and the corresponding signed type
+    \item A member function contains for std::basic\_string and std::basic\_string\_view, to check whether or not the string contains a given substring or character
     \item A stacktrace library (<stacktrace>), based on Boost.Stacktrace
-    \item A type trait std::is_scoped_enum
+    \item A type trait std::is\_scoped\_enum
     \item The header <stdatomic.h>, for interoperability with C atomics
 \end{itemize}
 
