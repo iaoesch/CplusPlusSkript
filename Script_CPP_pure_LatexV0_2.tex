@@ -2297,7 +2297,7 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 \chapter{Überladen von Operatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  von \CppVers{20} lassen sich ebenfalls überladen.
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
 
 
 \begin{CCode}
@@ -2516,7 +2516,7 @@ int main(int argc, char *argv[]) {
 \end{CCode}
 
 
-\section{Konstruktoren / Destruktoren}
+\section{Konstruktoren / Destruktoren / Zuweisungsoperator}
 Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
 Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
 
@@ -2865,12 +2865,12 @@ class Demo {
 };
 \end{CCode}
 
-Dabei ist zu Beachten, dass die Operatoren \CodeStyle{ >, <, >=, <=} auf den Operator \CodeStyle{<=>} zurückgeführt werden, dieser also vorhanden sein muss, entweder explizit definiert, oder via default Deklaration
+Dabei ist zu Beachten, dass die Operatoren \CodeStyle{ >, <, >=} und \CodeStyle{<=} auf den Operator \CodeStyle{<=>} zurückgeführt werden, dieser also vorhanden sein muss, entweder explizit definiert, oder via default Deklaration
 
-Analog wird der Operatore \CodeStyle{!=} auf den Operator \CodeStyle{==} zurückgeführt.
+Analog wird der Operator \CodeStyle{!=} auf den Operator \CodeStyle{==} zurückgeführt.
 
 \subsection{Drei Wege Vergleich (\CppVers{20})}
-
+\label{subsect:SpaceshipOperator}
 Der \OviIndex{Drei Wege Vergleich}, auch '\OviIndex{Spaceship-Operator}' genannt (\CodeIndex{<=>}) liefert einen Wert < 0 zurück, wenn der erste Operand kleiner als der zweite ist, einen Wert = 0 wenn beide gleich sind und einen Wert > 0 wenn der erste grösser als der zweite ist. Aus dem Drei-Wege-Vergleich lassen sich somit alle anderen Vergleichsoperationen ableiten.
 
 Für eine Klasse kann der Default-Drei-Wege-Vergleich angefordert werden. Dieser wird vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
@@ -2910,13 +2910,13 @@ Sobald für eine Klasse der Operator (\CodeStyle{<=>}) vorhanden ist, werden auch
 
 Der vom Compiler auf Anfrage automatisch generierte \OviIndex{Default Gleichheitsoperator} (\CodeIndex{==})  vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{==}.  Beim ersten Vergleich der \CodeStyle{false} zurückliefert wird abgebrochen und \CodeStyle{false} als Resultat zurückgeliefert. Wenn alle Vergleiche  \CodeStyle{true} liefern wird ebenfalls \CodeStyle{true} zurückgeliefert.
 
-Der Default Gleichheitsoperator wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits den (\CodeStyle{==})  Operator definiert haben. Der Default Gleichheitsoperator greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
+Der Default Gleichheitsoperator wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits den \CodeStyle{==} Operator definiert haben. Der Default Gleichheitsoperator greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
 
 Wenn der default Operator \CodeStyle{<=>} angefordert wurde, wird der Default \CodeStyle{==} Operator automatisch erzeugt.
         
-Wenn der Default Gleichheitsoperator für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{==}) passend überladen werden. 
+Wenn der Default Gleichheitsoperator für die Klasse nicht angemessen ist, kann der Operator \CodeStyle{==} passend überladen werden. 
 
-Sobald für eine Klasse der Operator (\CodeStyle{==}) vorhanden ist, wird auch der Operator \CodeStyle{!=} vom Compiler automatisch erzeugt, wenn er nicht durch den Benutzer bereits durch überladen definiert wurde.
+Sobald für eine Klasse der Operator \CodeStyle{==} vorhanden ist, wird auch der Operator \CodeStyle{!=} vom Compiler automatisch erzeugt, wenn er nicht durch den Benutzer bereits durch überladen definiert wurde.
 
 
 
