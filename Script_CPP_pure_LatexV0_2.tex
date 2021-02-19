@@ -167,7 +167,7 @@
 
 %Eigene Befehle
 \newcommand{\Cpp}{C{\texttt{++}} }
-\newcommand{\CppVers}[1]{C{\texttt{++}}{#1} }
+\newcommand{\CppVers}[1]{C{\texttt{++}}{#1}}
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
 
@@ -640,6 +640,88 @@ void SayHello::SayGreeting()                   \linebreak[4]
 }}
 }
 \end{center}
+
+\subsection{Beispiel eines kleinen \Cpp-Projektes mit Modulen gemäss \CppVers{20}}
+
+
+Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \CodeStyle{SayHello} vom Modul sayhello.cpp und muss deshalb das Modul  sayhello mit \CodeStyle{import} einbinden. Vom Modul sayhello exportierte Elemente werden mit dem Schlüsselwort \CodeStyle{export} definiert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \CodeStyle{static} deklariert.
+
+\begin{center}
+{ \footnotesize
+
+
+\vspace{5ex}
+
+\parbox[t]{6cm}{main.cpp}
+\hfill
+\parbox[t]{6cm}{sayhello.cpp}
+
+\fbox{\parbox[t]{6cm}{
+\ttfamily
+\begin{flushleft}
+\colorbox{Mygray}{import sayhello;   \linebreak[4]}
+                                               \linebreak[4]
+int main(int argc, char *argv[])               \linebreak[4] 
+\{                                             \linebreak[4]
+\hspace*{0.5cm}  SayHello AnObject;            \linebreak[4]
+\hspace*{0.5cm}  AnObject.SaySomething();      \linebreak[4]
+\hspace*{0.5cm}  return 0;                     \linebreak[4]
+\}
+\end{flushleft}
+}}
+\hfill
+\fbox{\parbox[t]{6cm}{
+\ttfamily
+\begin{flushleft}
+\#include <iostream>                           \linebreak[4]
+\colorbox{Mygray}{export module sayhello   \linebreak[4]}
+                                           \linebreak[4]
+
+export class SayHello \{                          \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}private:                    \linebreak[4]
+\hspace*{0.9cm}char *Greeting;             \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}public:                     \linebreak[4]
+\hspace*{0.9cm}SayHello(void);        \linebreak[4]
+\hspace*{0.9cm}void SaySomething(void);    \linebreak[4]
+                                           \linebreak[4]
+\hspace*{0.5cm}private:                    \linebreak[4]
+\hspace*{0.9cm}void SayGreeting(void);     \linebreak[4]
+\hspace*{0.9cm}void SayWorld(void);        \linebreak[4]
+\}                                         \linebreak[4]
+                                               \linebreak[4]
+static char TheGreeting = ''Hello'';           \linebreak[4]
+                                               \linebreak[4]
+SayHello::SayHello()                      \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   Greeting = TheGreeting;      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SaySomething()                  \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   SayGreeting();               \linebreak[4]
+\hspace*{0.5cm}   std::cout << '' '';          \linebreak[4]
+\hspace*{0.5cm}   SayWorld();                  \linebreak[4]
+\hspace*{0.5cm}   std::cout << std::endl;      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayWorld()                      \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   std::cout << ''World'';      \linebreak[4]
+\}                                             \linebreak[4]
+                                               \linebreak[4]
+void SayHello::SayGreeting()                   \linebreak[4]   
+\{                                             \linebreak[4]
+\hspace*{0.5cm}   std::cout << Greeting;       \linebreak[4]
+\}
+\end{flushleft}
+}
+}
+}
+
+\end{center}
+
  
 %\fbox{\parbox[t]{5cm}{
 %\CodeStyle$#include "sayhello.h"$\linebreak[4]
@@ -662,6 +744,8 @@ void SayHello::SayGreeting()                   \linebreak[4]
 \end{CCode}
 
 \section{Präprozessorbefehle}
+Der Präprozessor wird in C++ noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
+
 Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
 
 %#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
@@ -699,7 +783,7 @@ Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Co
 
 \emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
 
-Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if, \CodeStyle{inline / constexpr / const} anstelle von makros und defines) 
+Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if und wie erwähnt \CodeStyle{inline / constexpr / const} anstelle von makros  (\#defines)) 
 
 \section{Datentypen}
 \subsection{Einfache Datentypen}
@@ -717,7 +801,7 @@ Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temp
 
 In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
-Bei Unique Pointern kann immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
+Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
 
 Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
 
@@ -862,9 +946,11 @@ Beispiel zu Einsatz von shared Pointer:
 \autoref{subsec:RValueRefs}
 
 \OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
-Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
+Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
 
 Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+
+Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.
 
 Beispiel:
 \begin{CCode}
@@ -1007,6 +1093,8 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Mit \CppVers(20) kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
+
 
 Beispiel
 \begin{CCode}
@@ -1067,7 +1155,7 @@ Attributen, von \CodeStyle{const} Methoden verändert werden.
 	
 \end{CCode}
 
-Man kann so ein konstantes Objekt schaffen, bei dem doch nicht ganz
+Man kann so ein konstantes Objekt schaffen, bei dem dennoch nicht ganz
 alles konstant ist. \CodeStyle{Mutable} sollte nur in gut begründeten Ausnahmefällen
 eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
 nicht ändert, aber interne Verwaltungsinformation geändert werden
@@ -1215,11 +1303,14 @@ Neue Syntax:
 Unter \Cpp sind die gängigen mathematischen Operatoren wie gewohnt vorhanden:
 
 %\begin {tabular}{|l|l|l|}
-\begin {tabular}{|p{0.23\textwidth}|l|l|}
+\begin {tabular}{|p{0.23\textwidth}|p{0.4\textwidth}|l|}%p{0.29\textwidth}|}
+
 \hline
 Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$+ - * /$&	Addition, Subtraktion, Multiplikation, Division&\lstinline$a = b + c;$\\
+\hline
+\lstinline$+ - $&	Vorzeichen, Negation &\lstinline$a = -b; a = +b;$\\
 \hline
 \lstinline$%$	&Modulo-Operator , liefert den Rest einer Division&	\lstinline$a = b % c;$\\
 \hline
@@ -1233,24 +1324,26 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$!$	&Logisches NOT&\lstinline$if (!(a > b))$\\
 \hline
-\lstinline$&$	&Binäres AND (Bitweise)	&\lstinline$a = b & c;$\\
+\lstinline$&$	&Bitweises AND	&\lstinline$a = b & c;$\\
 \hline
-\lstinline$|$	&Binäres OR (Bitweise)	&\lstinline$a = b | c;$\\
+\lstinline$|$	&Bitweises OR	&\lstinline$a = b | c;$\\
 \hline
-\lstinline$^$	&Binäres XOR (Bitweise)	&\lstinline$a = b ^ c;$\\
+\lstinline$^$	&Bitweises XOR	&\lstinline$a = b ^ c;$\\
 \hline
-\lstinline$~$	&Binäres NOT (Bitweise) (Einerkomplement)	&\lstinline$a = ~c;$\\
+\lstinline$~$	&Bitweises NOT (Einerkomplement)	&\lstinline$a = ~c;$\\
 \hline
-\lstinline$<<$&	Binäres Linksschieben	&\lstinline$a = b << c; // = b * 2$$^c$\\
+\lstinline$<<$&	Bitweises Linksschieben	&\lstinline$a = b << c; // = b * 2$$^c$\\
 \hline
-\lstinline$>>$&	Binäres Rechtsschieben&\lstinline$a = b >> c; // = b / 2$$^c$\\
+\lstinline$>>$&	Bitweises Rechtsschieben&\lstinline$a = b >> c; // = b / 2$$^c$\\
+\hline
+\lstinline$<=>$  (\CppVers{20})& 3-Wege-Vergleich (Spaceship Operator), liefert -1 wenn erster kleiner als zweiter, 0 wenn beide gleich und 1 sonst&\lstinline$a = b <=> c; $\\
 \hline
 \lstinline$>  <  >=  <=  == !=$	&Relationale Operatoren != ist Ungleich	&\lstinline$if (a != b)$\\
 \hline
 \lstinline$=$	&Zuweisungsoperator	&\lstinline$a = 18;$\\
 \hline
 \lstinline$+= -= *= /= %=$\linebreak[4]
-\lstinline$&= |= ^= <<= >>=$	&Kombinierte Zuweisungsoperatoren	&\lstinline$a += 18; // a = a + 18$\\
+\lstinline$&= |= ^= <<= >>=$	&Kombinierte Zuweisungsoperatoren	&\lstinline$a += 18; // a = a + 18$\\ 
 \hline
 \end{tabular}
 
@@ -1286,13 +1379,25 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$(Typ)$&Typumwandlung (Cast), ungeprüft, in \Cpp nicht mehr verwenden&\lstinline$a = (int)b;$\\
 \hline
+\lstinline$Typ(Ausdruck)$&Typumwandlung (Cast), ungeprüft, in \Cpp nicht mehr verwenden&\lstinline$a = int(b);$\\
+\hline
+\lstinline$Typ(v1, v2, ...)$&Typumwandlung via Konstruktor&\lstinline$a = Point(x, y);$\\
+\hline
+\lstinline$Typ{v1, v2, ...}$&Typumwandlung via Konstruktor&\lstinline$a = Point{x, y};$\\
+\hline
 \lstinline$sizeof()$	&Speicherplatzbedarf eines Objektes oder Typs bestimmen&\lstinline$n = sizeof(int);$\\
+\hline
+\lstinline$co_await$ (\CppVers{20})	& Coroutine unterbrechen&\lstinline$co_await f();$\\
+\hline
+\lstinline$co_yield$ (\CppVers{20})	& Coroutine mit Rueckgabewert unterbrechen&\lstinline$co_yield n;$\\
 \hline
 \lstinline$&$	&Adresse eines Objektes bestimmen&\lstinline$p = &b;$\\
 \hline
 \lstinline$*$	&Dereferenzierung, Zeiger dereferenzieren&\lstinline$a = *p;$\\
 \hline
 \lstinline$new Typ$&Neues Objekt dynamisch erzeugen&\lstinline$p = new int;$\\
+\hline
+\lstinline$new Typ[]$&Neues Feld von Objekten dynamisch erzeugen&\lstinline$p = new int[n];$\\
 \hline
 \lstinline$delete$&Dynamisches Objekt zerstören&\lstinline$delete p;$\\
 \hline
@@ -1305,6 +1410,10 @@ Operator&	Beschreibung&	Beispiel\\
 \lstinline$?:$&Auswahloperator&\lstinline$a>b?a:b;$\\
 \hline
 \lstinline$throw$&Ausnahme werfen (Exceptionshandling)&\lstinline$throw a;$\\
+\hline
+\lstinline$noexcept$&Prüft ob Ausdruck eine Ausnahme werfen könnte (Zur Compile Zeit)(Exceptionshandling)&\lstinline$if (noexcept f());$\\
+\hline
+\lstinline$alignof$&Liefert Alignementbedarf einbes Types&\lstinline$x = alignof(int); y = alignof(Point);$\\
 \hline
 \lstinline$,$&Kommaoperator&\lstinline$a = (b,c);$\\
 \hline
@@ -4059,10 +4168,15 @@ namespace {
 
 \end{CCode}
  
- \chapter{constexpr (Seit \CppVers{11})}
+ \chapter{constexpr, consteval, constinit}
+
+Mit \CodeStyle{constexpr} (\CppVers{11}), \CodeStyle{consteval} (\CppVers{20})  und \CodeStyle{constinit} (\CppVers{20})  kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+
+ \section{constexpr (Seit \CppVers{11})}
  \label{subsubsect:constexpr}
  Mit dem Schlüsselwort \CodeIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
- Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.).
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.). Ansonsten dürfen \CodeStyle{constexpr}-Funktionen wie gewöhnliche Funktionen benutzt werden.
+ 
  
  Beispiel
  \begin{CCode}
@@ -4086,10 +4200,20 @@ namespace {
  	constexpr double MondAnziehung = Erdanziehung / 6.0;
  \end{CCode}
  
- Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
  
- Mit \CodeStyle{constexpr} kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+ \section{consteval (Seit \CppVers{20})}
+ \label{subsubsect:consteval}
+Mit \CodeStyle{consteval} können Funktionen definiert werden, welche nur zur Compilezeit ausgeführt werden könnnen, und analog zu \CodeStyle{constexpr} überall dort eingesetzt werden können, wo Konstanten erwartet werden. 
+
+ \section{constinit (Seit \CppVers{20})}
+ \label{subsubsect:constinit}
+\CodeStyle{constinit} dient zur Initialisierung von statischen oder threadlokalen Variablen zur Compilezeit, wobei die Variablen selbst auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.
+
  
+ 
+
+
 
 \chapter{Templates (Schablonen)}
 Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
