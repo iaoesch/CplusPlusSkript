@@ -2297,8 +2297,8 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 \chapter{Überladen von Operatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<= , \&\& ||} unäre: \CodeStyle{& ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  von \CppVers{20} lassen sich ebenfalls überladen.
-Die Operatoren \CodeStyle{&&} und \CodeStyle{||} verlieren dabei aber abgekürzte Auswertung und werten immer beide Argumente aus.
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  von \CppVers{20} lassen sich ebenfalls überladen.
+
 
 \begin{CCode}
 	class Complex {
@@ -2849,6 +2849,76 @@ class Demo {
 
 \end{CCode}
 Ohne die beiden letzten \CodeStyle{delete} könnte \CodeStyle{f()} auch mit \CodeStyle{int} aufgerufen werden, \CodeStyle{int} würde in diesem Fall in \CodeStyle{double} umgewandelt werden.
+
+\section{Default Vergleiche (\CppVers{20})}
+\index{Default Vergleiche}
+Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei op einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
+
+\begin{CCode}
+class Demo {
+
+    bool operator==(const Demo&) = default; // Den Vergleichsoperator als Memberfunktion automatisch erzeugen
+    friend bool operator<=(const Demo&, const Demo&) = default; // Den Vergleichsoperator als Nicht-Memberfunktion automatisch erzeugen
+
+    friend bool operator>(Demo, Demo) = default; // Den Vergleichsoperator als Nicht-Memberfunktion automatisch erzeugen
+    
+};
+\end{CCode}
+
+Dabei ist zu Beachten, dass die Operatoren \CodeStyle{ >, <, >=, <=} auf den Operator \CodeStyle{<=>} zurückgeführt werden, dieser also vorhanden sein muss, entweder explizit definiert, oder via default Deklaration
+
+Analog wird der Operatore \CodeStyle{!=} auf den Operator \CodeStyle{==} zurückgeführt.
+
+\subsection{Drei Wege Vergleich (\CppVers{20})}
+
+Der \OviIndex{Drei Wege Vergleich}, auch '\OviIndex{Spaceship-Operator}' genannt (\CodeIndex{<=>}) liefert einen Wert < 0 zurück, wenn der erste Operand kleiner als der zweite ist, einen Wert = 0 wenn beide gleich sind und einen Wert > 0 wenn der erste grösser als der zweite ist. Aus dem Drei-Wege-Vergleich lassen sich somit alle anderen Vergleichsoperationen ableiten.
+
+Für eine Klasse kann der Default-Drei-Wege-Vergleich angefordert werden. Dieser wird vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
+
+Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert:
+
+std::strong\_ordering: 
+\begin{itemize}
+\item         std::strong\_ordering::equal if both operands are arithmetically equal,
+\item         std::strong\_ordering::less if the first operand is arithmetically less than the second
+\item         std::strong\_ordering::greater otherwise. 
+\end{itemize}
+
+std::weak\_ordering: 
+\begin{itemize}
+\item         std::weak\_ordering::equivalent  if operands are equal,
+\item         std::weak\_ordering::less if the first operand is less than the second
+\item         std::weak\_ordering::greater otherwise. 
+\end{itemize}
+
+std::partial\_ordering:
+\begin{itemize}
+\item             std::partial\_ordering::less if a is less than b
+\item             std::partial\_ordering::greater if a is greater than b
+\item             std::partial\_ordering::equivalent if a is equivalent to b (-0 <=> +0 is equivalent)
+\item             std::partial\_ordering::unordered  if Values are not comparable (NaN <=> 0)
+\end{itemize}
+
+Der Defaultvergleich wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
+definiert haben.  Der Defaultvergleich greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
+        
+Wenn der Defaultvergleich für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{<=>}) passend überladen werden. 
+
+Sobald für eine Klasse der Operator (\CodeStyle{<=>}) vorhanden ist, werden auch die Operatoren \CodeStyle{< <= >=} und \CodeStyle{>} vom Compiler automatisch erzeugt, wenn sie nicht durch den Benutzer bereits durch überladen definiert wurden.
+
+\subsection{Default == (\CppVers{20})}
+
+Der vom Compiler auf Anfrage automatisch generierte \OviIndex{Default Gleichheitsoperator} (\CodeIndex{==})  vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{==}.  Beim ersten Vergleich der \CodeStyle{false} zurückliefert wird abgebrochen und \CodeStyle{false} als Resultat zurückgeliefert. Wenn alle Vergleiche  \CodeStyle{true} liefern wird ebenfalls \CodeStyle{true} zurückgeliefert.
+
+Der Default Gleichheitsoperator wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits den (\CodeStyle{==})  Operator definiert haben. Der Default Gleichheitsoperator greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
+
+Wenn der default Operator \CodeStyle{<=>} angefordert wurde, wird der Default \CodeStyle{==} Operator automatisch erzeugt.
+        
+Wenn der Default Gleichheitsoperator für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{==}) passend überladen werden. 
+
+Sobald für eine Klasse der Operator (\CodeStyle{==}) vorhanden ist, wird auch der Operator \CodeStyle{!=} vom Compiler automatisch erzeugt, wenn er nicht durch den Benutzer bereits durch überladen definiert wurde.
+
+
 
 
 \section{Zugriffsrechte}
@@ -4277,11 +4347,11 @@ Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werde
  
  \section{consteval (Seit \CppVers{20})}
  \label{subsubsect:consteval}
-Mit \CodeStyle{consteval} können Funktionen definiert werden, welche nur zur Compilezeit ausgeführt werden könnnen, und analog zu \CodeStyle{constexpr} überall dort eingesetzt werden können, wo Konstanten erwartet werden. 
+Mit \CodeIndex{consteval} können Funktionen definiert werden, welche nur zur Compilezeit ausgeführt werden könnnen, und analog zu \CodeStyle{constexpr} überall dort eingesetzt werden können, wo Konstanten erwartet werden. 
 
  \section{constinit (Seit \CppVers{20})}
  \label{subsubsect:constinit}
-\CodeStyle{constinit} dient zur Initialisierung von statischen oder threadlokalen Variablen zur Compilezeit, wobei die Variablen selbst auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.
+\CodeIndex{constinit} dient zur Initialisierung von statischen oder threadlokalen Variablen zur Compilezeit, wobei die Variablen selbst auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.
 
  
  
