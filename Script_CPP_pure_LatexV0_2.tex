@@ -6330,6 +6330,464 @@ Allerdings gibt es seit 2002 keine Aktualisierungen von Embedded \Cpp mehr, es w
 einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigestellt, einen Standard-Compiler zu verwenden, und je nach Anwendung und Limitationen des Zielsystems auf gewisse \Cpp-Elemente zu verzichten. Möglicherweise können spezialisierte Embedded-\Cpp Compiler besser optimieren und effizienteren Code generieren weil bestimmte Sprachmittel überhaupt nicht unterstützt werden müssen.
 
 Ein Embedded-\Cpp Programm ist ein Subset von Standard \Cpp und lässt sich mit jedem standardkonformen \Cpp Compiler übersetzen.
+\NextPagePlease
+\section{Hardware Abstraktion}
+Hardware kann in C++ mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
+ 
+\subsection{Mit Klassen}
+\subsubsection{Abstraktion}
+\begin{CCode}
+
+// GPIO.hpp
+class GPIOClass {
+
+   const uintptr_t BaseAdress;
+   const unsigned int PinNumber;
+   
+   public:
+   enum PinState {Off, On};
+   
+   GPIOClass(uintptr_t NewBaseAdress, unsigned int NewPinNumber);
+   
+   void SetPinState(PinState State);
+};
+\end{CCode}
+
+
+\begin{CCode}
+// GPIO.cpp
+GPIOClass::GPIOClass(uintptr_t NewBaseAdress, unsigned int NewPinNumber) : 
+   BaseAdress(NewBaseAdress), PinNumber(NewPinNumber)
+{
+   // Cherck for valid parameters
+   // Initialize GPIO Hw
+}
+
+void GPIOClass::SetPinState(GPIOClass::PinState State)
+{
+     volatile uint32_t &RegisterAdress  = *reinterpret_cast<volatile uint32_t *>(BaseAdress + RegisterOffset);
+
+     if (State == On) {
+        RegisterAdress |= 1u << PinNumber;
+     } else  {
+        RegisterAdress &= ~(1u << PinNumber);
+     }
+}
+\end{CCode}
+
+\subsubsection{Anwendung}
+\begin{CCode}
+// Usercode
+void f() 
+
+{
+   GPIOClass GreenLed(0x6007080, 5);
+   
+   GreenLed.SetPinState(GPIOClass::On);
+}
+\end{CCode}
+
+
+\subsubsection{Effektiver Code}
+\begin{CCode}
+// Effektiver Code
+void fe() 
+
+{
+   GPIOClass GreenLed; // Variable erzeugen
+   
+    // Konstruktor mit Adresse von Variable aufrufen
+   GPIOClass::GPIOClass(&GreenLed, 0x6007080, 5);
+   
+   // SetPinState() mit Adresse von Variable aufrufen
+   GPIOClass::SetPinState(&GreenLed, GPIOClass::On); 
+}
+
+void GPIOClass::SetPinState(GPIOClass::PinState State)
+{
+     // Funktions Entry Code (Variablen auf Stack erzeugen)
+     volatile uint32_t &RegisterAdress  = *reinterpret_cast<volatile uint32_t *>(BaseAdress + RegisterOffset);
+
+     if (State == On) {
+        RegisterAdress |= 1u << PinNumber;
+     } else  {
+        RegisterAdress &= ~(1u << PinNumber);
+     }
+     // Funktions exit Code (Stack aufraeumen)     
+}
+\end{CCode}
+\NextPagePlease
+\subsection{Mit Klassen und Inline Methoden}
+\subsubsection{Abstraktion}
+\begin{CCode}
+
+// GPIO.hpp
+class GPIOClass {
+
+   const uintptr_t BaseAdress;
+   const unsigned int PinNumber;
+   
+   public:
+   enum PinState {Off, On};
+   
+   GPIOClass(uintptr_t NewBaseAdress, unsigned int NewPinNumber);
+   
+   void SetPinState(PinState State)
+   {
+      volatile uint32_t &RegisterAdress  = *reinterpret_cast<volatile uint32_t *>(BaseAdress + RegisterOffset);
+      
+      if (State == On) {
+         RegisterAdress |= 1u << PinNumber;
+      } else  {
+         RegisterAdress &= ~(1u << PinNumber);
+      }
+   }
+};
+\end{CCode}
+
+
+\begin{CCode}
+// GPIO.cpp
+GPIOClass::GPIOClass(uintptr_t NewBaseAdress, unsigned int NewPinNumber) : 
+   BaseAdress(NewBaseAdress), PinNumber(NewPinNumber)
+{
+   // Cherck for valid parameters
+   // Initialize GPIO Hw
+}
+
+\end{CCode}
+
+\subsubsection{Anwendung}
+\begin{CCode}
+// Usercode
+void f() 
+
+{
+   GPIOClass GreenLed(0x6007080, 5);
+   
+   GreenLed.SetPinState(GPIOClass::On);
+}
+\end{CCode}
+
+
+\subsubsection{Effektiver Code}
+\begin{CCode}
+// Effektiver Code
+void fe() 
+{
+   GPIOClass GreenLed; // Variable erzeugen
+   GPIOClass::GPIOClass(&GreenLed, 0x6007080, 5); // Konstruktor mit Adresse von Variable aufrufen
+   
+   volatile uint32_t &RegisterAdress  = *reinterpret_cast<volatile uint32_t *>(GreenLed.BaseAdress + RegisterOffset);
+
+   // Wenn Aufruf mit Konstanten wird if wegoptimiert
+   if (GPIOClass::On == GPIOClass::On) {
+      RegisterAdress |= 1u << GreenLed.PinNumber;
+   } else  {
+      RegisterAdress &= ~(1u << GreenLed.PinNumber);
+   }
+}
+\end{CCode}
+\NextPagePlease
+\subsection{Mit Templates}
+\subsubsection{Abstraktion}
+\begin{CCode}
+
+// GPIO.hpp
+template <uintptr_t BaseAdress, unsigned int PinNumber>
+class GPIOClass {
+
+   public:
+   enum PinState {Off, On};
+
+   // Check for valid parameters
+   static_assert(PinNumber < 16, "Illegal Pinnumber");
+
+   GPIOClass() {
+      // Initialize GPIO Hw
+   }
+
+   void SetPinState(PinState State)
+   {
+      volatile uint32_t &RegisterAdress  = *reinterpret_cast<volatile uint32_t *>(BaseAdress + RegisterOffset);
+
+      if (State == On) {
+         RegisterAdress |= 1u << PinNumber;
+      } else  {
+         RegisterAdress &= ~(1u << PinNumber);
+      }
+   }
+};
+\end{CCode}
+
+
+\begin{CCode}
+// GPIO.cpp
+
+// Leer 
+
+\end{CCode}
+
+\subsubsection{Anwendung}
+\begin{CCode}
+// Usercode
+void f() 
+
+{
+   GPIOClass<0x6007080, 5> GreenLed;
+
+   GreenLed.SetPinState(GPIOClass<0x6007080, 5>::On);
+}
+\end{CCode}
+
+
+\subsubsection{Effektiver Code}
+\begin{CCode}
+// Effektiver Code
+void fe() 
+{
+   GPIOClass<0x6007080, 5> GreenLed; // Variable erzeugen
+   GPIOClass<0x6007080, 5>::GPIOClass<0x6007080, 5>(&GreenLed); // Konstruktor mit Adresse von Variable aufrufen
+
+   // Wenn Aufruf mit Konstanten wird if wegoptimiert
+   // Kein Zugriff auf Membervarianblen
+   // Konstante Ausdruecke werden zur Compilezeit berechnet
+   if (GPIOClass<0x6007080, 5>::On == GPIOClass<0x6007080, 5>::On) {
+      *(0x6007080 + RegisterOffset) |= (1u << 5);
+   } else  {
+      *(0x6007080 + RegisterOffset) &= ~(1u << 5);
+   }
+}
+\end{CCode}
+
+\NextPagePlease
+\subsection{Mit Templates ohne Objekte}
+\subsubsection{Abstraktion}
+\begin{CCode}
+
+// GPIO.hpp
+template <uintptr_t BaseAdress, unsigned int PinNumber>
+class GPIOClass {
+
+   public:
+   enum PinState {Off, On};
+
+   // Check for valid parameters
+   static_assert(PinNumber < 16, "Illegal Pinnumber");
+
+   GPIOClass() {
+      // Initialize GPIO Hw
+   }
+
+   static void SetPinState(PinState State) // Klassenmethode
+   {
+      volatile uint32_t &RegisterAdress  = *reinterpret_cast<volatile uint32_t *>(BaseAdress + RegisterOffset);
+
+      if (State == On) {
+         RegisterAdress |= 1u << PinNumber;
+      } else  {
+         RegisterAdress &= ~(1u << PinNumber);
+      }
+   }
+};
+\end{CCode}
+
+
+\begin{CCode}
+// GPIO.cpp
+
+// Leer 
+
+\end{CCode}
+
+\subsubsection{Anwendung}
+\begin{CCode}
+// Usercode
+void f() 
+
+{
+   // Nur Type definieren, kein Objekt erzeugt
+   typedef GPIOClass<0x6007080, 5> GreenLed;  
+
+   // Klassenmethode aufrufen
+   GreenLed::SetPinState(GPIOClass<0x6007080, 5>::On);
+}
+\end{CCode}
+
+
+\subsubsection{Effektiver Code}
+\begin{CCode}
+// Effektiver Code
+void fe() 
+{
+   // Konstruktor wird nicht aufgerufen da kein Objekt erzeugt wird
+   
+   // Wenn Aufruf mit Konstanten wird if wegoptimiert
+   // Kein Zugriff auf Membervarianblen
+   // Konstante Ausdruecke werden zur Compilezeit berechnet
+   if (GPIOClass<0x6007080, 5>::On == GPIOClass<0x6007080, 5>::On) {
+      *(0x6007080 + RegisterOffset) |= (1u << 5);
+   } else  {
+      *(0x6007080 + RegisterOffset) &= ~(1u << 5);
+   }
+}
+\end{CCode}
+
+\subsection{Vor- und Nachteile}
+\subsubsection{Klassen}
+ \begin{itemize}
+    \item Polymorphismus ist möglich
+     
+     \item  Identische Komponenten sind vom selben Typ
+      \item Verwaltung zur Laufzeit möglich
+\end{itemize}
+
+\begin{CCode}
+// Usercode
+void ProzessLed(GPIOClass &Led) 
+{
+     Led.SetPinState(GPIOClass::On);
+}
+
+
+void f() 
+{
+   GPIOClass GreenLed(0x6007080, 5);
+   GPIOClass RedLed(0x6007040, 2);
+   
+   // Verschiedene Led können an Funktion übergeben werden
+   ProzessLed(GreenLed); 
+   ProzessLed(RedLed);
+   
+   // Verschiedene Leds können im selben Vektor abgelegt werden
+   std::vector<GPIOClass *> Leds;
+   Leds.push_back(&RedLed);
+   Leds.push_back(&GreenLed);
+}
+\end{CCode}
+
+\subsubsection{Templates}
+ \begin{itemize}
+ 
+    \item Maximale geschwindigkeitsoptimierung möglich
+    \item Es kann ganz auf ein Objekt verzichtet werden
+    \item Polymorphismus nicht möglich
+     \item  Identische Komponenten sind nicht vom selben Typ
+     \item Verwaltung zur Laufzeit nicht möglich
+\end{itemize}
+
+\begin{CCode}
+// Usercode
+// Funktion nur für Led Nummmer 5 an Adresse 0x6007080
+void ProzessLed(GPIOClass<0x6007080, 5> &Led) 
+{
+     Led.SetPinState(GPIOClass<0x6007080, 5>::On);
+}
+
+// Für jede Led eigene Funktion notwendig
+// Achtung sieht harmlos aus, erzeugt aber für
+// jede eingesetzte Led neuen Funktionscode!
+template <class GPIO>
+void ProzessLedTemplate(GPIO &Led) 
+{
+     Led.SetPinState(GPIO::On);
+}
+
+
+void f() 
+{
+   GPIOClass<0x6007080, 5> GreenLed;
+   GPIOClass<0x6007040, 2> RedLed
+   
+   // Nur passende Led kann an Funktion übergeben werden
+   ProzessLed(GreenLed);   // Ok
+   ProzessLed(RedLed);       // Error
+   
+   // Für jede led kann passende Templatefunktion instanziert werden
+   ProzessLedTemplate(GreenLed);   // Ok, generiert Code fuer GPIOClass<0x6007080, 5>
+   ProzessLedTemplate(RedLed);       // Ok, generiert Code fuer GPIOClass<0x6007040, 2>
+   
+   // Verschiedene Leds können nicht im selben Vektor abgelegt werden
+   std::vector<GPIOClass<0x6007080, 5> *> Leds;
+   Leds.push_back(&RedLed);     // Ok
+   Leds.push_back(&GreenLed);  // Error
+}
+\end{CCode}
+
+
+
+\subsection{Fabrik mit Klassen}
+Objekte können zur Laufzeit mit einer 'Fabrikklasse' einfach erzeugt werden.
+
+\begin{CCode}
+
+// GPIO.hpp
+class GPIOFactory {
+
+   public:
+   enum PortNames{PortA, PortB, PortC};
+   
+   static GPIOClass CreateGPIO(PortNames Port, unsigned int PinNumber);
+};
+\end{CCode}
+
+
+\begin{CCode}
+// GPIO.cpp
+GPIOClass GPIOFactory::CreateGPIO(PortNames Port, unsigned int PinNumber)
+{
+    switch(Port) {
+       case PortA: return GPIOClass(0x6007000, PinNumber);
+       case PortB: return GPIOClass(0x6007040, PinNumber);
+       case PortC: return GPIOClass(0x6007080, PinNumber);
+       default: throw ErrorClass;
+}
+
+void f() 
+{
+   GPIOClass GreenLed = GPIOFactory::CreateGPIO(PortB, 5);
+   GPIOClass RedLed    = GPIOFactory::CreateGPIO(PortC, 2);
+   
+}
+\end{CCode}
+
+
+\subsection{Fabrik mit Templates}
+Klassen können zur Compilezeit mit einem 'Fabriktemplate' einfach erzeugt werden.
+\begin{CCode}
+
+// GPIO.hpp
+
+enum class GPIO_Ports {PortA, PortB, PortC};
+
+template <GPIOBase::GPIO_Ports GPIOPort, unsigned int Pin>
+class GPIOFactory
+{
+   static constexpr uintptr_t GetBaseAddress(GPIOBase::GPIO_Ports Port)
+   {
+      switch(Port) {
+         case GPIO_Ports::PortA: return 0x6007000;
+         case GPIO_Ports::PortB: return 0x6007040;
+         case GPIO_Ports::PortC: return 0x6007080;
+         default: return 0;
+      }
+   }
+
+   static_assert (GetBaseAddress(GPIOPort)!=0, "Illegal Port requested");
+   static_assert (Pin < 16, "Illegal Pin requested");
+   
+   public:
+   typedef typename GPIOClass<GetBaseAddress(GPIOPort), Pin> GPIO;
+}
+
+void f() 
+{
+   GPIOFactory<GPIO_Ports::PortB, 5>::GPIO GreenLed;
+   GPIOFactory<GPIO_Ports::PortC, 2>::GPIO RedLed;
+}
+\end{CCode}
+
+
 
 \chapter{Standardisierungen}
 \section{\CppVers{11}}
