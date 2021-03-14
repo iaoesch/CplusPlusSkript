@@ -6787,6 +6787,151 @@ void f()
 }
 \end{CCode}
 
+\NextPagePlease
+\section{Runtime und Compiletime Polymorphismus}
+Hardware kann in C++ mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
+ 
+\subsection{Runtime Polymorphismus mit virtuellen Methoden}
+Es wird erst zur Laufzeit entschieden, welche Objekte erstellt werden und entsprechend wird ebenfalls erst zur Laufzeit bestimmt, welche Methoden aufgerufen werden.Es werden alle Methoden erzeugt, deren Aufruf möglich wäre.
+\begin{CCode}
+class LedBase {
+public:
+   virtual void SetState(int State) = 0;
+};
+
+class SimulatedLed : public LedBase {
+   std::string Name;
+   
+public:
+   SimulatedLed(const std::string N) : Name(N) {}
+   virtual void SetState(int State) {
+      std::cout << "New Led State: " << State << std::endl;
+   }
+};
+
+class RealLed : public LedBase {
+   volatile int *Address;
+   
+public:
+   RealLed(int *Addr) : Address(Addr) {}
+   virtual void SetState(int State) {
+      *Address = State;
+   }
+};
+
+// Use baseclass interface, so all derived classes
+// are acceptable at runtime
+void f(LedBase *Led) 
+{
+   // Use virtual mechanism at runtime 
+   Led->SetState(1);
+}
+
+void Process()
+{
+   LedBase *Led;
+   
+   // Determine at runtime if debug or standard mode is selected
+   if (CheckDebugSwitch()) {
+      Led = new SimulatedLed("Red");
+   } else {
+      Led = new RealLed((int *)0x40010);
+   }
+   
+   f(Led);
+}
+\end{CCode}
+
+
+\subsection{Compiletime Polymorphismus mit Templates}
+Es wird bereits zur Compilezeit entschieden, welche Objekte erstellt werden und entsprechend wird ebenfalls zur Compilezeit bestimmt, welche Methoden generiert und aufgerufen werden. Dabei werden nur die (Template-)Methoden erzeugt, welche effektiv auch benötigt werden.
+
+\begin{CCode}
+class SimulatedLed {
+   std::string Name;
+
+public:
+   SimulatedLed(const std::string N) : Name(N) {}
+   void SetState(int State) {
+      std::cout << "New Led State: " << State << std::endl;
+   }
+};
+
+class RealLed {
+   volatile int *Address;
+
+public:
+   RealLed(int *Addr) : Address(Addr) {}
+   void SetState(int State) {
+      *Address = State;
+   }
+};
+
+template <bool DebugOn>
+class Helper {
+
+};
+template <>
+class Helper<true> {
+public:
+   typedef SimulatedLed Type;
+   static auto SelectParameter(uintptr_t AddressValue, const char *NameValue)
+   {
+      return NameValue;
+   }
+};
+template <>
+class Helper<false> {
+public:
+   typedef RealLed Type;
+   static auto SelectParameter(uintptr_t AddressValue, const char *NameValue)
+   {
+      return reinterpret_cast<int *>(AddressValue);
+   }
+};
+
+
+template <bool DebugOn>
+typename Helper<DebugOn>::Type CreateLed(uintptr_t AddressValue, const char *NameValue)
+{
+   typedef typename Helper<DebugOn>::Type ClassName;
+   return ClassName(Helper<DebugOn>::SelectParameter(AddressValue, NameValue));
+}
+
+// Generate typedependent code at compile time 
+template <class LedType>
+void f(LedType &Led)
+{
+   Led.SetState(1);
+}
+
+// Select Debug or normal mode at compile time
+constexpr bool DebugMode = true;
+
+void Process()
+{
+
+   // Determine at compiletime if debug or standard mode is selected
+   // Will either create a Simulated or a real Led
+   auto Led = CreateLed<DebugMode>(0x40070, "Red");
+
+   // Allways a simulated led
+   SimulatedLed DebugLed("Yellow");
+
+   // Allways a real led
+   RealLed TrueLed(reinterpret_cast<int *>(0x40090));
+
+   // Deceided a compiletime which method to generate and call
+   f(Led);
+
+   // Allways call function f<RealLed>()
+   f(TrueLed);
+
+   // Allways call function f<SimulatedLed>()
+   f(DebugLed);
+}
+
+\end{CCode}
 
 
 \chapter{Standardisierungen}
