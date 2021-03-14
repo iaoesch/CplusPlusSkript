@@ -27,3 +27,4 @@
 *.pdf
 *.bak
 /Script_CPP_pure_LatexV0_2_backup20180216.tex
+*.synctex.gz
