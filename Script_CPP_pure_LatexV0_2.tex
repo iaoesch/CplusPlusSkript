@@ -6789,7 +6789,11 @@ void f()
 
 \NextPagePlease
 \section{Runtime und Compiletime Polymorphismus}
-Hardware kann in C++ mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
+Polymorphismus kann in \Cpp in zwei Varianten auftreten. 
+
+Zum einen in Fom des statischen Polymorphismus durch Templates, hier wird zur Compilezeit entschieden welche Funktionen und Methoden generiert und aufgerufen werden. Dabei wird nur für effektiv verwendete Methoden Code generiert. 
+
+Zum anderen der Polymorphismus mit Vererbung und virtuellen Methoden, bei dem zur Laufzeit entschieden wird welche Methoden aufgerufen werden. Bei dieser Variante wird zur Compilezeit für alle Methoden Code generiert. 
  
 \subsection{Runtime Polymorphismus mit virtuellen Methoden}
 Es wird erst zur Laufzeit entschieden, welche Objekte erstellt werden und entsprechend wird ebenfalls erst zur Laufzeit bestimmt, welche Methoden aufgerufen werden.Es werden alle Methoden erzeugt, deren Aufruf möglich wäre.
