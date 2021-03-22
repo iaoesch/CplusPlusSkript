@@ -6049,6 +6049,8 @@ soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden w
 		 Inline Funktionen	 & Bedingt & Nein, sogar Zeitgewinn & Ja & Ja\\
 		 Templates	 & Je nach Template & Nein & Je nach Template & Je nach Template\\
 		 Temporäre Objekte & Nein & Ja & Ja & Ja\\
+		 constexpr Funktionen	 & Nein, sogar Platzgewinn & Nein, sogar Zeitgewinn & Ja & Ja\\
+		 const und consteval Konstanten & Nein, meist sogar Platzgewinn & Nein, meist sogar Zeitgewinn & Ja & Ja\\
 		\hline
 		
 	\end{tabular}
@@ -6269,6 +6271,17 @@ Grundsätzlich spart man sich die Zeit für den Funktionsaufruf, wenn jedoch die F
 Auf der Gegenseite wird die Codegrösse beim Benutzen von Inlinefunktionen grösser. (Der Code für die Funktion wird bei jedem Funktionsaufruf erneut eingefügt. Wenn der Funktionscode mehr Platz belegt, als durch den Wegfall des Codes für den Funktionsaufruf eingespart wird, hat das mehr Platzbedarf für den Gesamtcode zur Folge). Bei Inlinefunktionen muss man also immer zwischen Geschwindigkeitsgewinn und Codezuwachs abwägen. Einzig bei ganz kurzen Funktionen (1-3 Zeilen) kann auch die Codegrösse abnehmen.
 
 Wenn Inlinefunktionen über Pointer oder als virtuelle Funktionen eingesetzt werden, findet kein Inlining statt (Aber sehr wohl an Stellen bei der die Funktion direkt aufgerufen wird) 
+
+\subsection{Constexpr und consteval Funktionen}
+Wenn Constexprfunktionen mit Konstanten Werten aufgerufen werden, wird deren Ergebnis bereits zu Compilezeit berechnent und direkt im Code eingesetzt. Damit wird weder Code generiert, noch Zeit für dessen Ausführung zur Laufzeit benötigt.
+
+Cosntexprfunktionen sind jedoch eingeschränkt in den Möglichkeiten, da der ganze Code zur Compilezeit ausgeführt werden können muss und ein konstantes Resultat liefern muss. (Unter anderem dürfen sie nur andere Constexpr-Funktionen aufrufen und nur lokale Variablen verwenden).
+
+Wenn Konstexprfunktionen mit nicht konstanten Argumenten aufgerufen werden, wird Code generiert und die Funktion ganz normal zur Laufzeit ausgeführt.
+
+\subsection{Const und Constexpr Konstanten}
+Wenn Konstanten mit Constexpr oder static const definiert werden, und nirgens ihre Adresse verwendet wird, kann der Compiler oft vermeiden, dafür überhaupt Speicherplatz zu Belegen, sondern die Werte direkt in die Prozessorbefehle integrieren. Und wenn dies nicht möglich ist, werden die Werte zumindest im (Code-)Rom abgelegt, und nicht im RAM bei den anderen Variablen.
+
 
 \subsection{Templates}
 Ein gut geschriebenes Template sollte nicht mehr Code als handgeschriebener Code erzeugen. Man muss aber beachten, dass ein einfacher Templateaufruf möglicherweise im Hintergrund zum Instanzieren vieler Templates mit dem entsprechenden Code führt. Zudem sind noch nicht alle Linker in der Lage, redundanten Code wieder zu entfernen, wenn dasselbe Template in verschiedenenen Modulen verwendet wird. Grundsätzlich spricht jedoch nichts gegen den Einsatz von gut geschriebenen Templates, man sollte einfach den Speicherverbrauch im Auge behalten.
