@@ -54,7 +54,7 @@
 
 
 %Schriftgröße, Layout, Papierformat, Art des Dokumentes
-\documentclass[german,10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
+\documentclass[german,10pt,a4paper,BCOR=12mm,DIV=13,oneside]{scrreprt}
 %\documentclass[10pt,a4paper,BCOR12mm,DIV13,oneside]{scrreprt}
 %\documentclass[10pt,a4paper]{report}
 %\usepackage{bookman}
@@ -221,10 +221,10 @@ breaklines=true,
 basicstyle={\footnotesize \ttfamily},
 %backgroundcolor=\color{Mygray},
 %frame=single,
+% Allow linebreaks at underscores
+%literate={\_}{}{0\discretionary{\_}{}{\_}}%
 tab=\rightarrowfill}
 
-% Allow linebreaks at underscores
-literate={\_}{}{0\discretionary{\_}{}{\_}}%
   
 %Nicht sicher obs das wirklich braucht...
 % Versuch verbatime mit CCode zu kombinieren
@@ -2604,85 +2604,240 @@ könnte in folgenden Code umgesetzt werden:
   DoSomethingCooperative(RObj, nullptr, 3.14);
 \end{CCode}
 
-
+\subsubsection{Vollständiges Beispiel zu Coroutinen}
 \begin{CCode}
-template<typename PromiseType>
-struct SignalAwaiter {
-       
-  bool await_ready();
-  // Nur eine der drei await_suspend() Methoden darf definiert sein
-  void await_suspend(std::coroutine_handle<PromiseType> h);
-  bool await_suspend(std::coroutine_handle<PromiseType> h);
-  std::coroutine_handle<Whatever> await_suspend(std::coroutine_handle<PromiseType> h);
-  AnyType await_resume();
+#include <iostream>
+
+#ifndef __clang__
+// Compiler fully supports coroutines
+#include <coroutine>
+namespace xstd = std;
+
+#else
+// Compiler experimentally supports coroutines
+#include <experimental/coroutine>
+namespace xstd = std::experimental;
+#endif
+
+#include <iostream>
+#include <stdexcept>
+#include <cassert>
+
+class SignalClass {
+   bool State = false;
+public:
+   bool Get() {return State;}
+   void Set(bool NewState) {State = NewState;}
 };
-    
-\end{CCode}
 
-\begin{CCode}
-struct Awaiter{ // Must at laest contain the following Methods
+template<typename PromiseType>
+struct SignalAwaiter{
+   PromiseType *MyPromise = nullptr;
+   SignalClass &MySignal;
+
+   bool await_ready() { return MySignal.Get(); }
+   void await_suspend(xstd::coroutine_handle<PromiseType> h) {
+       MyPromise = &h.promise();
+       MyPromise->RegisterAwaiter(this);
+   }
+   bool await_resume() { if (MyPromise) { MyPromise->UnRegisterAwaiter();} return true; }
+   SignalAwaiter(SignalClass &ms) : MySignal(ms) {}
+   bool CanContinue()  {return await_ready();}
+};
+
+struct ReturnInfoType{ // Must contain an embedded promise type
   struct promise_type {
-    BaseAwaiter<promise_type> *Awaiter = nullptr;
+    SignalAwaiter<promise_type> *Awaiter = nullptr;
+    int IntValue = 7;
+    const char *TextValue = "<empty>";
 
     ReturnInfoType get_return_object() { return {.h_ = xstd::coroutine_handle<promise_type>::from_promise(*this)}; }
     xstd::suspend_never initial_suspend() { return {}; }
     xstd::suspend_always final_suspend() noexcept { return {}; }
-    void return_void() {}
-//    void return_value(enum RocketState Val) {Value = Val; ValueValid = true; }
-//    xstd::suspend_always yield_value(enum RocketState Val) {Value = Val; ValueValid = true; return {};}
+    void return_value(int Val) {IntValue = Val;}
+    void return_value(const char *c) {TextValue = c;}
+    xstd::suspend_always yield_value(int Val) { IntValue = Val; return {};}
+    xstd::suspend_always yield_value(const char * Val) { TextValue = Val; return {};}
     void unhandled_exception() {}
-//    RocketAwaiter<promise_type> await_transform(RocketLauncher& Launcher) {return RocketAwaiter<promise_type>(*this, Launcher);}
-    SignalAwaiter<promise_type> await_transform(SignalClass& Signal) {return SignalAwaiter<promise_type>(*this, Signal);}
-    void RegisterAwaiter(BaseAwaiter<promise_type> *NewAwaiter) {assert(Awaiter==nullptr); Awaiter = NewAwaiter; if constexpr (DebugOutput) std::cout << "Registering Awaiter " << Awaiter << std::endl;}
-    void UnregisterAwaiter(BaseAwaiter<promise_type> *AwaiterToRemove) {assert(Awaiter==AwaiterToRemove); Awaiter = nullptr; if constexpr (DebugOutput) std::cout << "Unregistering Awaiter " << AwaiterToRemove << std::endl;}
+    SignalAwaiter<promise_type> await_transform(SignalClass& Signal) {return SignalAwaiter<promise_type>(Signal);}
+    void RegisterAwaiter(SignalAwaiter<promise_type> *NewAwaiter) {assert(Awaiter==nullptr); Awaiter = NewAwaiter; }
+    void UnRegisterAwaiter() {Awaiter = nullptr; }
     bool IsReadyToResume() {
        if (Awaiter == nullptr) {
-          if constexpr (DebugOutput) std::cout  << "No Awaiter, just go on\n";
           return true;
        } else {
-          if constexpr (DebugOutput) std::cout  << "Checking Awaiter " << Awaiter << "\n";
           if (Awaiter->CanContinue()){
-             if constexpr (DebugOutput) std::cout  << "Awaiter ready\n";
              return true;
-
           } else {
-             if constexpr (DebugOutput) std::cout  << "Awaiter not ready\n";
              return false;
-
           }
        }
     }
-    ~promise_type() {std::cout  << "Promise destroyed\n";}
+    int GetIntValue() {return IntValue;}
+    const char *GetTextValue() {return TextValue;}
   };
+
   operator xstd::coroutine_handle<promise_type>() const { return h_; }
   xstd::coroutine_handle<promise_type> h_;
   void ResumeAllways() {h_();}
   void ResumeIfReady() {if (h_.promise().IsReadyToResume()) {h_();}}
 };
+
+
+ReturnInfoType CoRoutine(SignalClass &Signal1, SignalClass &Signal2) {
+
+
+     while (1) {
+        co_await Signal1;
+        
+        if (rand() % 3 == 0) {
+           co_yield rand();
+        }
+
+         co_await Signal2;
+
+        if (rand() % 3 == 0) {
+           co_yield "Hans";
+        }
+
+        if (rand() % 40 == 0) {
+           if (Signal1.Get()) {
+              co_return "Ende";
+           }
+           if (Signal2.Get()) {
+              co_return 99;
+           }
+        }
+     }
+}
+
+void SimulateEnvironment(SignalClass &Signal1, SignalClass &Signal2)
+{
+   if (rand() % 8 == 0) {
+      Signal2.Set(true);
+   } else {
+      if (rand() % 8 == 0) {
+         Signal2.Set(false);
+      }
+   }
+   if (rand() % 4 == 1) {
+      Signal1.Set(true);
+   } else {
+      if (rand() % 2 == 0) {
+         Signal1.Set(false);
+      }
+   }
+}
+
+void CoroutineDemo() {
+
+
+  SignalClass Signal1;
+  SignalClass Signal2;
+  ReturnInfoType ReturnObject;
+  xstd::coroutine_handle<ReturnInfoType::promise_type> h;
+
+  ReturnObject = CoRoutine(Signal1, Signal2);
+  h = ReturnObject;
+
+  while (!h.done()) {
+     std::cout  << "Tick\n";
+     SimulateEnvironment(Signal1, Signal2);
+     ReturnObject.ResumeIfReady(); // Continue Coroutine
+     std::cout << "Values: " << h.promise().IntValue << ", " << h.promise().GetTextValue() << std::endl;
+  }
+  h.destroy();
+}
+
+int main() {
+
+  std::cout << "Starting Coroutine Demo... "  << std::endl;
+  CoroutineDemo();
+  std::cout << "done... "  << std::endl;
+}
+
+
 \end{CCode}
 
-\begin{CCode}
-template<typename PromiseType>
-struct SignalAwaiter : public BaseAwaiter<PromiseType>{
-       bool CanContinue() override {return await_ready();}
-  bool await_ready() { return MySignal.Get(); }
-  void await_suspend(xstd::coroutine_handle<PromiseType> h) {
-    if constexpr (DebugOutput)  std::cout << "Suspended\n";
-    BaseAwaiter<PromiseType>::RegisterAwaiter();
-  }
-  bool await_resume() {
-     if constexpr (DebugOutput) std::cout << "Resumed\n";
-     BaseAwaiter<PromiseType>::UnregisterAwaiter();
-     return true;
-  }
-  SignalAwaiter(PromiseType &Promise, SignalClass &ms) : BaseAwaiter<PromiseType>(Promise), MySignal(ms) {}
-  SignalClass &MySignal;
-};
-    
-  };
-\end{CCode}
 
-
+%\begin{CCode}
+%template<typename PromiseType>
+%struct SignalAwaiter {
+       %
+  %bool await_ready();
+  %// Nur eine der drei await_suspend() Methoden darf definiert sein
+  %void await_suspend(std::coroutine_handle<PromiseType> h);
+  %bool await_suspend(std::coroutine_handle<PromiseType> h);
+  %std::coroutine_handle<Whatever> await_suspend(std::coroutine_handle<PromiseType> h);
+  %AnyType await_resume();
+%};
+    %
+%\end{CCode}
+%
+%\begin{CCode}
+%struct Awaiter{ // Must at laest contain the following Methods
+  %struct promise_type {
+    %BaseAwaiter<promise_type> *Awaiter = nullptr;
+%
+    %ReturnInfoType get_return_object() { return {.h_ = xstd::coroutine_handle<promise_type>::from_promise(*this)}; }
+    %xstd::suspend_never initial_suspend() { return {}; }
+    %xstd::suspend_always final_suspend() noexcept { return {}; }
+    %void return_void() {}
+%//    void return_value(enum RocketState Val) {Value = Val; ValueValid = true; }
+%//    xstd::suspend_always yield_value(enum RocketState Val) {Value = Val; ValueValid = true; return {};}
+    %void unhandled_exception() {}
+%//    RocketAwaiter<promise_type> await_transform(RocketLauncher& Launcher) {return RocketAwaiter<promise_type>(*this, Launcher);}
+    %SignalAwaiter<promise_type> await_transform(SignalClass& Signal) {return SignalAwaiter<promise_type>(*this, Signal);}
+    %void RegisterAwaiter(BaseAwaiter<promise_type> *NewAwaiter) {assert(Awaiter==nullptr); Awaiter = NewAwaiter; if constexpr (DebugOutput) std::cout << "Registering Awaiter " << Awaiter << std::endl;}
+    %void UnregisterAwaiter(BaseAwaiter<promise_type> *AwaiterToRemove) {assert(Awaiter==AwaiterToRemove); Awaiter = nullptr; if constexpr (DebugOutput) std::cout << "Unregistering Awaiter " << AwaiterToRemove << std::endl;}
+    %bool IsReadyToResume() {
+       %if (Awaiter == nullptr) {
+          %if constexpr (DebugOutput) std::cout  << "No Awaiter, just go on\n";
+          %return true;
+       %} else {
+          %if constexpr (DebugOutput) std::cout  << "Checking Awaiter " << Awaiter << "\n";
+          %if (Awaiter->CanContinue()){
+             %if constexpr (DebugOutput) std::cout  << "Awaiter ready\n";
+             %return true;
+%
+          %} else {
+             %if constexpr (DebugOutput) std::cout  << "Awaiter not ready\n";
+             %return false;
+%
+          %}
+       %}
+    %}
+    %~promise_type() {std::cout  << "Promise destroyed\n";}
+  %};
+  %operator xstd::coroutine_handle<promise_type>() const { return h_; }
+  %xstd::coroutine_handle<promise_type> h_;
+  %void ResumeAllways() {h_();}
+  %void ResumeIfReady() {if (h_.promise().IsReadyToResume()) {h_();}}
+%};
+%\end{CCode}
+%
+%\begin{CCode}
+%template<typename PromiseType>
+%struct SignalAwaiter : public BaseAwaiter<PromiseType>{
+       %bool CanContinue() override {return await_ready();}
+  %bool await_ready() { return MySignal.Get(); }
+  %void await_suspend(xstd::coroutine_handle<PromiseType> h) {
+    %if constexpr (DebugOutput)  std::cout << "Suspended\n";
+    %BaseAwaiter<PromiseType>::RegisterAwaiter();
+  %}
+  %bool await_resume() {
+     %if constexpr (DebugOutput) std::cout << "Resumed\n";
+     %BaseAwaiter<PromiseType>::UnregisterAwaiter();
+     %return true;
+  %}
+  %SignalAwaiter(PromiseType &Promise, SignalClass &ms) : BaseAwaiter<PromiseType>(Promise), MySignal(ms) {}
+  %SignalClass &MySignal;
+%};
+    %
+  %};
+%\end{CCode}
+%
+%
 
 
 \chapter{Überladen von Operatoren}
