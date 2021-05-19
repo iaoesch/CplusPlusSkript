@@ -223,6 +223,9 @@ basicstyle={\footnotesize \ttfamily},
 %frame=single,
 tab=\rightarrowfill}
 
+% Allow linebreaks at underscores
+literate={\_}{}{0\discretionary{\_}{}{\_}}%
+  
 %Nicht sicher obs das wirklich braucht...
 % Versuch verbatime mit CCode zu kombinieren
 
@@ -2318,7 +2321,8 @@ Grundsätzlich wird eine Coroutine gleich wie eine gewöhnliche Funktion definiert
   }
 \end{CCode}
 
-Mit dem (überladbaren) Operator \OviIndex{co\_await} wird die Coroutine unterbrochen und kehrt zum Aufrufer zurück. \CodeStyle{co_await} erhält als Parameter einen Ausdruck der angibt, worauf gewartet wird. Die Coroutine kann zu einem späteren Zeitpunkt vom Aufrufer oder von einer beliebigen anderen Stelle (Sogar von einem anderen Task oder Thread (theoretisch auch Interrupt)) fortgesetzt werden. Dazu muss nur \CodeStyle{Resume()} aufgerufen werden.
+Mit dem (überladbaren) Operator \OviIndex{co\_await} wird die Coroutine unterbrochen und kehrt zum Aufrufer zurück. \CodeStyle{co_await} erhält als Parameter einen Ausdruck der angibt, worauf gewartet wird. Die Coroutine kann zu einem späteren Zeitpunkt vom Aufrufer oder von einer beliebigen anderen Stelle (Sogar von einem anderen Task oder Thread (theoretisch auch Interrupt)) fortgesetzt werden. Dazu muss nur \CodeStyle{Resume()} aufgerufen werden. Der Ausdruck hinter \CodeStyle{co_await} muss Awaitable sein, oder durch eine passende  \CodeStyle{await_transform(AnyType)} Methode des \CodeStyle{promise_type} in ein Awaitable Konvertierbar sein. Falls für das Awaitable ein  \CodeStyle{operator co_await} definiert wurde (Global, static oder als Memberfunktion) wird dieser aufgerufen, um ein Awaiter-Objekt zu erhalten, ansonsten wird das Awaitable selbst als Awaiter benutzt.
+
  
 Mit der Anweisung \OviIndex{co\_yield} wird die Coroutine unterbrochen und kehrt zum Aufrufer zurück, dabei wird ein Wert/Objekt mitgeliefert. Die Coroutine kann zu einem späteren Zeitpunkt vom Aufrufer oder von einer beliebigen anderen Stelle (Sogar von einem anderen Task oder Thread (theoretisch auch Interrupt)) fortgesetzt werden. Dazu muss nur \CodeStyle{Resume()} aufgerufen werden.
 
@@ -2327,7 +2331,9 @@ Mit der Anweisung \OviIndex{co\_return} wird die Coroutine beendet und kehrt zum
 Mit dem \emph{Returnobject} kann mit der Coroutine kommuniziert werden, beim erstmaligen Aufruf der Coroutine wird ein Returnobjekt zurückgeliefert (und die Verwaltungs- und Zustandsinformationen erzeugt). Die Fortsetzung der Coroutine erfolgt über Informationen im Returnobjekt (Handle der Coroutine, Promiseobjekt der Coroutine). Die Struktur / Klasse des Returnobjektes wird vom Anwender definiert, muss aber zwingend einen \OviIndex{promise\_type} beinhalten, entweder als eingebettete Struktur oder als Typedef.
 
 \subsubsection{promise\_type}
+\begin{sloppypar}
 Mit dem \CodeStyle{promise\_type} kann das Verhalten der Coroutine gesteuert werden, der \CodeStyle{promise\_type} muss mindestend die 5 Methoden \CodeStyle{get\_return\_object}, \CodeStyle{initial\_suspend}, \CodeStyle{final\_suspend}, \CodeStyle{unhandled\_exception} und \CodeStyle{return\_void} definieren:
+\end{sloppypar}
 \begin{CCode}
   struct promise_type {
     
@@ -2342,9 +2348,9 @@ Mit dem \CodeStyle{promise\_type} kann das Verhalten der Coroutine gesteuert wer
     
   };
 \end{CCode}
-Nach Bedarf können noch die Methode \CodeStyle{return_value} (Anstelle von \CodeStyle{return_void}), sowie die beliebig überladbaren Methoden\CodeStyle{yield_value} und \CodeStyle{await_transform} definiert werden.
+Nach Bedarf können noch die Methode \CodeStyle{return_value} (Anstelle von \CodeStyle{return_void}), sowie die beliebig überladbaren Methoden  \CodeStyle{yield_value} und \CodeStyle{await_transform} definiert werden.
 
-Die Methode \CodeStyle{get\_return\_object} wird bei (jedem) initialen Aufruf einer Coroutine aufgerufen, und muss das Returnobjekt erzeugen, welches der Aufrufer der Coroutine als Ergebnis erhalt:
+Die Methode \CodeStyle{get\_return\_object()} wird bei (jedem) initialen Aufruf einer Coroutine aufgerufen, und muss das Returnobjekt erzeugen, welches der Aufrufer der Coroutine als Ergebnis erhalt:
 \begin{CCode}
   ...
   // Initialer Aufruf der Coroutine, Coroutinezustand wird erstellt und die Coroutine bis zum ersten 
@@ -2353,7 +2359,7 @@ Die Methode \CodeStyle{get\_return\_object} wird bei (jedem) initialen Aufruf ei
   ...
 \end{CCode}
 
-Die Methode \CodeStyle{initial\_suspend} wird bei (jedem) initialen Aufruf einer Coroutine aufgerufen, sobald das Verwaltungsobjekt der Coroutine erzeugt ist. Diese Methode legt fest, ob an dieser Stelle die Coroutine suspendiert wird, oder ob sie bis zum nächsten Haltepunkt (co\_...)weiterläuft. Sie muss ein Awaitable-Objekt zurückliefern, welches definiert ob die Coroutine unterbrochen werden soll oder nicht. Zur Vereinfachung sind in der Standardlibrary \CodeStyle{#include <coroutine>} bereits die beiden Klassen \CodeStyle{suspend_never} (Hält nie an) und \CodeStyle{suspend_always)} (Hält immer an) definiert.
+Die Methode \CodeStyle{initial\_suspend()} wird bei (jedem) initialen Aufruf einer Coroutine aufgerufen, sobald das Verwaltungsobjekt der Coroutine erzeugt ist. Diese Methode legt fest, ob an dieser Stelle die Coroutine suspendiert wird, oder ob sie bis zum nächsten Haltepunkt (co\_...)weiterläuft. Sie muss ein Awaitable-Objekt zurückliefern, welches definiert ob die Coroutine unterbrochen werden soll oder nicht. Zur Vereinfachung sind in der Standardlibrary \CodeStyle{#include <coroutine>} bereits die beiden Klassen \CodeStyle{suspend_never} (Hält nie an) und \CodeStyle{suspend_always)} (Hält immer an) definiert.
 
 \begin{CCode}
   ...
@@ -2365,7 +2371,7 @@ Die Methode \CodeStyle{initial\_suspend} wird bei (jedem) initialen Aufruf einer
 \end{CCode}
  
 
-Die Methode \CodeStyle{final\_suspend} wird beim endgültigen Ende einer Coroutine aufgerufen (Entweder wenn das letzte Statement einer Coroutine ausgeführt wurde, oder ein \CodeStyle{co_return} ausgeführt wird). Diese Methode legt fest, ob an dieser Stelle die Coroutine suspendiert wird, oder ob sie die Verwaltungs- und Zustandsinformationen löscht.
+Die Methode \CodeStyle{final\_suspend()} wird beim endgültigen Ende einer Coroutine aufgerufen (Entweder wenn das letzte Statement einer Coroutine ausgeführt wurde, oder ein \CodeStyle{co_return} ausgeführt wird). Diese Methode legt fest, ob an dieser Stelle die Coroutine suspendiert wird, oder ob sie ihre Verwaltungs- und Zustandsinformationen selber löscht und sich beendet.
 
 Wenn die Coroutine an diesem Punkt suspendiert wird, ist der Aufrufer für die Zerstörung (Aufräumen) des Coroutinezustandes varantwortlich. Ein weiterfahren der Coroutine ist nicht mehr möglich, ein Aufrufen von resume() führt zu undefiniertem Verhalten, unabhängig davon ob der Zustand freigegeben wurde.
 
@@ -2380,11 +2386,241 @@ Wenn die Coroutine an diesem Punkt nicht suspendiert wird, räumt sie selbst hint
   ...
 \end{CCode}
 
-Die Methode \CodeStyle{unhandled\_exception} wird aufgerufen wenn die Coroutine mit einer unbehandelten Exception beendet wird. Anschliessend wird \CodeStyle{final_suspend()} aufgerufen. Ein Aufrufen von resume() führt zu undefiniertem Verhalten
+Die Methode \CodeStyle{unhandled\_exception()} wird aufgerufen wenn die Coroutine mit einer unbehandelten Exception beendet wird. Anschliessend wird \CodeStyle{final_suspend()} aufgerufen. Ein Aufrufen von resume() führt zu undefiniertem Verhalten
+
+Die Methode \CodeStyle{return\_void()} wird aufgerufen wenn die Coroutine ihr Ende erreicht hat, oder ein  \CodeStyle{co_return} ohne Rückgabewert erreicht wird. Anschliessend wird \CodeStyle{final_suspend()} aufgerufen. Ein Aufrufen von resume() führt zu undefiniertem Verhalten
+
+Die Methode \CodeStyle{return\_value(TypeOfCoreturnedValue r)} wird aufgerufen wenn die Coroutine ein  \CodeStyle{co\_return Ausdruck} erreicht, diese Methode kann überladen werden, es wird die zum Ausdruck passend(st)e Methode aufgerufen. Es ist Aufgabe dieser Methode, den Wert der  \CodeStyle{co\_return} Anweisung so abzuspeichern oder weiterzuleiten, dass der Anwender der Coroutine darauf Zugriff hat. Anschliessend wird \CodeStyle{final_suspend()} aufgerufen. Ein Aufrufen von resume() führt zu undefiniertem Verhalten. Wenn eine \CodeStyle{return\_value(TypeOfCoreturnedValue r)} Methode definiert wurde, darf die Methode \CodeStyle{return\_void()} nicht definiert werden.
+
+
+Die Methode \CodeStyle{yield\_value(AnyType)} wird aufgerufen wenn die Coroutine ein  \CodeStyle{co\_yield Ausdruck} erreicht, diese Methode kann überladen werden, es wird die zum Ausdruck passend(st)e Methode aufgerufen. Es ist Aufgabe dieser Methode, den Wert der \CodeStyle{co\_yield} Anweisung so abzuspeichern oder weiterzuleiten, dass der Anwender der Coroutine darauf Zugriff hat. Sie muss ein Awaitable-Objekt zurückliefern, welches definiert ob die Coroutine unterbrochen werden soll oder nicht.
+
+Die Methode \CodeStyle{await\_transform(AnyType)} wird aufgerufen wenn die Coroutine ein \CodeStyle{co\_await AnyType} erreicht, diese Methode kann überladen werden, es wird die zum Ausdruck passend(st)e Methode aufgerufen. Es ist Aufgabe dieser Methode, den Wert der \CodeStyle{co\_await} Anweisung in ein Awaitable zu konvertieren. Wenn keine passende  \CodeStyle{await\_transform(AnyType)} Methode gefunden wird, erwartet der Compiler dass der Ausdruck von \CodeStyle{co\_await} selbst ein Awaitable ist.
+
+\subsubsection{awaiter}
+Mit einem \CodeStyle{Awaiter} kann das Verhalten einer \CodeStyle{co\_await} Anweisung gesteuert werden, ein \CodeStyle{Awaiter} muss mindestens die drei Methoden \CodeStyle{await_ready()}, \CodeStyle{await_suspend()} und \CodeStyle{await_resume()} definieren:
+\begin{CCode}
+template<typename PromiseType>
+struct SignalAwaiter {
+       
+  bool await_ready();
+  // Nur eine der drei await_suspend() Methoden darf definiert sein
+  void await_suspend(std::coroutine_handle<PromiseType> h);
+  bool await_suspend(std::coroutine_handle<PromiseType> h);
+  std::coroutine_handle<Whatever> await_suspend(std::coroutine_handle<PromiseType> h);
+  AnyType await_resume();
+};
+    
+\end{CCode}
+
+Die Methode \CodeStyle{await_ready()} wird als erstes aufgerufen wenn die Coroutine einen \CodeStyle{co\_await Ausdruck} erreicht (Nachdem 'Ausdruck' in einen Awaiter konvertiert wurde). Wenn \CodeStyle{await_ready()} den Wert \CodeStyle{true} zurückliefert wird die Coroutine nicht unterbrochen, direkt \CodeStyle{await_resume()} aufgerufen und nach dem \CodeStyle{co\_await} weitergefahren, wobei der Rückgabewert von \CodeStyle{await_resume()} zum Ergebnis der \CodeStyle{co\_await} Anweisung wird.  Wenn \CodeStyle{await_ready()} den Wert \CodeStyle{false} zurückliefert  wird die Coroutine unterbrochen und \CodeStyle{await_suspend()} aufgerufen.
+
+Die Methode \CodeStyle{await_suspend()} wird aufgerufen wenn die Coroutine einen \CodeStyle{co\_await Ausdruck} erreicht und \CodeStyle{await_ready()} den Wert \CodeStyle{false} zurückliefert. \CodeStyle{await_suspend()} erhält als Parameter das Handle der aktuellen Coroutine, und muss dafür sorgen, dass die Coroutine entweder zerstört wird (Handle.destroy()) oder zu einem späteren Zeitpunkt (auch von einem anderen Thread aus) wieder aufgerufen wird. 
+
+\begin{itemize}
+    
+\item Wenn \CodeStyle{await_suspend()} \CodeStyle{void} oder \CodeStyle{true} zurückliefert, bleibt die Coroutine unterbrochen und es wird zum Aufrufer zurückgekehrt.
+
+ \item Wenn \CodeStyle{await_suspend()} \CodeStyle{false} zurückliefert, wird die Coroutine wieder gestartet und es wird \CodeStyle{await_resume()} aufgerufen.
+
+\item Wenn \CodeStyle{await_suspend()} ein CoroutineHandle zurückliefert, wird diese Coroutine mit resume() gestartet und anschliessend (Sobald die nun aktive Coroutine unterbrochen wird) wird zum Aufrufer zurückgekehrt.
+ 
+\end{itemize}
+
+Die Methode \CodeStyle{await_resume()} wird aufgerufen wenn die Coroutine nach einem \CodeStyle{co\_await} weiterfährt, wobei der Rückgabewert von \CodeStyle{await_resume()} zum Ergebnis der \CodeStyle{co\_await} Anweisung wird.
+
+Ablauf von  \CodeStyle{co\_await}
 
 
 \begin{CCode}
-struct ReturnInfoType{ // Must contain an embedded promise type
+Result = co_await Expression;
+\end{CCode}
+
+Könnte zu folgendem (Pseudo) Code umgesetzt werden:
+
+\begin{CCode}
+Temp = Expression;
+Awaitable = Promise.await_transform(Temp); // Nur falls Notwendig oder vorhanden
+Awaiter = operator co_await(Awaitable); // Nur falls Notwendig oder vorhanden
+if (Awaiter.await_ready() == false) {
+   // Suspend Coroutine, save State
+   switch (Awaiter.await_suspend(CurrentCoroutineHandle)) {
+   
+      case <void>:  
+      case true:    // Suspend current Coroutine
+                    // Store Awaiter in Coroutine Context
+                    CurrentCoroutineHandle.Awaiter = Awaiter;
+                    // and return to Caller
+                    // --------------------------------------
+                    // Entrypoint for resume of this Coroutine
+                    Awaiter = CurrentCoroutineHandle.Awaiter;
+                    break;
+                    
+      case false:   // Resume current Coroutine
+                    break;
+      
+      case <std::coroutine_handle<Whatever>>:
+                    // Switch to other Coroutine 
+                    // Store Awaiter in Coroutine Context
+                    CurrentCoroutineHandle.Awaiter = Awaiter;
+                    
+                    // Get Context for Coroutine to resume
+                    Awaiter = <std::coroutine_handle<Whatever>>.Awaiter
+                    //Resume other Coroutine
+                    <std::coroutine_handle<Whatever>>.resume()
+                    // and return to Caller
+                    // --------------------------------------
+                    // Entrypoint for resume of this Coroutine
+                    Awaiter = CurrentCoroutineHandle.Awaiter;
+                    break;
+     }
+    // resume Coroutine, restore State
+}
+Result = Awaiter.await_resume();
+\end{CCode}
+
+
+\subsubsection{Coroutine Handle}
+Für jede aktive Coroutine wird ein Handle vom Typ \CodeStyle{std::coroutine_handle<PromiseType>} generiert, dieses Handle kann zur Steuerung der Coroutine verwendet werden.
+
+Dazu stehen folgende Methoden zur Verfügung (Nur die wichtigsten sind aufgeführt):
+
+\begin{CCode}
+std::coroutine_handle<PromiseType> h = std::coroutine_handle<PromiseType>::from_promise(promise);
+\end{CCode}
+Liefert das Handle der zu einem Promise gehörenden Coroutine.
+
+
+\begin{CCode}
+PromiseType &promise() const;
+
+Promise = h.promise()
+\end{CCode}
+Liefert eine Referenz auf das Promiseobjekt der zum Handle gehörenden Coroutine.
+Achtung, Verhalten ist undefiniert wenn die Coroutine beendet ist, resp. der Coroutine-Context gelöscht wurde (Auch auf das Promise-Objekt darf in diesem Falle nicht mehr zugegriffen werden).
+
+
+\begin{CCode}
+bool done() const;
+
+h.done()
+\end{CCode}
+Liefert true zurueck, wenn die Coroutine den letzten Unterbrechungspunkt erreicht hat und resume() nicht mehr aufgerufen werden darf. Achtung, verhalten ist undefiniert wenn die Coroutine bendet ist, resp. der Coroutine-Context gelöscht wurde.
+
+
+\begin{CCode}
+operator bool() const;
+
+if (h) ...
+\end{CCode}
+Liefert true zurueck, wenn das Handle auf eine Coroutine verweist. Achtung, verhalten ist undefiniert wenn die Coroutine bendet ist, resp. der Coroutine-Context gelöscht wurde.
+
+
+\begin{CCode}
+void operator ()() const;
+void resume () const;
+
+h()
+h.resume()
+\end{CCode}
+Die Coroutine wird vom letzten Unterbrechungspunkt aus fortgesetzt. Undefiniertes Verhalten wenn done() true zurückliefert, oder die Coroutine bendet ist, resp. der Coroutine-Context gelöscht wurde.
+
+
+\begin{CCode}
+void destroy () const;
+
+h.destroy()
+\end{CCode}
+Löscht den Coroutinencontext, die entsprechende Coroutineninstanz existiert anschliessend nicht mehr. Entsprechend dürfen auch done() und resume() nicht mehr aufgerufen werden, und auch auf das Promise-Objekt dieser Coroutineninstanz darf nicht mehr zugegriffen werden.
+ 
+\subsubsection{Coroutine}
+
+Folgende Coroutine
+\begin{CCode}
+	ReturnobjectType DoSomethingCooperative(float y)
+  {
+     int x = 23;
+     A;
+     co_yield 42;
+     B;
+     x++;
+     co_await Awaiter;
+     C;
+     co_return x*y;
+     D;
+  }
+  
+  ReturnobjectType RObj = DoSomethingCooperative(3.14); 
+\end{CCode}
+könnte in folgenden Code umgesetzt werden:
+\begin{CCode}
+	void DoSomethingCooperative(ReturnobjectType &r, Handle *h, float y)
+  {
+     if (h == nullptr) { // First call
+        h = new StateType<ReturnobjectType::promise_type>;
+        r = h->Promise.get_return_object();
+        h->State.x = 23;
+        h->State.y = y;
+        h->State.NextEntrypoint = 1;
+        co_await h->Promise.initial_suspend();
+        // Might return to caller
+     }
+     try {
+        switch(h->State.NextEntrypoint) {
+           case 1:
+              A;
+              h->State.NextEntrypoint = 2;
+              co_await  h->Promise.yield_value(42);
+              // Might return to caller
+              break;
+   
+           case 2:
+             B;
+             h->State.NextEntrypoint = 3;
+             co_await Awaiter;
+             // Might return to caller
+              break;
+
+           case 3:
+              B;
+              h->Promise.return_value(h->State.x * h->State.y);
+     
+              h->State.NextEntrypoint = 4;
+              co_await h->Promise.final_suspend();
+              // Might return to caller
+              break;
+          
+           case 4:
+              delete h;
+              break;
+        }
+    }
+    catch (...) {
+       h->Promise.unhandled_exception();
+    }
+  }
+  
+  ReturnobjectType RObj;
+  DoSomethingCooperative(RObj, nullptr, 3.14);
+\end{CCode}
+
+
+\begin{CCode}
+template<typename PromiseType>
+struct SignalAwaiter {
+       
+  bool await_ready();
+  // Nur eine der drei await_suspend() Methoden darf definiert sein
+  void await_suspend(std::coroutine_handle<PromiseType> h);
+  bool await_suspend(std::coroutine_handle<PromiseType> h);
+  std::coroutine_handle<Whatever> await_suspend(std::coroutine_handle<PromiseType> h);
+  AnyType await_resume();
+};
+    
+\end{CCode}
+
+\begin{CCode}
+struct Awaiter{ // Must at laest contain the following Methods
   struct promise_type {
     BaseAwaiter<promise_type> *Awaiter = nullptr;
 
@@ -2425,36 +2661,28 @@ struct ReturnInfoType{ // Must contain an embedded promise type
 };
 \end{CCode}
 
-Beispiele
 \begin{CCode}
-	
-	[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
-	[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
-	[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
-	[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
-	[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
-	[&q, r](int& x) { q += r*++x; }    // Zugriff auf die Variablen q und r der
-	// definierenden Funktion erlauben
-	// Einsatzbeispiel
-	std::vector<int> Liste;
-	int Total = 0;
-	for (int i=0; i<5; ++i) {
-		Liste.push_back(i);
-	}
-	
-	// for_each wird als drittes Argument eine Lambda-Funktion (Eigentlich ein
-	// Zeiger darauf) übergeben.  
-	// for_each ruft fuer jedes Element in der Liste diese Lambda-Funktion
-	// auf, das aktuelle Element wird jeweils in x uebergeben. Der lambda-Funktion 
-	// wird zudem der Zugriff auf die Variable Total erlaubt.  
-	
-	std::for_each( begin(Liste), end(Liste), [&Total](int x) {
-		Total += x;
-	}
-	);
+template<typename PromiseType>
+struct SignalAwaiter : public BaseAwaiter<PromiseType>{
+       bool CanContinue() override {return await_ready();}
+  bool await_ready() { return MySignal.Get(); }
+  void await_suspend(xstd::coroutine_handle<PromiseType> h) {
+    if constexpr (DebugOutput)  std::cout << "Suspended\n";
+    BaseAwaiter<PromiseType>::RegisterAwaiter();
+  }
+  bool await_resume() {
+     if constexpr (DebugOutput) std::cout << "Resumed\n";
+     BaseAwaiter<PromiseType>::UnregisterAwaiter();
+     return true;
+  }
+  SignalAwaiter(PromiseType &Promise, SignalClass &ms) : BaseAwaiter<PromiseType>(Promise), MySignal(ms) {}
+  SignalClass &MySignal;
+};
+    
+  };
 \end{CCode}
-Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
-Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \CodeStyle{auto} oder \CodeStyle{decltype} die Variablendefinition.
+
+
 
 
 \chapter{Überladen von Operatoren}
