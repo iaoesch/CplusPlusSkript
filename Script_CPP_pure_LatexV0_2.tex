@@ -955,6 +955,7 @@ Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird b
 
 Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.
 
+
 Beispiel:
 \begin{CCode}
 	
@@ -998,6 +999,35 @@ Beispiel:
 	// Kopierkonstruktor wird verwendet
 	
 \end{CCode}
+\index{this auf RValue}
+Bei nicht-statischen Methoden kann auch der \CodeStyle{this}-Pointer auf ein RValue-Objekt verweisen, entsprechend können auch nicht-statische Methoden für den Fall dass \CodeStyle{this} ein RValue-Objekt ist überladen werden:
+
+Beispiel:
+\begin{CCode}
+	
+	
+	class Demo {
+		// ...
+		
+		f() &&;        // this zeigt auf RValue Objekt
+		f() &;         // this zeigt auf LValue Objekt
+		
+    g();           // this zeigt auf LValue oder RValue Objekt
+	};	
+	
+	
+  Demo f1() {
+    return Demo;      // Temproaeres Demoobjekt wird erzeugt
+  }
+	
+  Demo d;
+  
+  f1().f();   // f1() liefert temporaeres Objekt, f()&& wird aufgerufen
+  d.f();      // Kein temporaeres Objekt, f()& wird aufgerufen
+	
+\end{CCode}
+
+
 
 Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
 \begin{CCode}
@@ -2188,7 +2218,8 @@ inline int Square(int i)     // Inline Methoden können auch in der
 
 
 \subsection{Überladen von Funktionen}
-Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden.
+Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden. Dabei wird auch zwischen const Argumenten und nicht-const Argumenten (Bei Referenzen und Pointern) sowie RValue- und LValue-Referenzen (Siehe \autoref{subsec:RValueRefs}) unterschieden.
+
 \begin{CCode}
 int max(int a, int b)
 {
@@ -3061,6 +3092,9 @@ int main(int argc, char *argv[]) {
 }
 \end{CCode}
 
+\section{Attribute***}
+
+\section{Methoden***}
 
 \section{Konstruktoren / Destruktoren / Zuweisungsoperator}
 Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
@@ -4389,14 +4423,20 @@ Mit \CodeIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Pri
 Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler \CodeStyle{catch(...)} fängt jede beliebige Exception. Nach jedem \CodeIndex{try}-Block folgt eine Liste von Handlern (\CodeIndex{catch()}). Die Handler werden in der Reihenfolge ihrer Definition durchsucht, der erste passende Handler wird benutzt, und alle weiteren Handler
 dieser Liste ignoriert, auch wenn einer noch besser passen würde. Somit werden alle Handler nach \CodeStyle{catch(...)} ignoriert. 
 
-Funktionen (und Methoden) können in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort \CodeStyle{throw()} verwendet. Im \CodeStyle{throw} Statement werden alle Exceptions aufgeführt, welche
-von der Funktion ausgelöst werden können. Ein fehlendes \CodeStyle{throw()} Statement bedeutet, dass diese
-Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres\CodeStyle{ throw()} bedeutet, dass die
+Funktionen (und Methoden) konnten bis \CppVers{17} resp. \CppVers{20} in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort \CodeStyle{throw()} verwendet. Im \CodeStyle{throw} Statement werden alle Exceptions aufgeführt, welche
+von der Funktion ausgelöst werden können (Erlaubt bis \CppVers{17}). Ein fehlendes \CodeStyle{throw()} Statement bedeutet, dass diese
+Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres\CodeStyle{ throw()} (Erlaubt bis \CppVers{20})bedeutet, dass die
 Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
 Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden \CodeStyle{try}/\CodeStyle{catch} Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
 Seit \CppVers{11} sollte \CodeStyle{noexcept(true)} oder \CodeStyle{noexcept} anstelle von \CodeStyle{throw()} verwendet werden, um anzuzeigen dass eine Funktion keine Exception werfen kann. (Wenn sie es dennoch tut, wird nach wie vor das Programm sofort mit \CodeStyle{terminate()} beendet). 
+
+
+Seit \CppVers{17} ist \CodeStyle{throw(typelist)} nicht mehr zulässig, um anzuzeigen dass eine Funktion nur bestimmte Exceptions werfen kann. Dieses Feature wurde ersatzlos aus der Sprache entfernt. 
+
+Seit \CppVers{20} ist \CodeStyle{throw()} nicht mehr zulässig, um anzuzeigen dass eine Funktion keine Exceptions werfen kann, es muss nun \CodeStyle{noexcept} verwendet werden. 
+
 
 Beispiel:
 \begin{CCode}
@@ -5664,6 +5704,8 @@ String gelesen, oder in einen String geschrieben wird:
     
 
 \end{CCode}
+
+\section{Uhrzeit, Datum und Zeitintervalle std::chrono****}
 
 \section{Datei Ein- und Ausgabe}
 \label{sect:DateiEinAusgabe}
