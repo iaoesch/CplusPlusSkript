@@ -5226,6 +5226,36 @@ class SpeziellKomplizierteKlasse {
 HelperClass ist hier selbst ein Template, welches mit T1
 parametrisiert wird.
 
+\subsection{Template Templateparameter ***************}
+\index{Template Templateparameter}
+Es ist auch moeglich, einem Template ein ganzes Template als Parameter mitzugeben:
+
+\begin{CCode}
+template< class T1, template<class, long> class T2, class T3 = int>
+// T2 ist ein Template mit einem Typen und einer long-Konstante als parameter
+class SpeziellKonfigurierbareKlasse {
+   T1 Wert1;
+   // Das uebergebene Template mit T3 und 6 instanzieren 
+   T2<T3, 6> Wert2;
+   ...
+   ...
+   ...
+};
+
+
+template< class T1, long size>
+class ArrayKlasse {
+   T1 Werte[size];
+   ...
+   ...
+   ...
+};
+
+// Anwendung
+SpeziellKonfigurierbareKlasse<int, ArrayKlasse, float> MyClass;
+
+\end{CCode}
+
 
 \subsection{Spezialisierung von Templates}
 Wenn bei einem Template für einen bestimmten Datentypen,
