@@ -19,7 +19,7 @@
 %/*                                                                           */
 %/*                                                                           */
 %/*  To DO:                                                                   */
-%/*     [[nodiscard]]                                                                      */
+%/*                                                                       */
 %/*  C++ Runtime, Startup (init, global ctors, global dtors                   */
 %/*  C++ Internas, Effizienz (vtables, exceptions)                            */
 %/*                                                                           */
@@ -320,7 +320,7 @@ Ivo Oesch
 
 \normalsize
 \begin{quote}
-Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden. Es gibt eine Kurzeinführung in die objektorientierte Programmiersprache \Cpp.
+Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientiertes Programmieren entworfen worden. Es gibt eine Einführung in die objektorientierte Programmiersprache \Cpp unter Berücksichtigung der Anforderungen an Effizienz und Resourcenbedarf in Embeddedsystemen.
 \end{quote}
 
 \vspace{\fill}
@@ -527,9 +527,11 @@ Weiter gibt es Bezeichner mit spezieller Bedeutung, welche zwar für Namen von Ob
 
 
 \section{Module}
-Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
+Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationsteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
 
-In der Headerdatei sind alle \OviIndex{Deklarationen} von Funktionen, Variablen, Konstanten, Datentypen und Klassen enthalten, die vom Modul zur Verfügung gestellt werden. Im Implementationsteil sind die entsprechenden \OviIndex{Definitionen} (Code und Speicherreservationen) enthalten, plus eventuell weitere lokale Variablen, Funktionen und Hilfsklassen.
+In der Headerdatei sind alle \OviIndex{Deklarationen} von Funktionen, Variablen, Konstanten, Datentypen und Klassen enthalten, die vom Modul zur Verfügung gestellt werden. Ebenfalls in der Headerdatei sind üblicherweise inline-Funktionen und Templates zu finden. 
+
+Im Implementationsteil sind die entsprechenden \OviIndex{Definitionen} (Code und Speicherreservationen) enthalten, plus eventuell weitere lokale Variablen, Funktionen und Hilfsklassen.
 
 In \Cpp wird üblicherweise jede Klasse in einem eigenen Modul implementiert, eventuell zusammen mit Hilfsklassen, die nur von diesem Modul verwendet werden.
 Wenn ein Modul Dienste von einem anderen Modul in Anspruch nimmt, muss es dessen Headerdatei mit dem \#include-Befehl einbinden.
@@ -1252,7 +1254,8 @@ Neue Syntax:
  
  
  \subsection{Weitere Datentypen}
- Weiter gibt es \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden.
+ Weiter gibt es \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den template-mechanismus realisiert werden
+ (Siehe  \autoref{chapter:Templates} und  \autoref{section:StandardSTL} . 
  Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
  
   \section{Literale}
@@ -1368,7 +1371,7 @@ Attribut&	Beschreibung\\
 \hline
 \lstinline$[[fallthrough]]$(\CppVers{17}) &Zeigt an dass ein 'Durchfallen' vom vorherigen in diesen case beim switch() beabsichtigt ist und der Compiler deshalb keine Warnung ausgeben soll \\
 \hline
-\lstinline$[[nodiscard]]$(\CppVers{17})&Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
+\lstinline$[[nodiscard]]$(\CppVers{17})&Kann auf Funktionen/Methoden oder Klassen angewendet werden. Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird, oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
 \hline
 \lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
 \hline
@@ -4946,6 +4949,7 @@ Mit \CodeIndex{consteval} können Funktionen definiert werden, welche nur zur Com
 
 
 \chapter{Templates (Schablonen)}
+\label{chapter:Templates}
 Obwohl \OviIndex{Templates} eigentlich nur ein neues Schlüsselwort einführen, wird damit ein
 mächtiges Werkzeug zur Verfügung gestellt, welches fast wie eine eigene Sprache wirkt und
 sehr komplexe, verallgemeinerte und typunabhängige Programmierung erlaubt. Mit Templates kann parametrisierbarer Code geschrieben werden, das heisst Code, der unabhängig von Datentypen ist. 
@@ -5755,7 +5759,7 @@ Eine Uhr kann monoton (Geht nie rückwaerts) oder nicht monoton (Kann auch rückwä
 \item[ tai\_clock] (\CppVers{20}) Uhr mit internationaler Atomzeit (International Atomic Time, TAI)
 \item[ gps\_clock] (\CppVers{20}) Uhr mit GPS-Zeit
 \item[ file\_clock] (\CppVers{20}) Uhr die vom Dateisystem benutzt wird
-\item[ local\_t] (\CppVers{20}) Pseudo-Uhr mit \OviIndex{lokaler Zeit}
+\item[ local\_t] (\CppVers{20}) Pseudo-Uhr mit undefinierter Zeitzone
 \end{description}
 
 Für jede Uhr ist die statische Methode \CodeStyle{now()} definiert, welche den aktuellen Uhrstand in einem
@@ -5791,6 +5795,71 @@ time\_point
  
 \subsection{Weitere Elemente von std::chrono }
 In der chrono-Library finden sich weiter Objekte zum Umgang mit Datum, Kalendern, Wochentagen, Zeitzonen sowie der Umwandlung dieser verschiedenen Objekte ineinander sowie zur Ein- und Ausgabe von Zeit- und Datumsobjekten
+ 
+\subsection{Beispiele zu std::chrono }
+ 
+\begin{CCode}
+ 
+// Beispiel fuer Arithmetik
+ 
+ #include <chrono>
+#include <iostream>
+int main()
+{
+    // einfache arithmetik
+    std::chrono::seconds s = std::chrono::hours(2) 
+                             + 3*std::chrono::minutes(15)
+                             + std::chrono::seconds(90)/10;
+ 
+    std::cout << "2 Stunden + 3*15 Minuten + 90/10 Sekunden = " << s.count() << " Sekunden\n";
+    // Ausgabe: ... 9909 Sekunden
+ 
+    // Division Zeitdauer durch Zeitdauer
+    std::cout << "Dividiert durch 2 Minuten ergibt "
+              << s / std::chrono::minutes(2) << '\n';
+    // Ausgabe: ....    82       
+              
+              
+    std::cout << "Dividiert durch 2 ergibt "
+              << (s / 2).count() << " Sekunden\n";
+    // Ausgabe: ....    4954 Sekunden      
+    
+    // Vereinfachter Umgang mit Zeitkonstanten 
+    using namespace std::literals; 
+    
+    std::chrono::seconds s2 = 2h + 3*15m + 90s/10; // Vergleiche mit Initialisierung von s oben
+  
+
+    const std::chrono::time_point<std::chrono::system_clock> Jetzt =
+        std::chrono::system_clock::now();
+ 
+    // Umwandlung ind standard C time struct:
+    const std::time_t t_c = std::chrono::system_clock::to_time_t(Jetzt - 24h);
+    std::cout << "Vor 24 Stunden war es "
+              << std::put_time(std::localtime(&t_c), "%F %T.\n") << std::flush;
+ 
+// Beispiel fuer Zeitmessung
+ 
+    
+       // Zeitmessung
+    auto start = std::chrono::steady_clock::now();
+    DoSomeLongCalculation();
+    auto end = std::chrono::steady_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    std::cout << "Benoetigte Zeit: " << elapsed_seconds.count() << "s\n";
+ 
+   // Ausgabe in Sekunden, Mili- und Mikrosekunden
+    std::cout
+      << "Benoetigte Zeit: "
+      << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " Mikrosekunden "
+      << (end - start) / 1ms << "ms" 
+      << (end - start) / 1s << "s.\n";  
+
+}
+\end{CCode}
+
+
  
 
 \section{Datei Ein- und Ausgabe}
@@ -5935,6 +6004,7 @@ Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, 
 
 
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
+\label{section:StandardSTL}
 Die \OviIndex{STL} (\OviIndex{Standard Template Library}) war eine der ersten Anwendungen, die umfassend von Templates gebrauch machte, und zudem die Erweiterung und Verbesserung der Templatesyntax zur Folge hatte. Mittlerweile ist die STL in die \OviIndex{\Cpp - Standardbibliothek}
 integriert worden. In diesem Kapitel wird vorallem auf die aus der STL übernommenen Komponenten der \Cpp - Standardbibliothek eingegangen. 
 
@@ -7619,6 +7689,429 @@ void Process()
 
 \end{CCode}
 
+\subsection{Effizienzvergleich des generierten Codes der verschiedenen Varianten}
+
+\subsubsection{Class, No Inline}
+
+\begin{CCode}
+
+class GPIOLedClass : public LedBaseClass {
+
+   GPIOClass *MyGPIO;
+
+   public:
+      GPIOLedClass(GPIOClass *Gpio) : MyGPIO(Gpio) {}
+
+      virtual void SetLed(LedState NewState) {
+    	  if (NewState == LedBaseClass::On) {
+    		  MyGPIO->SetPinState(1);
+    	  } else  {
+    		  MyGPIO->SetPinState(0);
+    	  }
+      }
+};
+
+
+class GPIOClass {
+
+   GPIOPortClass *MyPort;
+   int MyGPIO;
+
+   GPIOClass(GPIOPortClass *Parent, int GPIO) : MyPort(Parent), MyGPIO(GPIO) {}
+
+   public:
+      void SetPinState(int State) {MyPort->SetLevel(MyGPIO, State);}
+
+};
+
+class GPIOPortClass
+{
+      volatile uintptr_t GPIO_Base_Address;
+
+   private:
+      void SetLevel(uint32_t Pin, int Level);
+};
+
+
+
+void GPIOPortClass::SetLevel(uint32_t Pin, int Level)
+{
+   /* Method data declaration      */
+
+   volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address + 
+                                                                            LSB_OFFSET_GPIOX_BSRR);
+
+   /* Method code declaration      */
+
+   if(Pin >= 16) {
+      return; // Illegal Pin Number...
+   }
+
+   /* find the level Register for the pin, select set or cler register,  */
+   /* depending on requested pin level                                   */
+   if (Level == 0) {
+	   Pin = Pin + 16;
+   }
+
+   /* Just write a 1 for the pin to be set or cleared */
+   *GPLevelBase = 0x01L << Pin;
+}
+.
+
+main()
+{
+   GPIOClass *Out0 = GPIOManagerClass::AllocateGPIO(GPIOManagerClass::GPIO_Ports::PortB, 8);
+
+
+   GPIOLedClass LedOut0(Out0);
+   LedOut0.SetLed(LedBaseClass::On);
+}
+\end{CCode}
+
+\subsubsection{Class, with Inline}
+
+\begin{CCode}
+class GPIOLedClass : public LedBaseClass {
+
+   GPIOClass *MyGPIO;
+
+   public:
+      GPIOLedClass(GPIOClass *Gpio) : MyGPIO(Gpio) {}
+
+      virtual void SetLed(LedState NewState) {
+    	  if (NewState == LedBaseClass::On) {
+    		  MyGPIO->SetPinState(1);
+    	  } else  {
+    		  MyGPIO->SetPinState(0);
+    	  }
+      }
+};
+
+
+class GPIOClass {
+
+   GPIOPortClass *MyPort;
+   int MyGPIO;
+
+   GPIOClass(GPIOPortClass *Parent, int GPIO) : MyPort(Parent), MyGPIO(GPIO) {}
+    
+   public:
+      void SetPinState(int State) {MyPort->SetLevel(MyGPIO, State);}
+
+};
+
+class GPIOPortClass
+{
+
+      volatile uintptr_t GPIO_Base_Address;
+
+   private:
+      void SetLevel(uint32_t Pin, int Level);
+};
+
+
+
+inline void GPIOPortClass::SetLevel(uint32_t Pin, int Level)
+{
+   /* Method data declaration      */
+
+   volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address +        
+                                                                            LSB_OFFSET_GPIOX_BSRR);
+
+   /* Method code declaration      */
+
+   if(Pin >= 16) {
+      return; // Illegal Pin Number...
+   }
+
+   /* find the level Register for the pin, select set or cler register,  */
+   /* depending on requested pin level                                   */
+   if (Level == 0) {
+	   Pin = Pin + 16;
+   }
+
+   /* Just write a 1 for the pin to be set or cleared */
+   *GPLevelBase = 0x01L << Pin;
+}
+.
+
+main()
+{
+   GPIOClass *Out0 = GPIOManagerClass::AllocateGPIO(GPIOManagerClass::GPIO_Ports::PortB, 8);
+
+
+   GPIOLedClass LedOut0(Out0);
+   LedOut0.SetLed(LedBaseClass::On);
+}
+
+
+\end{CCode}
+
+\subsubsection{Templates}
+
+\begin{CCode}
+template <class GPIOType>
+class GPIOLedClass : public LedBaseClass {
+   
+      GPIOType *MyGPIO;
+   
+   public:
+      GPIOLedClass(GPIOType *Gpio) : MyGPIO(Gpio) {}
+
+      virtual void SetLed(LedState NewState) {
+          if (NewState == LedBaseClass::On) {
+                  MyGPIO->SetPinState(1);
+          } else  {
+                  MyGPIO->SetPinState(0);
+          }
+      }
+};
+
+template <GPIOBase::GPIO_Ports GPIOPort>
+class GPIOPortClass 
+{
+   static constexpr uintptr_t GetBaseAddress(GPIOBase::GPIO_Ports Port)
+   {
+      switch(Port) {
+         case GPIOBase::GPIO_Ports::PortA: return 0x40021A00;
+         case GPIOBase::GPIO_Ports::PortB: return 0x40021C00;
+         case GPIOBase::GPIO_Ports::PortC: return 0x40021D00;
+         default: return 0;
+      }
+   }
+   
+   static const uintptr_t GPIO_Base_Address = GetBaseAddress(GPIOPort);
+
+   public:
+      static void SetLevel(uint32_t Pin, int Level);
+};
+
+const int LSB_OFFSET_GPIOX_BSRR = 0x18;
+
+template <GPIOBase::GPIO_Ports GPIOPort>
+inline void GPIOPortClass<GPIOPort>::SetLevel(uint32_t Pin, int Level)
+{
+   /* Method data declaration      */
+   volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address +
+                                                                             LSB_OFFSET_GPIOX_BSRR);
+
+   /* Method code declaration      */
+
+   if(Pin >= 16) {
+      return; // Illegal Pin Number...
+   }
+
+   /* find the level Register for the pin, select set or cler register,  */
+   /* depending on requested pin level                                   */
+   if (Level == 0) {
+      Pin = Pin + 16;
+   }
+
+   /* Just write a 1 for the pin to be set or cleared */
+   *GPLevelBase = 0x01L << Pin;
+}
+/* HelperClass for single GPIO Management */
+template <GPIOBase::GPIO_Ports  GPIOPort, unsigned int PinNumber>
+class GPIOClass : public GPIOBase{
+   static_assert (PinNumber < 16,"Illegal Pinnumber requested" );
+   typedef GPIOPortClass<GPIOPort> MyPort;
+   static constexpr int MyGPIO = PinNumber;
+   public:
+      static void SetPinState(int State) {MyPort::SetLevel(MyGPIO, State);}
+
+};
+
+main()
+{
+   GPIOClass<GPIOBase::GPIO_Ports::PortB, 8>  Out0;
+   GPIOLedClass LedOut0(&Out0);
+   LedOut0.SetLed(LedBaseClass::On);
+}
+
+\end{CCode}
+
+\subsubsection{Generierter Code der Funktion SetLed inklusive Unterprogrammaufruf}
+
+%{ \scriptsize
+\begin{table}[htp]
+\caption{default}
+\begin{center}
+\begin{tabular}{|p{0.32\textwidth}|p{0.32\textwidth}|p{0.32\textwidth}|}  
+\hline
+Class, no inline & Class Inline & Template \\
+\hline
+{ \tiny
+\_ZN12GPIOLedClass6SetLed \newline EN12LedBaseClass8LedStateE:
+.LFB53:
+	cmp	r1, \#1	if (NewState == LedBaseClass::On)
+	ldr	r3, [r0, \#4]   this->MyGPIO to r3
+	beq	.L33	if (NewState == LedBaseClass::On)
+	ldrd	r0, r1, [r3]	r3->MyPort to r0, r3->Pin to r1
+	movs	r2, \#0	r2 = 0, r2 is Parameter State for SetLevel() 
+	b	\_ZN13GPIOPortClass8SetLevelEmi
+
+.L33:
+	mov	r2, r1	r1 contains \#1, r2 is Parameter State for SetLevel
+	ldrd	r0, r1, [r3]	r3->MyPort to r0, r3->Pin to r1
+	b	\_ZN13GPIOPortClass8SetLevelEmi
+
+
+\_ZN13GPIOPortClass8SetLevelEmi:
+.LFB159:
+	cmp	r1, \#15	if (Pin < 16) 
+	bhi	.L179	if (Pin < 16) 
+	cbz	r2, .L182	if (Level == 0) 
+.L181:
+	ldr	r2, [r0, \#204	this->GPIO\_Base\_Address to r2
+	movs	r3, \#1	1 << Pin 
+	lsl	r1, r3, r1	1 << Pin 
+	str	r1, [r2, \#24]	*( Addr + RegisterOffset) = 1 << Pin 
+.L179:
+	bx	lr	 return
+.L182:
+	adds	r1, r1, \#16	1 << (Pin + 16)
+	b	.L181
+	.cfi\_endproc
+	}
+&
+\begin{minipage}[t]{0.32\columnwidth}
+{ \tiny
+\_ZN12GPIOLedClass6SetLed\\EN12LedBaseClass8LedStateE:\\
+.LFB166: \\
+	\colorbox{blue!30}{blueldr	r2, [r0, \#4] }  this->MyGPIO to r2 \\
+	cmp	r1, \#1	if (NewState == LedBaseClass::On)\\
+	ldr	r3, [r2, \#4]	MyGPIO(r2)->Pin to r3\\
+	beq	.L35	if (NewState == LedBaseClass::On)\\
+	cmp	r3, \#15	if (Pin < 16) \\
+	bhi	.L32	if (Pin < 16) \\
+	ldr	r2, [r2]	MyGPIO(r2)->MyPort to r02\\
+	adds	r3, r3, \#16	1 << (Pin + 16)\\
+	ldr	r1, [r2, \#204] MyPort->GPIOBaseAddress to r1\\
+	movs	r2, \#1	 1 << (Pin + 16)\\
+	lsl	r3, r2, r3	  1 << (Pin + 16)\\
+	str	r3, [r1, \#24]  *( Base + RegOffset) = 1<<Pin+16\\
+.L32:\\
+	bx	lr	 return\\
+.L35:\\
+	cmp	r3, \#15	if (Pin < 16) \\
+	bhi	.L32	if (Pin < 16) \\
+	ldr	r2, [r2]	MyGPIO(r2)->MyPort to r2\\
+	ldr	r2, [r2, \#204] MyPort->GPIOBaseAddress to r1\\
+	lsls	r1, r1, r3	 1 <<  Pin\\
+	str	r1, [r2, \#24] *( Base + RegOffset) = 1 << Pin\\
+	bx	lr	 return\\
+	.cfi\_endproc\\
+	}
+\end{minipage}
+
+&
+\_ZN12GPIOLedClassI9GPIOClassILj1073880064ELj11EEE6SetLedEN12LedBaseClass8LedStateE:
+.LFB345:
+	cmp	r1, \#1	if (NewState == LedBaseClass::On)
+	ldr	r3, .L15 	GPIOBaseAddress + RegOffset to r3
+	ite	eq	if (NewState == LedBaseClass::On)
+	moveq	r2, \# 0x800	1 << Pin 
+	movne r2, \# 0x800000	1 << (Pin  + 16)
+	str	r2, [r3] 	*(GPIOBaseAddress + RegOffset) = r2 
+	bx	lr	 return
+.L15:
+	.word	0x40021C18 GPIOBaseAddress + RegOffset
+	.cfi\_endproc
+
+\\	
+
+
+\end{tabular}
+\end{center}
+\label{default}
+\end{table}
+%}
+
+Class, no inline
+Class Inline
+Template
+
+\_ZN12GPIOLedClass6SetLedEN12LedBaseClass8LedStateE:
+.LFB53:
+	cmp	r1, \#1	if (NewState == LedBaseClass::On)
+	ldr	r3, [r0, \#4]   this->MyGPIO to r3
+	beq	.L33	if (NewState == LedBaseClass::On)
+	ldrd	r0, r1, [r3]	r3->MyPort to r0, r3->Pin to r1
+	movs	r2, \#0	r2 = 0, r2 is Parameter State for SetLevel() 
+	b	\_ZN13GPIOPortClass8SetLevelEmi
+
+.L33:
+	mov	r2, r1	r1 contains \#1, r2 is Parameter State for SetLevel
+	ldrd	r0, r1, [r3]	r3->MyPort to r0, r3->Pin to r1
+	b	\_ZN13GPIOPortClass8SetLevelEmi
+
+
+\_ZN13GPIOPortClass8SetLevelEmi:
+.LFB159:
+	cmp	r1, \#15	if (Pin < 16) 
+	bhi	.L179	if (Pin < 16) 
+	cbz	r2, .L182	if (Level == 0) 
+.L181:
+	ldr	r2, [r0, \#204	this->GPIO\_Base\_Address to r2
+	movs	r3, \#1	1 << Pin 
+	lsl	r1, r3, r1	1 << Pin 
+	str	r1, [r2, \#24]	*( Addr + RegisterOffset) = 1 << Pin 
+.L179:
+	bx	lr	 return
+.L182:
+	adds	r1, r1, \#16	1 << (Pin + 16)
+	b	.L181
+	.cfi\_endproc
+
+\_ZN12GPIOLedClass6SetLedEN12LedBaseClass8LedStateE:
+.LFB166:
+	ldr	r2, [r0, \#4]   this->MyGPIO to r2
+	cmp	r1, \#1	if (NewState == LedBaseClass::On)
+	ldr	r3, [r2, \#4]	MyGPIO(r2)->Pin to r3
+	beq	.L35	if (NewState == LedBaseClass::On)
+	cmp	r3, \#15	if (Pin < 16) 
+	bhi	.L32	if (Pin < 16) 
+	ldr	r2, [r2]	MyGPIO(r2)->MyPort to r02
+	adds	r3, r3, \#16	1 << (Pin + 16)
+	ldr	r1, [r2, \#204] MyPort->GPIOBaseAddress to r1
+	movs	r2, \#1	 1 << (Pin + 16)
+	lsl	r3, r2, r3	  1 << (Pin + 16)
+	str	r3, [r1, \#24]  *( Base + RegOffset) = 1<<Pin+16
+.L32:
+	bx	lr	 return
+.L35:
+	cmp	r3, \#15	if (Pin < 16) 
+	bhi	.L32	if (Pin < 16) 
+	ldr	r2, [r2]	MyGPIO(r2)->MyPort to r2
+	ldr	r2, [r2, \#204] MyPort->GPIOBaseAddress to r1
+	lsls	r1, r1, r3	 1 <<  Pin
+	str	r1, [r2, \#24] *( Base + RegOffset) = 1 << Pin
+	bx	lr	 return
+	.cfi\_endproc
+.LFE166:
+
+\_ZN12GPIOLedClassI9GPIOClassILj1073880064ELj11EEE6SetLedEN12LedBaseClass8LedStateE:
+.LFB345:
+	cmp	r1, \#1	if (NewState == LedBaseClass::On)
+	ldr	r3, .L15 	GPIOBaseAddress + RegOffset to r3
+	ite	eq	if (NewState == LedBaseClass::On)
+	moveq	r2, \# 0x800	1 << Pin 
+	movne r2, \# 0x800000	1 << (Pin  + 16)
+	str	r2, [r3] 	*(GPIOBaseAddress + RegOffset) = r2 
+	bx	lr	 return
+.L15:
+	.word	0x40021C18 GPIOBaseAddress + RegOffset
+	.cfi\_endproc
+
+
+   Grün Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+14 Instruktionen und 3 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden
+   Grün Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+11 Instruktionen und 2 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden
+   Grün Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+7 Instruktionen (Wovon 2 bedingt)  und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden
+
+Eine weitere Optimierungsmöglichkeit wäre der Einsatz zweier separater Methoden zum Setzen und Löschen der Leds, (SetLed() und ClearLed()), damit würde das if im Sourcecode und die entsprechenden Befehle im Assemblercode entfallen. Im Gegenzug würde mehr Speicherplatz für den Code benötigt.
 
 \chapter{Standardisierungen}
 \section{\CppVers{11}}
