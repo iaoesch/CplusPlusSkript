@@ -5226,13 +5226,16 @@ class SpeziellKomplizierteKlasse {
 HelperClass ist hier selbst ein Template, welches mit T1
 parametrisiert wird.
 
-\subsection{Template Templateparameter ***************}
+\subsection{Template Templateparameter}
 \index{Template Templateparameter}
-Es ist auch moeglich, einem Template ein ganzes Template als Parameter mitzugeben:
+Es ist auch möglich, einem Template ganze Template als Parameter mitzugeben,
+dazu muss dem Templateparameter das Schlüsselwort template gefolgt von der
+Typenliste in spitzen Klammern des einzusetzenden Templates. Anschliessend
+können beim Instanzieren alle Template mit passender Parameterliste übergeben werden:
 
 \begin{CCode}
 template< class T1, template<class, long> class T2, class T3 = int>
-// T2 ist ein Template mit einem Typen und einer long-Konstante als parameter
+// T2 ist ein Template mit einem Typen und einer long-Konstante als Parameter
 class SpeziellKonfigurierbareKlasse {
    T1 Wert1;
    // Das uebergebene Template mit T3 und 6 instanzieren 
@@ -5735,7 +5738,60 @@ String gelesen, oder in einen String geschrieben wird:
 
 \end{CCode}
 
-\section{Uhrzeit, Datum und Zeitintervalle std::chrono****}
+\section{Uhrzeit, Datum und Zeitintervalle std::chrono}
+In der Headerdatei \CodeStyle{<chrono>} werden verschieden Typen und Methoden zum Umgang mit Zeiten und Zeitpunkten definiert. \index{chrono}\index{std::chrono}
+Diese sind im Namespace \CodeStyle{std::chrono} abgelegt. In diesem Kapitel werden nur einige Elemente dieser Library vorgestellt.
+
+\subsection{Uhren (Clocks)}
+\index{clock}
+Eine \OviIndex{Uhr} besteht aus einem Startzeitpunkt und einer Tickrate (Intervall mit welchem die Uhr aktualisiert wird).
+Eine Uhr kann monoton (Geht nie rückwaerts) oder nicht monoton (Kann auch rückwärts gehen, z.B. Sommerzeitumstellung, Uhrrichten, etc). Aktuell sind folgende Uhren definiert:
+
+\begin{description}
+\item[ system\_clock] \OviIndex{Systemzeit} das Computers 
+\item[ steady\_clock] Monotone Zeit, welche nie korrigiert / angepasst wird.
+\item[ high\_resolution\_clock] Zeit mit der kürzesten verfügbaren Tickrate (Höchstauflösende Zeitmessung)
+\item[ utc\_clock] (\CppVers{20}) Uhr mit \OviIndex{UTC-Zeit}
+\item[ tai\_clock] (\CppVers{20}) Uhr mit internationaler Atomzeit (International Atomic Time, TAI)
+\item[ gps\_clock] (\CppVers{20}) Uhr mit GPS-Zeit
+\item[ file\_clock] (\CppVers{20}) Uhr die vom Dateisystem benutzt wird
+\item[ local\_t] (\CppVers{20}) Pseudo-Uhr mit \OviIndex{lokaler Zeit}
+\end{description}
+
+Für jede Uhr ist die statische Methode \CodeStyle{now()} definiert, welche den aktuellen Uhrstand in einem
+ \CodeStyle{time\_point} Objekt zurückliefert. Für viele Uhren sind zudem noch Umwandlungsfunktionen in andere, kompatible Uhren verfügber.
+ 
+\subsection{Zeitpunkte (Time point)}
+Ein \OviIndex{Zeitpunkt} \index{time\_point} ist die Zeitdauer, welche seit dem Startzeitpunkt der Uhr verstrichen ist. (Bei \CodeStyle{std::chrono::local\_t::now()} entspricht dies der aktuellen Uhrzeit.)
+Zeitpunkte werden in \CodeStyle{time\_point} Objekten abgespeichert. Für \CodeStyle{time\_point} sind zudem die relationalen Operatoren, sowie Addition und Subtraktion zusammen mit   \CodeStyle{duration} Objekten definiert.
+
+
+\subsection{Zeitdauer (Duration)}
+Eine \OviIndex{Zeitdauer} \index{duration} ist eine bestimmte Menge von Timerticks in einer bestimmten Zeiteinheit. Zeitdauern werden in Objekten vom Typ \CodeStyle{duration} abgelegt.  Für \CodeStyle{time\_point} sind die relationalen Operatoren sowie Addition und 
+ Subtraktion im Zusammenhang mit \CodeStyle{time\_point} Objekten und Multiplikation und Division mit Sklaren und anderen \CodeStyle{duration} Objekten definiert. Dabei werden die Einheiten und Basisticks der verschiedenen Objekte berücksichtigt, die Berechnungen finden im passendsten gemeinsamen Tick statt. Multiplikation und Division mit einem Skalar ergibt wieder ein \CodeStyle{duration} Objekt, Division mit einem \CodeStyle{duration} Objekt ergibt einen Skalar (1h / 1m ergibt 60).
+
+Für Zeitdauern sind folgende Literal-Suffixes definiert: h, m, s, ms, us, ns. 
+
+
+\subsection{Zeitdauer und Zeitpunkte}
+Für Zeitdauern und Zeitpunkte sind Addition und Subtraktion definiert, wobei folgende Regeln gelten:
+
+\begin{itemize}
+\item Zeitpunkt + Zeitpunkt: Nicht definiert
+\item Zeitpunkt - Zeitpunkt: ergibt Zeitdauer
+\item Zeitpunkt + Zeitdauer: ergibt Zeitpunkt
+\item Zeitpunkt - Zeitdauer: ergibt Zeitpunkt
+\item Zeitpunkt - Zeitpunkt: ergibt Zeitdauer
+\item Zeitdauer + Zeitdauer: ergibt Zeitdauer
+\item Zeitdauer - Zeitdauer: ergibt Zeitdauer
+\end{itemize}
+
+Bei den Berechnungen werden jeweils die Basis-Timer-Ticks der Operanden in den am Besten passenden gemeinsamen Tick umgewandelt, bevor die Berechnung durchgeführt wird. 
+time\_point
+ 
+\subsection{Weitere Elemente von std::chrono }
+In der chrono-Library finden sich weiter Objekte zum Umgang mit Datum, Kalendern, Wochentagen, Zeitzonen sowie der Umwandlung dieser verschiedenen Objekte ineinander sowie zur Ein- und Ausgabe von Zeit- und Datumsobjekten
+ 
 
 \section{Datei Ein- und Ausgabe}
 \label{sect:DateiEinAusgabe}
@@ -8336,7 +8392,7 @@ Seit Dezember 2020 verabschiedet.
     \item further relaxed constexpr (Siehe \autoref{subsubsect:constexpr})
     \item signed integers are 2's complement
    \item  aggregate initialization using parentheses
-    \item Coroutinessubsec: (Siehe \autoref{subsec:CoRoutinen})
+    \item Coroutines (Siehe \autoref{subsec:CoRoutinen})
     \item Modules (Siehe \autoref{subsubsect:Modules})
     \item Constraints and concepts
     \item abbreviated function templates
