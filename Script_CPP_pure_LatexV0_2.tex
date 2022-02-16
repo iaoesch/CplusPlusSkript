@@ -59,7 +59,7 @@
 %\documentclass[10pt,a4paper]{report}
 %\usepackage{bookman}
 %\typearea[current]{calc}
-
+\setcounter{secnumdepth}{3}
 
 
 
@@ -748,6 +748,29 @@ void SayHello::SayGreeting()                   \linebreak[4]
    Zeilen */
 \end{CCode}
 
+\section{Digraphen}
+Mit \OviIndex{Digraphen} können auf einigen Tastaturen oder Systemen nicht vorhandene Zeichen umgangen werden.
+Anstelle des nicht vorhandenen Zeichens kann der Digraph eingesetzt werden:
+
+\begin {tabular}{|p{0.23\textwidth}|l|}%p{0.29\textwidth}|}
+\hline
+Zeichen&Ersatz (Digraph)\\
+\hline
+\lstinline${$& 	<\%\\
+\hline
+\lstinline$}$&	\%>\\
+\hline
+\lstinline$[$&	<:\\
+\hline
+\lstinline$]$&	:>\\
+\hline
+\lstinline$#$&	\%:\\
+\hline
+\lstinline$##$&	\%:\%:\\
+\hline
+\end{tabular}
+
+
 \section{Präprozessorbefehle}
 Der Präprozessor wird in C++ noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
 
@@ -802,7 +825,10 @@ Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autor
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
-Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsubsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
+
+\subsubsection{Einsatz von Zeigern}
+Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt gibt (null-pointer).
 
 In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
@@ -812,6 +838,7 @@ Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeige
 
 Siehe \autoref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
 
+\subsubsection{Beispiele zum Einsatz von Zeigern, Smartpointern und Referenzen}
 
 \begin{CCode}
 	int j, k, l;    // Drei Integer Variablen definieren
@@ -947,15 +974,14 @@ Beispiel zu Einsatz von shared Pointer:
 \end{CCode}
 
 \subsubsection{RValue Referenzen (Seit \Cpp11)}
-\label{subsec:RValueRefs}
-\autoref{subsec:RValueRefs}
+\label{subsubsec:RValueRefs}
 
 \OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
 
 Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
 
-Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.
+Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.)
 
 
 Beispiel:
@@ -1047,7 +1073,65 @@ Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen 
 \end{CCode}
 
 
-\subsection{Konstantheit (const)}
+
+\subsection{Typsicherere Enummerationen (Seit \Cpp11)}
+\label{subsubsect:TypsichererEnum}
+Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \CodeStyle{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
+
+Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
+mehrere Enums dieselben Bezeichner verwenden.   
+
+Neue Syntax:
+\begin{CCode}
+	
+	enum class Aufzaehlung {
+		Item1,
+		Item2,
+		Item3 = 100,
+		Item4         // Erhaelt den Wert 101 
+	};
+	
+	int i = Aufzaehlung::Item2;          // Compilerfehler
+	
+	Aufzaehlung a = Item1;               // Compilerfehler
+	Aufzaehlung a = Aufzaehlung::Item1;  // OK
+	a = 12;                              // Compilerfehler
+	
+	if (a == 17)                         // Compilerfehler
+	
+	// Angabe der gewuenschte Datengrösse
+	enum class Enum2 : unsigned int {Item1, Item2};
+	
+\end{CCode}
+ 
+ \subsection{Initialisiererlisten (Seit \Cpp11)}
+ \label{subsubsect:Initialisiererlisten}
+ \index{Initialisiererlisten}
+ Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
+ 
+ Beispiel:
+ \begin{CCode}
+ 	
+ 	class DemoClass {
+ 		public:
+ 		DemoClass(std::initializer_list<int> list);
+ 	};
+ 	
+ 	
+ 	DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
+ 	
+ \end{CCode}
+ 
+ Das Template \CodeStyle{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
+ 
+ \subsection{Klassen}
+ Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
+ 
+ \subsection{Weitere Datentypen}
+ Weiter gibt es \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den template-mechanismus realisiert werden
+ (Siehe  \autoref{chapter:Templates} und  \autoref{section:StandardSTL} . 
+ 
+ \subsection{Konstantheit (const)}
 Variablen und Objekte, die nur gelesen werden dürfen, kann man als \CodeIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
 
 \begin{CCode}
@@ -1202,66 +1286,11 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
 ändert seinen Wert schliesslich nicht.
 
 
-\subsection{Typsicherere Enummerationen (Seit \Cpp11)}
-\label{subsubsect:TypsichererEnum}
-Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \CodeStyle{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
-
-Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
-mehrere Enums dieselben Bezeichner verwenden.   
-
-Neue Syntax:
-\begin{CCode}
-	
-	enum class Aufzaehlung {
-		Item1,
-		Item2,
-		Item3 = 100,
-		Item4         // Erhaelt den Wert 101 
-	};
-	
-	int i = Aufzaehlung::Item2;          // Compilerfehler
-	
-	Aufzaehlung a = Item1;               // Compilerfehler
-	Aufzaehlung a = Aufzaehlung::Item1;  // OK
-	a = 12;                              // Compilerfehler
-	
-	if (a == 17)                         // Compilerfehler
-	
-	// Angabe der gewuenschte Datengrösse
-	enum class Enum2 : unsigned int {Item1, Item2};
-	
-\end{CCode}
- 
- \subsection{Initialisiererlisten (Seit \Cpp11)}
- \label{subsubsect:Initialisiererlisten}
- \index{Initialisiererlisten}
- Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
- 
- Beispiel:
- \begin{CCode}
- 	
- 	class DemoClass {
- 		public:
- 		DemoClass(std::initializer_list<int> list);
- 	};
- 	
- 	
- 	DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
- 	
- \end{CCode}
- 
- Das Template \CodeStyle{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
- 
- 
- \subsection{Weitere Datentypen}
- Weiter gibt es \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den template-mechanismus realisiert werden
- (Siehe  \autoref{chapter:Templates} und  \autoref{section:StandardSTL} . 
- Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
  
   \section{Literale}
  Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale, der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
  
- \subsubsection{Nullpointer (Seit \Cpp11)}
+ \subsection{Nullpointer (Seit \Cpp11)}
  \label{subsubsect:nullptr}
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
  Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
@@ -1354,16 +1383,16 @@ int main()
 }
  \end{CCode}
  
-Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken, oder dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern.
+Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken oder forcieren, sowie dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern. Nachfolgen die bis Standard \CppVers{20} definierten Attribute:
 
 \begin {tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}%p{0.29\textwidth}|}
 
 \hline
 Attribut&	Beschreibung\\
 \hline
-\lstinline$[[noreturn]] $(\CppVers{11}) &Die Funktion wird nie beendet (Z.B. ein Thread)\\
+\lstinline$[[noreturn]] $(\CppVers{11}) &Die Funktion wird nie beendet (Z.B. ein Thread), erlaubt Codeoptimierungen\\
 \hline
-\lstinline$[[carries_dependency]]$(\CppVers{11})&Erlaubt optimierungen im Speichermanagement\\
+\lstinline$[[carries_dependency]]$(\CppVers{11})&Erlaubt Optimierungen im Speichermanagement\\
 \hline
 \lstinline$[[deprecated]]$(\CppVers{14})&Zeigt an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs)\\
 \hline
@@ -1373,9 +1402,9 @@ Attribut&	Beschreibung\\
 \hline
 \lstinline$[[nodiscard]]$(\CppVers{17})&Kann auf Funktionen/Methoden oder Klassen angewendet werden. Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird, oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
 \hline
-\lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird\\
+\lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
 \hline
-\lstinline$[[maybe_unused]]$(\CppVers{17}) &Verhindert eine Compilkerwarnung, wenn dieses Element nirgends verwendet wird (Z.B. unbenutzte Variable)\\
+\lstinline$[[maybe_unused]]$(\CppVers{17}) &Verhindert eine Compilerwarnung, wenn dieses Element nirgends verwendet wird (Z.B. unbenutzte Variable)\\
 \hline
 \lstinline$[[likely]]$(\CppVers{20})&Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) wahrscheinlicher als andere ist \\
 \hline
@@ -1508,6 +1537,38 @@ Operator&	Beschreibung&	Beispiel\\
 \lstinline$,$&Kommaoperator&\lstinline$a = (b,c);$\\
 \hline
 \end{tabular}
+
+Daneben gibt es noch alternative Schreibweisen für einige Operatoren:
+
+\begin {tabular}{|p{0.23\textwidth}|l|}%p{0.29\textwidth}|}
+\hline
+Operator&Alternative\\
+\hline
+\lstinline$&&$& 	and\\
+\hline
+\lstinline$&= $&	and\_eq\\
+\hline
+\lstinline$& $&	bitand\\
+\hline
+\lstinline$| $&	bitor\\
+\hline
+\lstinline$~ $&	compl\\
+\hline
+\lstinline$! $&	not\\
+\hline
+\lstinline$!= $&	not\_eq\\
+\hline
+\lstinline$|| $&	or\\
+\hline
+\lstinline$|= $&	or\_eq\\
+\hline
+\lstinline$^ $&	xor\\
+\hline
+\lstinline$^= $&	xor\_eq\\
+\hline
+\end{tabular}
+
+
 
 \section{Blöcke}
 Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
@@ -7935,7 +7996,7 @@ main()
 Nachfolgend sind die relevanten generierten Assemblerzeilen zum Setzen / Löschen eines Bits aufgeführt, der Code wurde mit GGC für STM32 compiliert.\\
  
  \noindent
-\colorbox{\CP}{Violett ist die Returnanweisung markiert} \\
+\colorbox{\CP}{Violett ist das effektive Setzen oder Löschen des Bits markiert} \\
 \colorbox{\CR}{Hellrot ist der Code zur Berechnung der Bitmaske zum Löschen der LED markiert} \\
 \colorbox{\CY}{Gelb ist der Code zur Berechnung der Bitmaske zum Setzen der LED markiert} \\
 \colorbox{\CO}{HellOrange ist der gemeinsame Code zur Berechnung der Bitmaske zum Setzen/Löschen der LED markiert} \\
