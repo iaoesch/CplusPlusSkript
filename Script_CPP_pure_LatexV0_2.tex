@@ -7711,7 +7711,6 @@ class GPIOLedClass : public LedBaseClass {
       }
 };
 
-
 class GPIOClass {
 
    GPIOPortClass *MyPort;
@@ -7721,7 +7720,6 @@ class GPIOClass {
 
    public:
       void SetPinState(int State) {MyPort->SetLevel(MyGPIO, State);}
-
 };
 
 class GPIOPortClass
@@ -7732,22 +7730,16 @@ class GPIOPortClass
       void SetLevel(uint32_t Pin, int Level);
 };
 
-
-
 void GPIOPortClass::SetLevel(uint32_t Pin, int Level)
 {
-   /* Method data declaration      */
-
    volatile uint32_t *GPLevelBase = 
          reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address + LSB_OFFSET_GPIOX_BSRR);
-
-   /* Method code declaration      */
 
    if(Pin >= 16) {
       return; // Illegal Pin Number...
    }
 
-   /* find the level Register for the pin, select set or cler register,  */
+   /* find the level Register for the pin, select set or clear register,  */
    /* depending on requested pin level                                   */
    if (Level == 0) {
 	   Pin = Pin + 16;
@@ -7756,7 +7748,6 @@ void GPIOPortClass::SetLevel(uint32_t Pin, int Level)
    /* Just write a 1 for the pin to be set or cleared */
    *GPLevelBase = 0x01L << Pin;
 }
-.
 
 main()
 {
@@ -7787,7 +7778,6 @@ class GPIOLedClass : public LedBaseClass {
       }
 };
 
-
 class GPIOClass {
 
    GPIOPortClass *MyPort;
@@ -7797,27 +7787,19 @@ class GPIOClass {
     
    public:
       void SetPinState(int State) {MyPort->SetLevel(MyGPIO, State);}
-
 };
 
 class GPIOPortClass
 {
-
       volatile uintptr_t GPIO_Base_Address;
 
    private:
       void SetLevel(uint32_t Pin, int Level);
 };
 
-
-
 inline void GPIOPortClass::SetLevel(uint32_t Pin, int Level)
 {
-   /* Method data declaration      */
-
-   volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address +    LSB_OFFSET_GPIOX_BSRR);
-
-   /* Method code declaration      */
+    volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address +    LSB_OFFSET_GPIOX_BSRR);
 
    if(Pin >= 16) {
       return; // Illegal Pin Number...
@@ -7832,7 +7814,6 @@ inline void GPIOPortClass::SetLevel(uint32_t Pin, int Level)
    /* Just write a 1 for the pin to be set or cleared */
    *GPLevelBase = 0x01L << Pin;
 }
-.
 
 main()
 {
@@ -7842,8 +7823,6 @@ main()
    GPIOLedClass LedOut0(Out0);
    LedOut0.SetLed(LedBaseClass::On);
 }
-
-
 \end{CCode}
 
 \subsubsection{Templates}
@@ -7890,10 +7869,7 @@ const int LSB_OFFSET_GPIOX_BSRR = 0x18;
 template <GPIOBase::GPIO_Ports GPIOPort>
 inline void GPIOPortClass<GPIOPort>::SetLevel(uint32_t Pin, int Level)
 {
-   /* Method data declaration      */
-   volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address +  LSB_OFFSET_GPIOX_BSRR);
-
-   /* Method code declaration      */
+    volatile uint32_t *GPLevelBase = reinterpret_cast<volatile uint32_t *>(GPIO_Base_Address +  LSB_OFFSET_GPIOX_BSRR);
 
    if(Pin >= 16) {
       return; // Illegal Pin Number...
@@ -7916,7 +7892,6 @@ class GPIOClass : public GPIOBase{
    static constexpr int MyGPIO = PinNumber;
    public:
       static void SetPinState(int State) {MyPort::SetLevel(MyGPIO, State);}
-
 };
 
 main()
@@ -7925,7 +7900,6 @@ main()
    GPIOLedClass LedOut0(&Out0);
    LedOut0.SetLed(LedBaseClass::On);
 }
-
 \end{CCode}
 
 \subsubsection{Generierter Code der Funktion SetLed inklusive Unterprogrammaufruf}
@@ -7966,7 +7940,7 @@ Nachfolgend sind die relevanten generierten Assemblerzeilen zum Setzen / Löschen
 \colorbox{\CY}{Gelb ist der Code zur Berechnung der Bitmaske zum Setzen der LED markiert} \\
 \colorbox{\CO}{HellOrange ist der gemeinsame Code zur Berechnung der Bitmaske zum Setzen/Löschen der LED markiert} \\
 \colorbox{\CB}{Hellblauviolett ist der Code für die Fallunterscheidung Setzen/Löschen markiert} \\
-\colorbox{\CLB}{Hellblau ist der Code für die Fallunterscheidung Setzen/Löschen markiert} \\
+\colorbox{\CLB}{Hellblau ist der Code für die Bereichsüberprüfung der Pinnummer markiert} \\
 \colorbox{\CBG}{Hellblaugruen ist der Code für den Funktionsaufruf markiert} \\
 
 %{ \scriptsize
@@ -7999,9 +7973,9 @@ Class, no inline & Class Inline & Template \\
 .LFB159: \\
 	\RB\GB	\MC{\CLB}{cmp	r1, \#15}{	if (Pin < 16) } \\
 	\RB\GB	\MC{\CLB}{bhi	.L179}{	if (Pin < 16) } \\
-	\RB\GB	\MC{\CW}{cbz	r2, .L182}{	if (Level == 0) } \\
+	\RB\GB	\MC{\CB}{cbz	r2, .L182}{	if (Level == 0) } \\
 .L181: \\
-	\RB\GB	\MC{\CO}{ldr	r2, [r0, \#204}{	this->GPIO\_Base\_Address to r2} \\
+	\RB\GB	\MC{\CO}{ldr	r2, [r0, \#204]}{	this->GPIO\_Base\_Address to r2} \\
 	\RB\GB	\MC{\CO}{movs	r3, \#1}{	1 << Pin } \\
 	\RB\GB	\MC{\CO}{lsl	r1, r3, r1}{	1 << Pin } \\
 	\RB\GB	\MC{\CP}{str	r1, [r2, \#24]}{*( Addr + RegisterOffset) = 1 << Pin } \\
