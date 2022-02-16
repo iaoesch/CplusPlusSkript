@@ -7931,8 +7931,10 @@ main()
 \subsubsection{Generierter Code der Funktion SetLed inklusive Unterprogrammaufruf}
 
 \definecolor{MyGreen}{rgb}{0,0.6,0}
+\definecolor{MyBlueGreen}{rgb}{0.5,1,0.92}
 \definecolor{MyPurple}{rgb}{0.8,0.6,1}
 \definecolor{MyBlue}{rgb}{0.7,0.7,1}
+\definecolor{MyLightBlue}{rgb}{0.7,0.87,1}
 \definecolor{MyRed}{rgb}{1,0.7,0.7}
 \definecolor{MyYellow}{rgb}{1,1,0.5}
 \definecolor{MyOrange}{rgb}{1,0.85,0.7}
@@ -7947,7 +7949,10 @@ main()
 
 \newcommand{\CW}{white}%
 \newcommand{\CG}{MyGreen}%
+
+\newcommand{\CBG}{MyBlueGreen}%
 \newcommand{\CB}{MyBlue}%
+\newcommand{\CLB}{MyLightBlue}%
 \newcommand{\CR}{MyRed}%
 \newcommand{\CY}{MyYellow}%
 \newcommand{\CO}{MyOrange}%
@@ -7955,11 +7960,14 @@ main()
 
 Nachfolgend sind die relevanten generierten Assemblerzeilen zum Setzen / Löschen eines Bits aufgeführt, der Code wurde mit GGC für STM32 compiliert.\\
  
+ \noindent
 \colorbox{\CP}{Violett ist die Returnanweisung markiert} \\
 \colorbox{\CR}{Hellrot ist der Code zur Berechnung der Bitmaske zum Löschen der LED markiert} \\
 \colorbox{\CY}{Gelb ist der Code zur Berechnung der Bitmaske zum Setzen der LED markiert} \\
-\colorbox{\CO}{Orange ist der gemeinsame Code zur Berechnung der Bitmaske zum Setzen/Löscenh der LED markiert} \\
-\colorbox{\CB}{Hwellblau ist der Code für die Fallunterscheidung Setzen/Löschen markiert} \\
+\colorbox{\CO}{HellOrange ist der gemeinsame Code zur Berechnung der Bitmaske zum Setzen/Löschen der LED markiert} \\
+\colorbox{\CB}{Hellblauviolett ist der Code für die Fallunterscheidung Setzen/Löschen markiert} \\
+\colorbox{\CLB}{Hellblau ist der Code für die Fallunterscheidung Setzen/Löschen markiert} \\
+\colorbox{\CBG}{Hellblaugruen ist der Code für den Funktionsaufruf markiert} \\
 
 %{ \scriptsize
 %\begin{table}[htp]
@@ -7978,19 +7986,19 @@ Class, no inline & Class Inline & Template \\
 	\RB\GB	\MC{\CB}{cmp	r1, \#1}{	if (NewState == LedBaseClass::On)} \\
 	\RB\GB	\MC{\CW}{ldr	r3, [r0, \#4]}{   this->MyGPIO to r3} \\
 	\RB\GB	\MC{\CB}{beq	.L33}{	if (NewState == LedBaseClass::On)} \\
-	\RB\WB	\MC{\CW}{ldrd	r0, r1, [r3]}{	r3->MyPort to r0, r3->Pin to r1} \\
-	\RB\WB	\MC{\CW}{movs	r2, \#0}{	r2 = 0, r2 is Parameter State for SetLevel() } \\
-	\RB\WB	\MC{\CW}{b	\_ZN13GPIOPortClass8SetLevelEmi}{} \\
+	\RB\WB	\MC{\CBG}{ldrd	r0, r1, [r3]}{	r3->MyPort to r0, r3->Pin to r1} \\
+	\RB\WB	\MC{\CBG}{movs	r2, \#0}{	r2 = 0, r2 is Parameter State for SetLevel() } \\
+	\RB\WB	\MC{\CBG}{b	\_ZN13GPIOPortClass8SetLevelEmi}{} \\
 
 .L33: \\
-	\WB\GB	\MC{\CW}{mov	r2, r1}{	r1 contains \#1, r2 is Parameter State for SetLevel} \\
-	\WB\GB	\MC{\CW}{ldrd	r0, r1, [r3]}{	r3->MyPort to r0, r3->Pin to r1} \\
-	\WB\GB	\MC{\CW}{b	\_ZN13GPIOPortClass8SetLevelEmi}{} \\
+	\WB\GB	\MC{\CBG}{mov	r2, r1}{	r1 contains \#1, r2 is Parameter State for SetLevel} \\
+	\WB\GB	\MC{\CBG}{ldrd	r0, r1, [r3]}{	r3->MyPort to r0, r3->Pin to r1} \\
+	\WB\GB	\MC{\CBG}{b	\_ZN13GPIOPortClass8SetLevelEmi}{} \\
 \\
 \_ZN13GPIOPortClass8SetLevelEmi: \\
 .LFB159: \\
-	\RB\GB	\MC{\CW}{cmp	r1, \#15}{	if (Pin < 16) } \\
-	\RB\GB	\MC{\CW}{bhi	.L179}{	if (Pin < 16) } \\
+	\RB\GB	\MC{\CLB}{cmp	r1, \#15}{	if (Pin < 16) } \\
+	\RB\GB	\MC{\CLB}{bhi	.L179}{	if (Pin < 16) } \\
 	\RB\GB	\MC{\CW}{cbz	r2, .L182}{	if (Level == 0) } \\
 .L181: \\
 	\RB\GB	\MC{\CO}{ldr	r2, [r0, \#204}{	this->GPIO\_Base\_Address to r2} \\
@@ -8017,8 +8025,8 @@ Class, no inline & Class Inline & Template \\
 	\RB\GB	\MC{\CB}{cmp	r1, \#1 }{if (NewState == LedBaseClass::On)}\\
 	\RB\GB	\MC{\CW}{ldr	r3, [r2, \#4]	 }{MyGPIO(r2)->Pin to r3}\\
 	\RB\GB	\MC{\CB}{beq	.L35	 }{if (NewState == LedBaseClass::On)}\\
-        \RB\WB \MC{\CW}{cmp	r3, \#15}{if (Pin < 16)} \\
-	\RB\WB	\MC{\CW}{bhi	.L32 }{	if (Pin < 16) }\\
+        \RB\WB \MC{\CLB}{cmp	r3, \#15}{if (Pin < 16)} \\
+	\RB\WB	\MC{\CLB}{bhi	.L32 }{	if (Pin < 16) }\\
 	\RB\WB	\MC{\CW}{ldr	r2, [r2] }{	MyGPIO(r2)->MyPort to r02}\\
 	\RB\WB	\MC{\CR}{adds	r3, r3, \#16 }{	1 << (Pin + 16)}\\
 	\RB\WB	\MC{\CR}{ldr	r1, [r2, \#204] }{ MyPort->GPIOBaseAddress to r1}\\
@@ -8028,8 +8036,8 @@ Class, no inline & Class Inline & Template \\
 .L32:\\
 	\RB\WB	\MC{\CW}{bx	lr }{	 return}\\
 .L35:\\
-	\WB\GB	\MC{\CW}{cmp	r3, \#15 }{	if (Pin < 16)} \\
-	\WB\GB	\MC{\CW}{bhi	.L32 }{	if (Pin < 16) }\\
+	\WB\GB	\MC{\CLB}{cmp	r3, \#15 }{	if (Pin < 16)} \\
+	\WB\GB	\MC{\CLB}{bhi	.L32 }{	if (Pin < 16) }\\
 	\WB\GB	\MC{\CY}{ldr	r2, [r2] }{	MyGPIO(r2)->MyPort to r2}\\
 	\WB\GB	\MC{\CY}{ldr	r2, [r2, \#204]  }{MyPort->GPIOBaseAddress to r1}\\
 	\WB\GB	\MC{\CY}{lsls	r1, r1, r3 }{	 1 <<  Pin}\\
@@ -8062,33 +8070,43 @@ Class, no inline & Class Inline & Template \\
 
 \\	
 \hline
-  Grün Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
-14 Instruktionen und 3 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden
+{\footnotesize
+  Grün markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+14 Instruktionen und 3 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden\par}
 &
-   Grün Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
-11 Instruktionen und 2 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden
+{\footnotesize
+   Grün markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+11 Instruktionen und 2 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden\par}
 
 &
-  Grün Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
-7 Instruktionen (Wovon 2 bedingt)  und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden
+{\footnotesize
+  Grün markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+7 Instruktionen (Wovon 2 bedingt)  und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden\par}
 \\
 \hline
-  Rot Markiert ist der Pfad zum Löschen der Led, dieser Pfad benötigt 
-16 Instruktionen und 4 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden
+{\footnotesize
+  Rot markiert ist der Pfad zum Löschen der Led, dieser Pfad benötigt 
+16 Instruktionen und 4 Sprünge, die Anzahl der Taktzyklen müsste noch bestimmt werden\par}
 &
-   Rot Markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
-13 Instruktionen und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden
+{\footnotesize
+   Rot markiert ist der Pfad zum Setzen der Led, dieser Pfad benötigt 
+13 Instruktionen und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden\par}
 
 &
-  Rot Markiert ist der Pfad zum Löschen der Led, dieser Pfad benötigt 
-7 Instruktionen (Wovon 2 bedingt)  und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden
+{\footnotesize
+  Rot markiert ist der Pfad zum Löschen der Led, dieser Pfad benötigt 
+7 Instruktionen (Wovon 2 bedingt)  und 1 Sprung, die Anzahl der Taktzyklen müsste noch bestimmt werden\par}
 \\
 \hline
+{\footnotesize
   Zwei Instruktionen werden jeweils zur Überprüfung der Pinnummer benötigt
+  Drei Instruktionen (inklusive ein Sprung) werden für den Funktionsaufruf und Parameterübergabe benötigt\par}
 &
-   Zwei Instruktionen werden jeweils zur Überprüfung der Pinnummer benötigt
+{\footnotesize
+   Zwei Instruktionen werden jeweils zur Überprüfung der Pinnummer benötigt\par}
 &
-  Pinnummer wird zur Compilezeit überprüft, Test entfällt
+{\footnotesize
+  Pinnummer wird zur Compilezeit überprüft, Test entfällt \par}
 \\
 \hline
 \multicolumn{3}{|l|}{
