@@ -7932,6 +7932,14 @@ main()
 
 \subsubsection{Generierter Code der Funktion SetLed inklusive Unterprogrammaufruf}
 
+\newcommand{\GB}{\colorbox{green!80}{\phantom{X}}}%
+\newcommand{\WB}{\colorbox{white!80}{\phantom{X}}}%
+
+\newcommand{\MC}[3]{\colorbox{#1}{#2}\scalebox{.7}[1.0]{#3}}%
+
+\newcommand{\CB}{blue!20}%
+
+
 %{ \scriptsize
 \begin{table}[htp]
 \caption{default}
@@ -7940,67 +7948,74 @@ main()
 \hline
 Class, no inline & Class Inline & Template \\
 \hline
+\begin{minipage}[t]{0.32\columnwidth}
 { \tiny
-\_ZN12GPIOLedClass6SetLed \newline EN12LedBaseClass8LedStateE:
-.LFB53:
-	cmp	r1, \#1	if (NewState == LedBaseClass::On)
-	ldr	r3, [r0, \#4]   this->MyGPIO to r3
-	beq	.L33	if (NewState == LedBaseClass::On)
-	ldrd	r0, r1, [r3]	r3->MyPort to r0, r3->Pin to r1
-	movs	r2, \#0	r2 = 0, r2 is Parameter State for SetLevel() 
-	b	\_ZN13GPIOPortClass8SetLevelEmi
+\setlength{\fboxsep}{0pt}%
 
-.L33:
-	mov	r2, r1	r1 contains \#1, r2 is Parameter State for SetLevel
-	ldrd	r0, r1, [r3]	r3->MyPort to r0, r3->Pin to r1
-	b	\_ZN13GPIOPortClass8SetLevelEmi
+\_ZN12GPIOLedClass6SetLed \newline EN12LedBaseClass8LedStateE:\\
+.LFB53: \\
+	\WB	\MC{\CB}{cmp	r1, \#1}{	if (NewState == LedBaseClass::On)} \\
+	\WB	\MC{\CB}{ldr	r3, [r0, \#4]}{   this->MyGPIO to r3} \\
+	\WB	\MC{\CB}{beq	.L33}{	if (NewState == LedBaseClass::On)} \\
+	\WB	\MC{\CB}{ldrd	r0, r1, [r3]}{	r3->MyPort to r0, r3->Pin to r1} \\
+	\WB	\MC{\CB}{movs	r2, \#0}{	r2 = 0, r2 is Parameter State for SetLevel() } \\
+	\WB	\MC{\CB}{b	\_ZN13GPIOPortClass8SetLevelEmi}{} \\
 
-
-\_ZN13GPIOPortClass8SetLevelEmi:
-.LFB159:
-	cmp	r1, \#15	if (Pin < 16) 
-	bhi	.L179	if (Pin < 16) 
-	cbz	r2, .L182	if (Level == 0) 
-.L181:
-	ldr	r2, [r0, \#204	this->GPIO\_Base\_Address to r2
-	movs	r3, \#1	1 << Pin 
-	lsl	r1, r3, r1	1 << Pin 
-	str	r1, [r2, \#24]	*( Addr + RegisterOffset) = 1 << Pin 
-.L179:
-	bx	lr	 return
-.L182:
-	adds	r1, r1, \#16	1 << (Pin + 16)
-	b	.L181
-	.cfi\_endproc
+.L33: \\
+	\WB	\MC{\CB}{mov	r2, r1}{	r1 contains \#1, r2 is Parameter State for SetLevel} \\
+	\WB	\MC{\CB}{ldrd	r0, r1, [r3]}{	r3->MyPort to r0, r3->Pin to r1} \\
+	\WB	\MC{\CB}{b	\_ZN13GPIOPortClass8SetLevelEmi}{} \\
+\\
+\_ZN13GPIOPortClass8SetLevelEmi: \\
+.LFB159: \\
+	\WB	\MC{\CB}{cmp	r1, \#15}{	if (Pin < 16) } \\
+	\WB	\MC{\CB}{bhi	.L179}{	if (Pin < 16) } \\
+	\WB	\MC{\CB}{cbz	r2, .L182}{	if (Level == 0) } \\
+.L181: \\
+	\WB	\MC{\CB}{ldr	r2, [r0, \#204}{	this->GPIO\_Base\_Address to r2} \\
+	\WB	\MC{\CB}{movs	r3, \#1}{	1 << Pin } \\
+	\WB	\MC{\CB}{lsl	r1, r3, r1}{	1 << Pin } \\
+	\WB	\MC{\CB}{str	r1, [r2, \#24]}{	*( Addr + RegisterOffset) = 1 << Pin } \\
+.L179: \\
+	\WB	\MC{\CB}{bx	lr}{	 return} \\
+.L182: \\
+	\WB	\MC{\CB}{adds	r1, r1, \#16}{	1 << (Pin + 16)} \\
+	\WB	\MC{\CB}{b	.L181}{} \\
+	.cfi\_endproc \\
+	\par
 	}
+	\end{minipage}
+
 &
 \begin{minipage}[t]{0.32\columnwidth}
 { \tiny
 \_ZN12GPIOLedClass6SetLed\\EN12LedBaseClass8LedStateE:\\
-.LFB166: \\
-	\colorbox{blue!30}{blueldr	r2, [r0, \#4] }  this->MyGPIO to r2 \\
-	cmp	r1, \#1	if (NewState == LedBaseClass::On)\\
-	ldr	r3, [r2, \#4]	MyGPIO(r2)->Pin to r3\\
-	beq	.L35	if (NewState == LedBaseClass::On)\\
-	cmp	r3, \#15	if (Pin < 16) \\
-	bhi	.L32	if (Pin < 16) \\
-	ldr	r2, [r2]	MyGPIO(r2)->MyPort to r02\\
-	adds	r3, r3, \#16	1 << (Pin + 16)\\
-	ldr	r1, [r2, \#204] MyPort->GPIOBaseAddress to r1\\
-	movs	r2, \#1	 1 << (Pin + 16)\\
-	lsl	r3, r2, r3	  1 << (Pin + 16)\\
-	str	r3, [r1, \#24]  *( Base + RegOffset) = 1<<Pin+16\\
+.LFB166: \par
+\setlength{\fboxsep}{0pt}%
+	\WB	\MC{\CB}{ldr	r2, [r0, \#4] }{this->MyGPIO to r2}\\
+	\WB	\MC{\CB}{cmp	r1, \#1 }{if (NewState == LedBaseClass::On)}\\
+	\WB	\MC{\CB}{ldr	r3, [r2, \#4]	 }{MyGPIO(r2)->Pin to r3}\\
+	\WB	\MC{\CB}{beq	.L35	 }{if (NewState == LedBaseClass::On)}\\
+        \WB \MC{\CB}{cmp	r3, \#15}{if (Pin < 16)} \\
+	\WB	\MC{\CB}{bhi	.L32 }{	if (Pin < 16) }\\
+	\WB	\MC{\CB}{ldr	r2, [r2] }{	MyGPIO(r2)->MyPort to r02}\\
+	\WB	\MC{\CB}{adds	r3, r3, \#16 }{	1 << (Pin + 16)}\\
+	\WB	\MC{\CB}{ldr	r1, [r2, \#204] }{ MyPort->GPIOBaseAddress to r1}\\
+	\WB	\MC{\CB}{movs	r2, \#1 }{	 1 << (Pin + 16)}\\
+	\WB	\MC{\CB}{lsl	r3, r2, r3 }{	  1 << (Pin + 16)}\\
+	\WB	\MC{\CB}{str	r3, [r1, \#24] }{  *( Base + RegOffset) = 1<<Pin+16}\\
 .L32:\\
-	bx	lr	 return\\
+	\WB	\MC{\CB}{bx	lr }{	 return}\\
 .L35:\\
-	cmp	r3, \#15	if (Pin < 16) \\
-	bhi	.L32	if (Pin < 16) \\
-	ldr	r2, [r2]	MyGPIO(r2)->MyPort to r2\\
-	ldr	r2, [r2, \#204] MyPort->GPIOBaseAddress to r1\\
-	lsls	r1, r1, r3	 1 <<  Pin\\
-	str	r1, [r2, \#24] *( Base + RegOffset) = 1 << Pin\\
-	bx	lr	 return\\
+	\WB	\MC{\CB}{cmp	r3, \#15 }{	if (Pin < 16)} \\
+	\WB	\MC{\CB}{bhi	.L32 }{	if (Pin < 16) }\\
+	\WB	\MC{\CB}{ldr	r2, [r2] }{	MyGPIO(r2)->MyPort to r2}\\
+	\WB	\MC{\CB}{ldr	r2, [r2, \#204]  }{MyPort->GPIOBaseAddress to r1}\\
+	\WB	\MC{\CB}{lsls	r1, r1, r3 }{	 1 <<  Pin}\\
+	\WB	\MC{\CB}{str	r1, [r2, \#24] }{ *( Base + RegOffset) = 1 << Pin}\\
+	\WB	\MC{\CB}{bx	lr }{	 return}\\
 	.cfi\_endproc\\
+	\par
 	}
 \end{minipage}
 
