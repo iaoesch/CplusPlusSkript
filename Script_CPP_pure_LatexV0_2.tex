@@ -1241,6 +1241,7 @@ Beispiel
 
 
 \subsubsection{Umgehung der Konstantheit (Mutable)}
+\label{subsubsect:Mutable}
 Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
 aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
 (z. B. ein statischer Zugriffszähler) modifiziert.
@@ -2400,6 +2401,8 @@ Beispiele
 Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
 Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \CodeStyle{auto} oder \CodeStyle{decltype} die Variablendefinition.
 
+Lambdafunktionen ohne Capture-Block können auch passenden Funktionszeigern zugewiesen werden, Lambdafunktionen mit Capture-Block sind nicht kompatibel mit Funktionszeigern, da ein Objekt zur Aufnahme der Capture-Variablen erzeugt werden muss.
+
 
 \subsection{Coroutinen (Seit \Cpp20)}
 \label{subsec:CoRoutinen}
@@ -3161,8 +3164,8 @@ int main(int argc, char *argv[]) {
 
 \section{Attribute}
 \label{sect:AttributeKlassen}
-In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablendefinitionen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte}) public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember})
-definiert werden. Als Attribute sind grundsätzlich alle Datentypen von C++ zulässig.
+In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte}) public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember}) definiert werden. Mit Mutable (Siehe \ref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
+Als Attribute sind grundsätzlich alle Datentypen von C++ zulässig.
 
 \section{Methoden}
 \OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \ref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\ref{subsect:Konstruktoren}), Destruktoren (\ref{subsect:Destruktor}) und Zuweisungsoperatoren (\ref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte} public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember}\
@@ -6863,6 +6866,7 @@ soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden w
 		 New / Delete & Ja & Ja & Bedingt & Bedingt\\
 		 Exception Handling	 & Ja & Bedingt & Nein & Nein\\
 		 Inline Funktionen	 & Bedingt & Nein, sogar Zeitgewinn & Ja & Ja\\
+		 Lamdba Funktionen	 & Nein & Nein & Ja & Ja\\
 		 Templates	 & Je nach Template & Nein & Je nach Template & Je nach Template\\
 		 Temporäre Objekte & Nein & Ja & Ja & Ja\\
 		 constexpr Funktionen	 & Nein, sogar Platzgewinn & Nein, sogar Zeitgewinn & Ja & Ja\\
@@ -7097,6 +7101,66 @@ Wenn Konstexprfunktionen mit nicht konstanten Argumenten aufgerufen werden, wird
 
 \subsection{Const und Constexpr Konstanten}
 Wenn Konstanten mit Constexpr oder static const definiert werden, und nirgens ihre Adresse verwendet wird, kann der Compiler oft vermeiden, dafür überhaupt Speicherplatz zu Belegen, sondern die Werte direkt in die Prozessorbefehle integrieren. Und wenn dies nicht möglich ist, werden die Werte zumindest im (Code-)Rom abgelegt, und nicht im RAM bei den anderen Variablen.
+
+\subsection{Lambda Funktionen}
+Bei Lambdafunktionen wird an der Stelle der Definition eine Klasse mit überladenem Funtionsaufrufoperator definiert, und ein Objekt dieser Klasse erzeugt und als Resultat zurückgeliefert.
+Wenn ein Lamda-Objekt einem Template oder einer Inline-Funktion übergeben wird, kann der ganze Overhead vom Compiler wegoptimiert werden, und der Code der Lambdafunktion wird einfach im Template oder der Inlinefunktion eingefügt.
+In den anderen Fällen wird die Funktion über den operator() des Lambda-Objektes realisiert und ein solches Lambda-Objekte erzeugt.
+Wenn eine Lambdafunktion einen leeren Captureblock hat, wird vom Compiler je nach Einsatz eine Namenlose Funktion erzeugt, und ein Pointer auf diese Funktion zurückgeliefert.
+
+\begin{CCode}
+// Folgender Ausdruck
+int x;
+int y;
+f([x, &y](int a)->float{x = x + a; y = a + 2; return x*y*a; });
+
+// wird zu:
+
+int x;
+int y;
+
+class AnonymousLambda {
+   int My_x;
+   int &My_y;
+   AnonymousLambda(int _x, int &_y) : My_x(_x), My_y(_y) {}
+   float operator()(int a) {
+                               My_x = My_x + a; 
+                               My_y = a + 2; 
+                               return My_x*My_y*a; 
+                           }
+}
+
+f(AnonymousLambda(x, y));
+
+// Achtung, definiton von f als nichttemplate ist herausfordernd:
+// void f(std::function<float (int)> &f);
+
+\end{CCode}
+
+Im Falle einer Zustandslosen (Kein Captureblock) Lambdafunktion als
+Parameter für eine Funktion welche einen passenden Funktionspointer
+akzeptiert wird die Lambdafunktion als gewöhnliche Funktion compiliert
+und ein Zeiger auf diese übergeben.
+\begin{CCode}
+// Folgender Ausdruck
+
+void f(float (*fkt)(int));
+
+f([](int a)->float{return 15*a;});
+
+// wird zu:
+
+void f(float (*fkt)(int));
+
+float AnonymousLambda(int a) 
+{
+    return 15*a; 
+}
+
+f(AnonymousLambda);
+\end{CCode}
+
+
 
 
 \subsection{Templates}
