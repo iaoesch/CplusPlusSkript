@@ -170,6 +170,7 @@
 \newcommand{\CppVers}[1]{C{\texttt{++}}{#1}}
 
 \newcommand{\OviIndex}[1]{\textit{#1}\index{#1}}
+\newcommand{\OviIndexModified}[2]{\textit{#1}\index{#2}}
 
 \newcommand{\NextPagePlease}{\pagebreak[4]}
 
@@ -1363,6 +1364,8 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  
 \section{Attribute (Seit \CppVers{11})}
 \label{subsubsect:Attribute}
+\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \ref{sect:AttributeKlassen}).\
+} 
 Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
 \CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
 
@@ -3156,11 +3159,18 @@ int main(int argc, char *argv[]) {
 }
 \end{CCode}
 
-\section{Attribute***}
+\section{Attribute}
+\label{sect:AttributeKlassen}
+In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablendefinitionen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte}) public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember})
+definiert werden. Als Attribute sind grundsätzlich alle Datentypen von C++ zulässig.
 
-\section{Methoden***}
+\section{Methoden}
+\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \ref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\ref{subsect:Konstruktoren}), Destruktoren (\ref{subsect:Destruktor}) und Zuweisungsoperatoren (\ref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte} public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember}\
+definiert werden.
 
 \section{Konstruktoren / Destruktoren / Zuweisungsoperator}
+\label{subsect:KonstruktorenDestruktorenZuweisungsOP}
+
 Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
 Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
 
@@ -3199,6 +3209,7 @@ Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher a
 
 
 \subsection{Konstruktoren}
+\label{subsect:Konstruktoren}
 \OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
 \begin{CCode}
 class MyClass {
@@ -3339,6 +3350,7 @@ Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \aut
 \end{CCode}
 
 \subsection{Zuweisungsoperator}
+\label{subsect:Zuweisungsoperator}
 In die gleiche Kategorie gehört auch der \OviIndex{Zuweisungsoperator} (\CodeStyle{operator =()}), dieser wird jeweils aufgerufen, wenn ein Objekt einem anderen zugewiesen wird. Auch hier erzeugt der Compiler selbständig eine Zuweisungsmethode, wenn dies vom Programmierer unterlassen wird. Der Zuweisungsoperator muss den Spezialfall einer Zuweisung an sich selbst behandeln, und sollte eine Referenz auf sich selbst (\CodeStyle{*this}) zurückliefern. Der Zuweisungsoperator kann
 für verschiedene Datentypen überladen werden. Er ist eine Kombination von Copy-Konstruktor und Destruktor, da der alte Inhalt des Objektes gelöscht (Überschrieben) und durch neue Werte ersetzt wird. Der Zuweisungsoperator sollte Fail-Safe sein, d.h. auch wenn Exceptions auftreten, sollte die Zuweisung funktioneren, resp. es sollten gar keine Exceptions auftreten.
 
@@ -3392,6 +3404,7 @@ Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapit
 \end{CCode}
 
 \subsection{Destruktor}
+\label{subsect:Destruktor}
 Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden. (Basisklassen mit virtuellen Funktionen sollten immer einen virtuellen Destruktor definieren, auch wenn er nichts zu tun hat).
 \begin{CCode}
 class MyClass {
@@ -3567,6 +3580,7 @@ Sobald für eine Klasse der Operator \CodeStyle{==} vorhanden ist, wird auch der 
 
 
 \section{Zugriffsrechte}
+\label{sect:Zugrifsrechte}
 In Klassen kann unter \Cpp der Zugriff auf Member (Attribute und Methoden) eingeschränkt werden. Es gibt folgende \OviIndex{Zugriffsrechte}\index{public}\index{protected}\index{private}:
 \paragraph{public:} 
 Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubute vermieden werden (Default bei Strukturen).
@@ -3618,6 +3632,7 @@ void f1(SomeClass &r);
 Sobald man auf Member zugreift, muss die Klasse vollständig bekannt sein.
 
 \section{Inline Methoden}
+\label{sect:InlineMethoden}
 \index{Inline Methoden} 
 Kurze und oft benutzte Methoden können als \CodeIndex{inline} definiert werden. (Üblicherweise
 wird die ganze Funktion samt Code in diesem Fall in der Headerdatei innerhalb der Klassendeklaration definiert). Solche Methoden
@@ -3662,6 +3677,7 @@ inline void A::DoSomething()  // Inline Methoden können mit dem Schluesselwort
 
  
 \section{Statische Member}
+\label{sect:StatischeMember}
 \OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Sie können somit such aufgerufen werden, ohne dass ein Objekt von dieser Klasse existiert. Auf statische Member wird über den Klassennamen mit dem Scope-Resolutions-Operator ('\CodeStyle{::}') zugegriffen.
 
 Achtung: Für statische Attribute muss neben der Deklaration in der Klasse explizit eine Variable definiert werden, üblicherweise in der dazugehörigen Implementationsdatei, welche auch den Code für die Methoden dieser Klasse enthält. 
