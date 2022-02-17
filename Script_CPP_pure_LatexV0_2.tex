@@ -6521,7 +6521,7 @@ Für Zeitdauern und Zeitpunkte sind Addition und Subtraktion definiert, wobei fol
 \end{itemize}
 
 Bei den Berechnungen werden jeweils die Basis-Timer-Ticks der Operanden in den am Besten passenden gemeinsamen Tick umgewandelt, bevor die Berechnung durchgeführt wird. 
-time\_point
+
  
 \subsection{Weitere Elemente von std::chrono }
 In der chrono-Library finden sich weiter Objekte zum Umgang mit Datum, Kalendern, Wochentagen, Zeitzonen sowie der Umwandlung dieser verschiedenen Objekte ineinander sowie zur Ein- und Ausgabe von Zeit- und Datumsobjekten
@@ -9696,7 +9696,7 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{std::bind_front}
     \item \CodeStyle{std::c8rtomb,  std::mbrtoc8}
     \item \CodeStyle{std::make_obj_using_allocator} etc
-    \item \CodeStyle{std::make_shared_for_overwrite}/\CodeStyle{std::make_unique_for_overwrite}
+    \item \CodeStyle{std::make_shared_for_overwrite}/\CodeStyle{std::make_unique_for_overwrite} z.B. zum Allozieren grosser Arrays ohne diese zu initialisieren, effizienter falls Arrays später gefüllt werden.
     \item heterogeneous lookup in unordered associative containers
     \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument
     \item \CodeStyle{std::execution::unseq}
@@ -9710,13 +9710,97 @@ Seit Dezember 2020 verabschiedet.
 
 \section{\CppVers{23}}
 Bereits in der Planungs- und Diskussionsphase.
- \begin{itemize}
-    \item Planned features for \CppVers{23} are library support for coroutines, a modular standard library, executors, and networking. 
-     \item   Literal suffixes for std::size\_t and the corresponding signed type
-    \item A member function contains for std::basic\_string and std::basic\_string\_view, to check whether or not the string contains a given substring or character
-    \item A stacktrace library (<stacktrace>), based on Boost.Stacktrace
-    \item A type trait std::is\_scoped\_enum
-    \item The header <stdatomic.h>, for interoperability with C atomics
+ %\begin{itemize}
+    %\item Planned features for \CppVers{23} are library support for coroutines, a modular standard library, executors, and networking. 
+     %\item   Literal suffixes for std::size\_t and the corresponding signed type
+    %\item A member function contains for std::basic\_string and std::basic\_string\_view, to check whether or not the string contains a given substring or character
+    %\item A stacktrace library (<stacktrace>), based on Boost.Stacktrace
+    %\item A type trait std::is\_scoped\_enum
+    %\item The header <stdatomic.h>, for interoperability with C atomics
+%\end{itemize}
+(Quelle: https://en.cppreference.com/w/cpp/23)
+
+Sprache (Stand 14.2.2022)
+\begin{itemize}
+\item Literal suffix for (signed) size\_t 
+\item Make () more optional for lambdas 
+\item if consteval 
+\item Removing Garbage Collection Support 
+\item DR: C++ Identifier Syntax using Unicode Standard Annex 31 
+\item DR: Allow Duplicate Attributes 
+\item Narrowing contextual conversions in static\_assert and constexpr if 
+\item Trimming whitespaces before line splicing 
+\item Make declaration order layout mandated 
+\item Removing mixed wide string literal concatenation 
+\item Deducing this 
+\item auto(x) and auto{x} 
+\item Change scope of lambda trailing-return-type 
+\item \#elifdef and \#elifndef 
+\item Non-literal variables (and labels and gotos) in constexpr functions 
+\item Consistent character literal encoding 
+\item Character sets and encodings 
+\item Extend init-statement to allow alias-declaration 
+\item Multidimensional subscript operator 
+\item Attributes on lambda expressions 
+\item DR: Missing feature test macros for C++20 core papers 
+\end{itemize}
+
+Library (Stand 14.2.2022)
+\begin{itemize}
+\item Stacktrace library 
+\item <stdatomic.h> 
+\item std::is\_scoped\_enum 
+\item basic\_string::contains(), basic\_string\_view::contains() 
+\item std::to\_underlying 
+\item Relaxing requirements for time\_point<>::clock 
+\item DR: std::visit() for classes derived from std::variant 
+\item DR: Conditionally borrowed ranges 
+\item DR: Repairing input range adaptors and std::counted\_iterator 
+\item Providing size feedback in the Allocator interface 
+\item <spanstream> : string-stream with std::span-based buffer 
+\item std::out\_ptr(), std::inout\_ptr() 
+\item constexpr type\_info::operator==() 
+\item Iterator pair constructors for std::stack and std::queue 
+\item Non-deduction context for allocators in container deduction guides 
+\item ranges::starts\_with() and ranges::ends\_with() 
+\item Prohibiting std::basic\_string and std::basic\_string\_view construction from nullptr 
+\item std::invoke\_r() 
+\item Range constructor for std::basic\_string\_view 
+\item Default template arguments for pair's forwarding constructor 
+\item Remove Garbage Collection and Reachability-Based Leak Detection (library support) 
+\item DR: join\_view should join all views of ranges 
+\item DR: view does not require default\_initializable 
+\item DR: Range adaptor objects bind arguments by value 
+\item DR: constexpr for std::optional and std::variant 
+\item DR: std::format() improvements 
+\item DR: lazy\_split\_view and redesigned split\_view 
+\item zip 
+\item Heterogeneous erasure overloads for associative containers 
+\item std::byteswap() 
+\item Printing volatile T* 
+\item basic\_string::resize\_and\_overwrite() 
+\item Monadic operations for std::optional 
+\item std::move\_only\_function 
+\item Add a conditional noexcept specification to std::exchange 
+\item Require span \& basic\_string\_view to be TriviallyCopyable 
+\item Clarifying the status of the "`C headers"' 
+\item DR: Fix ranges::istream\_view 
+\item DR: Add support for non-const-formattable types to std::format 
+\item DR: What is a view 
+\item DR: fixing locale handling in chrono formatters 
+\item DR: Cleaning up integer-class types 
+\item std::expected 
+\item constexpr for <cmath> and <cstdlib> 
+\item std::unreachable() 
+\item Deprecating std::aligned\_storage and std::aligned\_union 
+\item A type trait to detect reference binding to temporary 
+\item constexpr std::unique\_ptr 
+\item ranges::to 
+\item Pipe support for user-defined range adaptors 
+\item ranges::iota, ranges::shift\_left, and ranges::shift\_right 
+\item ranges::join\_with\_view 
+\item ranges::chunk\_view and ranges::slide\_view 
+\item ranges::chunk\_by\_view
 \end{itemize}
 
 
