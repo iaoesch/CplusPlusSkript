@@ -396,6 +396,17 @@ In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlo
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
 ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in C++ (Anonyme) Namespaces (Siehe \autoref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
 
+\section{Kommentare}
+\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \CodeStyle{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \CodeStyle{/*} eingeleitet und endet mit \CodeStyle{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
+\begin{CCode}
+// Ein Zeilenkommentar
+/* dieser Kommentar
+   geht ueber mehrere
+   Zeilen */
+\end{CCode}
+
+
+
 \section{Bezeichner und reservierte Namen}
 Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
 
@@ -525,6 +536,132 @@ Weiter gibt es Bezeichner mit spezieller Bedeutung, welche zwar für Namen von Ob
 \end{description}
 \end{multicols}
 
+\section{Digraphen}
+Mit \OviIndex{Digraphen} können auf einigen Tastaturen oder Systemen nicht vorhandene Zeichen umgangen werden.
+Anstelle des nicht vorhandenen Zeichens kann der Digraph eingesetzt werden:
+
+\begin {tabular}{|p{0.23\textwidth}|l|}%p{0.29\textwidth}|}
+\hline
+Zeichen&Ersatz (Digraph)\\
+\hline
+\lstinline${$& 	<\%\\
+\hline
+\lstinline$}$&	\%>\\
+\hline
+\lstinline$[$&	<:\\
+\hline
+\lstinline$]$&	:>\\
+\hline
+\lstinline$#$&	\%:\\
+\hline
+\lstinline$##$&	\%:\%:\\
+\hline
+\end{tabular}
+
+
+\section{Präprozessorbefehle}
+Der Präprozessor wird in C++ noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
+
+Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
+
+%#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
+
+\begin{CCode}
+#include "test.h"   // der wohl wichtigste Befehl, fuegt die angegebene Datei an 
+                    // dieser Stelle in den Code ein.
+#if 0               // Bedingte Kompilierung
+...                 // Der Teil dessen Bedingung nicht zutrifft wird als
+#else               // Kommentar behandelt, also vom Compiler ignoriert
+...
+#endif
+
+#ifdef DEBUG        // Bedingte Kompilierung
+... // Wird nur compiliert wenn Makro Debug definiert ist
+#endif
+\end{CCode}
+Speziell beim Einbinden von Headerdateien kann es geschehen, dass die selbe Datei über verschiedene Wege mehrfach eingebunden wird. Das kann zu Problemen führen, besonders bei Klassen, weil diese nur einmal definiert werden dürfen. Das Problem lässt sich umgehen, wenn der Inhalt jeder Headerdatei mit folgenden Befehlen eingeschlossen wird:
+\begin{CCode}
+
+#ifndef HEADER_DATEI_NAME_HPP // ifndef -> if not defined, Gegenteil von ifdef
+#define HEADER_DATEI_NAME_HPP
+
+// Inhalt der Headerdatei,    wird nur Compiliert wenn HEADER_DATEI_NAME_HPP noch
+                           // nicht definiert war, also nur beim ersten Mal
+#endif
+\end{CCode}
+
+Damit wird garantiert, dass der Inhalt der Headerdatei nur einmal berücksichtigt wird. Diese Methode ist beinahe Standard, man findet sie bei allen Systemdateien und Bibliotheken, und die meisten Programmierer wenden sie grundsätzlich an, um eventuellen Problemen vorzubeugen.
+Es gibt zwei Formen für den Includebefehl:
+\#include <......> sucht die Datei im Systemverzeichnis des Compilers und allfälligen weiteren vom Benutzer angegebenen Verzeichnissen. Diese Form wird für Bibliotheksfunktionen verwendet.
+\#include ''.....'' sucht zuerst im gleichen Verzeichnis in welchem die cpp Datei liegt, und dann in denselben Verzeichnissen wie \#include <...>. Diese Form wird für Projektbezogene Dateien (Vom Benutzer selbst geschriebene Dateien) eingesetzt. 
+
+Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \CodeStyle{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \CodeStyle{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
+
+\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
+
+Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if und wie erwähnt \CodeStyle{inline / constexpr / const} anstelle von makros  (\#defines)) 
+
+
+
+
+\section{Attribute (Seit \CppVers{11})}
+\label{subsubsect:Attribute}
+\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \ref{sect:AttributeKlassen}).\
+} 
+Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
+\CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
+
+Beispiel:
+ \begin{CCode}
+
+[[gnu::always_inline, gnu::const, gnu::hot, nodiscard]]
+int f(); 
+ 
+// C++17:
+[[using gnu : const, always_inline, hot]] [[nodiscard]]
+int f[[gnu::always_inline]](); // an attribute may appear in multiple specifiers
+ 
+int f() { return 0; }
+ 
+int main()
+{
+}
+ \end{CCode}
+ 
+Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken oder forcieren, sowie dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern. Nachfolgen die bis Standard \CppVers{20} definierten Attribute:
+
+\begin {tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}%p{0.29\textwidth}|}
+
+\hline
+Attribut&	Beschreibung\\
+\hline
+\lstinline$[[noreturn]] $(\CppVers{11}) &Die Funktion wird nie beendet (Z.B. ein Thread), erlaubt Codeoptimierungen\\
+\hline
+\lstinline$[[carries_dependency]]$(\CppVers{11})&Erlaubt Optimierungen im Speichermanagement\\
+\hline
+\lstinline$[[deprecated]]$(\CppVers{14})&Zeigt an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs)\\
+\hline
+\lstinline$[[deprecated("reason")]]$(\CppVers{14}) &	Zeigt mit Begründung an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs\\
+\hline
+\lstinline$[[fallthrough]]$(\CppVers{17}) &Zeigt an dass ein 'Durchfallen' vom vorherigen in diesen case beim switch() beabsichtigt ist und der Compiler deshalb keine Warnung ausgeben soll \\
+\hline
+\lstinline$[[nodiscard]]$(\CppVers{17})&Kann auf Funktionen/Methoden oder Klassen angewendet werden. Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird, oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
+\hline
+\lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
+\hline
+\lstinline$[[maybe_unused]]$(\CppVers{17}) &Verhindert eine Compilerwarnung, wenn dieses Element nirgends verwendet wird (Z.B. unbenutzte Variable)\\
+\hline
+\lstinline$[[likely]]$(\CppVers{20})&Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) wahrscheinlicher als andere ist \\
+\hline
+\lstinline$[[unlikely]]$(\CppVers{20}) &Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) weniger wahrscheinlicher als andere ist \\
+\hline
+\lstinline$[[no_unique_address]]$(\CppVers{20}) &Zeigt an dass ein Member nicht zwingend eine von anderen Membern unterschiedliche Adresse zu haben braucht (Z.B. Eine Membervariable einer leeren Klasse ohne Member belegt so keinen Speicherplatz.\\
+\hline
+\lstinline$[[optimize_for_synchronized]]$(TM TS) &Zeigt an dass diese Funktion für synchronisierte Ausführung optimiert werden soll\\
+\hline
+\end{tabular}
+
+ 
 
 
 \section{Module}
@@ -740,687 +877,7 @@ void SayHello::SayGreeting()                   \linebreak[4]
 %}}
 
 
-\section{Kommentare}
-\Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \CodeStyle{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \CodeStyle{/*} eingeleitet und endet mit \CodeStyle{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
-\begin{CCode}
-// Ein Zeilenkommentar
-/* dieser Kommentar
-   geht ueber mehrere
-   Zeilen */
-\end{CCode}
 
-\section{Digraphen}
-Mit \OviIndex{Digraphen} können auf einigen Tastaturen oder Systemen nicht vorhandene Zeichen umgangen werden.
-Anstelle des nicht vorhandenen Zeichens kann der Digraph eingesetzt werden:
-
-\begin {tabular}{|p{0.23\textwidth}|l|}%p{0.29\textwidth}|}
-\hline
-Zeichen&Ersatz (Digraph)\\
-\hline
-\lstinline${$& 	<\%\\
-\hline
-\lstinline$}$&	\%>\\
-\hline
-\lstinline$[$&	<:\\
-\hline
-\lstinline$]$&	:>\\
-\hline
-\lstinline$#$&	\%:\\
-\hline
-\lstinline$##$&	\%:\%:\\
-\hline
-\end{tabular}
-
-
-\section{Präprozessorbefehle}
-Der Präprozessor wird in C++ noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
-
-Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
-
-%#define pi 3.14     // Makro (definition einer Konstanten) Wollen wir in C++ nicht mehr...
-
-\begin{CCode}
-#include "test.h"   // der wohl wichtigste Befehl, fuegt die angegebene Datei an 
-                    // dieser Stelle in den Code ein.
-#if 0               // Bedingte Kompilierung
-...                 // Der Teil dessen Bedingung nicht zutrifft wird als
-#else               // Kommentar behandelt, also vom Compiler ignoriert
-...
-#endif
-
-#ifdef DEBUG        // Bedingte Kompilierung
-... // Wird nur compiliert wenn Makro Debug definiert ist
-#endif
-\end{CCode}
-Speziell beim Einbinden von Headerdateien kann es geschehen, dass die selbe Datei über verschiedene Wege mehrfach eingebunden wird. Das kann zu Problemen führen, besonders bei Klassen, weil diese nur einmal definiert werden dürfen. Das Problem lässt sich umgehen, wenn der Inhalt jeder Headerdatei mit folgenden Befehlen eingeschlossen wird:
-\begin{CCode}
-
-#ifndef HEADER_DATEI_NAME_HPP // ifndef -> if not defined, Gegenteil von ifdef
-#define HEADER_DATEI_NAME_HPP
-
-// Inhalt der Headerdatei,    wird nur Compiliert wenn HEADER_DATEI_NAME_HPP noch
-                           // nicht definiert war, also nur beim ersten Mal
-#endif
-\end{CCode}
-
-Damit wird garantiert, dass der Inhalt der Headerdatei nur einmal berücksichtigt wird. Diese Methode ist beinahe Standard, man findet sie bei allen Systemdateien und Bibliotheken, und die meisten Programmierer wenden sie grundsätzlich an, um eventuellen Problemen vorzubeugen.
-Es gibt zwei Formen für den Includebefehl:
-\#include <......> sucht die Datei im Systemverzeichnis des Compilers und allfälligen weiteren vom Benutzer angegebenen Verzeichnissen. Diese Form wird für Bibliotheksfunktionen verwendet.
-\#include ''.....'' sucht zuerst im gleichen Verzeichnis in welchem die cpp Datei liegt, und dann in denselben Verzeichnissen wie \#include <...>. Diese Form wird für Projektbezogene Dateien (Vom Benutzer selbst geschriebene Dateien) eingesetzt. 
-
-Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \CodeStyle{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \CodeStyle{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
-
-\emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
-
-Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if und wie erwähnt \CodeStyle{inline / constexpr / const} anstelle von makros  (\#defines)) 
-
-\section{Datentypen}
-\subsection{Einfache Datentypen}
-Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
-
-Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
-
-
-\subsection{Zeiger und Referenzen}
-\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \CodeStyle{&}. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit \CodeStyle{*} \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
-Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
-Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
-
-Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsubsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
-
-\subsubsection{Einsatz von Zeigern}
-Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt gibt (null-pointer).
-
-In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
-
-Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
-
-Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
-
-Siehe \autoref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
-
-\subsubsection{Beispiele zum Einsatz von Zeigern, Smartpointern und Referenzen}
-
-\begin{CCode}
-	int j, k, l;    // Drei Integer Variablen definieren
-	int &r = j;     // Eine Referenz auf j definieren
-	int *ptr;       // Ein Zeiger auf int definieren
-	
-	j = 100;        // Werte an j, k und l Zuweisen
-	k = 200;
-	l = 300;
-	
-	std::cout << r;      // Wert ausgeben der von r referenziert wird (j)
-	
-	ptr = &k;       // Addresse von k an Ptr zuweisen
-	std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
-	
-	ptr = &l;       // Addresse von l an Ptr zuweisen
-	std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
-	
-	void DoSomething(int &a, const int &b) 
-	{
-		a = b + 3; // b ist const Referenz, also nur lesbar
-		// a ist auch schreibbar
-	}
-	
-	void DoSomethingElse(int &&a) // rValueReferenzen
-	{
-	}
-	
-	
-	DoSomething(j, k); // j wird von DoSomething veraendert
-\end{CCode}
-
-Beispiel zu Einsatz von unique Pointer:
-\begin{CCode}
-	
-	#include <memory>  // definiton von unique_ptr
-	
-	std::unique_ptr<A> f(int i) 
-	{
-		return std::make_unique<A>(i);   // UniquePointer erzeugt Objekt und übernimmt Verwaltung
-	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
-	
-	void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
-	{
-		// Do something;   
-	} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
-	
-	int TestUnique(int argc, char*argv[])
-	{
-		std::unique_ptr<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
-		
-		f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
-		// wird gelöscht, ohne seinen Inhalt weitergegeben zu 
-		// haben -> Destruktor von UniquePointer loescht
-		// Objekt auf welches der UniquePointer zeigt.  
-		
-		spwrong = f(13);       // Zuweisung verboten
-		
-		std::unique_ptr<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
-		// sp1 uebergeben bevor der zurueckgegebene UniquePointer 
-		// gelöscht wird -> Destruktor von UniquePointer loescht
-		// nichts 
-		
-		sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
-		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-		
-		try {
-			std::unique_ptr<A> p = std::make_unique<A>(12);
-			g(p);              // Kopie Verboten
-			
-			g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
-			// (Movekonstruktor)
-			
-			g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
-			// p verliert Besitz von Objekt und wird zu nullptr
-			
-			std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
-			
-			std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
-			// zuweisen
-			
-			// Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
-			//                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
-		} catch(...) {  
-		}                    
-	}
-\end{CCode}
-Beispiel zu Einsatz von shared Pointer:
-\begin{CCode}
-	#include <memory>  // definiton von shared_ptr
-	std::shared_ptr<A> f(int i) 
-	{
-		return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
-	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
-	
-	void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
-	{
-		// Do something;   
-	} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
-	// und Objekt freigegeben falls counter 0 wird.
-	
-	int Test(int argc, char*argv[])
-	{
-		std::shared_ptr<A> sp1;
-		
-		f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
-		// wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
-		// -> Destruktor von Sharedpointer loescht
-		// Objekt auf welches der Sharedpointer zeigt falls counter
-		// 0 wird.  
-		
-		sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
-		// uebergeben bevor der zurueckgegebene Sharedpointer 
-		// gelöscht wird -> Destruktor von Sharedpointer
-		// dekrementiert counter, aber loescht nichts 
-		
-		sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
-		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-		
-		try {
-			std::shared_ptr<A> p = std::make_shared<A>(12);
-			g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
-			// counter wird inkrementiert, p ist weiterhin gueltig
-			std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
-			// kopiert, counter wird inkrementiert, sp1 ist weiterhin 
-			// gueltig
-			// Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
-			//                    freigegeben wann auch immer der letzte Pointer darauf
-			// ungueltig wird  
-		} catch(...) {  
-		}                    
-	}
-\end{CCode}
-
-\subsubsection{RValue Referenzen (Seit \Cpp11)}
-\label{subsubsec:RValueRefs}
-
-\OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
-Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
-
-Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
-
-Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.)
-
-
-Beispiel:
-\begin{CCode}
-	
-	
-	class Demo {
-		// ...
-		Demo(const Demo &Src);            // Kopierkonstruktor
-		Demo(Demo&&Src);                  // Move-Konstruktor
-		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
-		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
-	};	
-	
-	
-	Demo f1() {
-		
-		...
-		
-		return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
-		// Hier kommt Move-Konstruktor zum Zug
-		// Welcher Inhalt vom temporaeren Objekt
-		// uebernimmt statt kopiert
-		
-	}
-	
-	void f2(Demo d) {
-		
-		...
-		
-	}
-	
-	
-	f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
-	// Hier kommt Move-Konstruktor zum Zug
-	// Welcher Inhalt vom temporaeren Objekt
-	// uebernimmt statt kopiert
-	
-	
-	Demo q(xyz);
-	
-	f2(q);                    // Kein temporaeres Objekt, normaler
-	// Kopierkonstruktor wird verwendet
-	
-\end{CCode}
-\index{this auf RValue}
-Bei nicht-statischen Methoden kann auch der \CodeStyle{this}-Pointer auf ein RValue-Objekt verweisen, entsprechend können auch nicht-statische Methoden für den Fall dass \CodeStyle{this} ein RValue-Objekt ist überladen werden:
-
-Beispiel:
-\begin{CCode}
-	
-	
-	class Demo {
-		// ...
-		
-		f() &&;        // this zeigt auf RValue Objekt
-		f() &;         // this zeigt auf LValue Objekt
-		
-    g();           // this zeigt auf LValue oder RValue Objekt
-	};	
-	
-	
-  Demo f1() {
-    return Demo;      // Temproaeres Demoobjekt wird erzeugt
-  }
-	
-  Demo d;
-  
-  f1().f();   // f1() liefert temporaeres Objekt, f()&& wird aufgerufen
-  d.f();      // Kein temporaeres Objekt, f()& wird aufgerufen
-	
-\end{CCode}
-
-
-
-Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
-\begin{CCode}
-	
-	Demo q(xyz);
-	
-	f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
-	// betrachten), Movekonstruktor wird verwendet
-	
-	q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
-	// keine Resourcen mehr, kann gefaehrlich sein 
-	
-	q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
-	
-\end{CCode}
-
-
-
-\subsection{Typsicherere Enummerationen (Seit \Cpp11)}
-\label{subsubsect:TypsichererEnum}
-Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \CodeStyle{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
-
-Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
-mehrere Enums dieselben Bezeichner verwenden.   
-
-Neue Syntax:
-\begin{CCode}
-	
-	enum class Aufzaehlung {
-		Item1,
-		Item2,
-		Item3 = 100,
-		Item4         // Erhaelt den Wert 101 
-	};
-	
-	int i = Aufzaehlung::Item2;          // Compilerfehler
-	
-	Aufzaehlung a = Item1;               // Compilerfehler
-	Aufzaehlung a = Aufzaehlung::Item1;  // OK
-	a = 12;                              // Compilerfehler
-	
-	if (a == 17)                         // Compilerfehler
-	
-	// Angabe der gewuenschte Datengrösse
-	enum class Enum2 : unsigned int {Item1, Item2};
-	
-\end{CCode}
- 
- \subsection{Initialisiererlisten (Seit \Cpp11)}
- \label{subsubsect:Initialisiererlisten}
- \index{Initialisiererlisten}
- Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
- 
- Beispiel:
- \begin{CCode}
- 	
- 	class DemoClass {
- 		public:
- 		DemoClass(std::initializer_list<int> list);
- 	};
- 	
- 	
- 	DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
- 	
- \end{CCode}
- 
- Das Template \CodeStyle{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
- 
- \subsection{Klassen}
- Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
- 
- \subsection{Weitere Datentypen}
- Weiter gibt es \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den template-mechanismus realisiert werden
- (Siehe  \autoref{chapter:Templates} und  \autoref{section:StandardSTL} . 
- 
- \subsection{Konstantheit (const)}
-Variablen und Objekte, die nur gelesen werden dürfen, kann man als \CodeIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
-
-\begin{CCode}
-	int a;
-	const int ci = 4;   // Konstante, kann nicht geaendert werden
-	a = ci + 3;         // OK, nur lesen
-	ci = 19;            // Error, aendern nicht erlaubt
-\end{CCode}
-
-Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übergeben werden, sonst wäre es ja möglich, die Konstantheit zu umgehen. Nichtkonstante Objekte dürfen jederzeit an Zeiger oder Referenzen auf konstante Objekte zugewiesen werden.
-\begin{CCode}
-	int a;
-	const int ci = 4;     // Konstante, kann nicht geaendert werden
-	const int &cr = ci;   // Referenz auf konstantes int, zeigt auf ci, alles OK
-	const int *cptr;      // Zeiger auf konstantes int
-	int * const ccp = &a; // Konstanter Zeiger auf int (const muss nach * sein)
-	int *ptr;             // Zeiger auf int
-	int &r = ci;          // Error, ci koennte sonst via r geaendert werden
-	const int &cra = a;   // Referenz auf konstantes int, zeigt auf a, alles OK
-	cr = 19;              // Error, aendern nicht erlaubt
-	cra = 17;             // Error, aendern nicht erlaubt (cra ist konstante Referenz)
-	ptr = &ci;            // Error, ci ist konstant, *ptr nicht
-	cptr = &ci;           // Ok (Zeiger selbst ist nicht konstant)
-	*cptr = 4;            // Error, Zeiger zeigt auf Konstant
-	cptr++;               // Ok (Zeiger selbst ist nicht konstant)
-	*ccp = 4;             // Ok, Zeiger zeigt auf nicht konstant)
-	ccp++;                // Error Zeiger ist konstant
-	
-	void f1(int &i) 
-	{ 
-		i++; 
-	}
-	
-	void f2(const int &i) 
-	{ 
-		i++; // Error, i ist Referenz auf konstantes int
-	}
-	
-	f1(ci); // Error, Argument von f1 ist nich konstant, koennte i aendern
-	f2(ci); // Ok f2 kann i nicht aendern
-\end{CCode}
-
-Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als \CodeStyle{const} deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit \CodeStyle{const} kann man eine Methode also überladen.
-\begin{CCode}
-	class MyClass {
-		
-		int i;
-		
-		public:
-		int  Test(void);         // Nur-Lese Methode, aber nicht als const deklariert
-		int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
-		void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
-	};
-	
-	int MyClass::Test(void) 
-	{ 
-		return (i == 0);
-	}
-	
-	int MyClass::Read(void) const
-	{ 
-		i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
-		return i;   // Ok, i wird nur gelesen
-	}
-	
-	void MyClass::Write(int n) 
-	{ 
-		i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
-	}
-	
-	void f1(const MyClass& mc)    // f1 veraendert Argument nicht 
-	{
-		int i = mc.Read();  //Ok, Read() ist Konstant, nur lesen
-		int j = mc.Test();  //Error, Test() ist nicht Konstant
-		mc.Write();         //Error, Write() ist nicht Konstant 
-	}
-\end{CCode}
-
-Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
-Mit \CppVers(20) kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
-
-
-Beispiel
-\begin{CCode}
-	
-	constexpr int GetLength() 
-	{
-		return 15;
-	}
-	
-	int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
-	
-	constexpr int MakeDouble(int x) 
-	{
-		return x * 2;
-	}
-	
-	int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
-	
-	
-	constexpr double Erdanziehung = 9.81;
-	constexpr double MondAnziehung = Erdanziehung / 6.0;
-\end{CCode}
-
-
-
-\subsubsection{Umgehung der Konstantheit (Mutable)}
-\label{subsubsect:Mutable}
-Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
-aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
-(z. B. ein statischer Zugriffszähler) modifiziert.
-
-Für diese Fälle kann ein Attribut als \CodeIndex{mutable} gekennzeichnet werden. 
-Attribute mit dem Qualifizierer \CodeStyle{mutable} dürfen, im Gegensatz zu 'normalen'
-Attributen, von \CodeStyle{const} Methoden verändert werden.
-
-
-\begin{CCode}
-	class MyClass {
-		
-		mutable int NumberOfReadAccesses;
-		int i;
-		
-		public:
-		int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
-		void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
-	};
-	
-	int MyClass::Read(void) const
-	{ 
-		NumberOfReadAccesses++;  // OK, mutable darf von const-Methode geaendert werden 
-		i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
-		return i;   // Ok, i wird nur gelesen
-	}
-	
-	void MyClass::Write(int n) 
-	{ 
-		i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
-	}
-	
-\end{CCode}
-
-Man kann so ein konstantes Objekt schaffen, bei dem dennoch nicht ganz
-alles konstant ist. \CodeStyle{Mutable} sollte nur in gut begründeten Ausnahmefällen
-eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
-nicht ändert, aber interne Verwaltungsinformation geändert werden
-muss. 
-
-Eine mögliche Anwendung wäre ein Proxy-Objekt, das beim Lesen
-effektiv Daten von einer Datei in einen lokalen Cache lädt, oder die
-Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
-ändert seinen Wert schliesslich nicht.
-
-
- 
-  \section{Literale}
- Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale, der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
- 
- \subsection{Nullpointer (Seit \Cpp11)}
- \label{subsubsect:nullptr}
- Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
- Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
- 
- \begin{CCode}
- 	class StrangeClass {
- 		public:
- 		void DoSomething(float *p);
- 		void DoSomething(int *p);
- 	};
- 	
- 	StrangeClass sc;
- 	int a;
- 	
- 	sc.DoSomething(&a);
- 	sc.DoSomething(nullptr); // Error float* or int* ???
- 	
- 	
- 	class LessStrangeClass {
- 		public:
- 		void DoSomething(float *p);
- 		void DoSomething(int *p);
- 		void DoSomething(std::nulptr_t p);  // Variant for nullptr
- 	};
- 	
- 	LessStrangeClass lsc;
- 	int a;
- 	
- 	lsc.DoSomething(&a);
- 	lsc.DoSomething(nullptr); // ok, std::nulptr_t
- 	
- 	
- 	
- 	
- \end{CCode}
- 
- 
- 
- 
- 
- \subsection{Erweiterte Stringliterale (Seit \Cpp11)}
- \label{subsubsect:erweiterteStringliterale}
- Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
- 
- 
- \begin{CCode}
- 	u8"Ein UTF-8 String"  // hat den Typ const char[]
- 	u"Ein UTF-16 String"  // hat den Typ const char16_t[]
- 	U"Ein UTF-32 String"  // hat den Typ const char32_t[]
- \end{CCode}
- 
- Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
- \begin{CCode}
- 	u8"Ein spezielles UTF-8 Zeichen: \u2018" 
- 	u"Ein spezielles UTF-16 Zeichen: \u2018" 
- 	U"Ein spezielles UTF-32 Zeichen: \U00002018"  
- \end{CCode}
- 
- Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
- 
- Beispiel:
- \begin{CCode}
- 	R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
- 	
- 	// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
- 	R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
- \end{CCode}
- 
- R und U können auch kombiniert werden.
- 
-\section{Attribute (Seit \CppVers{11})}
-\label{subsubsect:Attribute}
-\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \ref{sect:AttributeKlassen}).\
-} 
-Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
-\CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
-
-Beispiel:
- \begin{CCode}
-
-[[gnu::always_inline, gnu::const, gnu::hot, nodiscard]]
-int f(); 
- 
-// C++17:
-[[using gnu : const, always_inline, hot]] [[nodiscard]]
-int f[[gnu::always_inline]](); // an attribute may appear in multiple specifiers
- 
-int f() { return 0; }
- 
-int main()
-{
-}
- \end{CCode}
- 
-Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken oder forcieren, sowie dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern. Nachfolgen die bis Standard \CppVers{20} definierten Attribute:
-
-\begin {tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}%p{0.29\textwidth}|}
-
-\hline
-Attribut&	Beschreibung\\
-\hline
-\lstinline$[[noreturn]] $(\CppVers{11}) &Die Funktion wird nie beendet (Z.B. ein Thread), erlaubt Codeoptimierungen\\
-\hline
-\lstinline$[[carries_dependency]]$(\CppVers{11})&Erlaubt Optimierungen im Speichermanagement\\
-\hline
-\lstinline$[[deprecated]]$(\CppVers{14})&Zeigt an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs)\\
-\hline
-\lstinline$[[deprecated("reason")]]$(\CppVers{14}) &	Zeigt mit Begründung an, dass ein Element noch benutzbar ist, aber besser nicht mehr benutzt wird (Z.B. in Libraries oder APIs\\
-\hline
-\lstinline$[[fallthrough]]$(\CppVers{17}) &Zeigt an dass ein 'Durchfallen' vom vorherigen in diesen case beim switch() beabsichtigt ist und der Compiler deshalb keine Warnung ausgeben soll \\
-\hline
-\lstinline$[[nodiscard]]$(\CppVers{17})&Kann auf Funktionen/Methoden oder Klassen angewendet werden. Der Compiler soll eine Warnung ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird, oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
-\hline
-\lstinline$[[nodiscard("reason")]]$(\CppVers{20}) &Der Compiler soll eine Warnung mit Grund ausgeben, wenn der Rückgabewert dieser Funktion nicht verwendet wird oder ein Objekt dieser Klasse von einer Funktion zurückgegeben, aber vom Aufrufer nicht verwendet wird\\
-\hline
-\lstinline$[[maybe_unused]]$(\CppVers{17}) &Verhindert eine Compilerwarnung, wenn dieses Element nirgends verwendet wird (Z.B. unbenutzte Variable)\\
-\hline
-\lstinline$[[likely]]$(\CppVers{20})&Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) wahrscheinlicher als andere ist \\
-\hline
-\lstinline$[[unlikely]]$(\CppVers{20}) &Der Compiler soll beim Optimieren annehmen, das dieser Pfad (z.b. if, else, switch, for, ...) weniger wahrscheinlicher als andere ist \\
-\hline
-\lstinline$[[no_unique_address]]$(\CppVers{20}) &Zeigt an dass ein Member nicht zwingend eine von anderen Membern unterschiedliche Adresse zu haben braucht (Z.B. Eine Membervariable einer leeren Klasse ohne Member belegt so keinen Speicherplatz.\\
-\hline
-\lstinline$[[optimize_for_synchronized]]$(TM TS) &Zeigt an dass diese Funktion für synchronisierte Ausführung optimiert werden soll\\
-\hline
-\end{tabular}
-
- 
 
 \section{Operatoren}
 Unter \Cpp sind die gängigen mathematischen Operatoren wie gewohnt vorhanden:
@@ -1875,6 +1332,555 @@ int main(int argc, char *argv[])
 
 Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von \CodeStyle{main()} werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
 
+\chapter{Datentypen}
+\section{Einfache Datentypen}
+Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
+
+Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
+
+
+\section{Zeiger und Referenzen}
+\OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \CodeStyle{&}. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit \CodeStyle{*} \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
+Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
+Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
+
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsubsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
+
+\subsection{Einsatz von Zeigern}
+Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt gibt (null-pointer).
+
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+
+Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
+
+Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
+
+Siehe \autoref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
+
+\subsection{Beispiele zum Einsatz von Zeigern, Smartpointern und Referenzen}
+
+\begin{CCode}
+	int j, k, l;    // Drei Integer Variablen definieren
+	int &r = j;     // Eine Referenz auf j definieren
+	int *ptr;       // Ein Zeiger auf int definieren
+	
+	j = 100;        // Werte an j, k und l Zuweisen
+	k = 200;
+	l = 300;
+	
+	std::cout << r;      // Wert ausgeben der von r referenziert wird (j)
+	
+	ptr = &k;       // Addresse von k an Ptr zuweisen
+	std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+	
+	ptr = &l;       // Addresse von l an Ptr zuweisen
+	std::cout << *ptr;   // Wert, auf den Ptr zeigt, ausgeben
+	
+	void DoSomething(int &a, const int &b) 
+	{
+		a = b + 3; // b ist const Referenz, also nur lesbar
+		// a ist auch schreibbar
+	}
+	
+	void DoSomethingElse(int &&a) // rValueReferenzen
+	{
+	}
+	
+	
+	DoSomething(j, k); // j wird von DoSomething veraendert
+\end{CCode}
+
+Beispiel zu Einsatz von unique Pointer:
+\begin{CCode}
+	
+	#include <memory>  // definiton von unique_ptr
+	
+	std::unique_ptr<A> f(int i) 
+	{
+		return std::make_unique<A>(i);   // UniquePointer erzeugt Objekt und übernimmt Verwaltung
+	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+	
+	void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
+	{
+		// Do something;   
+	} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
+	
+	int TestUnique(int argc, char*argv[])
+	{
+		std::unique_ptr<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
+		
+		f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
+		// wird gelöscht, ohne seinen Inhalt weitergegeben zu 
+		// haben -> Destruktor von UniquePointer loescht
+		// Objekt auf welches der UniquePointer zeigt.  
+		
+		spwrong = f(13);       // Zuweisung verboten
+		
+		std::unique_ptr<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
+		// sp1 uebergeben bevor der zurueckgegebene UniquePointer 
+		// gelöscht wird -> Destruktor von UniquePointer loescht
+		// nichts 
+		
+		sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
+		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+		
+		try {
+			std::unique_ptr<A> p = std::make_unique<A>(12);
+			g(p);              // Kopie Verboten
+			
+			g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
+			// (Movekonstruktor)
+			
+			g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
+			// p verliert Besitz von Objekt und wird zu nullptr
+			
+			std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
+			
+			std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
+			// zuweisen
+			
+			// Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
+			//                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
+		} catch(...) {  
+		}                    
+	}
+\end{CCode}
+Beispiel zu Einsatz von shared Pointer:
+\begin{CCode}
+	#include <memory>  // definiton von shared_ptr
+	std::shared_ptr<A> f(int i) 
+	{
+		return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
+	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+	
+	void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
+	{
+		// Do something;   
+	} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
+	// und Objekt freigegeben falls counter 0 wird.
+	
+	int Test(int argc, char*argv[])
+	{
+		std::shared_ptr<A> sp1;
+		
+		f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
+		// wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
+		// -> Destruktor von Sharedpointer loescht
+		// Objekt auf welches der Sharedpointer zeigt falls counter
+		// 0 wird.  
+		
+		sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
+		// uebergeben bevor der zurueckgegebene Sharedpointer 
+		// gelöscht wird -> Destruktor von Sharedpointer
+		// dekrementiert counter, aber loescht nichts 
+		
+		sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
+		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+		
+		try {
+			std::shared_ptr<A> p = std::make_shared<A>(12);
+			g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
+			// counter wird inkrementiert, p ist weiterhin gueltig
+			std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
+			// kopiert, counter wird inkrementiert, sp1 ist weiterhin 
+			// gueltig
+			// Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
+			//                    freigegeben wann auch immer der letzte Pointer darauf
+			// ungueltig wird  
+		} catch(...) {  
+		}                    
+	}
+\end{CCode}
+
+\subsection{RValue Referenzen (Seit \Cpp11)}
+\label{subsubsec:RValueRefs}
+
+\OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
+Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
+
+Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+
+Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.)
+
+
+Beispiel:
+\begin{CCode}
+	
+	
+	class Demo {
+		// ...
+		Demo(const Demo &Src);            // Kopierkonstruktor
+		Demo(Demo&&Src);                  // Move-Konstruktor
+		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
+		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
+	};	
+	
+	
+	Demo f1() {
+		
+		...
+		
+		return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
+		// Hier kommt Move-Konstruktor zum Zug
+		// Welcher Inhalt vom temporaeren Objekt
+		// uebernimmt statt kopiert
+		
+	}
+	
+	void f2(Demo d) {
+		
+		...
+		
+	}
+	
+	
+	f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
+	// Hier kommt Move-Konstruktor zum Zug
+	// Welcher Inhalt vom temporaeren Objekt
+	// uebernimmt statt kopiert
+	
+	
+	Demo q(xyz);
+	
+	f2(q);                    // Kein temporaeres Objekt, normaler
+	// Kopierkonstruktor wird verwendet
+	
+\end{CCode}
+\index{this auf RValue}
+Bei nicht-statischen Methoden kann auch der \CodeStyle{this}-Pointer auf ein RValue-Objekt verweisen, entsprechend können auch nicht-statische Methoden für den Fall dass \CodeStyle{this} ein RValue-Objekt ist überladen werden:
+
+Beispiel:
+\begin{CCode}
+	
+	
+	class Demo {
+		// ...
+		
+		f() &&;        // this zeigt auf RValue Objekt
+		f() &;         // this zeigt auf LValue Objekt
+		
+    g();           // this zeigt auf LValue oder RValue Objekt
+	};	
+	
+	
+  Demo f1() {
+    return Demo;      // Temproaeres Demoobjekt wird erzeugt
+  }
+	
+  Demo d;
+  
+  f1().f();   // f1() liefert temporaeres Objekt, f()&& wird aufgerufen
+  d.f();      // Kein temporaeres Objekt, f()& wird aufgerufen
+	
+\end{CCode}
+
+
+
+Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
+\begin{CCode}
+	
+	Demo q(xyz);
+	
+	f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
+	// betrachten), Movekonstruktor wird verwendet
+	
+	q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
+	// keine Resourcen mehr, kann gefaehrlich sein 
+	
+	q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
+	
+\end{CCode}
+
+
+
+\section{Typsicherere Enummerationen (Seit \Cpp11)}
+\label{subsubsect:TypsichererEnum}
+Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \CodeStyle{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
+
+Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
+mehrere Enums dieselben Bezeichner verwenden.   
+
+Neue Syntax:
+\begin{CCode}
+	
+	enum class Aufzaehlung {
+		Item1,
+		Item2,
+		Item3 = 100,
+		Item4         // Erhaelt den Wert 101 
+	};
+	
+	int i = Aufzaehlung::Item2;          // Compilerfehler
+	
+	Aufzaehlung a = Item1;               // Compilerfehler
+	Aufzaehlung a = Aufzaehlung::Item1;  // OK
+	a = 12;                              // Compilerfehler
+	
+	if (a == 17)                         // Compilerfehler
+	
+	// Angabe der gewuenschte Datengrösse
+	enum class Enum2 : unsigned int {Item1, Item2};
+	
+\end{CCode}
+ 
+ \section{Initialisiererlisten (Seit \Cpp11)}
+ \label{subsubsect:Initialisiererlisten}
+ \index{Initialisiererlisten}
+ Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
+ 
+ Beispiel:
+ \begin{CCode}
+ 	
+ 	class DemoClass {
+ 		public:
+ 		DemoClass(std::initializer_list<int> list);
+ 	};
+ 	
+ 	
+ 	DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
+ 	
+ \end{CCode}
+ 
+ Das Template \CodeStyle{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
+ 
+ \section{Klassen}
+ Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
+ 
+ \section{Weitere Datentypen}
+ Weiter gibt es Arrays, \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den Template-mechanismus realisiert werden
+ (Siehe  \autoref{chapter:Templates} und  \autoref{section:StandardSTL} . 
+ 
+ \section{Konstantheit (const)}
+Variablen und Objekte, die nur gelesen werden dürfen, kann man als \CodeIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
+
+\begin{CCode}
+	int a;
+	const int ci = 4;   // Konstante, kann nicht geaendert werden
+	a = ci + 3;         // OK, nur lesen
+	ci = 19;            // Error, aendern nicht erlaubt
+\end{CCode}
+
+Konstante Objekte können nur an Zeiger oder Referenzen auf Konstante Objekte übergeben werden, sonst wäre es ja möglich, die Konstantheit zu umgehen. Nichtkonstante Objekte dürfen jederzeit an Zeiger oder Referenzen auf konstante Objekte zugewiesen werden.
+\begin{CCode}
+	int a;
+	const int ci = 4;     // Konstante, kann nicht geaendert werden
+	const int &cr = ci;   // Referenz auf konstantes int, zeigt auf ci, alles OK
+	const int *cptr;      // Zeiger auf konstantes int
+	int * const ccp = &a; // Konstanter Zeiger auf int (const muss nach * sein)
+	int *ptr;             // Zeiger auf int
+	int &r = ci;          // Error, ci koennte sonst via r geaendert werden
+	const int &cra = a;   // Referenz auf konstantes int, zeigt auf a, alles OK
+	cr = 19;              // Error, aendern nicht erlaubt
+	cra = 17;             // Error, aendern nicht erlaubt (cra ist konstante Referenz)
+	ptr = &ci;            // Error, ci ist konstant, *ptr nicht
+	cptr = &ci;           // Ok (Zeiger selbst ist nicht konstant)
+	*cptr = 4;            // Error, Zeiger zeigt auf Konstant
+	cptr++;               // Ok (Zeiger selbst ist nicht konstant)
+	*ccp = 4;             // Ok, Zeiger zeigt auf nicht konstant)
+	ccp++;                // Error Zeiger ist konstant
+	
+	void f1(int &i) 
+	{ 
+		i++; 
+	}
+	
+	void f2(const int &i) 
+	{ 
+		i++; // Error, i ist Referenz auf konstantes int
+	}
+	
+	f1(ci); // Error, Argument von f1 ist nich konstant, koennte i aendern
+	f2(ci); // Ok f2 kann i nicht aendern
+\end{CCode}
+
+Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Methoden, die in der Klassendeklaration als \CodeStyle{const} deklariert wurden. Konstante und nichtkonstante Methoden mit demselben Namen und der selben Art und Anzahl von Argumenten gelten als unterschiedlich, mit \CodeStyle{const} kann man eine Methode also überladen.
+\begin{CCode}
+	class MyClass {
+		
+		int i;
+		
+		public:
+		int  Test(void);         // Nur-Lese Methode, aber nicht als const deklariert
+		int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
+		void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
+	};
+	
+	int MyClass::Test(void) 
+	{ 
+		return (i == 0);
+	}
+	
+	int MyClass::Read(void) const
+	{ 
+		i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
+		return i;   // Ok, i wird nur gelesen
+	}
+	
+	void MyClass::Write(int n) 
+	{ 
+		i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
+	}
+	
+	void f1(const MyClass& mc)    // f1 veraendert Argument nicht 
+	{
+		int i = mc.Read();  //Ok, Read() ist Konstant, nur lesen
+		int j = mc.Test();  //Error, Test() ist nicht Konstant
+		mc.Write();         //Error, Write() ist nicht Konstant 
+	}
+\end{CCode}
+
+Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Mit \CppVers(20) kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
+
+
+Beispiel
+\begin{CCode}
+	
+	constexpr int GetLength() 
+	{
+		return 15;
+	}
+	
+	int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
+	
+	constexpr int MakeDouble(int x) 
+	{
+		return x * 2;
+	}
+	
+	int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
+	
+	
+	constexpr double Erdanziehung = 9.81;
+	constexpr double MondAnziehung = Erdanziehung / 6.0;
+\end{CCode}
+
+
+
+\subsection{Umgehung der Konstantheit (Mutable)}
+\label{subsubsect:Mutable}
+Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
+aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
+(z. B. ein statischer Zugriffszähler) modifiziert.
+
+Für diese Fälle kann ein Attribut als \CodeIndex{mutable} gekennzeichnet werden. 
+Attribute mit dem Qualifizierer \CodeStyle{mutable} dürfen, im Gegensatz zu 'normalen'
+Attributen, von \CodeStyle{const} Methoden verändert werden.
+
+
+\begin{CCode}
+	class MyClass {
+		
+		mutable int NumberOfReadAccesses;
+		int i;
+		
+		public:
+		int  Read(void) const;   // Nur-Lese Methode, ok fuer konstante Objekte
+		void Write(int n);       // Schreibe Methode, nicht fuer konstante Objekte
+	};
+	
+	int MyClass::Read(void) const
+	{ 
+		NumberOfReadAccesses++;  // OK, mutable darf von const-Methode geaendert werden 
+		i = i / 2;  // Error, Methode ist const, darf Attribute nicht aendern.
+		return i;   // Ok, i wird nur gelesen
+	}
+	
+	void MyClass::Write(int n) 
+	{ 
+		i = n;  //Ok, schreiben in nicht konstanten Methoden erlaubt
+	}
+	
+\end{CCode}
+
+Man kann so ein konstantes Objekt schaffen, bei dem dennoch nicht ganz
+alles konstant ist. \CodeStyle{Mutable} sollte nur in gut begründeten Ausnahmefällen
+eingesetzt werden, normalerweise wenn das Objekt gegen aussen, vom Anwender aus gesehen 
+nicht ändert, aber interne Verwaltungsinformation geändert werden
+muss. 
+
+Eine mögliche Anwendung wäre ein Proxy-Objekt, das beim Lesen
+effektiv Daten von einer Datei in einen lokalen Cache lädt, oder die
+Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
+ändert seinen Wert schliesslich nicht.
+
+ 
+  \chapter{Literale}
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale, der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
+ 
+ \section{Nullpointer (Seit \Cpp11)}
+ \label{subsubsect:nullptr}
+ Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
+ Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
+ 
+ \begin{CCode}
+ 	class StrangeClass {
+ 		public:
+ 		void DoSomething(float *p);
+ 		void DoSomething(int *p);
+ 	};
+ 	
+ 	StrangeClass sc;
+ 	int a;
+ 	
+ 	sc.DoSomething(&a);
+ 	sc.DoSomething(nullptr); // Error float* or int* ???
+ 	
+ 	
+ 	class LessStrangeClass {
+ 		public:
+ 		void DoSomething(float *p);
+ 		void DoSomething(int *p);
+ 		void DoSomething(std::nulptr_t p);  // Variant for nullptr
+ 	};
+ 	
+ 	LessStrangeClass lsc;
+ 	int a;
+ 	
+ 	lsc.DoSomething(&a);
+ 	lsc.DoSomething(nullptr); // ok, std::nulptr_t
+ 	
+ 	
+ 	
+ 	
+ \end{CCode}
+ 
+ 
+ 
+ 
+ 
+ \section{Erweiterte Stringliterale (Seit \Cpp11)}
+ \label{subsubsect:erweiterteStringliterale}
+ Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
+ 
+ 
+ \begin{CCode}
+ 	u8"Ein UTF-8 String"  // hat den Typ const char[]
+ 	u"Ein UTF-16 String"  // hat den Typ const char16_t[]
+ 	U"Ein UTF-32 String"  // hat den Typ const char32_t[]
+ \end{CCode}
+ 
+ Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
+ \begin{CCode}
+ 	u8"Ein spezielles UTF-8 Zeichen: \u2018" 
+ 	u"Ein spezielles UTF-16 Zeichen: \u2018" 
+ 	U"Ein spezielles UTF-32 Zeichen: \U00002018"  
+ \end{CCode}
+ 
+ Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+ 
+ Beispiel:
+ \begin{CCode}
+ 	R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
+ 	
+ 	// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
+ 	R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
+ \end{CCode}
+ 
+ R und U können auch kombiniert werden.
+
+
 \chapter{Variablen}
 \section{Definition von Variablen}
 Eine Variablendefinition muss immer die Form
@@ -2176,7 +2182,7 @@ switch (SomeClass SomeObject = GetTheObject(); SomeObject.Value()) {
 \end{CCode}
 
 
-\section{Funktionen}
+\chapter{Funktionen}
 Bei C/\Cpp findet die Übergabe von Argumenten grundsätzlich 'by Value' statt, das heisst es werden lokale Kopien erzeugt. Wenn man innerhalb der Funktion die Argumente verändert sind davon nur die Kopien betroffen, die Variablen des aufrufenden Programms bleiben unverändert. Wenn man auf Variablen des aufrufenden Programmes zugreifen will, müssen Zeiger oder Referenzen verwendet werden. Funktionen die keinen Rückgabewert haben (Prozeduren) werden als \CodeStyle{void} deklariert. Referenzen auf Objekte, die von der Funktion gelesen, aber nicht verändert werden, deklariert man am besten als Konstant (\CodeStyle{const}).
 
 Mit '\CodeStyle{return x}' kann ein Rückgabewert aus der Funktion zurückgegeben werden, mit '\CodeStyle{return}' oder '\CodeStyle{return x}' kann eine Funktion auch vor ihrem Ende verlassen werden.
@@ -2225,7 +2231,7 @@ Lokale Variablen von Funktionen besitzen zufälligen Inhalt, sie müssen vor erstm
 
 Rekursion ist in \Cpp ohne Einschränkungen möglich (Solange der Speicher ausreicht).
 
-\subsection{Prototypen}
+\section{Prototypen}
 Bevor eine Funktion verwendet wird, muss sie bekannt sein. Entweder man definiert die Funktion vor ihrer Verwendung, oder man deklariert sie mit einem \OviIndex{Prototyp}. Prototypen von globalen Funktionen werden normalerweise im Headerfile des entsprechenden Modules deklariert, lokale Funktionen am Anfang des Modules. Ein Prototyp ist nichts anderes als ein Funktionskopf, abgeschlossen mit einem Semikolon; der Funktionsrumpf fehlt. Derselbe Prototyp kann beliebig oft deklariert werden, solange sich die verschiedenen Deklarationen nicht widersprechen.
 
 Ein Prototyp wird wie folgt deklariert:
@@ -2238,7 +2244,7 @@ extern void PrintIt(int a);             // Prototyp, extern zeigt an dass die
                                         // extern in diesem Fall optional ist
 \end{CCode}
 
-\subsection{Defaultargumente}
+\section{Defaultargumente}
 Funktionen können mit \OviIndex{Defaultargumenten} ausgestattet werden. Beim Aufruf
 der Funktion können diese Argumente weggelassen werden, der Kompiler setzt dann
 automatisch die angegebenen Defaultwerte am Ort des Aufrufes ein. Die Defaultargumente müssen bei der
@@ -2263,7 +2269,7 @@ void Afunction(int a, char *b = NULL, int c = 17);  // Prototyp
 
 \end{CCode}
 
-\subsection{Inline-Funktionen}
+\section{Inline-Funktionen}
 Kurze und oft benutzte Funktionen können als \CodeIndex{inline} definiert werden (Üblicherweise
 wird die ganze Funktion samt Code in diesem Fall in der Headerdatei definiert). Solche Funktionen
 werden (Soweit möglich) vom Compiler an der Aufrufstelle in den Code eingefügt, und nicht
@@ -2285,7 +2291,7 @@ inline int Square(int i)     // Inline Methoden können auch in der
 \end{CCode}
 
 
-\subsection{Überladen von Funktionen}
+\section{Überladen von Funktionen}
 Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden. Dabei wird auch zwischen const Argumenten und nicht-const Argumenten (Bei Referenzen und Pointern) sowie RValue- und LValue-Referenzen (Siehe \autoref{subsec:RValueRefs}) unterschieden.
 
 \begin{CCode}
@@ -2318,7 +2324,7 @@ int main (int argc, char *argv[])
 }
 \end{CCode}
 
-\subsection{Alternative Funktionsdefinition (Seit \Cpp11)}
+\section{Alternative Funktionsdefinition (Seit \Cpp11)}
 \label{subsubsect:Alternative Funktionsdefinition}
 
 Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
@@ -2348,12 +2354,12 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 
 
 
-\subsection{constexpr Funktionen (Seit \Cpp11)}
+\section{constexpr Funktionen (Seit \Cpp11)}
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
-\subsection{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
+\section{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
 \label{subsec:LambdaFunctions}
 \OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 
@@ -2404,7 +2410,7 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 Lambdafunktionen ohne Capture-Block können auch passenden Funktionszeigern zugewiesen werden, Lambdafunktionen mit Capture-Block sind nicht kompatibel mit Funktionszeigern, da ein Objekt zur Aufnahme der Capture-Variablen erzeugt werden muss.
 
 
-\subsection{Coroutinen (Seit \Cpp20)}
+\section{Coroutinen (Seit \Cpp20)}
 \label{subsec:CoRoutinen}
 \OviIndex{Coroutinen} sind Funktionen, welche unterbrochen und zu einem späteren Zeitpunkt fortgesetzt werden können. Hilfreich bei kooperativem Multitasking ohne Betriebssystem.
 
@@ -2431,7 +2437,7 @@ Mit der Anweisung \OviIndex{co\_return} wird die Coroutine beendet und kehrt zum
 
 Mit dem \emph{Returnobject} kann mit der Coroutine kommuniziert werden, beim erstmaligen Aufruf der Coroutine wird ein Returnobjekt zurückgeliefert (und die Verwaltungs- und Zustandsinformationen erzeugt). Die Fortsetzung der Coroutine erfolgt über Informationen im Returnobjekt (Handle der Coroutine, Promiseobjekt der Coroutine). Die Struktur / Klasse des Returnobjektes wird vom Anwender definiert, muss aber zwingend einen \OviIndex{promise\_type} beinhalten, entweder als eingebettete Struktur oder als Typedef.
 
-\subsubsection{promise\_type}
+\subsection{promise\_type}
 \begin{sloppypar}
 Mit dem \CodeStyle{promise\_type} kann das Verhalten der Coroutine gesteuert werden, der \CodeStyle{promise\_type} muss mindestend die 5 Methoden \CodeStyle{get\_return\_object}, \CodeStyle{initial\_suspend}, \CodeStyle{final\_suspend}, \CodeStyle{unhandled\_exception} und \CodeStyle{return\_void} definieren:
 \end{sloppypar}
@@ -2498,7 +2504,7 @@ Die Methode \CodeStyle{yield\_value(AnyType)} wird aufgerufen wenn die Coroutine
 
 Die Methode \CodeStyle{await\_transform(AnyType)} wird aufgerufen wenn die Coroutine ein \CodeStyle{co\_await AnyType} erreicht, diese Methode kann überladen werden, es wird die zum Ausdruck passend(st)e Methode aufgerufen. Es ist Aufgabe dieser Methode, den Wert der \CodeStyle{co\_await} Anweisung in ein Awaitable zu konvertieren. Wenn keine passende  \CodeStyle{await\_transform(AnyType)} Methode gefunden wird, erwartet der Compiler dass der Ausdruck von \CodeStyle{co\_await} selbst ein Awaitable ist.
 
-\subsubsection{awaiter}
+\subsection{awaiter}
 Mit einem \CodeStyle{Awaiter} kann das Verhalten einer \CodeStyle{co\_await} Anweisung gesteuert werden, ein \CodeStyle{Awaiter} muss mindestens die drei Methoden \CodeStyle{await_ready()}, \CodeStyle{await_suspend()} und \CodeStyle{await_resume()} definieren:
 \begin{CCode}
 template<typename PromiseType>
@@ -2581,7 +2587,7 @@ Result = Awaiter.await_resume();
 \end{CCode}
 
 
-\subsubsection{Coroutine Handle}
+\subsection{Coroutine Handle}
 Für jede aktive Coroutine wird ein Handle vom Typ \CodeStyle{std::coroutine_handle<PromiseType>} generiert, dieses Handle kann zur Steuerung der Coroutine verwendet werden.
 
 Dazu stehen folgende Methoden zur Verfügung (Nur die wichtigsten sind aufgeführt):
@@ -2634,7 +2640,7 @@ h.destroy()
 \end{CCode}
 Löscht den Coroutinencontext, die entsprechende Coroutineninstanz existiert anschliessend nicht mehr. Entsprechend dürfen auch done() und resume() nicht mehr aufgerufen werden, und auch auf das Promise-Objekt dieser Coroutineninstanz darf nicht mehr zugegriffen werden.
  
-\subsubsection{Coroutine}
+\subsection{Coroutine}
 
 Folgende Coroutine
 \begin{CCode}
@@ -2705,7 +2711,7 @@ könnte in folgenden Code umgesetzt werden:
   DoSomethingCooperative(RObj, nullptr, 3.14);
 \end{CCode}
 
-\subsubsection{Vollständiges Beispiel zu Coroutinen}
+\subsection{Vollständiges Beispiel zu Coroutinen}
 \begin{CCode}
 #include <iostream>
 
