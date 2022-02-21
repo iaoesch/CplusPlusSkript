@@ -606,7 +606,7 @@ Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternative
 
 \section{Attribute (Seit \CppVers{11})}
 \label{subsubsect:Attribute}
-\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \ref{sect:AttributeKlassen}).\
+\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \autoref{sect:AttributeKlassen}).\
 } 
 Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
 \CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
@@ -1045,7 +1045,7 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
+Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
 Dynamische Arrays werden am Besten mit \CodeStyle{std::vector} realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
 
 \begin{CCode}
@@ -2969,6 +2969,7 @@ int main() {
 
 
 \chapter{Überladen von Operatoren}
+\label{sect:UeberladenOperatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
 Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
@@ -3189,13 +3190,26 @@ int main(int argc, char *argv[]) {
 }
 \end{CCode}
 
+\section{Aufbau einer Klasse}
+\label{sect:AttributeKlassen}
+Eine Klasse kann folgende Elemente beinhalten:
+
+  \begin{labeling}{Basisklasse(n)}
+    \item[Datentypen] Typedefs, Enums, (eingebettete) Klassen und Strukturen
+    \item[Attribute] Eigenschaften (Membervariablen) der Klasse oder Objekte (Siehe  \autoref{sect:AttributeKlassen})
+    \item[Methoden] Funktionen (Memberfunktionen) der Klasse oder Objekte(Siehe  \autoref{sect:MethodenKlassen}), das können auch überladene Operatoren sein (Siehe  \autoref{sect:UeberladenOperatoren}).
+    \item[Friends] Freunde der Klasse, das können Funktionen, Methoden oder ganze Klassen sein (Siehe  \autoref{sect:Friends}).
+    \item[Basisklasse(n)] Klasse, von welcher geerbt wird (Siehe  \autoref{sect:Vererbung}).
+  \end{labeling}
+
 \section{Attribute}
 \label{sect:AttributeKlassen}
-In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte}) public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember}) definiert werden. Mit Mutable (Siehe \ref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
+In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte}) public, protected und private und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}) definiert werden. Mit Mutable (Siehe \autoref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
 Als Attribute sind grundsätzlich alle Datentypen von C++ zulässig.
 
 \section{Methoden}
-\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \ref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\ref{subsect:Konstruktoren}), Destruktoren (\ref{subsect:Destruktor}) und Zuweisungsoperatoren (\ref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \ref{sect:Zugrifsrechte} public, protected und private und als Member oder Klassenvariablen (siehe \ref{sect:StatischeMember}\
+\label{sect:MethodenKlassen}
+\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \autoref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\autoref{subsect:Konstruktoren}), Destruktoren (\autoref{subsect:Destruktor}) und Zuweisungsoperatoren (\autoref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte} public, protected und private und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}\
 definiert werden.
 
 \section{Konstruktoren / Destruktoren / Zuweisungsoperator}
@@ -3620,6 +3634,7 @@ Auf dieses Element darf von überall her zugegriffen werden, sollte für Attriubut
 Eine Zugriffsberechtigung ist innerhalb der Klassendeklaration für alle nachfolgenden Klassenmember gültig bis eine andere Zugriffsberechtigung eingestellt wird.
 
 \section{Friendfunktionen, Friend Klassen}
+\label{sect:Friends}
 \index{Friendfunktionen}\index{Friend klassen} Möchte man einer Funktion oder einer Klasse Zugriff auf \CodeStyle{private} oder \CodeStyle{protected} Member erlauben, ohne diese Member als \CodeStyle{public} zu definieren, kann diese Funktion oder Klasse als \CodeIndex{friend} deklariert werden:
 
 \begin{CCode}
@@ -3875,7 +3890,7 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit \CodeStyle{new} erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
 Globale Objekte werden vor Aufruf von\CodeStyle{ main()} erzeugt, auch deren Konstruktor wird vor dem Start von \CodeStyle{main()} aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von \CodeStyle{main()} resp. des Programms. 
 
-Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit \CodeStyle{delete} wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit \CodeStyle{delete} wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 \begin{CCode}
 
   #include <memory>  // definiton von unique_ptr
@@ -4091,6 +4106,7 @@ int main (int argc, char *argv[])
 
 \NextPagePlease 
 \section{Vererbung}
+\label{sect:Vererbung}
 Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden, die von einer existierenden Klasse erbt. 
 
 Bei der \OviIndex{Vererbung} übernimmt die neue Klasse zuerst einmal alle Attribute und Methoden der bereits bestehenden Klasse, und fügt eventuell neue Attribute und Methoden hinzu, oder ändert die geerbten Methoden ab (Überschreibt Sie).
@@ -4191,7 +4207,7 @@ class ExtendedClass : public MyClass, public AnotherClass{  // Mehrfachvererbung
 Mehrfachvererbung sollte soweit wie möglich vermieden werden, da sie oft Probleme verursacht. Speziell wenn von beiden Seiten Attribute geerbt werden (Wenn z.B. zwei
 Attribute den selben Namen besitzen ist ohne Scoperesolution nie klar, welches gemeint ist). Wenn nur eine Basisklasse Attribute aufweist, und alle anderen Basisklassen nur virtuelle Methoden besitzen entspricht dies im Prinzip den \OviIndex{Interfaces} in Java und kann in dieser Form zur Implementation von \OviIndex{Schnittstellen} eingesetzt werden. 
 
-In Bild \ref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu sehen.
+In Bild \autoref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu sehen.
 
 
 
@@ -4661,7 +4677,7 @@ catch (DivideByZerroErrorClass &e) {
 
 Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (\CodeStyle{new}) ist der Benutzer hingegen selbst zuständig (Durch entsprechende \CodeStyle{catch throw} Anweisungen).
 
-Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \ref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
 Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit \CodeStyle{new}), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen (Oder Smart/Unique/Shared Pointer nutzen). Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit \CodeStyle{throw()} einfach erneut geworfen:
 
