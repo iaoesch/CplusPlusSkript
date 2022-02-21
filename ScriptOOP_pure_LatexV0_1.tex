@@ -1169,6 +1169,23 @@ Bei einer Komposition ist die Kardinalität beim übergeordneten Objekt (Am Rhombu
  
  Kardinalitäten die grösser als 1 sind, werden durch Listen oder Felder von Zeigern oder Objekten realisiert. Wenn die Anzahl von Objekten während dem Programmlauf dynamisch ändern kann oder keine fixe Obergrenze für die Anzahl von Objekten definiert ist, werden vor allem Listen eingesetzt.
 
+\subsubsection{Rollennamen}
+Mit dem \OviIndex{Rollennamen} wird bei den Assoziationen angegeben, welche Rolle Objekte einer anderen Klasse für diese Klasse annehmen. Einfach gesagt ist der Rollenname einfach der Name des Attributes, welches auf die andere Klasse verweist.
+ Für das Diagramm in Bild \ref{fig:Rolenames3} bedeuten sie, dass im Verkäufer unter dem Attribut 'Arbeitgeber' das Firmenobjekt oder ein Verweis auf dieses abgespeichert ist. Ob dies direkt, über eine Referenz, ein Pointer oder ein Array erfolgt, hängt von der Art der Assoziation und der Kardinalität ab.
+
+%\begin{figure}[H]
+	  %\centering
+%\input{Rolenames2.pdf_tex} 
+	%\caption{Rollennamen} 
+	%\label{fig:Rolenames2}
+%\end{figure}
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics{Rolenames2noLatex}
+	\caption{Rollennamen} 
+	\label{fig:Rolenames3}
+\end{figure}
 
 
 \section{Objektdiagramm}

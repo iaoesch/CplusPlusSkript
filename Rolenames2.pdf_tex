@@ -1,0 +1,101 @@
+%% Creator: Inkscape inkscape 0.92.3, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'Rolenames2.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{411.75bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.41165756)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{Rolenames2.pdf}}%
+    \put(0.91803279,0.20765027){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\textbf{Auto}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{Rolenames2.pdf}}%
+    \put(0.86520947,0.17486339){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Polsterfarbe\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{Rolenames2.pdf}}%
+    \put(0.86520947,0.1420765){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Auftanken()\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{Rolenames2.pdf}}%
+    \put(0.2859745,0.38979964){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\textbf{Autohandlung}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{Rolenames2.pdf}}%
+    \put(0.2003643,0.3424408){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}VertragAnfordern()\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{Rolenames2.pdf}}%
+    \put(0.81602914,0.39344262){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\textbf{Fahrzeug}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{Rolenames2.pdf}}%
+    \put(0.7704918,0.36065574){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Gewicht\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{Rolenames2.pdf}}%
+    \put(0.7704918,0.32786885){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Fahren()\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{Rolenames2.pdf}}%
+    \put(0.10746812,0.1129326){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\textbf{Verkaeufer}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{Rolenames2.pdf}}%
+    \put(0.01821494,0.06557377){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Akzeptieren()\end{tabular}}}}%
+    \put(0.01821494,0.03642987){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}AngebotAnfordern()\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{Rolenames2.pdf}}%
+    \put(0.45173042,0.10382514){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\textbf{Sekretaerin}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{Rolenames2.pdf}}%
+    \put(0.37340619,0.0564663){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}VertragErstellen()\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{Rolenames2.pdf}}%
+    \put(0.74499089,0.20947177){\color[rgb]{0,0,0}\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}\textbf{Mofa}\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=14]{Rolenames2.pdf}}%
+    \put(0.69763206,0.17668488){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Sattelfarbe\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=15]{Rolenames2.pdf}}%
+    \put(0.69763206,0.143898){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Treten()\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=16]{Rolenames2.pdf}}%
+    \put(0.39708561,0.38615665){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Besitzer\end{tabular}}}}%
+    \put(0.64845173,0.38251366){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Fahrzeuge\end{tabular}}}}%
+    \put(0.73588342,0.33697632){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}*\end{tabular}}}}%
+    \put(0.10746812,0.30236794){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Arbeitgeber\end{tabular}}}}%
+    \put(0.22040073,0.30054645){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}1\end{tabular}}}}%
+    \put(0.43715847,0.1420765){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Angestellte\end{tabular}}}}%
+    \put(0.11839709,0.15118397){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}*\end{tabular}}}}%
+    \put(0.33333333,0.30054645){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Arbeitgeber\end{tabular}}}}%
+    \put(0.3715847,0.1420765){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}1..*\end{tabular}}}}%
+    \put(0.16211293,0.15118397){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Angestellter\end{tabular}}}}%
+    \put(0.39708561,0.34061931){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}1\end{tabular}}}}%
+    \put(0.2859745,0.30054645){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}1\end{tabular}}}}%
+  \end{picture}%
+\endgroup%
