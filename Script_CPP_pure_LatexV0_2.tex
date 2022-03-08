@@ -5026,12 +5026,12 @@ namespace {
  
  \chapter{constexpr, consteval, constinit}
 
-Mit \CodeStyle{constexpr} (\CppVers{11}), \CodeStyle{consteval} (\CppVers{20})  und \CodeStyle{constinit} (\CppVers{20})  kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
+Mit \CodeStyle{constexpr} (\CppVers{11}), \CodeStyle{consteval} (\CppVers{20})  und \CodeStyle{constinit} (\CppVers{20})  kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichkeiten.
 
  \section{constexpr (Seit \CppVers{11})}
  \label{subsubsect:constexpr}
  Mit dem Schlüsselwort \CodeIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.). Ansonsten dürfen \CodeStyle{constexpr}-Funktionen wie gewöhnliche Funktionen benutzt werden.
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label, reinterpret-cast<>} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.). Ansonsten dürfen \CodeStyle{constexpr}-Funktionen wie gewöhnliche Funktionen benutzt werden. Wenn sie anstelle von Konstanten genutzt werden, müssen alle ihre Argumente an dieser Stelle Konstant sein (Literale, Enums, \CodeStyle{constexpr} Funktionen oder Konstanten/Objekte, Adressen von globalen Objekten, Referenzen auf Konstanten)
  
  
  Beispiel
@@ -5260,7 +5260,8 @@ Templates können in ihrer Parameterliste auch konstante
 Werte (\CodeStyle{int, float}, Adressen, ...) enthalten, welche 
 innerhalb des Templates benutzt werden können.
 (Z. B. Arraygrenzen, Adressen von Funktionen, Hardwareadressen,
- Abbruchkriterium für Iterationen)
+ Abbruchkriterium für Iterationen. Wobei bei der Instanzierung nur Adressen 
+von zur Compilezeit bekannten Objekten (Also globalen Objekten) oder in Pointer gecastete Konstanten erlaubt sind )
  
 Beispiel:
 \begin{CCode}
@@ -7892,6 +7893,7 @@ Ein Embedded-\Cpp Programm ist ein Subset von Standard \Cpp und lässt sich mit j
 \NextPagePlease
 \section{Hardware Abstraktion}
 Hardware kann in C++ mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
+Hinweis: \CodeStyle{reinterpret_cast<>()} darf nicht in \CodeStyle{constexpr} Funktionen und Variablen, oder zur Initialisierung derselben verwendet werden. Zum Speichern van Adressen wird deshalb der dafür vorgesehene Datentyp \CodeStyle{uintptr_t} verwendet, und der \CodeStyle{reinterpret_cast<>()} zur Umwandlung in einen Pointer erst beim effektiven Zugriff durchgeführt. Auf die Geschwindigkeit hat dies keinen Einfluss.
  
 \subsection{Mit Klassen}
 \subsubsection{Abstraktion}
@@ -7948,6 +7950,8 @@ void f()
 
 
 \subsubsection{Effektiver Code}
+So könnte der Code nach dem Einfügen der inline-Funktionen und wegoptimieren
+unnötiger Funktionsaufrufe aussehen:
 \begin{CCode}
 // Effektiver Code
 void fe() 
@@ -8030,6 +8034,8 @@ void f()
 
 
 \subsubsection{Effektiver Code}
+So könnte der Code nach dem Einfügen der inline-Funktionen und wegoptimieren
+unnötiger Funktionsaufrufe aussehen:
 \begin{CCode}
 // Effektiver Code
 void fe() 
@@ -8101,6 +8107,8 @@ void f()
 
 
 \subsubsection{Effektiver Code}
+So könnte der Code nach dem Einfügen der inline-Funktionen und wegoptimieren
+unnötiger Funktionsaufrufe aussehen:
 \begin{CCode}
 // Effektiver Code
 void fe() 

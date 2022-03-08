@@ -11,14 +11,14 @@ MaxPos.x=-1
 MaxPos.y=-1
 NormalPos.left=4
 NormalPos.top=26
-NormalPos.right=1066
-NormalPos.bottom=522
+NormalPos.right=1402
+NormalPos.bottom=578
 Class=LaTeXView
 Document=ScriptOOP_pure_LatexV0_1.tex
 
 [Frame0_View0,0]
-TopLine=92
-Cursor=12006
+TopLine=1761
+Cursor=75616
 
 [SessionInfo]
 FrameCount=1
