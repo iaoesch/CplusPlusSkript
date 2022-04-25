@@ -7057,6 +7057,8 @@ Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Su
 Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator \CodeStyle{[]} Sucht \emph{und} fügt hinzu, falls nicht gefunden)
 
 \subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
+ (Seit \CppVers{17} gibt es für die meisten Algorithmen mit execution policies überladene Varianten, welche für Parallele Ausführung auf mehreren Prozessorkernen und/oder vektorisierte Ausführung optimiert sind. Siehe \autoref{subsect:ExecutionPolicies})
+ 
 \subsubsection{for\_each()}
 Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer oder ein Objekt mit überladenem \CodeStyle{()} operator.
 Die Funktion oder der \CodeStyle{operator()} wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \CodeStyle{mem_fn()}\index{mem\_fn()} aus der Standardlibrary benutzt werden (Vor \CppVers{11} \CodeStyle{mem_fun()}\index{mem\_fun()}).
@@ -7286,7 +7288,7 @@ int main()
 \end{CCode}
 
 \subsection{Thread lokale Variablen}
-Mit dem Schlüsselwort \index{thread_local} \CodeStyle{thread_local} kann eine Thread-lokale Variable erzeugt werden. Dies verhält sich gleich wie eine \CodeStyle{static} Variable, jedoch hat jeder Thread sein eigenes Exemplar. Für jeden Thread der erzeugt wird, wird auch ein ensprechendes Objekt (Inklusive allfälligem Konstruktoraufruf) erzeugt, und beim beenden des Threads werden seine \index{thread_local} Objekte wieder gelöscht (Inklusive allfälligen Destruktoraufrufen).
+Mit dem Schlüsselwort \index{thread\_local} \CodeStyle{thread_local} kann eine Thread-lokale Variable erzeugt werden. Dies verhält sich gleich wie eine \CodeStyle{static} Variable, jedoch hat jeder Thread sein eigenes Exemplar. Für jeden Thread der erzeugt wird, wird auch ein ensprechendes Objekt (Inklusive allfälligem Konstruktoraufruf) erzeugt, und beim beenden des Threads werden seine \CodeStyle{thread_local} Objekte wieder gelöscht (Inklusive allfälligen Destruktoraufrufen).
 
 In folgendem Beispiel werden 3 Threads erzeugt, und jeder besitzt ein eigenes Threadlokales Objekt Demo. Und jedes dieser Objekte wird von seinem Thread genau einmal inkrementiert. (Beachte: Die Funktion Worker1 wird zweimal von zwei verschiedenen Threads ausgeführt).
 
@@ -7460,11 +7462,40 @@ int main()
 
 Anstelle von \CodeStyle{std::launch::async} kann \CodeStyle{async()} auch \CodeStyle{std::launch::deferred} übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald \CodeStyle{get()} aufgerufen wird (\CodeStyle{get()} ruft somit die übergebene Funktion auf). Wenn \CodeStyle{async()} ohne eine dieser Policies aufgerufen wird (\CodeStyle{std::async(HardWorkingFunction, 1, 10000)} ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von \CodeStyle{get()} ausgeführt wird.
 
-\subsection{Mutex und conditional Variables}
-Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex} und \OviIndex{Conditional Variables} zur Verfügung, sowie dazugehörende Manipulationsfunktionen.
+\subsection{Synchronisationsmittel}
+Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex},  \OviIndex{Semaphoren},  \OviIndex{Latches},  \OviIndex{Barrier}  und \OviIndex{Conditional Variables} zur Verfügung, sowie dazugehörende Manipulationsfunktionen (insbesondere die std::...lock() Funktionen).
+
+Einsatzbeispiele:
+\begin{description}
+\item[Mutex] Schützen gemeinsamer Resourcen, nur ein Thread darf zur selben Zeit auf eine Resource zugreifen  
+\item[Semaphoren] Schützen gemeinsamer Resourcen, nur eine maximale Anzahl Threads darf zur selben Zeit auf eine Resource zugreifen
+\item[Conditional Variables] Ein oder mehrere Threads können auf ein Signal eines anderen Threads warten. Der signalisierende Thread kann Alle, oder nur einen Thread (Welcher der wartenden Threads dabei zum Zuge kommt ist nicht definiert) signalisieren.
+\item[Latch] Ein Zähler der von Threads dekrementiert werden kann, und auf den ein oder mehrere Threads warten können bis er 0 erreicht. Dient üblicherweise zur Synchronisation mehrere Threads (Warten bis alle Bereit/Fertig sind). Kann nur einmal verwendet werden (Für mehrmalige Nutzung muss eine Barrier verwendet werden).
+\item[Barrier] Ein Zähler der von Threads dekrementiert werden kann, und auf den ein oder mehrere Threads warten können bis er 0 erreicht. Dient üblicherweise zur Synchronisation mehrere Threads (Warten bis alle Bereit/Fertig sind). Kann mehrmals  verwendet werden.
+
+\end{description}
+
 
 \subsection{Atomic}
 \OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt) durchgeführt werden, und damit Race Konditionen vermieden werden können.
+
+\subsection{Execution policies (Seit \CppVers{17})}
+\label{subsect:ExecutionPolicies}
+Seit \CppVers{17} sind viele Algorithmen aus der Standardlibrary mit Execution policies überladen, so dass \OviIndex{parallele Ausführung} und/oder vektorisierte Ausführung der Algorithmen möglich wird. Mit  \CodeStyle{std::execution::par} wird eine optimierte Version des entsprechenden Algorithmus instanziert, welche die Arbeit optimal auf die vorhandenen Prozessorcores verteilt.
+
+Codebeispiel:
+\begin{CCode}
+// For Each auf mehrere Cores verteilen, soweit moeglich
+// Die Funktion f() muss Threadsafe sein, da sie moeglicherweise in mehreren
+// Threads gleichzeitig ausgefuehrt wird.
+std::for_each(std::execution::par, std::begin(a), std::end(a), f());
+\end{CCode}
+
+Mit der execution policy  \CodeStyle{std::execution::unseq} kann eine für \OviIndex{Vektorisierte Ausführung}
+optimierte Version des Algorithmus (falls vorhanden) instanziert werden.  \CodeStyle{std::execution::par\_unseq} kombiniert Parallelisierunbg und Vektorisierung.
+ 
+Es gibt bereits Compiler, welcher so erzeugten Code teilweise auf die Graphikkarte auslagern, da diese für vektorisierte Operationen optimiert ist.
+ 
 
 \chapter{\Cpp in Embedded Systemen}
 \section{Startup Code}
