@@ -80,6 +80,8 @@
 \usepackage{longtable}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{fancyvrb}
+
 %\usepackage{html,makeidx}
 
 \usepackage{graphicx}
@@ -270,6 +272,18 @@ tab=\rightarrowfill}
 }
 {
 \end{quote}
+\end{framed}
+}
+
+
+% Eigene umgebung fuer eingerahmte Textausgabe
+\newenvironment{ConsoleOutput}{
+\VerbatimEnvironment
+\begin{framed}
+ \begin{Verbatim}
+}
+{
+\end{Verbatim}
 \end{framed}
 }
 
@@ -7271,6 +7285,97 @@ int main()
 
 \end{CCode}
 
+\subsection{Thread lokale Variablen}
+Mit dem Schlüsselwort \index{thread_local} \CodeStyle{thread_local} kann eine Thread-lokale Variable erzeugt werden. Dies verhält sich gleich wie eine \CodeStyle{static} Variable, jedoch hat jeder Thread sein eigenes Exemplar. Für jeden Thread der erzeugt wird, wird auch ein ensprechendes Objekt (Inklusive allfälligem Konstruktoraufruf) erzeugt, und beim beenden des Threads werden seine \index{thread_local} Objekte wieder gelöscht (Inklusive allfälligen Destruktoraufrufen).
+
+In folgendem Beispiel werden 3 Threads erzeugt, und jeder besitzt ein eigenes Threadlokales Objekt Demo. Und jedes dieser Objekte wird von seinem Thread genau einmal inkrementiert. (Beachte: Die Funktion Worker1 wird zweimal von zwei verschiedenen Threads ausgeführt).
+
+\begin{CCode}
+// Demo for Threadlocal
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <string>
+
+class DemoClass {
+public:
+   DemoClass() : a(0) {std::cout << "Demo created" << std::endl;}
+   ~DemoClass() {std::cout << "Demo destroyed: " << a << std::endl;}
+   int a;
+};
+
+static thread_local DemoClass Demo;
+
+void Worker1(int n)
+{
+     Demo.a++;
+     for (int i = 0; i < 5; ++i) {
+         std::cout << "Thread " << n << " executing\n";
+         std::this_thread::sleep_for(std::chrono::milliseconds(10));
+     }
+}
+
+void Worker2(int n, std::string Info)
+{
+   Demo.a++;
+     for (int i = 0; i < 5; ++i) {
+         std::cout << "Thread [" << Info << "]" << n << " executing\n";
+         std::this_thread::sleep_for(std::chrono::milliseconds(10));
+     }
+}
+
+
+int main()
+{
+     // Create and start threads
+     std::thread FirstThread(Worker1, 1);
+     std::thread SecondThread(Worker1, 2);
+     std::thread ThirdThread(Worker2, 1, "Hans");
+
+     Worker1(6);
+
+     // Wait for end of threads
+     FirstThread.join();
+     SecondThread.join();
+     ThirdThread.join();
+     std::cout << "Done\n";
+}
+\end{CCode}
+
+Die Ausgabe des Beispiels sieht wie folgt aus:
+
+\begin{ConsoleOutput}
+Demo created
+Demo created
+Demo created
+Thread Demo createdThread [
+2 executing
+HansThread ]6 executing
+1 executing
+Thread 1 executing
+Thread [Hans]Thread 1 executing
+1Thread 2 executing
+ executing
+Thread 6 executing
+Thread Thread [Thread 1 executing
+Thread 6 executing
+2 executing
+Hans]1 executing
+Thread 6 executing
+Thread 1 executing
+Thread [Hans]1 executing
+Thread 2 executing
+Thread Thread 26 executing
+ executing
+Thread 1 executing
+Thread [Hans]1 executing
+Demo destroyed: Demo destroyed: 1
+1
+Demo destroyed: 1
+Done
+Demo destroyed: 1
+\end{ConsoleOutput}
+ 
 
 \subsection{Futures}
 \OviIndex{Futures} dienen zum übermitteln von Daten von einem Thread zum Anderen. Ein Future ist eine Variable, welche irgendwann in Zukunft einen Wert enthalten wird. Wenn ein Thread versucht, diese Variable mittels \CodeStyle{get()} zu lesen wird er angehalten, bis diese Variable einen Wert enthält. Ein Thread kann auch mit \CodeStyle{wait()} (ohne Timeout) oder \CodeStyle{wait_until()}/\CodeStyle{wait_for()} (Mit Timeout) auf das Verfügbar werden des Wertes warten.
