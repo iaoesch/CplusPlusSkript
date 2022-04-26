@@ -5206,6 +5206,53 @@ const char* Maximum(const char *a, const char *b)  // gilt fuer alle Strings
 }
 \end{CCode}
 
+\subsection{Vereinfachte Funktionstemplate-Definition}
+Seit \CppVers{20} gibt es eine abgekürzte Syntax für Funktionstemplates, anstelle der 
+Templatesyntax kann \CodeStyle{auto} in der Parameterliste verwendet werden.
+Wenn man den Typen der Parameter benötigt, muss man auf  \CodeStyle{decltype}
+zurückgreifen.
+
+\begin{CCode}
+auto Maximum (auto a, auto b)  
+{
+   auto Resultat = a; // Damit Typ von Resultat bestimmt werden kann
+   // decltype(a) Resultat;  // Alternative definitionsmoeglichkeit
+   if (a > b) {         
+      Resultat = a;
+   } else {
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+Falls der Rückgabetyp der Templatefunktion aus den Parametern abgeleitet
+werden muss, und nicht aus den \CodeStyle{return} Statement erschlossen werden kann, kommt die 
+\emph{trailing return type declaration} zum Einsatz:
+\begin{CCode}
+auto Maximum (auto a, auto b)  -> const decltype(a)
+{
+   auto Resultat = a; 
+   if (a > b) {        
+      Resultat = a;
+   } else {
+      Resultat = b;
+   }
+   return Resultat;
+}
+\end{CCode}
+
+\subsection{Generische Lambdafunktionen}
+Seit \CppVers{14} können mit dem Schlüsselwort  \CodeStyle{auto} \OviIndex{generische Lambdafunktionen}
+definiert werden:
+\begin{CCode}
+auto L = [](auto x) { return x*x};
+\end{CCode}
+
+Seit \CppVers{20} kann dazu auch eine Templateartige Syntax verwendet werden:
+\begin{CCode}
+auto L = []<class T>(T x) { return x*x};
+\end{CCode}
+
 \section{Klassentemplates}
 \index{Klassentemplates}
 Es kann auch eine ganze Klasse parametrisiert werden:
@@ -5831,6 +5878,30 @@ Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates 
 \begin{CCode}
 	extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
 \end{CCode}
+
+\section{Konzepts (Seit \CppVers{20})}
+Mit Konzepten können Anforderungen an Templateparameter definiert werden, und so sichergestellt werden, dass Templates nur mit dafür vorgesehenen Typen instanziert werden. Zudem werden die Fehlermeldungen das Compilers bei unpassenden Typen aussagekräftiger.
+\OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requrements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingeführten Schlüsselwörter  \CodeStyle{concept} und  \CodeStyle{requires} 
+zum tragen.
+
+\begin{CCode}
+template <typename T>
+concept DigitalOutpout = 
+  requires(T o) {  // Jedes o das ein Output sein will
+    o.On();     // muss eine Methode On()
+    o.Off();      // und eine Methode Off() besitzen`
+  };
+  
+  template<typename T>
+  requires DigitalOutpout<T>
+  class Indicator {
+    T MyOutput; 
+    Indicator(T &Output) : MyOutput(Output) {}
+    void SetState(bool OnOff) {if (OnOff) {}}
+  }
+  \end{CCode}
+
+
 
 
 \chapter{Die Standardbibliothek}
