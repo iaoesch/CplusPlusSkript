@@ -7404,19 +7404,19 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
       GroupedElements.splice (GroupedElements.begin(), Figuren, Figuren.begin(), Figuren.end());
 \end{CCode}
 
-\subsection{Ranges (Bereiche) (Seit \CppVers{11})}
+\subsection{Ranges / Views (Bereiche) (Seit \CppVers{20})}
 \label{subsect:Ranges}
 
-\OviIndex{Ranges} dienen als vereinfachte Schnittstelle zu Algorithmen. Ein Range ist ein Bereich von Objekten, die durch einen Anfang und einem Ende oder einem Anfang und einer Länge definert sind, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang (begin(), sowie einen Iterator der das Ende kennzeichnet (end()). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können.  
+\OviIndex{Ranges} \index{Views} dienen als vereinfachte Schnittstelle zu Algorithmen. Ein Range ist ein Bereich von Objekten, der durch einen Anfang und einem Ende oder einem Anfang und einer Länge definiert ist, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang (begin(), sowie einen Iterator der das Ende kennzeichnet (end()). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. Iteratoren eines Ranges enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem Range/View gehörenden Filterungen oder Transformationen aus.  
 
-Die meisten Algorithem sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden.
+Die meisten Algorithmen sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden, falls der ganze Container bearbeitet werden soll.
 
-Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, Mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten (Projektionen). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator ||()} vereinfacht werden:
+Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten um zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator ||()} vereinfacht werden:
 
 \begin{CCode}
 int main()
 {
-    auto const Quelle = {0,1,2,3,4,5};
+    auto const Quelle = {0,1,2,3,4,5,9,7,6,2,1};
     auto IstGerade = [](int i) { return 0 == i % 2; };
     auto Quadriere = [](int i) { return i * i; };
  
@@ -7429,14 +7429,14 @@ int main()
 
 Ausgabe:
 
-0 4 16
+0 4 16 36 4
 \end{CCode}
 
-Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um aus die Daten der Quell-Ranges zuzugreifen. Filteroperationen finden wärend der Iteration statt, Transformation nur bei Zugriffen auf die vom Iterator referenzierten Daten.
+Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um aus die Daten der Quell-Ranges zuzugreifen. Filteroperationen finden während der Iteration statt, Transformation nur bei Zugriffen auf die vom Iterator referenzierten Daten.
 
 In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrementation den Iterator auf die  \CodeStyle{Quelle} solange Inkrementieren, bis er wieder auf einen geraden Wert verweist. Bei einem Zugriff auf die Daten wird einfach das Ergebnis des Zugriffs auf den Iterator auf die Quelle zurückgeliefert.
 
-Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurueckgeliefert.
+Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurückgeliefert.
 
 
 
