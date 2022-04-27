@@ -1358,7 +1358,7 @@ Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autor
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
-Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsubsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
 \subsection{Einsatz von Zeigern}
 Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt gibt (null-pointer).
@@ -1507,7 +1507,8 @@ Beispiel zu Einsatz von shared Pointer:
 \end{CCode}
 
 \subsection{RValue Referenzen (Seit \Cpp11)}
-\label{subsubsec:RValueRefs}
+\label{subsec:RValueRefs}
+
 
 \OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
 Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
@@ -2382,7 +2383,7 @@ Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 	[capture](parameters)->return_type{body}
 \end{CCode}
 
-Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren.
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren. Seit \Cpp14 können auch initialisierte Variablen im Captureblock stehen (\CodeStyle{[x = a + 5 *b]}  a und b werden von der definierenden Funktion gelesen, x ist eine lokale Variable des Lambdablocks)
 
 \emph{Parameters} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
@@ -2398,8 +2399,8 @@ Beispiele
 	[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
 	[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
 	[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
-	[&q, r](int& x) { q += r*++x; }    // Zugriff auf die Variablen q und r der
-	// definierenden Funktion erlauben
+	[&q, r](int& x) { q += r*++x; }    // Erlaubt Zugriff auf die Variable q und 
+	                             //kopiert  die Variable r der definierenden Funktion 
 	// Einsatzbeispiel
 	std::vector<int> Liste;
 	int Total = 0;
@@ -2422,6 +2423,9 @@ Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und ande
 Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \CodeStyle{auto} oder \CodeStyle{decltype} die Variablendefinition.
 
 Lambdafunktionen ohne Capture-Block können auch passenden Funktionszeigern zugewiesen werden, Lambdafunktionen mit Capture-Block sind nicht kompatibel mit Funktionszeigern, da ein Objekt zur Aufnahme der Capture-Variablen erzeugt werden muss.
+
+Auch generische Lambdafunktionen sind seit \CppVers{14} möglich (Siehe \autoref{subsection:GenerischeLambdafunktionen})
+
 
 
 \section{Coroutinen (Seit \Cpp20)}
@@ -5207,6 +5211,7 @@ const char* Maximum(const char *a, const char *b)  // gilt fuer alle Strings
 \end{CCode}
 
 \subsection{Vereinfachte Funktionstemplate-Definition}
+ \label{subsect:VereinfachteFunktionstemplateDefinition}
 Seit \CppVers{20} gibt es eine abgekürzte Syntax für Funktionstemplates, anstelle der 
 Templatesyntax kann \CodeStyle{auto} in der Parameterliste verwendet werden.
 Wenn man den Typen der Parameter benötigt, muss man auf  \CodeStyle{decltype}
@@ -5242,6 +5247,7 @@ auto Maximum (auto a, auto b)  -> const decltype(a)
 \end{CCode}
 
 \subsection{Generische Lambdafunktionen}
+\label{subsection:GenerischeLambdafunktionen}
 Seit \CppVers{14} können mit dem Schlüsselwort  \CodeStyle{auto} \OviIndex{generische Lambdafunktionen}
 definiert werden:
 \begin{CCode}
@@ -5317,6 +5323,7 @@ class SpeziellKomplizierteKlasse {
 
 
 \subsection{Parametrisierung von Templates mit Konstanten}
+\label{subsection:ParametrisierungvonTemplatesmitKonstanten}
 Templates können in ihrer Parameterliste auch konstante
 Werte (\CodeStyle{int, float}, Adressen, ...) enthalten, welche 
 innerhalb des Templates benutzt werden können.
@@ -5333,6 +5340,22 @@ class SpeziellKomplizierteKlasse {
    ...
    ...
 };
+\end{CCode}
+
+Seit \CppVers{17} kann anstelle des Datentyps der Konstanten auch auto angegeben werden, dann wird
+der Typ durch die übergebene Konstante definiert:
+\begin{CCode}
+template< class T1, auto Code>
+class SpeziellKomplizierteKlasse {
+   constexpr auto TheMagicConstant = Code;  
+   ...
+};
+
+SpeziellKomplizierteKlasse<int, 'a'> K; // TheMagicConstant hat den Typ char
+
+SpeziellKomplizierteKlasse<int, '2u> L; // TheMagicConstant hat den Typ unsigned int
+
+
 \end{CCode}
 
 
@@ -5880,28 +5903,103 @@ Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates 
 \end{CCode}
 
 \section{Konzepts (Seit \CppVers{20})}
+\label{sect:Konzepts}
 Mit Konzepten können Anforderungen an Templateparameter definiert werden, und so sichergestellt werden, dass Templates nur mit dafür vorgesehenen Typen instanziert werden. Zudem werden die Fehlermeldungen das Compilers bei unpassenden Typen aussagekräftiger.
 \OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requrements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingeführten Schlüsselwörter  \CodeStyle{concept} und  \CodeStyle{requires} 
 zum tragen.
 
+Das folgende Konzept verlangt, dass der Typ auf Gleichheit und Ungleichheit getestet werden kann:
 \begin{CCode}
+template<typename T>
+concept EqualityComparable = requires(T a, T b) {
+    { a == b } -> std::same_as<bool>;
+    { a != b } -> std::same_as<bool>;
+};
+\end{CCode}
+
+Um das Konzept als Anforderung eines Templates zu verwenden, gibt es verschiedene Schreibweisen: 
+\begin{CCode}
+// Vollstaendige Schreibweise
+template <class T>
+requires EqualityComparable<T> // << T muss Konzept erfuellen
+void f(const T &x) { /* code */ }
+
+// Kompakte Schreibweise
+template <EqualityComparable T>
+void f(const T &x) { /* code */ }
+
+// Alternative fuer Funktionstemplate mit auto-Schreibweise
+void f(const EqualityComparable auto &x) { /* code */ }
+\end{CCode}
+All diese Templates können nur noch mit Typen instanziert werden, die auf Gleichheit getestet werden können.
+
+
+// Ein etwas umfangreicheres Beispiel
+\begin{CCode}
+// Definition eines Konzeptes
 template <typename T>
-concept DigitalOutpout = 
+concept DigitalOutpout =
   requires(T o) {  // Jedes o das ein Output sein will
     o.On();     // muss eine Methode On()
     o.Off();      // und eine Methode Off() besitzen`
   };
-  
+
   template<typename T>
-  requires DigitalOutpout<T>
+  requires DigitalOutpout<T> // << T muss Konzept erfuellen
   class Indicator {
-    T MyOutput; 
+    T MyOutput;
+  public:
     Indicator(T &Output) : MyOutput(Output) {}
-    void SetState(bool OnOff) {if (OnOff) {}}
+    void SetState(bool OnOff) {if (OnOff) {
+                                 MyOutput.On();
+                              } else {
+                                 MyOutput.Off();
+                              }
+                              }
+  };
+
+ 
+  class Port {
+  public:
+     void On() {}
+     void Off() {}
+  };
+
+  class Switch {
+  public:
+     void IsOn() {}
+     void IsOff() {}
+  };
+
+  void DemoFunction()
+  {
+     Port P;
+     Switch S;
+
+     Indicator I(P);
+     Indicator<Switch> I2(S);  // Problem, switch passt nicht
+
+     I.SetState(false);
+     I2.SetState(false);
   }
-  \end{CCode}
+\end{CCode}
 
+Fehlermeldung ohne Konzept:
+\begin{quote}
+error: no member named 'On' in 'Switch' MyOutput.On();
+\end{quote}
+Fehlermeldung mit Konzept:
 
+\begin{quote}
+ error: constraints not satisfied for class template 'Indicator' [with T = Switch]
+ Indicator<Switch> I2(S);
+note: because 'Switch' does not satisfy 'DigitalOutpout'
+requires DigitalOutpout<T>
+note: because 'o.On()' would be invalid: no member named 'On' in 'Switch'
+\end{quote}
+
+Mit Konzepts können auch Rückagebtypen, Member, Kategorien von Typen (Numerisch, Ganzzahl, Kopierbar, ...)
+und/oder Anforderungen an Typen (Vergleich möglich, Numerische Operationen unterstützt usw) festgelegt und überprüft werden.
 
 
 \chapter{Die Standardbibliothek}
@@ -7306,6 +7404,42 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
       GroupedElements.splice (GroupedElements.begin(), Figuren, Figuren.begin(), Figuren.end());
 \end{CCode}
 
+\subsection{Ranges (Bereiche) (Seit \CppVers{11})}
+\label{subsect:Ranges}
+
+\OviIndex{Ranges} dienen als vereinfachte Schnittstelle zu Algorithmen. Ein Range ist ein Bereich von Objekten, die durch einen Anfang und einem Ende oder einem Anfang und einer Länge definert sind, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang (begin(), sowie einen Iterator der das Ende kennzeichnet (end()). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können.  
+
+Die meisten Algorithem sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden.
+
+Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, Mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten (Projektionen). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator ||()} vereinfacht werden:
+
+\begin{CCode}
+int main()
+{
+    auto const Quelle = {0,1,2,3,4,5};
+    auto IstGerade = [](int i) { return 0 == i % 2; };
+    auto Quadriere = [](int i) { return i * i; };
+ 
+    // Nimm die Quelle, Nimm davon nur die Geraden Zahlen und Quadriere diese
+    // Gib die Elemente der resultierenden View aus
+    for (int i : Quelle | std::views::filter(IstGerade) | std::views::transform(Quadriere)) {
+        std::cout << i << ' ';
+    }
+ }
+
+Ausgabe:
+
+0 4 16
+\end{CCode}
+
+Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um aus die Daten der Quell-Ranges zuzugreifen. Filteroperationen finden wärend der Iteration statt, Transformation nur bei Zugriffen auf die vom Iterator referenzierten Daten.
+
+In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrementation den Iterator auf die  \CodeStyle{Quelle} solange Inkrementieren, bis er wieder auf einen geraden Wert verweist. Bei einem Zugriff auf die Daten wird einfach das Ergebnis des Zugriffs auf den Iterator auf die Quelle zurückgeliefert.
+
+Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurueckgeliefert.
+
+
+
 
 \section{Multithreading support (Seit \CppVers{11})}
 \label{sect:Multithreading}
@@ -7354,8 +7488,6 @@ int main()
     ThirdThread.join();
     std::cout << "Done\n";
 }
-
-
 \end{CCode}
 
 \subsection{Thread lokale Variablen}
@@ -7534,6 +7666,7 @@ int main()
 Anstelle von \CodeStyle{std::launch::async} kann \CodeStyle{async()} auch \CodeStyle{std::launch::deferred} übergeben werden, in diesem Fall wird die Funktion nicht parallel ausgeführt, sondern im gleichen Thread, sobald \CodeStyle{get()} aufgerufen wird (\CodeStyle{get()} ruft somit die übergebene Funktion auf). Wenn \CodeStyle{async()} ohne eine dieser Policies aufgerufen wird (\CodeStyle{std::async(HardWorkingFunction, 1, 10000)} ) ist nicht definiert, ob die Funktion parallel, oder erst beim Aufruf von \CodeStyle{get()} ausgeführt wird.
 
 \subsection{Synchronisationsmittel}
+\label{subsect:Synchronisationsmittel}
 Weiter stellt Thread zur Synchronisation verschiedene Varianten von \OviIndex{Mutex},  \OviIndex{Semaphoren},  \OviIndex{Latches},  \OviIndex{Barrier}  und \OviIndex{Conditional Variables} zur Verfügung, sowie dazugehörende Manipulationsfunktionen (insbesondere die std::...lock() Funktionen).
 
 Einsatzbeispiele:
@@ -9801,9 +9934,9 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
    \item Aggregate Member initialisierung
    \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001)
    \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000
-   \item Generische Lambdafunktionen
-   \item Lambda capture expressions
-   \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen.
+   \item Generische Lambdafunktionen  (Siehe \autoref{subsection:GenerischeLambdafunktionen})
+   \item Lambda capture expressions (Siehe \autoref{subsec:LambdaFunctions})
+   \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen. (Siehe \autoref{subsubsect:Attribute})
    \item Kleinere Erweiterungen der Standardlibrary
 	
 \end{itemize}
@@ -9848,7 +9981,7 @@ Im Dezember 2017 publiziert.
 
     \item A file system library based on \CodeStyle{boost::filesystem}
 
-    \item Parallel versions of STL algorithms
+    \item Parallel versions of STL algorithms (Siehe \autoref{subsect:ExecutionPolicies})
 
     \item Additional mathematical special functions
 
@@ -9871,7 +10004,7 @@ Im Dezember 2017 publiziert.
     \item Inline variables, which allows the definition of variables in header files
     
     
-    \item \CodeStyle{template <auto>}
+    \item \CodeStyle{template <auto K>} für Konstanten (Siehe \autoref{subsection:ParametrisierungvonTemplatesmitKonstanten})
     \item A weaker version of fixed order-of-evaluation for expressions 
     \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
     
@@ -9902,8 +10035,9 @@ Seit Dezember 2020 verabschiedet.
    \item  aggregate initialization using parentheses
     \item Coroutines (Siehe \autoref{subsec:CoRoutinen})
     \item Modules (Siehe \autoref{subsubsect:Modules})
-    \item Constraints and concepts
-    \item abbreviated function templates
+    \item Constraints and concepts (Siehe \autoref{sect:Konzepts})
+    \item abbreviated function templates (Siehe \autoref{subsect:VereinfachteFunktionstemplateDefinition})
+
     \item DR: array new can deduce array size 
 \end{itemize}
 \begin{itemize}
@@ -9916,9 +10050,9 @@ Seit Dezember 2020 verabschiedet.
    \item  \CodeStyle{std::remove_cvref}
     \item \CodeStyle{std::to_address}
     \item floating point and shared\_ptr atomics
-    \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore}
+    \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore} (Siehe \autoref{subsect:Synchronisationsmittel})
     \item \CodeStyle{std::jthread} and thread cancellation classes
-    \item <version>
+    \item <version> Header mit Versionsinformation zur benutzten Standardlibrary
     \item \CodeStyle{std::osyncstream}
     \item \CodeStyle{std::u8string} and other \CodeStyle{char8_t} uses
     \item \CodeStyle{constexpr} for <algorithm>, <utility>, <complex>
@@ -9934,9 +10068,22 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{std::midpoint and std::lerp}
     \item \CodeStyle{std::ssize}
     \item \CodeStyle{std::is_bounded_array}
-    \item Ranges
+    \item Ranges (Siehe \autoref{subsect:Ranges})
+
     \item uniform container erasure (\CodeStyle{std::erase}/\CodeStyle{std::erase_if})
     \item Mathematical constants 
+\end{itemize}
+
+Neue Schlüsselworte:
+\begin{itemize}
+    \item  \CodeStyle{concept} 
+    \item  \CodeStyle{constinit} 
+    \item  \CodeStyle{consteval} 
+    \item  \CodeStyle{co_await} 
+    \item  \CodeStyle{co_return} 
+    \item  \CodeStyle{co_yield} 
+    \item  \CodeStyle{requires} 
+    \item  \CodeStyle{char8_t} 
 \end{itemize}
 
 \section{\CppVers{23}}
