@@ -6672,6 +6672,107 @@ noch keinen gültigen Pointer...
 %bpc2 = tmp; 
 
 
+\section{Variant, Optional, Any}
+\label{sect:VariantOptionalAny}
+\subsection{Varianten (std::variant<>)}
+\index{Variant}
+\OviIndex{Varianten}\index{Variant} werden in \Cpp in Form des Templates \CodeStyle{std::variant<>} unterstützt. Diese Klasse
+bietet eine typsichere Union. In einer Variante können Werte von unterschiedlichem Typ abgelegt werden, wobei zu jedem Zeitpunkt nur ein Wert abgelegt sein kann. Wen versucht wird, auf einen anderen als der zur Zeit abgespeicherten Wert zuzugreifen wird eione Exception geworfen.
+Eine Variante kann weder Arrays, noch Referenzen oder den void-Typen beinhalten.
+
+Mit dem Zuweisungsoperator kann einem Variantenobjekt ein neuer Wert von einem der Passenden Typen zugewiesen werden, dabei geht der alte Inhalt verloren. Mit  \CodeStyle{std::get<Type>(v)} oder  \CodeStyle{std::get<Index>(v)} kann der aktuelle Wert gelesen werden, falls der gespeicherte Wert nicht dem gewünschten Typ oder Index entspricht wird eine Exception geworfen. Mit \CodeStyle{std::holds_alternative<Type>(v)} kann abgefragt werden, ob die Variante aktuell einen Wert von angegebene Typ beinhaltet.
+
+Einige Beispiele:
+\begin{CCode}
+
+...std::variant<int, std::string, float> v = 3.14f; 
+   bool b = std::holds_alternative<int>(v); // b wird false
+   b = std::holds_alternative<float>(v);    // b wird true
+  
+   int i = std::get<int>(v);  // Wirft exception (Kein int in v)
+   float f = std::get<float>(v);  // ok, f ist nun 3.14
+  
+   v = 123;
+   i = std::get<int>(v);  //ok, i ist nun 123
+   f = std::get<float>(v);  // Wirft exception (Kein float in v)
+  
+   v = "Test";
+   std::string s = std::get<std::string>(v);  //ok, s ist nun "Test"
+   
+
+\end{CCode}
+
+\subsection{Optionaler Wert (std::optional<>)}
+\index{optional}
+Ein \OviIndex{Optionaler Wert}\index{optional} wird in \Cpp in Form des Templates \CodeStyle{std::optional<>} unterstützt. Dieses Templates
+bietet eine möglichkeit, neben dem Wert auch das Nicht-Vorhandensein eines Wertes zu signalisieren.
+
+Ein Objekt des Templates \CodeStyle{std::optional<>} kann zu jedem Zeitpunkt entweder \emph{einen Wert} oder \emph{keinen Wert} beinhalten.
+ 
+Mit Umwandlung nach bool (\CodeStyle{operator bool()}oder \CodeStyle{has_value()} kann abgefragt werden, ob das Objekt einen Wert beinhaltet,
+mit \CodeStyle{value()} (Wirft Exception wenn kein Wert vorhanden),  \CodeStyle{value_or(DefaultValue)} (Liefert DefaultValue wenn kein Wert vorhanden), \CodeStyle{operator *()} (Undefiniertes Verhalten wenn kein Wert vorhanden) oder \CodeStyle{operator ->()} (Undefiniertes Verhalten wenn kein Wert vorhanden) kann der Wert gelesen werden.
+
+Mit dem Zuweisungsoperator kann einem Optionalobjekt ein neuer Wert zugewiesen werden. Mit \CodeStyle{reset()} kann ein vorhandener Wert gelöscht werden, damit beinhaltet es wieder keinen Wert mehr.
+
+Einige Beispiele:
+\begin{CCode}
+
+...std::optional<int> o; 
+   if (o) { // Abfrage ob optional einen Wert enthaelt
+   }
+   bool b = o.has_value(); // b wird false
+   
+   int i = o.value();  // Wirft exception (Kein Wert in o)
+   i = o.value_or(-1);  //ok, i ist nun -1, o wird nicht veraendert
+  
+   o = 123;
+   i = o.value();  // ok, i ist nun 123
+   i = o.value_or(-1);  // ok, i ist nun 123, o wird nicht veraendert
+   i = *o;      // ok, i ist nun 123
+  
+   b = o.has_value(); // b wird true
+   o.reset();
+   b = o.has_value(); // b wird false
+   
+   
+
+\end{CCode}
+
+\subsection{Beliebiger Wert (std::any)}
+\index{Any}
+Ein Any-Objekt kann einen Wert von einem beliebigen Typen aufnehmen, und wie \CodeStyle{std::optional<>} auch keinen Wert beinhalten.
+
+Mit dem Zuweisungsoperator kann einem Any-objekt ein beliebiger neuer Wert zugewiesen werden.
+
+Mit \CodeStyle{has_value()} kann abgefragt werden, ob das Objekt einen Wert beinhaltet,
+mit \CodeStyle{type()} kann der Typ des enthaltenen Objektes abgefragt werden,
+mit \CodeStyle{std::any_cast<>()} (Wirft Exception wenn kein passender Wert vorhanden) kann auf des entahltene Objekt zugegriffen werden.
+mit \CodeStyle{std::make_any<>()} kann ein Any-Objekt erzeugt werden, welches bereits einen bestimmten Wert enthält.
+
+Einige Beispiele:
+\begin{CCode}
+
+...std::any a = 99;
+   a.type().name(); // liefert "int"
+   int i = std::any_cast<int>(a); // i ist jetzt 99
+   float f = std::any_cast<float>(a); // wirft exception (Kein float in a)
+   
+   a = 3.14f;
+   a.type().name(); // liefert "float"
+   i = std::any_cast<int>(a); //wirft exception (Kein int in a)
+   f = std::any_cast<float>(a); // f ist jetzt 3.14
+  
+   
+   bool b = a.has_value(); // b wird true
+   
+   a.reset();
+   b = a.has_value(); // b wird false
+   
+   
+
+\end{CCode}
+
+
 \section{Uhrzeit, Datum und Zeitintervalle std::chrono}
 In der Headerdatei \CodeStyle{<chrono>} werden verschieden Typen und Methoden zum Umgang mit Zeiten und Zeitpunkten definiert. \index{chrono}\index{std::chrono}
 Diese sind im Namespace \CodeStyle{std::chrono} abgelegt. In diesem Kapitel werden nur einige Elemente dieser Library vorgestellt.
@@ -9985,9 +10086,9 @@ Im Dezember 2017 publiziert.
 
     \item Additional mathematical special functions
 
-    \item Most of Library Fundamentals TS I (e.g. \CodeStyle{std::optional}, \CodeStyle{std::any})
+    \item Most of Library Fundamentals TS I (e.g. \CodeStyle{std::optional}, \CodeStyle{std::any}, siehe \autoref{sect:VariantOptionalAny})
 
-    \item \CodeStyle{std::variant}, a type-safe union container
+    \item \CodeStyle{std::variant}, a type-safe union container (Siehe \autoref{sect:VariantOptionalAny})
 
     \item A compile-time static if with the form \CodeStyle{if constexpr(expression)}  (Siehe \autoref{subsubsect:constexprif})
 
