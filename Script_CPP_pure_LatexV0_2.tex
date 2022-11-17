@@ -6805,7 +6805,7 @@ Zeitpunkte werden in \CodeStyle{time\_point} Objekten abgespeichert. Für \CodeSt
 Eine \OviIndex{Zeitdauer} \index{duration} ist eine bestimmte Menge von Timerticks in einer bestimmten Zeiteinheit. Zeitdauern werden in Objekten vom Typ \CodeStyle{duration} abgelegt.  Für \CodeStyle{time\_point} sind die relationalen Operatoren sowie Addition und 
  Subtraktion im Zusammenhang mit \CodeStyle{time\_point} Objekten und Multiplikation und Division mit Sklaren und anderen \CodeStyle{duration} Objekten definiert. Dabei werden die Einheiten und Basisticks der verschiedenen Objekte berücksichtigt, die Berechnungen finden im passendsten gemeinsamen Tick statt. Multiplikation und Division mit einem Skalar ergibt wieder ein \CodeStyle{duration} Objekt, Division mit einem \CodeStyle{duration} Objekt ergibt einen Skalar (1h / 1m ergibt 60).
 
-Für Zeitdauern sind folgende Literal-Suffixes definiert: h, m, s, ms, us, ns. 
+Für Zeitdauern sind im Namespace \CodeStyle{std::chrono_literals} folgende Literal-Suffixes definiert: h, m, s, ms, us, ns. 
 
 
 \subsection{Zeitdauer und Zeitpunkte}
