@@ -2990,7 +2990,8 @@ int main() {
 \label{sect:UeberladenOperatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () [] new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
+Der Funktionsaufrufoperator \CodeStyle{operator()(Argumente...)} läesst sich dabei pro Klasse mit unterschiedlicher Argumentenliste mehrfach überladen. Der Indexoperator [] laesst sich ab \CppVers{23} auch für mehrdimensionale Zugriffe überladen: \CodeStyle{operator[](int x, double d)} würde \CodeStyle{x[6, 3.14]} erlauben.
 
 
 \begin{CCode}
@@ -3037,7 +3038,7 @@ Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= 
 \OviIndex{Operatorfunktionen} können als Klassenmember oder als globale (\CodeStyle{friend}-) Funktionen definiert werden, man nimmt normalerweise die Form, die besser zur Aufgabe passt. Wenn man die Klassenmemberfunktion benutzt, ist zu beachten, dass der erste Operand immer ein Objekt sein muss.
 Der Ausdruck \CodeStyle{a + b} entspricht somit den Ausdrücken \CodeStyle{a.operator +(b)} oder \CodeStyle{operator +(a, b)}, man sollte aber nur eine von beiden Varianten pro Klasse und Operator benutzen.
 
-Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
+Man muss beachten, dass alle Operatoren ausser den Zuweisungsoperatoren üblicherweise ein neues Objekt als Ergebnis der Operation zurückliefern müssen, da die Operanden ja nicht verändert werden sollten. Bei Zuweisungsoperatoren sowie \OviIndex{Inkrement} und \OviIndex{Dekrement} wird der erste Operand verändert, das ist ja schliesslich der Sinn dieser Operatoren. Hier wird normalerweise nur eine Referenz auf den ersten Operand zurückgeliefert (Ausnahme Post-Inkrement/Dekrement, da hier eine Kopie des unveränderten Objektes geliefert werden muss).
 Bei den Inkrement- und Dekrementoperatoren gibt es eine weitere Spezialität. Um Post (\CodeStyle{i++}) und Pre (\CodeStyle{++i})
 auseinanderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 
@@ -3110,7 +3111,7 @@ Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \section{Benutzerdefinierte Literale (Seit \Cpp11)}
 \index{Benutzerdefinierte Literale}
 \label{subsubsect:BenutzerdefinierteLiterale}
-Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
+Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, siehe \autoref{subsect:STDChrono:Duration}).
 
 Numerische Literale können dabei als Strings, als \CodeStyle{unsigned long long} oder als \CodeStyle{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
@@ -6774,6 +6775,7 @@ Einige Beispiele:
 
 
 \section{Uhrzeit, Datum und Zeitintervalle std::chrono}
+\label{sect:STDChrono}
 In der Headerdatei \CodeStyle{<chrono>} werden verschieden Typen und Methoden zum Umgang mit Zeiten und Zeitpunkten definiert. \index{chrono}\index{std::chrono}
 Diese sind im Namespace \CodeStyle{std::chrono} abgelegt. In diesem Kapitel werden nur einige Elemente dieser Library vorgestellt.
 
@@ -6802,6 +6804,7 @@ Zeitpunkte werden in \CodeStyle{time\_point} Objekten abgespeichert. Für \CodeSt
 
 
 \subsection{Zeitdauer (Duration)}
+\label{subsect:STDChrono:Duration}
 Eine \OviIndex{Zeitdauer} \index{duration} ist eine bestimmte Menge von Timerticks in einer bestimmten Zeiteinheit. Zeitdauern werden in Objekten vom Typ \CodeStyle{duration} abgelegt.  Für \CodeStyle{time\_point} sind die relationalen Operatoren sowie Addition und 
  Subtraktion im Zusammenhang mit \CodeStyle{time\_point} Objekten und Multiplikation und Division mit Sklaren und anderen \CodeStyle{duration} Objekten definiert. Dabei werden die Einheiten und Basisticks der verschiedenen Objekte berücksichtigt, die Berechnungen finden im passendsten gemeinsamen Tick statt. Multiplikation und Division mit einem Skalar ergibt wieder ein \CodeStyle{duration} Objekt, Division mit einem \CodeStyle{duration} Objekt ergibt einen Skalar (1h / 1m ergibt 60).
 
@@ -10245,7 +10248,7 @@ Bereits in der Planungs- und Diskussionsphase.
 %\end{itemize}
 (Quelle: https://en.cppreference.com/w/cpp/23)
 
-Sprache (Stand 14.2.2022)
+Sprache (Stand 14.2.2023)
 \begin{itemize}
 \item Literal suffix for (signed) size\_t 
 \item Make () more optional for lambdas 
@@ -10258,7 +10261,7 @@ Sprache (Stand 14.2.2022)
 \item Make declaration order layout mandated 
 \item Removing mixed wide string literal concatenation 
 \item Deducing this 
-\item auto(x) and auto{x} 
+\item auto(x) and auto\{x\} 
 \item Change scope of lambda trailing-return-type 
 \item \#elifdef and \#elifndef 
 \item Non-literal variables (and labels and gotos) in constexpr functions 
