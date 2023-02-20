@@ -7033,6 +7033,52 @@ selbst neue Manipulatoren zu erzeugen.
 
 Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, left, right}
 
+\subsection{Dateisystem-Bibliothek (Seit \CppVers{17})}
+\label{subsect:Filesystemlibrary}
+
+Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem Dateisystem definiert.
+Zum Beispiel:
+
+ \emph{path}
+ 
+Eine Klasse welche Dateipfade aufnehmen kann, und Pfadmanipulationen erlaubt (Pfadteile ergänzen, zusammenfügen, aufteilen, oder Dateiname, Dateiendung oder Pfad extrahieren).
+ 
+ \emph{directory\_iterator}
+
+Ein Iterator, welcher über alle Einträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert.
+
+
+ \emph{recursive\_directory\_iterator}
+
+Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert.
+
+\begin{CCode}
+    // Set the current path to parent of our directorystructure
+    // Not really neede, we could also use absolute path in line below
+    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP");
+
+    // Create an iterator to travel our directory structure
+    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
+
+    // travel directorystructure, print out all entries
+    std::ranges::for_each(files, [](auto p){
+          // Dateiname mit Pfad ausgeben
+          std::cout << p.path() << '\n';
+    });
+
+    // Create an new iterator to travel our directory structure
+    files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
+
+    // Define filterfunction (Lambda) for textfiles
+    auto TextFileFilter = [](auto p) { return p.is_regular_file() && p.path().extension() == ".txt"; };
+
+    // travel directorystructure, filter out unwanted files and print result
+    std::ranges::for_each(files | std::views::filter(TextFileFilter), [](auto p){
+          // Dateiname mit Pfad ausgeben
+          std::cout << p.path() << '\n';
+    });
+\end{CCode} 
+
 
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
 \label{section:StandardSTL}
