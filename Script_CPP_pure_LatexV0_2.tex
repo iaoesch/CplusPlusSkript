@@ -424,7 +424,7 @@ ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, d
 \section{Bezeichner und reservierte Namen}
 Bezeichner (Namen) setzen sich wie bei C aus Ziffern, Buchstaben und Unterstrichen zusammen, grundsätzlich sind auch Unicodes erlaubt, müssen aber nicht unterstützt werden. 
 
-Bezeichner welche mit einem Unterstrich gefolgt von einem Grossbuchsteben beginnen, oder zwei aufeinanderfolgende Unterstriche enthalten (Irgendwo im Namen) sind in jeden Kontext reserviert, Bezeichner, welche mit einem Unterstrich beginnen dürfen nicht im globalen Namensbereich verwendet werden.
+Bezeichner welche mit einem Unterstrich gefolgt von einem Grossbuchsteben beginnen, oder zwei aufeinanderfolgende Unterstriche enthalten (Irgendwo im Namen) sind in jedem Kontext reserviert, Bezeichner, welche mit einem Unterstrich beginnen dürfen nicht im globalen Namensbereich verwendet werden.
 
 Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 (Mit TS markierte Elemente sind experimentelle Erweiterungen und könnten in einem späteren Standard integriert werden.):
@@ -1059,8 +1059,13 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}). \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
-Dynamische Arrays werden am Besten mit \CodeStyle{std::vector} realisiert, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. 
+Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder Vector aus der Standardbibliothek nutzen (Siehe \autoref{section:StandardSTL}). Dynamische Arrays lassen sich so einfach mit \CodeStyle{std::vector} realisieren, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. Die Verwaltung des Speichers wird so vollständig durch die Bibliothek übernommen.
+
+Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+
+Für Fälle, in denen der dynamische Speicher direkt verwaltet werden soll kann auf \CodeStyle{new} und \CodeStyle{delete} zurückgegriffen werden.
+Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von SmartPointern aus der Standard-Library umgangen werden. \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
+ 
 
 \begin{CCode}
 int *Memory;            // Ein Zeiger auf int definieren
