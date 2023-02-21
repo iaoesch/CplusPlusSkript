@@ -2393,7 +2393,7 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 
 \section{constexpr Funktionen (Seit \Cpp11)}
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
 \section{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
@@ -2415,7 +2415,9 @@ Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Fun
 
 Beispiele
 \begin{CCode}
-	
+	int q;
+  int r;
+  
 	[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
 	[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
 	[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
@@ -2443,7 +2445,15 @@ Beispiele
 \end{CCode}
 Lambda-Funktionen können auch in Variablen (Entsprechend auch in Arrays und anderen
 Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennung mit den Schlüsselworten \CodeStyle{auto} oder \CodeStyle{decltype} die Variablendefinition.
+\begin{CCode}
+	int q;
+  int r;
+  
+	// Lambda Funktion in Variable Fkt Abspeichern
+	auto fkt = [&q, r](int& x)  -> float { q += r * ++x;  return q;} 
 
+	std::for_each( begin(Liste), end(Liste), fkt);
+\end{CCode}
 Lambdafunktionen ohne Capture-Block können auch passenden Funktionszeigern zugewiesen werden, Lambdafunktionen mit Capture-Block sind nicht kompatibel mit Funktionszeigern, da ein Objekt zur Aufnahme der Capture-Variablen erzeugt werden muss.
 
 Auch generische Lambdafunktionen sind seit \CppVers{14} möglich (Siehe \autoref{subsection:GenerischeLambdafunktionen})
@@ -2468,7 +2478,7 @@ Grundsätzlich wird eine Coroutine gleich wie eine gewöhnliche Funktion definiert
   }
 \end{CCode}
 
-Mit dem (überladbaren) Operator \OviIndex{co\_await} wird die Coroutine unterbrochen und kehrt zum Aufrufer zurück. \CodeStyle{co_await} erhält als Parameter einen Ausdruck der angibt, worauf gewartet wird. Die Coroutine kann zu einem späteren Zeitpunkt vom Aufrufer oder von einer beliebigen anderen Stelle (Sogar von einem anderen Task oder Thread (theoretisch auch Interrupt)) fortgesetzt werden. Dazu muss nur \CodeStyle{Resume()} aufgerufen werden. Der Ausdruck hinter \CodeStyle{co_await} muss Awaitable sein, oder durch eine passende  \CodeStyle{await_transform(AnyType)} Methode des \CodeStyle{promise_type} in ein Awaitable Konvertierbar sein. Falls für das Awaitable ein  \CodeStyle{operator co_await} definiert wurde (Global, static oder als Memberfunktion) wird dieser aufgerufen, um ein Awaiter-Objekt zu erhalten, ansonsten wird das Awaitable selbst als Awaiter benutzt.
+Mit dem (überladbaren) Operator \OviIndex{co\_await} wird die Coroutine unterbrochen und kehrt zum Aufrufer zurück. \CodeStyle{co_await} erhält als Parameter einen Ausdruck der angibt, worauf gewartet wird, \CodeStyle{co_await} kan auch ein Resultat liefern. Die Coroutine kann zu einem späteren Zeitpunkt vom Aufrufer oder von einer beliebigen anderen Stelle (Sogar von einem anderen Task oder Thread (theoretisch auch Interrupt)) fortgesetzt werden. Dazu muss nur \CodeStyle{Resume()} aufgerufen werden. Der Ausdruck hinter \CodeStyle{co_await} muss Awaitable sein, oder durch eine passende  \CodeStyle{await_transform(AnyType)} Methode des \CodeStyle{promise_type} in ein Awaitable Konvertierbar sein. Falls für das Awaitable ein  \CodeStyle{operator co_await} definiert wurde (Global, static oder als Memberfunktion) wird dieser aufgerufen, um ein Awaiter-Objekt zu erhalten, ansonsten wird das Awaitable selbst als Awaiter benutzt.
 
  
 Mit der Anweisung \OviIndex{co\_yield} wird die Coroutine unterbrochen und kehrt zum Aufrufer zurück, dabei wird ein Wert/Objekt mitgeliefert. Die Coroutine kann zu einem späteren Zeitpunkt vom Aufrufer oder von einer beliebigen anderen Stelle (Sogar von einem anderen Task oder Thread (theoretisch auch Interrupt)) fortgesetzt werden. Dazu muss nur \CodeStyle{Resume()} aufgerufen werden.
@@ -3013,7 +3023,7 @@ int main() {
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
 Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () [] new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
-Der Funktionsaufrufoperator \CodeStyle{operator()(Argumente...)} läesst sich dabei pro Klasse mit unterschiedlicher Argumentenliste mehrfach überladen. Der Indexoperator [] laesst sich ab \CppVers{23} auch für mehrdimensionale Zugriffe überladen: \CodeStyle{operator[](int x, double d)} würde \CodeStyle{x[6, 3.14]} erlauben.
+Der Funktionsaufrufoperator \CodeStyle{operator()(Argumente...)} läesst sich dabei pro Klasse mit unterschiedlicher Argumentenliste mehrfach überladen. Der Indexoperator [] lässt sich ab \CppVers{23} auch für mehrdimensionale Zugriffe überladen: \CodeStyle{operator[](int x, double d)} würde \CodeStyle{objekt[6, 3.14]} erlauben.
 
 
 \begin{CCode}
@@ -3133,7 +3143,7 @@ Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \section{Benutzerdefinierte Literale (Seit \Cpp11)}
 \index{Benutzerdefinierte Literale}
 \label{subsubsect:BenutzerdefinierteLiterale}
-Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, siehe \autoref{subsect:STDChrono:Duration}).
+Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, wie Zeitdauern in \CodeStyle{std::chrono}, siehe \autoref{subsect:STDChrono:Duration}).
 
 Numerische Literale können dabei als Strings, als \CodeStyle{unsigned long long} oder als \CodeStyle{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
