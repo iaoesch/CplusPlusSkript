@@ -1161,7 +1161,8 @@ delete aptr;
 
 
 // Ein neues A-Objekt in vorgegebenem Speicherbereich definieren
-char Memory[sizeof(A)];
+// (Speicherbereich muss passendes Alignement fuer A haben)
+alignas(A) char Memory[sizeof(A)];
 
 aptr = new(Memory) A;  // Memory kann beliebige Adresse sein, an welcher 
                        // das Objekt erzeugt werden soll        
@@ -1194,7 +1195,7 @@ int main(int argc, char *argv[])
 } 
 \end{CCode}
 
-\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren. (Siehe \autoref{sect:DateiEinAusgabe})
+\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren. (Siehe \autoref{sect:DateiEinAusgabe}) sowie seit \CppVers{20} mit \CodeStyle{std::format}.
 
 %\section{Datei Ein- und Ausgabe}
 %\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
@@ -1366,13 +1367,13 @@ Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
 \subsection{Einsatz von Zeigern}
-Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt gibt (null-pointer).
+Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt geben kann (null-pointer).
 
-In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{shared} oder \CodeStyle{unique}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
 Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
 
-Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das Objekt gelöscht.
+Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das entsprechende Objekt gelöscht.
 
 Siehe \autoref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
 
@@ -1750,8 +1751,8 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 \end{CCode}
 
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
-Mit \CppVers(20) kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Mit \CppVers{20} kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
 
 
 Beispiel
@@ -1780,7 +1781,7 @@ Beispiel
 
 \subsection{Umgehung der Konstantheit (Mutable)}
 \label{subsubsect:Mutable}
-Hin und wieder hat man das Problem, dass ein Objekt zwar konstant ist,
+Hin und wieder ergibt sich das Problem, dass ein Objekt zwar konstant ist,
 aber eine Methode zu Verwaltungszwecken dennoch ein Attribut
 (z. B. ein statischer Zugriffszähler) modifiziert.
 
@@ -1827,7 +1828,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
 
  
   \chapter{Literale}
- Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale, der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
  
  \section{Nullpointer (Seit \Cpp11)}
  \label{subsubsect:nullptr}
@@ -1888,7 +1889,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  	U"Ein spezielles UTF-32 Zeichen: \U00002018"  
  \end{CCode}
  
- Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+ Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichnet, der eigentliche String wird mit \emph{"'Begrenzung(} und \emph{)Begrenzung"'} eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
  
  Beispiel:
  \begin{CCode}
@@ -1916,7 +1917,7 @@ float b = 3.14;  // Eine Ganzahlige Variable definieren
 char c;          // Eine Zeichenvariable definieren (8 Bit)
 \end{CCode}
 
-\subsection{Automatische Typerkennung}
+\subsection{Automatische Typerkennung (seit \CppVers{11})}
 \label{subsubsect:AutomatischeTyperkennung}
 \index{Automatische Typerkennung}
 Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort \CodeStyle{auto} benutzt. Mit dem Schlüsselwort \CodeIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
@@ -1927,7 +1928,7 @@ Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable
 	auto Magic = 5;  // Magic erhält den Typ int
 	
 	
-	decltype(Magic) OtherMagicVariable = 0; // Selber Typ wie Magic
+	decltype(Magic) OtherMagicVariable = 3.14; // Selber Typ wie Magic
 	
 	for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
 		...
@@ -1948,10 +1949,18 @@ Neu können strukturierte Datentypen automatisch in Einzelvariablen umgepackt wer
 
 using namespace std;
 
+
 std::tuple<int, std::string, double> ReturnMultipleValues()
 {
    return std::make_tuple(1, "marius", 1234.5);
 }
+
+// oder einfacher mit auto
+auto f()
+{
+   return std::make_tuple(99, "sepp", 5.5);
+}
+
 
 struct Demo {
      int x;
@@ -2006,7 +2015,7 @@ s[13] = 'f';
 s[99] = 'z'; // Letztes Element (!)
 \end{CCode}
 
-In \Cpp sollten jedoch Container wie z. B. Vector (Siehe \autoref{subsect:Vector} verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und fast überall eingesetzt werden können wo auch Arrays erwartet werden. Im Gegensatz zu Arrays sind sie aber dynamisch (Ihre Grösse kann zur Laufzeit verändert werden), und sie bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
+In \Cpp sollten jedoch Container wie z. B. \CodeStyle{std::Vector} (Siehe \autoref{subsect:Vector} oder \CodeStyle{std::array} (seit \CppVers{11}) verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und fast überall eingesetzt werden können wo auch Arrays erwartet werden. Im Gegensatz zu Arrays ist \CodeStyle{std::Vector} aber dynamisch (Seine Grösse kann zur Laufzeit verändert werden), und sowohl \CodeStyle{std::Vector} als auch \CodeStyle{std::array} bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
 
 \begin{CCode}
 #include<vector>
@@ -2023,12 +2032,17 @@ Val = MyVector[21];           //Liefert den Wert des 22. Elementes
 Val = MyVector.at(21);        //Liefert den Wert des 22. Elementes (Exception falls ausserhalb Vektorgrenzen)
 MyVector[21] = 66.4;          //ueberschreibt den Wert des 22.ten Elementes
 
+// Array mit 20 Elementen, nurn erste 3 initialisiert
+std::array<int, 20> MyArray = {1, 2, 3};
+Val = MyArray[10];           //Liefert den Wert des 11. Elementes
+Val = MyArray.at(10);        //Liefert den Wert des 11. Elementes (Exception falls ausserhalb Arraygrenzen)
+
 \end{CCode}
 
 
 
 \chapter{Kontrollstrukturen}
-C/\Cpp besitzt alle gängigen Kontrollstrukturen, wobei einige etwas anders als bei anderen Sprachen (Pascal) funktionieren.
+C/\Cpp besitzt alle gängigen Kontrollstrukturen, die meisten funktionieren ähnlich oder gleich wie bei C.
 
 \section{if() then else}
 Verzweigung
@@ -2164,7 +2178,7 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 	
 \end{CCode}
 
-Dies funktioniert für Arrays und alle Objekte, welche \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
+Dies funktioniert für Arrays und alle Objekte, welche die Methoden \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
 
 
 \section{switch()}
@@ -2353,7 +2367,10 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 	
 	// Der Rückgabetyp ist, was auch immer der Ergebnistyp der Addition von x und y ist
 	template<class T1, class T2>
-	auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) {return x + y;}
+	auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) 
+	{
+	    return x + y;
+	}
 	
 	// Geht auch bei 'gewoehnlichen' Funktionen:
 	
@@ -2376,7 +2393,7 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 
 \section{constexpr Funktionen (Seit \Cpp11)}
 Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
 \section{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
