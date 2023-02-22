@@ -4359,7 +4359,7 @@ cout << d.C::A::x; // gibt 5 aus
 \end{CCode}
 
 
-Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden (Dabei wird ein zusätzlicher versteckter Zeiger eingeführt, welcher auf die Basisklasse zeigt. B und C greifen nun nur über diesen Zeiger auf die Basisklasse zu, wobei B, D und D jeweils nur eine Instanz der Basisklasse besitzen, bei D zeigen die Zeiger von B und von C auf dieselbe Instanz von A)  . Grundsätzlich besser ist aber die Vermeidung
+Dieses Problem kann mit \OviIndex{virtueller Vererbung} umgangen werden (Dabei wird ein zusätzlicher versteckter Zeiger eingeführt, welcher auf die Basisklasse zeigt. B und C greifen nun nur über diesen Zeiger auf die Basisklasse zu, wobei B, C und D jeweils nur eine Instanz der Basisklasse besitzen, bei D zeigen die Zeiger von B und von C auf dieselbe Instanz von A). Grundsätzlich besser ist aber die Vermeidung
 von Mehrfachvererbung wenn mehr als nur Schnittstellen implementiert werden sollen.
 
 \begin{CCode}
@@ -4411,7 +4411,7 @@ cout << d.C::A::x; // gibt 5 aus
 Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen Methoden der Basisklasse als \OviIndex{virtuell} deklariert werden. Die Deklaration als virtuell erfolgt in der Klassendeklaration durch das Schlüsselwort \CodeIndex{virtual}, aber nicht bei der Definition (Implementation).
 \emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil ansonsten unter Umständen der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht derjenige der Basisklasse benutzt werden.
 
-Wenn es unsinnig ist, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit\CodeStyle{ = 0} in der Deklaration: '\CodeStyle{virtual void f(void) = 0}'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen, entsprechend besteht meistens auch kein Bedarf für diese Funktion. (Ausser sie würde von einer abgeleiteten Klasse direkt aufgerufen.)
+Wenn es unsinnig ist, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung oder eine reine Schnittstellendefinition ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit \CodeStyle{ = 0} in der Deklaration: '\CodeStyle{virtual void f(void) = 0}'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen, entsprechend besteht meistens auch kein Bedarf für diese Funktion. (Ausser sie würde von einer abgeleiteten Klasse direkt aufgerufen.)
 \NextPagePlease
 \paragraph{MyClass.hpp} (Klassendeklaration)
 \begin{CCode}
@@ -4641,7 +4641,7 @@ class Abgeleitet : Basisklasse {
 
 \chapter{Ausnahmebehandlung (Exceptions)}
 %\index{throw}\index{try}\index{catch}
-Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
+Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen behandelt werden kann, an verschiedenen Stellen im Programm zu finden. Dies lässt das Behandeln von Fehlern meist zu einem komplizierten und fehleranfälligen Problem werden.
 
 Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit \CodeStyle{throw()} eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
@@ -4651,9 +4651,9 @@ dieser Liste ignoriert, auch wenn einer noch besser passen würde. Somit werden a
 
 Funktionen (und Methoden) konnten bis \CppVers{17} resp. \CppVers{20} in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort \CodeStyle{throw()} verwendet. Im \CodeStyle{throw} Statement werden alle Exceptions aufgeführt, welche
 von der Funktion ausgelöst werden können (Erlaubt bis \CppVers{17}). Ein fehlendes \CodeStyle{throw()} Statement bedeutet, dass diese
-Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres\CodeStyle{ throw()} (Erlaubt bis \CppVers{20})bedeutet, dass die
+Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres \CodeStyle{ throw()} (Erlaubt bis \CppVers{20})bedeutet, dass die
 Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
-Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden \CodeStyle{try}/\CodeStyle{catch} Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von Ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
+Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden \CodeStyle{try}/\CodeStyle{catch} Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
 Seit \CppVers{11} sollte \CodeStyle{noexcept(true)} oder \CodeStyle{noexcept} anstelle von \CodeStyle{throw()} verwendet werden, um anzuzeigen dass eine Funktion keine Exception werfen kann. (Wenn sie es dennoch tut, wird nach wie vor das Programm sofort mit \CodeStyle{terminate()} beendet). 
@@ -4775,7 +4775,7 @@ catch (DivideByZerroErrorClass &e) {
 
 \end{CCode}
 
-Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automtisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (\CodeStyle{new}) ist der Benutzer hingegen selbst zuständig (Durch entsprechende \CodeStyle{catch throw} Anweisungen).
+Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automatisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (\CodeStyle{new}) ist der Benutzer hingegen selbst zuständig (Durch entsprechende \CodeStyle{catch throw} Anweisungen).
 
 Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
@@ -5033,7 +5033,7 @@ von beiden beteiligten Klassen muss virtuell sein.
 \label{chap:Namespaces}
 \OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit lässt sich eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
 
-Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen besitzen, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
+Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen definieren, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
 
 In Bibliothek 1
 \begin{CCode}
@@ -6131,9 +6131,9 @@ String gelesen, oder in einen String geschrieben wird:
 
 \end{CCode}
 
-\section{Resourcenverwaltung mit Smart Pointer, Unique Pointer, Shared Pointer}  \label{sec:Smartpointer}
+\section{Resourcenverwaltung mit Unique Pointer und Shared Pointer}  \label{sec:StdSmartpointer}
 Korrektes Resourcenmanagement ist in \Cpp essenziell, erfordert jedoch vom Programmierer sorgfältiges und diszipliniertes Arbeiten und klare Schnittstellendefinitionen. Besonders im Zusammenhang mit der Weitergabe von Pointer an andere Objekte/Methoden ist nicht immer klar, wer jetzt für das Freigeben der Resource zuständig ist.
-Nachfolgend wird der Einsatz und die prinzipielle Funktion von \OviIndex{Smart Pointer}, \OviIndex{Unique Pointer} und \OviIndex{Shared Pointer} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden. Achtung, der vorgestellte Code ist vereinfacht und soll nur das Prinzip darstellen, er ist nicht für den Einsatz in produktivem Code geeignet. Dazu sollen die entsprechenden Templates aus der Standardlibrary verwendet werden.
+Nachfolgend wird der Einsatz von \OviIndex{Smart Pointern} wie \OviIndex{std::unique\_ptr} und \OviIndex{std::shared\_ptr} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden.
 
 \subsection{Problemfälle in der Resourcenverwaltung}
 Hier ein paar Beispiele für Problemfälle:
@@ -6161,187 +6161,85 @@ int main(int argc, char*argv[])
 \end{CCode}
 
 \subsection{Lösung mit Smart Pointer}
-Anstelle von Pointern intelligente, pointerähnliche Objekte verwenden, welche das Objekt besitzen und Managen. Die Resourcenverwaltung erfolgt durch die Konstruktoren / Destruktoren. Es werden Templates eingesetzt um Typunabhängig zu werden. Auf eine bestimmte Resource kann immer nur ein \OviIndex{Smart Pointer} zeigen, wann immer ein Smartpointer einem anderen zugewiesen wird, oder er kopiert wird, uebergibt er die Verantwortung über die Resource an den neuen Pointer und wird selber ungültig.  
+Anstelle von Pointern intelligente, pointerähnliche Objekte verwenden, welche das Objekt besitzen und Managen. Die Resourcenverwaltung erfolgt durch die Konstruktoren / Destruktoren. Es werden Templates eingesetzt um Typunabhängig zu werden. 
 
-\begin{CCode}
-template <class T>
-class Smartpointer {
-
-   private:
-   T *RealObjekt;  // Pointer auf das verwaltete Objekt
-
-   public:
-   
-   T& operator *() {return *RealObjekt;}; // Erlaubt *p 
-   T *operator ->() {return RealObjekt;}; // Erlaubt p-> 
-   
-   Smartpointer(T *p) : RealObjekt(p){};  // Erzeugen eines Pointers
-  ~Smartpointer() {if (RealObjekt!=0) delete RealObjekt;}; // Loeschen n. Bedarf 
-
-   // Resourcen uebernehmen (Nicht kopieren!!!)
-   Smartpointer(Smartpointer &s) : RealObjekt(s.RealObjekt) {s.RealObjekt = 0;};
-   Smartpointer<T> &operator=(Smartpointer &s) 
-            { 
-              if (&s != this) {
-                 if (RealObjekt!=0) {
-                    delete RealObjekt;
-                 }
-                 RealObjekt = s.RealObjekt;
-                 s.RealObjekt = 0;                
-              }
-            };
-
-}
-
-
-\end{CCode}
-
-Unser Einstiegsbeispiel mit Smart Pointer:
-\begin{CCode}
-
-Smartpointer<A> f(int i) 
-{
-   return Smartpointer<A>(new A(i));   // Smartpointer übernimmt Verwaltung
-}
-
-int main(int argc, char*argv[])
-{
-   Smartpointer<A> sp1;
-
-   f(13);                // Rueckgabewert ignoriert, zurueckgegebener Smartpointer 
-                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu  
-                         // haben -> Destruktor von Smartpointer loescht
-                         // Objekt auf welches der Smartpointer zeigt.  
-
-  sp1 = f(13);           // Inhalt von zurueckgegebenem Smartpointer wird an sp1
-                         // uebergeben bevor der zurueckgegebene Smartpointer  
-                         // gelöscht wird -> Destruktor von Smartpointer loescht
-                         // nichts 
-    
-  sp1->DoSomething();    // Smartpointer koennen dank Ueberladung von operator -> 
-  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-
-   try {
-      Smartpointer<A> p = new A(12);
-      g(p);              // Inhalt von p wird an Smartpointer von g uebergeben,
-                         // p zeigt auf nichts mehr
-      Smartpointer<A> Copy = sp1;   // Inhalt von sp1 wird an Smartpointer Copy
-                                    //  uebergeben, sp1 zeigt auf nichts mehr
-      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
-      //                    freigegebe nwann auch immer Copy ungueltig wird  
-   } catch(...) {  
-   }                    
-}
-\end{CCode}
 
 \subsection{Lösung mit Unique Pointer}
-Der \OviIndex{Unique Pointer} verhält sich fast gleich wie der Smart Pointer, aber es sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine ungültigen Zeiger mehr geben.
- 
+Der \OviIndex{std::unique\_ptr} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu weder mehr Speicherplatzbedarf noch mehr Laufzeitaufwand. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
 
-\begin{CCode}
-template <class T>
-class UniquePointer {
-
-   private:
-   T *RealObjekt;  // Pointer auf das verwaltete Objekt
-
-   public:
-   
-   T& operator *() {return *RealObjekt;}; // Erlaubt *p 
-   T *operator ->() {return RealObjekt;}; // Erlaubt p-> 
-   
-   UniquePointer(T *p) : RealObjekt(p){};  // Erzeugen eines Pointers
-  ~UniquePointer() {if (RealObjekt!=0) delete RealObjekt;}; // Loeschen n. Bedarf 
-
-   // Resourcen nur mit move uebernehmen (Nicht kopieren!!!)
-   UniquePointer(UniquePointer &&s) : RealObjekt(s.RealObjekt) {s.RealObjekt = 0;};
-   UniquePointer<T> &operator=(UniquePointer &&s) 
-            { 
-              if (&s != this) {
-                 if (RealObjekt!=0) {
-                    delete RealObjekt;
-                 }
-                 RealObjekt = s.RealObjekt;
-                 s.RealObjekt = 0;                
-              }
-            };
-
-   // Normaler Kopierkonstruktor und Zuweisung verbieten
-   UniquePointer(UniquePointer &s) = delete;
-   UniquePointer<T> &operator=(UniquePointer &s) = delete; 
-
-}
-
-
-\end{CCode}
 
 Unser Einstiegsbeispiel mit Unique Pointer:
 \begin{CCode}
 
-UniquePointer<A> f(int i) 
+std::unique_ptr<A> f(int i) 
 {
-   return UniquePointer<A>(new A(i));   // UniquePointer übernimmt Verwaltung
+   //return std::unique_ptr<A>(new A(i));   // veraltet (vor C++14)
+  
+   return std::make_unique<A>(i); // UniquePointer übernimmt Verwaltung
 }
 
-void g(UniquePointer<A> q) // UniquePointer übernimmt Verwaltung
+void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
 {
    // Do something;   
 } // UniquePointer stirbt, referenziertes Objekt wird freigegeben
 
 int main(int argc, char*argv[])
 {
-   UniquePointer<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
+   std::unique_ptr<A> sp; // Zeiger ohne Inhalt erzeugen (nullptr)
  
-   f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
+   f(13);                // Rueckgabewert ignoriert, zurueckgegebener unique_ptr 
                          // wird gelöscht, ohne seinen Inhalt weitergegeben zu 
-                         // haben -> Destruktor von UniquePointer loescht
-                         // Objekt auf welches der UniquePointer zeigt.  
+                         // haben -> Destruktor von unique_ptr loescht
+                         // Objekt auf welches der unique_ptr zeigt.  
+                        
+   sp = std::make_unique<A>(27)  // sp zeigt auf neues Objekt
 
-  spwrong = f(13);       // Zuweisung verboten
+   sp = std::make_unique<A>(42);  // sp zeigt neu auf Objekt(42), altes Objekt(27)
+  ...................... .// wird freigegeben
   
-  UniquePointer<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
+   std::unique_ptr<A> sp1 = f(13)  // Inhalt von zurueckgegebenem UniquePointer wird an
                          // sp1 uebergeben bevor der zurueckgegebene UniquePointer 
                          // gelöscht wird -> Destruktor von UniquePointer loescht
                          // nichts 
       
-  sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
-  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+   sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
+   Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
 
    try {
-      UniquePointer<A> p = new A(12);
+      std::unique_ptr<A> p = std::make_unique<A>(12);
       g(p);              // Kopie Verboten
                          
-      g(UniquePointer<A>(new A(12)));  // Kopie von temporary erlaubt 
-                                       // (Movekonstruktor)
+      g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
+                                   // (Movekonstruktor)
                                       
       g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
                                // p verliert Besitz von Objekt und wird zu nullptr
 
-      UniquePointer<A> WrongCopy = sp1;  // Kopie Verboten
+      std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
                        
-      UniquePointer<A> Copy = new A(*sp1);  // Duplikat von Resource erzeugen und 
+      std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
                                             // zuweisen
 
-      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
-      //                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
+      // Kein delete noetig, Resourcen werden durch Destruktor
+      // freigegeben wann auch immer Copy/sp1/p ungueltig werden  
    } catch(...) {  
    }                    
 }
 \end{CCode}
 
-Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
+Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren oder gültig sind. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
 
 Seit \CppVers{14} können Objekte direkt mit \CodeStyle{make_unique()}\index{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_unique()} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
 \begin{CCode}
 
 
 // Unsicher
-f(UniquePointer<A>(new A(42)), SomeFunction());
+f(std::unique_ptr<A>(new A(42)), SomeFunction());
 
 // Koennte vom Compiler zu:
 A *t1 = new A(42);
 int t2 = SomeFunction();   // Koennte Exception werfen -> t1 ginge verloren 
-UniquePointer<A> t3(t1);
+std::unique_ptr<A> t3(t1);
 f(t3, t2);
 
 
@@ -6349,7 +6247,7 @@ f(t3, t2);
 f(std::make_unique<A>(42), SomeFunction());
 
 // Koennte vom Compiler zu:
-UniquePointer<A> t1 = std::make_unique<A>(42); //Erzeugt Objekt mit new und
+std::unique_ptr<A> t1 = std::make_unique<A>(42); //Erzeugt Objekt mit new und
                                                // liefert UniquePointer darauf
 int t2 = SomeFunction();   // Koennte Exception werfen -> t1 wuerde geloescht
                            // und somit das von t1 referenzierte Objekt ebenfalls
@@ -6358,75 +6256,21 @@ f(t1, t2);
 \end{CCode}
 
 \subsection{Lösung mit Shared Pointer}
-Der \OviIndex{Shared Pointer} verhält sich ähnlich wie der Smart Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede Resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resource verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wannimmer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
-Der Shared Pointer ist somit am universellsten einsetzbar, benötigt aber auch am meisten Resourcen.
+Der \OviIndex{shared\_ptr} verhält sich ähnlich wie der unique\_ptr Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede Resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resource verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wannimmer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
+Der \CodeStyle{std::shared\_ptr} ist somit am universellsten einsetzbar, benötigt aber auch am meisten Resourcen.
 
-\begin{CCode}
+Um zyklische Referenzen zu durchbrechen gibt es noch den \OviIndex{std::weak\_ptr}, welcher den Referenzcounter nicht erhöht, aber bei Bedarf in einen echten \CodeStyle{std::shared\_ptr} umgewandelt werden kann, falls das Objekt zu diesem Zeitpunkt noch existiert.
 
-template <class T>
-class Sharedpointer {
-
-   private:
-   T *RealObjekt;  // Pointer auf das verwaltete Objekt
-   int *Counter;   // Pointer auf den Zaehler des verwalteten Objektes 
-
-   public:
-   
-   T& operator *() {return *RealObjekt;}; // Erlaubt *p 
-   T *operator ->() {return RealObjekt;}; // Erlaubt p-> 
-   
-   // Erzeugen eines Shared Pointers
-   Sharedpointer(T *p) : RealObjekt(p), Counter = new int(1){};  
-   
-   // Loeschen wenn letzter Zeiger verschwindet
-   ~Sharedpointer() {
-      // Einer weniger der das Objekt benutzt
-      (*Counter)--;
-      // Loeschen wenn nicht mehr gebraucht 
-      if ((*Counter) <= 0) {
-         delete RealObjekt;
-         delete Counter;
-      }; 
-   };
-
-   // Resourcen teilen (Nicht kopieren!!!)
-   Sharedpointer(Sharedpointer &s) : RealObjekt(s.RealObjekt), Counter(s.Counter)
-   {
-      // Einer mehr der teilt...
-      (*Counter)++;
-   } 
-
-   Sharedpointer<T> &operator=(Smartpointer &s) 
-            { 
-              if (&s != this) {
-                 // Alten inhalt 'loswerden'
-                 (*Counter)--;
-                 // Loeschen wenn nicht mehr gebraucht 
-                 if ((*Counter) <= 0) {
-                    delete RealObjekt;
-                    delete Counter;
-                 }; 
-                 // neuen Inhalt teilen
-                 Counter = s.Counter;
-                 RealObjekt = s.RealObjekt;
-                 // Einer mehr der teilt...
-                (*Counter)++;
-              }
-            };
-
-}
-
-\end{CCode}
 
 Unser Einstiegsbeispiel mit Sharedpointer:
 \begin{CCode}
 
-Sharedpointer<A> f(int i) 
+std::shared_ptr<A> f(int i) 
 {
-   return Sharedpointer<A>(new A(i));   // Sharedpointer übernimmt Verwaltung
+   return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
 }
 
-void g(Sharedpointer<A> q) // Sharedpointer übernimmt Verwaltung
+void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
 {
    // Do something;   
 } // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
@@ -6434,11 +6278,11 @@ void g(Sharedpointer<A> q) // Sharedpointer übernimmt Verwaltung
 
 int main(int argc, char*argv[])
 {
-   Sharedpointer<A> sp1;
+   std::shared_ptr<A> sp1;
 
    f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
                          // wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
-                         // -> Destruktor von Sharedpointer loescht
+                         // -> Destruktor von Sharedpointer dekrementiert counter und loescht
                          // Objekt auf welches der Sharedpointer zeigt falls counter
                          // 0 wird.  
 
@@ -6451,10 +6295,10 @@ int main(int argc, char*argv[])
   Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
 
    try {
-      Sharedpointer<A> p = new A(12);
+      std::shared_ptr<A> p = std::make_shared<A>(12);
       g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
                          // counter wird inkrementiert, p ist weiterhin gueltig
-      Sharedpointer<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
+      std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
                          // kopiert, counter wird inkrementiert, sp1 ist weiterhin 
                          // gueltig
       // Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
@@ -6469,12 +6313,12 @@ Objekte können auch direkt mit \CodeStyle{make_shared}\index{make\_shared} erzeu
 
 
 // Unsicher und ineffizient (Zwei Allokationen)
-f(Sharedpointer<A>(new A(42)), SomeFunction());
+f(std::shared_ptr<A>(new A(42)), SomeFunction());
 
 // Koennte vom Compiler zu:
 A *t1 = new A(42);         // Speicher fuer A allozieren 
 int t2 = SomeFunction();   // Koennte Exception werfen -> t1 ginge verloren 
-Sharedpointer<A> t3(t1);   // Speicher fuer counter allozieren
+std::shared_ptr<A> t3(t1);   // Speicher fuer counter allozieren
 f(t3, t2);
 
 
@@ -6482,7 +6326,7 @@ f(t3, t2);
 f(std::make_shared<A>(42), SomeFunction());
 
 // Koennte vom Compiler zu:
-Sharedpointer<A> t1 = std::make_shared<A>(42); //Erzeugt Objekt mit new und
+std::shared_ptr<A> t1 = std::make_shared<A>(42); //Erzeugt Objekt mit new und
                                                // liefert UniquePointer darauf
                                                // Counter und Objekt koennen im
                                                // selben (vergroesserten)  
@@ -6506,13 +6350,13 @@ class Troublemaker {
    // Gefaehrlich, Aufruf erzeugt einen neuen Sharedpointer, so verwalten
    // mehrere Sharedpointer das Objekt
    Troublemaker(OtherClass &OtherObject) { 
-                     OtherObject.register(Sharedpointer<Troublemaker>(this)); 
+                     OtherObject.register(std::shared_ptr<Troublemaker>(this)); 
                   }
 
     // Gefaehrlich, jeder Aufruf erzeugt einen neuen Sharedpointer, so verwalten
     // mehrere Sharedpointer das Objekt
-   Sharedpointer<Troublemaker> GetThis() { 
-                     return Sharedpointer<Troublemaker>(this);
+   std::shared_ptr<Troublemaker> GetThis() { 
+                     return std::shared_ptr<Troublemaker>(this);
                   }
   
    void DoSomething();
@@ -6520,14 +6364,14 @@ class Troublemaker {
 
 int main(int argc, char*argv[])
 {
-   Sharedpointer<Troublemaker> sp1;
+   std::shared_ptr<Troublemaker> sp1;
   
-   Sharedpointer<Troublemaker> sp1 = std::make_shared<Troublemaker>();
+   std::shared_ptr<Troublemaker> sp1 = std::make_shared<Troublemaker>();
 
    {
       // Jetzt haben wir einen zweiten unabhaengigen shared pointer 
       // auf dasselbe objekt
-      Sharedpointer<Troublemaker> sp2 = sp1->GetThis();
+      std::shared_ptr<Troublemaker> sp2 = sp1->GetThis();
       
    } // Blockende, sp2 stirbt und loescht objekt
   
@@ -6557,21 +6401,19 @@ class NiceGui : public std::enable_shared_from_this<NiceGui> {
 
    // Ok, Aufruf erzeugt eine Kopie des bestehenden Sharedpointer welcher
    // das Objekt verwaltet, alle in Ordnung
-   Sharedpointer<NiceGui> GetThis() { return shared_from_this();}
+   std::shared_ptr<NiceGui> GetThis() { return shared_from_this();}
   
    void DoSomething();
 }
 
 int main(int argc, char*argv[])
 {
-   Sharedpointer<NiceGui> sp1;
-  
-   Sharedpointer<NiceGui> sp1 = std::make_shared<NiceGui>();
+   std::shared_ptr<NiceGui> sp1 = std::make_shared<NiceGui>();
 
    {
       // Jetzt haben wir einen zweiten gueltigen shared pointer 
       // auf dasselbe objekt
-      Sharedpointer<NiceGui> sp2 = sp1->GetThis();
+      std::shared_ptr<NiceGui> sp2 = sp1->GetThis();
       
    } // Blockende, sp2 stirbt, loescht das objekt aber nicht
   
@@ -10657,7 +10499,316 @@ Datei Testerb.cpp
 \lstinline$   }	$&Ende der Funktion main, alle lokalen Objekte werde hier automatisch gelöscht (MeinAuto)\\
 \end{CodeTable}
  
+\NextPagePlease 
+ 
+\section{Beispiel Implementation von Smart Pointer zur Resourcenverwaltung}  \label{sec:Smartpointer}
+Korrektes Resourcenmanagement ist in \Cpp essenziell, erfordert jedoch vom Programmierer sorgfältiges und diszipliniertes Arbeiten und klare Schnittstellendefinitionen. Besonders im Zusammenhang mit der Weitergabe von Pointer an andere Objekte/Methoden ist nicht immer klar, wer jetzt für das Freigeben der Resource zuständig ist.
+Nachfolgend wird der Einsatz und die prinzipielle Funktion von \OviIndex{Smart Pointern} wie \OviIndex{Unique Pointer} und \OviIndex{Shared Pointer} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden. Achtung, der vorgestellte Code ist vereinfacht und soll nur das Prinzip darstellen, er ist nicht für den Einsatz in produktivem Code geeignet. Dazu sollen die entsprechenden Templates aus der Standardlibrary verwendet werden.
 
+\subsection{Problemfälle in der Resourcenverwaltung}
+Hier ein paar Beispiele für Problemfälle:
+
+\begin{CCode}
+A *f(int i) 
+{
+   return new A(i);   // Rueckgabewert koennte ignoriert werden
+}
+
+int main(int argc, char*argv[])
+{
+   f(13); // Rueckgabewert ignoriert
+
+   try {
+      A *p = new A(12);
+      g(p);              // p koennte geloescht werden
+      A *Copy = p;       // Zwei Zeiger auf selbes Objekt, koennte doppelt
+                         // gelöscht werden 
+      delete p;          // g koennte Exception ausloesen, delete wuerde ignoriert  
+   } catch(...) {  
+   }                    
+}
+
+\end{CCode}
+
+\subsection{Lösung mit Smart Pointer}
+Anstelle von Pointern intelligente, pointerähnliche Objekte verwenden, welche das Objekt besitzen und Managen. Die Resourcenverwaltung erfolgt durch die Konstruktoren / Destruktoren. Es werden Templates eingesetzt um Typunabhängig zu werden. Auf eine bestimmte Resource kann immer nur ein \OviIndex{Smart Pointer} zeigen, wann immer ein Smartpointer einem anderen zugewiesen wird, oder er kopiert wird, uebergibt er die Verantwortung über die Resource an den neuen Pointer und wird selber ungültig.  
+
+\begin{CCode}
+template <class T>
+class Smartpointer {
+
+   private:
+   T *RealObjekt;  // Pointer auf das verwaltete Objekt
+
+   public:
+   
+   T& operator *() {return *RealObjekt;}; // Erlaubt *p 
+   T *operator ->() {return RealObjekt;}; // Erlaubt p-> 
+   
+   Smartpointer(T *p) : RealObjekt(p){};  // Erzeugen eines Pointers
+  ~Smartpointer() {if (RealObjekt!=0) delete RealObjekt;}; // Loeschen n. Bedarf 
+
+   // Resourcen uebernehmen (Nicht kopieren!!!)
+   Smartpointer(Smartpointer &s) : RealObjekt(s.RealObjekt) {s.RealObjekt = 0;};
+   Smartpointer<T> &operator=(Smartpointer &s) 
+            { 
+              if (&s != this) {
+                 if (RealObjekt!=0) {
+                    delete RealObjekt;
+                 }
+                 RealObjekt = s.RealObjekt;
+                 s.RealObjekt = 0;                
+              }
+            };
+
+}
+
+
+\end{CCode}
+
+Unser Einstiegsbeispiel mit Smart Pointer:
+\begin{CCode}
+
+Smartpointer<A> f(int i) 
+{
+   return Smartpointer<A>(new A(i));   // Smartpointer übernimmt Verwaltung
+}
+
+int main(int argc, char*argv[])
+{
+   Smartpointer<A> sp1;
+
+   f(13);                // Rueckgabewert ignoriert, zurueckgegebener Smartpointer 
+                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu  
+                         // haben -> Destruktor von Smartpointer loescht
+                         // Objekt auf welches der Smartpointer zeigt.  
+
+  sp1 = f(13);           // Inhalt von zurueckgegebenem Smartpointer wird an sp1
+                         // uebergeben bevor der zurueckgegebene Smartpointer  
+                         // gelöscht wird -> Destruktor von Smartpointer loescht
+                         // nichts 
+    
+  sp1->DoSomething();    // Smartpointer koennen dank Ueberladung von operator -> 
+  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+
+   try {
+      Smartpointer<A> p = new A(12);
+      g(p);              // Inhalt von p wird an Smartpointer von g uebergeben,
+                         // p zeigt auf nichts mehr
+      Smartpointer<A> Copy = sp1;   // Inhalt von sp1 wird an Smartpointer Copy
+                                    //  uebergeben, sp1 zeigt auf nichts mehr
+      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
+      //                    freigegebe nwann auch immer Copy ungueltig wird  
+   } catch(...) {  
+   }                    
+}
+\end{CCode}
+
+\subsection{Lösung mit Unique Pointer}
+Der \OviIndex{Unique Pointer} verhält sich fast gleich wie der Smart Pointer, aber es sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine ungültigen Zeiger mehr geben.
+ 
+
+\begin{CCode}
+template <class T>
+class UniquePointer {
+
+   private:
+   T *RealObjekt;  // Pointer auf das verwaltete Objekt
+
+   public:
+   
+   T& operator *() {return *RealObjekt;}; // Erlaubt *p 
+   T *operator ->() {return RealObjekt;}; // Erlaubt p-> 
+   
+   UniquePointer(T *p) : RealObjekt(p){};  // Erzeugen eines Pointers
+  ~UniquePointer() {if (RealObjekt!=0) delete RealObjekt;}; // Loeschen n. Bedarf 
+
+   // Resourcen nur mit move uebernehmen (Nicht kopieren!!!)
+   UniquePointer(UniquePointer &&s) : RealObjekt(s.RealObjekt) {s.RealObjekt = 0;};
+   UniquePointer<T> &operator=(UniquePointer &&s) 
+            { 
+              if (&s != this) {
+                 if (RealObjekt!=0) {
+                    delete RealObjekt;
+                 }
+                 RealObjekt = s.RealObjekt;
+                 s.RealObjekt = 0;                
+              }
+            };
+
+   // Normaler Kopierkonstruktor und Zuweisung verbieten
+   UniquePointer(UniquePointer &s) = delete;
+   UniquePointer<T> &operator=(UniquePointer &s) = delete; 
+
+}
+
+
+\end{CCode}
+
+Unser Einstiegsbeispiel mit Unique Pointer:
+\begin{CCode}
+
+UniquePointer<A> f(int i) 
+{
+   return UniquePointer<A>(new A(i));   // UniquePointer übernimmt Verwaltung
+}
+
+void g(UniquePointer<A> q) // UniquePointer übernimmt Verwaltung
+{
+   // Do something;   
+} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
+
+int main(int argc, char*argv[])
+{
+   UniquePointer<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
+ 
+   f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
+                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu 
+                         // haben -> Destruktor von UniquePointer loescht
+                         // Objekt auf welches der UniquePointer zeigt.  
+
+  spwrong = f(13);       // Zuweisung verboten
+  
+  UniquePointer<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
+                         // sp1 uebergeben bevor der zurueckgegebene UniquePointer 
+                         // gelöscht wird -> Destruktor von UniquePointer loescht
+                         // nichts 
+      
+  sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
+  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+
+   try {
+      UniquePointer<A> p = new A(12);
+      g(p);              // Kopie Verboten
+                         
+      g(UniquePointer<A>(new A(12)));  // Kopie von temporary erlaubt 
+                                       // (Movekonstruktor)
+                                      
+      g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
+                               // p verliert Besitz von Objekt und wird zu nullptr
+
+      UniquePointer<A> WrongCopy = sp1;  // Kopie Verboten
+                       
+      UniquePointer<A> Copy = new A(*sp1);  // Duplikat von Resource erzeugen und 
+                                            // zuweisen
+
+      // Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
+      //                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
+   } catch(...) {  
+   }                    
+}
+\end{CCode}
+
+Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
+
+
+\subsection{Lösung mit Shared Pointer}
+Der \OviIndex{Shared Pointer} verhält sich ähnlich wie der Smart Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede Resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resource verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wannimmer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
+Der Shared Pointer ist somit am universellsten einsetzbar, benötigt aber auch am meisten Resourcen.
+
+\begin{CCode}
+
+template <class T>
+class Sharedpointer {
+
+   private:
+   T *RealObjekt;  // Pointer auf das verwaltete Objekt
+   int *Counter;   // Pointer auf den Zaehler des verwalteten Objektes 
+
+   public:
+   
+   T& operator *() {return *RealObjekt;}; // Erlaubt *p 
+   T *operator ->() {return RealObjekt;}; // Erlaubt p-> 
+   
+   // Erzeugen eines Shared Pointers
+   Sharedpointer(T *p) : RealObjekt(p), Counter = new int(1){};  
+   
+   // Loeschen wenn letzter Zeiger verschwindet
+   ~Sharedpointer() {
+      // Einer weniger der das Objekt benutzt
+      (*Counter)--;
+      // Loeschen wenn nicht mehr gebraucht 
+      if ((*Counter) <= 0) {
+         delete RealObjekt;
+         delete Counter;
+      }; 
+   };
+
+   // Resourcen teilen (Nicht kopieren!!!)
+   Sharedpointer(Sharedpointer &s) : RealObjekt(s.RealObjekt), Counter(s.Counter)
+   {
+      // Einer mehr der teilt...
+      (*Counter)++;
+   } 
+
+   Sharedpointer<T> &operator=(Smartpointer &s) 
+            { 
+              if (&s != this) {
+                 // Alten inhalt 'loswerden'
+                 (*Counter)--;
+                 // Loeschen wenn nicht mehr gebraucht 
+                 if ((*Counter) <= 0) {
+                    delete RealObjekt;
+                    delete Counter;
+                 }; 
+                 // neuen Inhalt teilen
+                 Counter = s.Counter;
+                 RealObjekt = s.RealObjekt;
+                 // Einer mehr der teilt...
+                (*Counter)++;
+              }
+            };
+
+}
+
+\end{CCode}
+
+Unser Einstiegsbeispiel mit Sharedpointer:
+\begin{CCode}
+
+Sharedpointer<A> f(int i) 
+{
+   return Sharedpointer<A>(new A(i));   // Sharedpointer übernimmt Verwaltung
+}
+
+void g(Sharedpointer<A> q) // Sharedpointer übernimmt Verwaltung
+{
+   // Do something;   
+} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
+  // und Objekt freigegeben falls counter 0 wird.
+
+int main(int argc, char*argv[])
+{
+   Sharedpointer<A> sp1;
+
+   f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
+                         // wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
+                         // -> Destruktor von Sharedpointer loescht
+                         // Objekt auf welches der Sharedpointer zeigt falls counter
+                         // 0 wird.  
+
+  sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
+                         // uebergeben bevor der zurueckgegebene Sharedpointer 
+                         // gelöscht wird -> Destruktor von Sharedpointer
+                         // dekrementiert counter, aber loescht nichts 
+    
+  sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
+  Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
+
+   try {
+      Sharedpointer<A> p = new A(12);
+      g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
+                         // counter wird inkrementiert, p ist weiterhin gueltig
+      Sharedpointer<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
+                         // kopiert, counter wird inkrementiert, sp1 ist weiterhin 
+                         // gueltig
+      // Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
+      //                    freigegeben wann auch immer der letzte Pointer darauf
+                         // ungueltig wird  
+   } catch(...) {  
+   }                    
+}
+\end{CCode}
 
 \NextPagePlease 
  
