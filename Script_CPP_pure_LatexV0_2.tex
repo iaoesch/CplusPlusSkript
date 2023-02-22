@@ -3255,17 +3255,55 @@ Eine Klasse kann folgende Elemente beinhalten:
 
 \section{Attribute}
 \label{sect:AttributeKlassen}
-In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte}) public, protected und private und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}) definiert werden. Mit Mutable (Siehe \autoref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
-Als Attribute sind grundsätzlich alle Datentypen von C++ zulässig.
+In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte}) \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}) definiert werden. Mit \CodeStyle{mutable} (Siehe \autoref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
+Als Attribute sind grundsätzlich alle Datentypen (inklusive Benutzerdefinierte wie Klassen) von C++ zulässig.
 
 \section{Methoden}
 \label{sect:MethodenKlassen}
-\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \autoref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\autoref{subsect:Konstruktoren}), Destruktoren (\autoref{subsect:Destruktor}) und Zuweisungsoperatoren (\autoref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte} public, protected und private und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}\
+\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \autoref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\autoref{subsect:Konstruktoren}), Destruktoren (\autoref{subsect:Destruktor}) und Zuweisungsoperatoren (\autoref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte} \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenmethoden (siehe \autoref{sect:StatischeMember}\
 definiert werden.
 
 \section{Konstruktoren / Destruktoren / Zuweisungsoperator}
 \label{subsect:KonstruktorenDestruktorenZuweisungsOP}
+In einem \Cpp Programm werden wiederholt Objekte erzeugt, kopiert, einander zugewiesen und wieder gelöscht, teilweise implizit wie bei Argumentübergabe an Funktionen oder dem Ausführen des return-statements. In diesem Fällen werden vom Compiler automatisch die entsprechenden Methoden des Objektes aufgerufen. Beim Erzeugen oder Kopieren sind dies der \emph{Konstruktor}, der \emph{Kopierkonstruktor} und der \emph{Move-Konstruktor (Seit \CppVers{11})}, bei Zuweisungen der \emph{Zuweisungsoperator} und der \emph{Move-Zuweisungsoperator (Seit \CppVers{11})} und beim Löschen der \emph{Destruktor}.
 
+Unter bestimmten Bedingungen weden diese Methoden automatisch vom Compiler generiert, so dass sich die Objekte wie Strukturen unter C verhalten:
+
+\begin {tabular}{|p{0.23\textwidth}|p{0.4\textwidth}|p{0.3\textwidth}|}%p{0.29\textwidth}|}
+
+\hline
+Methode&Wird erzeugt wenn&Beschreibung\\
+
+\hline
+Defaultkonstruktor&Kein anderer Konstruktor definiert&Ruft Defaultkonstruktor aller Member und Basisklassen auf\\
+\hline
+Destruktor&Kein Destruktor definiert&Macht nichts\\
+\hline
+Kopierkonstruktor&Kein Kopierkonstruktor, kein Move-Konstruktor und kein Move-Zuweisungsoperator definiert&Ruft Kopierkonstruktor aller Member und Basisklassen auf\\
+\hline
+Move-Konstruktor&Kein Move-Konstruktor, kein Destruktor, kein Kopierkonstruktor, kein Zuweisungsoperator, und kein Move-Zuweisungsoperator definiert&Ruft Move-Konstruktor aller Member und Basisklassen auf\\
+\hline
+Zuweisungsoperator&Kein Zuweisungsoperator, kein Move-Konstruktor und kein Move-Zuweisungsoperator definiert&Ruft Zuweisungsoperator aller Member und Basisklassen auf\\
+\hline
+Move-Zuweisungsoperator&Kein Move-Zuweisungsoperator, kein Zuweisungsoperator, kein Destruktor, kein Kopierkonstruktor und kein Move-Konstruktor definiert&Ruft Move-Zuweisungsoperator aller Member und Basisklassen auf\\
+\hline
+\end{tabular}
+
+Für POD (Standard-Typen aus C wie int, float, Pointer, ...) macht der Defaultkonstruktor nichts, und Kopier, Move-Kopierkonstruktor, Zuweisung und Movezuweisung kopieren einfach den Wert.
+
+Seit \CppVers{11} kann mit dem Schlüsselworte \CodeStyle{delete} das automatische Erzeugen der entsprechenden Mehthode unterdrückt, und mit \CodeStyle{default} das automatische Erzeugen der entsprechenden Methode erzwungen werden (Siehe \autoref{subsubsect:ControlAutoMember}).
+
+\subsection{Rule of 3, 5, 0}
+Bei den \emph{Konstruktorn}, \emph{Kopierkonstruktoren}, \emph{Move-Konstruktoren}, \emph{Zuweisungsoperatoren}, \emph{Move-Zuweisungsoperatoren} und den \emph{Destruktorn} galt bis \CppVers{11} die Regel der 3: Entweder \emph{Kopierkonstruktor}, \emph{Zuweisungsoperator} und \emph{Destruktor} alle 3 Methoden selber definieren, oder keine selbst definieren.
+
+Ab \CppVers{11} gilt die Regel der 5: Entweder \emph{Kopierkonstruktor}, \emph{Move-Konstruktor}, \emph{Zuweisungsoperator}, \emph{Move-Zuweisungsoperator} und \emph{Destruktor} alle 5 Methoden selber definieren, oder keine selbst definieren.
+
+Noch besser ist aber die Regel der 0: Code so zu schreiben dass keine der 5 Methoden notwendig sind, indem man zur Resourcenverwaltung Container und Smartpointer einsetzt.
+
+ 
+
+\subsection{Konstruktoren}
+\label{subsect:Konstruktoren}
 Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
 Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
 
@@ -3300,11 +3338,6 @@ int main(int argc, char *argv[]) {
 
 Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-Als Gegenstück zum Konstruktor gibt es noch den \OviIndex{Destruktor}, welcher automatisch beim Löschen eines Objektes aufgerufen wird.  Die Aufgabe des Destruktor ist das Aufräumen bevor das Objekt definitiv verschwindet, also das Freigeben von eventuell reservierten Resourcen und interne Buchhaltungen zu aktualisieren, falls vorhanden. In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, sobald eine Klasse eine virtuelle Methode besitzt, muss üblicherweise auch ein virtueller Destruktor definiert werden (Siehe \autoref{subsec:VirtualFunctions})
-
-
-\subsection{Konstruktoren}
-\label{subsect:Konstruktoren}
 \OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
 \begin{CCode}
 class MyClass {
@@ -3500,7 +3533,8 @@ Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapit
 
 \subsection{Destruktor}
 \label{subsect:Destruktor}
-Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). Wenn kein Destruktor benötigt wird, kann er weggelassen werden. (Basisklassen mit virtuellen Funktionen sollten immer einen virtuellen Destruktor definieren, auch wenn er nichts zu tun hat).
+
+Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann automatisch vom Compiler aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben und interne Buchhaltungen zu aktualisieren, falls vorhanden. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, Basisklassen mit virtuellen Funktionen sollten immer auch einen virtuellen Destruktor definieren, auch wenn er nichts zu tun hat). (Siehe \autoref{subsec:VirtualFunctions})
 \begin{CCode}
 class MyClass {
   int k, j;
@@ -3546,7 +3580,7 @@ Deshalb empfiehlt es sich, Umwandlungsoperatoren als \CodeStyle{explizit} zu def
 
 \subsubsection{Explizite Umwandlungsoperatoren (Seit \CppVers{11})}
 \label{subsubsect:ExpliziteUmwandlungsoperatoren}
-Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort '\CodeStyle{explizit}' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach \CodeStyle{bool} in Bedingungen bei Kontrollstrukturen und für Argumente für Logische Operatoren gilt als expliziter Einsatz)
+Auch Umwandlungsoperatoren können mit dem Schlüsselwort '\CodeStyle{explizit}' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach \CodeStyle{bool} in Bedingungen bei Kontrollstrukturen und für Argumente für logische Operatoren gilt als expliziter Einsatz)
 
 \subsection{Vereinfachte Objektkonstruktion (Seit \CppVers{11})}
 \label{subsubsect:VereinfachteObjektkonstruktion}
