@@ -6161,11 +6161,11 @@ int main(int argc, char*argv[])
 \end{CCode}
 
 \subsection{Lösung mit Smart Pointer}
-Anstelle von Pointern intelligente, pointerähnliche Objekte verwenden, welche das Objekt besitzen und Managen. Die Resourcenverwaltung erfolgt durch die Konstruktoren / Destruktoren. Es werden Templates eingesetzt um Typunabhängig zu werden. 
+Um diese Probleme zu umgehen werden anstelle von Pointern intelligente, pointerähnliche Objekte verwendet, welche das Objekt besitzen und Managen. Die Resourcenverwaltung erfolgt durch die Konstruktoren / Destruktoren. Es werden Templates eingesetzt um Typunabhängig zu werden. 
 
 
 \subsection{Lösung mit Unique Pointer}
-Der \OviIndex{std::unique\_ptr} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu weder mehr Speicherplatzbedarf noch mehr Laufzeitaufwand. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
+Der \OviIndex{std::unique\_ptr} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu nicht mehr Speicherplatzbedarf und zusätzlicher Laufzeitaufwand entsteht nur beim Erzeugen, Löschen und Übergeben von Objekten. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
 
 
 Unser Einstiegsbeispiel mit Unique Pointer:
