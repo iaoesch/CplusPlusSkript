@@ -3586,7 +3586,7 @@ Auch Umwandlungsoperatoren können mit dem Schlüsselwort '\CodeStyle{explizit}' v
 \label{subsubsect:VereinfachteObjektkonstruktion}
 \index{Vereinfachte Objektkonstruktion}
 Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
-Das Übernehmen der Konstruktoren der Basisklasse ist angebracht, wenn die Konstruktoren der abgeleiteten Klasse direkt die Konstruktoren der Basiskalsse (Mit unveränderter Argumentübergabe) aufrufen. Dies erspart unnötigen Code. 
+Das Übernehmen der Konstruktoren der Basisklasse ist angebracht, wenn die Konstruktoren der abgeleiteten Klasse direkt die Konstruktoren der Basisklasse (Mit unveränderter Argumentübergabe) aufrufen. Dies erspart unnötigen Code. 
 
 \begin{CCode}
 class Demo  {
@@ -3664,27 +3664,29 @@ Für eine Klasse kann der Default-Drei-Wege-Vergleich angefordert werden. Dieser 
 
 Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert:
 
-std::strong\_ordering: 
-\begin{itemize}
-\item         std::strong\_ordering::equal if both operands are arithmetically equal,
-\item         std::strong\_ordering::less if the first operand is arithmetically less than the second
-\item         std::strong\_ordering::greater otherwise. 
-\end{itemize}
+\begin{labeling}{std::strong\_ordering:}
+\item[std::strong\_ordering:] 'Gleiche' Operanden sind ununterscheidbar und austauschbar.
+\begin{labeling}{std::strong\_ordering::greater}
+\item[std::strong\_ordering::equal] Wenn beide Operanden arithmetisch gleich sind,
+\item[std::strong\_ordering::less] Wenn der erste Operand arithmetisch kleiner als der zweite ist
+\item[std::strong\_ordering::greater] Wenn der erste Operand arithmetisch grösser als der zweite ist. 
+\end{labeling}
 
-std::weak\_ordering: 
-\begin{itemize}
-\item         std::weak\_ordering::equivalent  if operands are equal,
-\item         std::weak\_ordering::less if the first operand is less than the second
-\item         std::weak\_ordering::greater otherwise. 
-\end{itemize}
+\item[std::weak\_ordering:] 'Gleiche' Operanden können trotzdem unterschiedlich sein (Z.B. Vergleich der Gross- und Kleinschreibung ignoriert)
+\begin{labeling}{std::weak\_ordering::equivalent}
+\item[std::weak\_ordering::equivalent]  Wenn beide Operanden gleich sind,
+\item[std::weak\_ordering::less] Wenn der erste Operand kleiner als der zweite ist
+\item[std::weak\_ordering::greater] Wenn der erste Operand grösser als der zweite ist. 
+\end{labeling}
 
-std::partial\_ordering:
-\begin{itemize}
-\item             std::partial\_ordering::less if a is less than b
-\item             std::partial\_ordering::greater if a is greater than b
-\item             std::partial\_ordering::equivalent if a is equivalent to b (-0 <=> +0 is equivalent)
-\item             std::partial\_ordering::unordered  if Values are not comparable (NaN <=> 0)
-\end{itemize}
+\item[std::partial\_ordering:] 'Gleiche' Operanden können trotzdem unterschiedlich sein (Z.B. Vergleich der Gross- und Kleinschreibung ignoriert), zudem gibt es Werte die nicht verglichen werden können
+\begin{labeling}{std::partial\_ordering::equivalent}
+\item[std::partial\_ordering::less] Wenn der erste Operand kleiner als der zweite ist
+\item[std::partial\_ordering::greater] Wenn der erste Operand grösser als der zweite ist
+\item[std::partial\_ordering::equivalent] Wenn beide Operanden gleich sind (-0 <=> +0 ist equivalent)
+\item[std::partial\_ordering::unordered]  Wenn die Operanden nicht vergleichbar sind (NaN <=> 0)
+\end{labeling}
+\end{labeling}
 
 Der Defaultvergleich wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
 definiert haben.  Der Defaultvergleich greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
@@ -3808,7 +3810,7 @@ inline void A::DoSomething()  // Inline Methoden können mit dem Schluesselwort
  
 \section{Statische Member}
 \label{sect:StatischeMember}
-\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Sie können somit such aufgerufen werden, ohne dass ein Objekt von dieser Klasse existiert. Auf statische Member wird über den Klassennamen mit dem Scope-Resolutions-Operator ('\CodeStyle{::}') zugegriffen.
+\OviIndex{Statische Member}\index{Klassenmember} (Attribute oder Methoden) einer Klasse sind für alle Objekte gemeinsam, sie beziehen sich nicht auf ein bestimmtes Objekt. Statische Methoden werden auf die Klasse angewendet, nicht auf ein Objekt. Sie können somit auch aufgerufen werden, ohne dass ein Objekt von dieser Klasse existiert. Auf statische Member wird über den Klassennamen mit dem Scope-Resolutions-Operator ('\CodeStyle{::}') zugegriffen.
 
 Achtung: Für statische Attribute muss neben der Deklaration in der Klasse explizit eine Variable definiert werden, üblicherweise in der dazugehörigen Implementationsdatei, welche auch den Code für die Methoden dieser Klasse enthält. 
 
@@ -3819,7 +3821,7 @@ class A {
    private:
    int i;
    static int Count;   // Zaehlt anzahl Objekte
-	 const static int MaxCount = 99;
+   const static int MaxCount = 99;
    
    public:
    A(int _i) : i(_i) { Count++; };      //Konstruktor, zaehlt Objekte
@@ -3832,9 +3834,9 @@ class A {
 int A::Count = 0;   // Definiere und initialisiere statische Member-Variable 
                     // Nur an einem Platz im ganzen Programm, normalerweise
                     // im .cpp-Modul der Klasse
-										
+ 
 const int A::MaxCount; // Erlaubt, aber nicht notwendig, solange Adresse
-                       // von MaxCount nirgends verwendet.  										
+                       // von MaxCount nirgends verwendet.   
 
 A a1(1), a2(2), a3(3);   // Einige Objekte erzeugen
 int Number = A::GetNumberOfObjects(); // Anzahl Objekte abfragen
@@ -3894,7 +3896,7 @@ Demo   x;
 Demo   y;
 Demo *dp = &y;
 
-int    Demo::*MemberPointer;
+int    Demo::*MemberPointer; // Kann auf ein int Member in Demo zeigen
 
 MemberPointer = &Demo::Bestand; // Zeigt nun auf Bestand der Klasse Demo 
   
@@ -3946,18 +3948,22 @@ Eine \CodeStyle{int} Variable kann wie folgt erzeugt werden:
 
 \begin{CCode}
   int i;       // Erzeugen einer Integervariablen mit dem Namen i
+
+
   int *p;      // Erzeugen eines Zeigers auf einen Integer
   p = new int; // Dynamisches Erzeugen einer namenlosen Integervariablen und
                   den Zeiger p darauf zeigen lassen
                   
                   
-  delete p;    // Resourcen wieder freigeben                
+  delete p;    // Resourcen wieder freigeben (Jedes new muss ein delete haben)  
 \end{CCode}
 
 Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 
 \begin{CCode}
   Student s;       // Erzeugen eines Studentenobjektes mit dem Namen s
+  
+    
   Student *sp;     // Erzeugen eines Zeigers auf einen Studenten
   sp = new Student; // Dynamisches Erzeugen eines namenlosen Studenten-
                     //  objektes und den Zeiger sp darauf zeigen lassen
@@ -3965,8 +3971,9 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
   delete sp;    // Resourcen wieder freigeben (inkl. Destruktoraufruf)               
 
                       
-  Student s2("Hans", 27);         // Mit Argumenten fuer Konstruktor                    
-  sp = new Student("Fritz", 28);                      
+  Student s2("Hans", 27);         // Mit Argumenten fuer Konstruktor
+                      
+  sp = new Student("Fritz", 29);                      
 
   delete sp;    // Resourcen wieder freigeben (inkl. Destruktoraufruf)               
 
@@ -3985,10 +3992,12 @@ Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten seh
 	   // Objekt erzeugen und Smartpointer zuweisen
      std::unique_ptr<Student> q = std::make_unique<Student>("Fritz", 28); 
 	  
+..   // Integer Objekt erzeugen und Smartpointer zuweisen
+     auto p = std::make_unique<int>(42);
 			....
 			
 		
-  }  // kein delete noetig, smartpointer loescht objekt automatisch
+  }  // kein delete noetig, smartpointer loeschen objekte automatisch
 	   // wenn Gueltigkeitsbereich verlassen wird
 
 
@@ -4045,50 +4054,56 @@ class StudentClass {
 \subsection{Vereinheitlichte Initialisierung (Seit \Cpp11)}
 \label{subsubsect:VereinheitlichteInitialisierung}
 Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
-passende Konstruktor aufgerufen (falls vorhanden).
+passende Konstruktor aufgerufen (falls vorhanden). Auch für POD gelten dieselbem Regeln.
 
 Beispiel:
 \begin{CCode}
-	
-	class DemoClass {
+...
+...class DemoClass {
+...
+......private:
+......int a;
+......float b;	
 		
-		private:
-		int a;
-		float b;	
+......public:
+......DemoClass(int _a, float _b) : a(_a), b(_b) {};
 		
-		public:
-		DemoClass(int _a, float _b) : a(_a), b(_b) {};
-		
-	};
+...};
 	
+...int i = 2;   // i mit 2 initialisieren
+   int k(6);    // k mit 6 initialisieren
+...int p{7};    // p mit 7 initialisieren
+   int q{};     // q mit 0 initialisieren
+  
+...DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
+...DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
 	
-	DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
-	DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
+...// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
 	
-	// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
+...DemoClass f() {
+......return {2, 2.7f};
+...}
 	
-	DemoClass f() {
-		return {2, 2.7f};
-	}
+...void f2(DemoClass c) {
+...}
 	
-	void f2(DemoClass c) {
-	}
-	
-	f2({5, 1.23f});
+...f2({5, 1.23f});
 	
 	
 \end{CCode}
 
 \section{Placement new}
-Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objektes in einem vorgegebenen Speicherplatz, der Speicher wird vom Anwender zur Verfügung gestellt, und nicht vom System. Dafür darf auf ein solchermassen erzeugtes Objekt auf keinen Fall \CodeStyle{delete} aufgerufen werden. Hier ist einer der wenigen Fälle, wo der Destruktor explizit aufgerufen werden darf und muss.
+Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objektes in einem vorgegebenen Speicherplatz, der Speicher wird vom Anwender zur Verfügung gestellt, und nicht vom System. Dafür darf auf ein solchermassen erzeugtes Objekt auf keinen Fall \CodeStyle{delete} aufgerufen werden. Hier ist einer der wenigen Fälle, in welchen der Destruktor explizit aufgerufen werden darf und muss.
 
+Die übergebene Adresse muss die Alignementanforderungen des Objektes erfüllen, ansonsten kann es zu undefiniertem Programmverhalten kommen.
+Mit \OviIndex{alignof()} kann die Alignementanforderung (in Bytes) eines Objektes abgefragt werden, und mit \OviIndex{alignas()} kann ein Objekt mit den Alignementanforderungen eines anderen Objektes erzeugt werden.
 \begin{CCode}
 
 StudentClass *sp;
 
 // Speicherplatz erzeugen (Koennte auch eine hardcodierte Adresse sein)
 // Darauf Achten dass Alignementanforderungen des Objektes erfuellt sind 
-char Buffer[sizeof (StudentClass)];
+alignas(StudentClass) char Buffer[sizeof (StudentClass)];
 
 // Das Objekt im speziellen Speicherbereich erzeugen
 sp = new(Buffer) StudentClass("Hans");
@@ -4169,7 +4184,7 @@ int main (int argc, char *argv[])
 {
   MyClass Object1(12, 30);
   MyClass Object2;
-  MyClass *Ptr;
+  std::unique_ptr<MyClass> Ptr;
 
   Object1.Print();
   Object1.Seti(33);
@@ -4177,16 +4192,16 @@ int main (int argc, char *argv[])
 
   std::cout << "Object2 " << Object2.Geti() << ":" << Object2.Getk() << std::endl;
 
-  Ptr = new MyClass(10, 20);
+  Ptr = std::make_unique<MyClass>(10, 20);
   Ptr->Print();
-  delete Ptr;
 
-  Ptr = new MyClass(6, 12);
+  // altes Objekt wird automatisch geloescht, bevor Ptr auf neues Objekt zeigt
+  Ptr = std::make_unique<MyClass>(6, 12);
   Ptr->Print();
-  delete Ptr;
   
   return 0;
-}
+} // von Ptr referenziertes Objekt wird automatisch gelöscht wenn Ptr
+  // aufhört zu existieren
 \end{CCode}
 
 \NextPagePlease 
