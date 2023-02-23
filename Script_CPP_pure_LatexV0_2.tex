@@ -6165,7 +6165,7 @@ Um diese Probleme zu umgehen werden anstelle von Pointern intelligente, pointerä
 
 
 \subsection{Lösung mit Unique Pointer}
-Der \OviIndex{std::unique\_ptr} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu nicht mehr Speicherplatzbedarf und zusätzlicher Laufzeitaufwand entsteht nur beim Erzeugen, Löschen und Übergeben von Objekten. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
+Der \OviIndex{std::unique\_ptr} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu nicht mehr Speicherplatzbedarf und zusätzlicher Laufzeitaufwand entsteht nur beim Erzeugen, Löschen und Übergeben von Objekten. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Das Objekt kann jedoch von einem Pointer zum nächsten weitergereicht werden. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
 
 
 Unser Einstiegsbeispiel mit Unique Pointer:
@@ -6195,7 +6195,7 @@ int main(int argc, char*argv[])
    sp = std::make_unique<A>(27)  // sp zeigt auf neues Objekt
 
    sp = std::make_unique<A>(42);  // sp zeigt neu auf Objekt(42), altes Objekt(27)
-  ...................... .// wird freigegeben
+                                  // wird freigegeben
   
    std::unique_ptr<A> sp1 = f(13)  // Inhalt von zurueckgegebenem UniquePointer wird an
                          // sp1 uebergeben bevor der zurueckgegebene UniquePointer 
@@ -6227,7 +6227,7 @@ int main(int argc, char*argv[])
 }
 \end{CCode}
 
-Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren oder gültig sind. Somit ist es nicht möglich, ungültige UniquePonter zu haben.
+Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren oder mittels \CodeStyle{std::move()} explizit zum ausschlachten freigegeben worden sind (In diesem Fall wird die Quelle zu einem nullptr). Somit ist es nicht möglich, ungewollt ungültige oder doppelte UniquePointer zu haben.
 
 Seit \CppVers{14} können Objekte direkt mit \CodeStyle{make_unique()}\index{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_unique()} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
 \begin{CCode}
@@ -6338,7 +6338,7 @@ f(t1, t2);
 \end{CCode}
 
 \subsection{this und Shared Pointer}
-Wenn ein Objekt von einem Shared-pointer verwaltet wird, ist es gefährlich und fehleranfällig, den this-Pointer gegen aussen weiterzugeben. Und es ist definitiv ein Fehler, this in einem Shared-pointer zurückzugeben, da bei jedem Aufruf ein neuer Shared-pointer erzeugt werden würde, und der erste 'sterbende' Shared-pointer würde das Objekt löschen, auch wenn es sonst noch in Gebrauch ist und weitere Shared-Pointer darauf verweisen.
+Wenn ein Objekt von einem Shared-pointer verwaltet wird, ist es gefährlich und fehleranfällig, den this-Pointer gegen aussen weiterzugeben. Und es ist definitiv ein Fehler, this in einem Shared-pointer zurückzugeben, da in diesem Fall ein neuer Shared-pointer erzeugt werden würde, und der erste 'sterbende' Shared-pointer würde das Objekt löschen, auch wenn es sonst noch in Gebrauch ist und weitere Shared-Pointer darauf verweisen.
 
 \begin{CCode}
 
@@ -6382,10 +6382,10 @@ int main(int argc, char*argv[])
  
 \end{CCode}
 
-Das Problem kann mit dem Template std::enable\_shared\_from\_this<...> und seiner Methode shared\_from\_this() umgangen werden. Dazu muss die betreffende Klasse vom Template \linebreak std::enable\_shared\_from\_this<...> erben, entweder direkt oder über Mehrfachvererbung. Als Templateparameter muss dazu die (zu sharende / erbende) Klasse angegeben werden. Die Klasse muss jetzt zwingend von einem Shared Pointer verwaltet werden, und darf keinesfalls auf dem Stack oder als (direkter) Member einer anderen Klasse instanziert werden.
-shared\_from\_this() darf jedoch nicht im Konstruktor aufgerufen werden, da das Objekt erst nach erfolgreicher Konstruktion von Shared Pointer verwaltet wird (und der sharedpointer erst nach der Objektkonstruktion via Basisklasse std::enable\_shared\_from\_this<...> einen WeakPointer von sich
-im Objekt hinterlegt, welcher dann von  shared\_from\_this() benutzt wird). Wenn shared\_from\_this() in einem
-Konstruktor aufgerufen wird, liefert es entweder einen ungültigen sharedpointer, rep. undefiniertes Verhalten (\CppVers{11}) oder eine std::bad\_weak\_ptr (\CppVers{11}) exception.
+Das Problem kann mit dem Template \CodeStyle{std::enable_shared_from_this<...>} und seiner Methode \CodeStyle{shared_from_this()} umgangen werden. Dazu muss die betreffende Klasse vom Template \linebreak \CodeStyle{std::enable_shared_from_this<...>} erben, entweder direkt oder über Mehrfachvererbung. Als Templateparameter muss dazu die (zu sharende / erbende) Klasse angegeben werden. Die Klasse muss jetzt zwingend von einem Shared Pointer verwaltet werden, und darf keinesfalls auf dem Stack oder als (direkter) Member einer anderen Klasse instanziert werden.
+\CodeStyle{shared_from_this()} darf jedoch nicht im Konstruktor aufgerufen werden, da das Objekt erst nach erfolgreicher Konstruktion von Shared Pointer verwaltet wird (und der sharedpointer erst nach der Objektkonstruktion via Basisklasse \CodeStyle{std::enable_shared_from_this<...>} einen  \CodeStyle{std::weak_ptr} von sich
+im Objekt hinterlegt, welcher dann von  \CodeStyle{shared_from_this()} benutzt wird). Wenn \CodeStyle{shared_from_this()} in einem
+Konstruktor aufgerufen wird, liefert es entweder einen ungültigen sharedpointer, rep. undefiniertes Verhalten (\CppVers{11}) oder eine \CodeStyle{std::bad_weak_ptr} (\CppVers{11}) exception.
  
 
 \begin{CCode}
@@ -6424,28 +6424,28 @@ int main(int argc, char*argv[])
  
 \end{CCode}
 
-\emph{Ein wichtiger Punkt zu shared\_from\_this():}
+\emph{Ein wichtiger Punkt zu \CodeStyle{shared_from_this()}:}
 
-shared\_from\_this() darf nicht in einem Konstruktor
+\CodeStyle{shared_from_this()} darf nicht in einem Konstruktor
 aufgerufen werden.
 
 
 Grund:
 
-Bei make\_shared<>() läuft folgendes ab:
+Bei \CodeStyle{make_shared<>()} läuft folgendes ab:
 
 \begin{enumerate}
 	\item Invaliden shared pointer erzeugen
   \item Speicher für gewünschtes Objekt allozieren
     \item Konstruktor des gewünschtes Objekt aufrufen
       \item Shared Pointer auf neues Objekt zeigen lassen
-    und referenzcounter initialisieren.
+    und Referenzcounter initialisieren.
 \end{enumerate}
 
 
 d.h. in Schritt 3 ist das neue Objekt noch keinem
 shared Pointer zugeordnet, entsprechend liefert
-shared\_from\_this() in einem Konstruktor
+\CodeStyle{shared_from_this()} in einem Konstruktor
 noch keinen gültigen Pointer...
 
 
@@ -6601,15 +6601,19 @@ noch keinen gültigen Pointer...
 \subsection{Varianten (std::variant<>)}
 \index{Variant}
 \OviIndex{Varianten}\index{Variant} werden in \Cpp in Form des Templates \CodeStyle{std::variant<>} unterstützt. Diese Klasse
-bietet eine typsichere Union. In einer Variante können Werte von unterschiedlichem Typ abgelegt werden, wobei zu jedem Zeitpunkt nur ein Wert abgelegt sein kann. Wen versucht wird, auf einen anderen als der zur Zeit abgespeicherten Wert zuzugreifen wird eione Exception geworfen.
+bietet eine typsichere Union. In einer Variante können Werte von unterschiedlichem Typ abgelegt werden, wobei zu jedem Zeitpunkt nur ein Wert abgelegt sein kann. Wenn versucht wird, auf einen anderen als der zur Zeit abgespeicherten Wert zuzugreifen wird eine Exception geworfen.
 Eine Variante kann weder Arrays, noch Referenzen oder den void-Typen beinhalten.
 
-Mit dem Zuweisungsoperator kann einem Variantenobjekt ein neuer Wert von einem der Passenden Typen zugewiesen werden, dabei geht der alte Inhalt verloren. Mit  \CodeStyle{std::get<Type>(v)} oder  \CodeStyle{std::get<Index>(v)} kann der aktuelle Wert gelesen werden, falls der gespeicherte Wert nicht dem gewünschten Typ oder Index entspricht wird eine Exception geworfen. Mit \CodeStyle{std::holds_alternative<Type>(v)} kann abgefragt werden, ob die Variante aktuell einen Wert von angegebene Typ beinhaltet.
+Mit dem Zuweisungsoperator kann einem Variantenobjekt ein neuer Wert von einem der passenden Typen zugewiesen werden, dabei geht der alte Inhalt verloren. 
+
+Mit  \CodeStyle{std::get<Type>(v)} oder  \CodeStyle{std::get<Index>(v)} kann der aktuelle Wert gelesen werden, falls der gespeicherte Wert nicht dem gewünschten Typ oder Index entspricht wird eine Exception geworfen. 
+
+Mit \CodeStyle{std::holds_alternative<Type>(v)} kann abgefragt werden, ob die Variante aktuell einen Wert vom angegebenen Typen beinhaltet.
 
 Einige Beispiele:
 \begin{CCode}
 
-...std::variant<int, std::string, float> v = 3.14f; 
+   std::variant<int, std::string, float> v = 3.14f; 
    bool b = std::holds_alternative<int>(v); // b wird false
    b = std::holds_alternative<float>(v);    // b wird true
   
@@ -6634,14 +6638,17 @@ bietet eine möglichkeit, neben dem Wert auch das Nicht-Vorhandensein eines Werte
 Ein Objekt des Templates \CodeStyle{std::optional<>} kann zu jedem Zeitpunkt entweder \emph{einen Wert} oder \emph{keinen Wert} beinhalten.
  
 Mit Umwandlung nach bool (\CodeStyle{operator bool()}oder \CodeStyle{has_value()} kann abgefragt werden, ob das Objekt einen Wert beinhaltet,
-mit \CodeStyle{value()} (Wirft Exception wenn kein Wert vorhanden),  \CodeStyle{value_or(DefaultValue)} (Liefert DefaultValue wenn kein Wert vorhanden), \CodeStyle{operator *()} (Undefiniertes Verhalten wenn kein Wert vorhanden) oder \CodeStyle{operator ->()} (Undefiniertes Verhalten wenn kein Wert vorhanden) kann der Wert gelesen werden.
 
-Mit dem Zuweisungsoperator kann einem Optionalobjekt ein neuer Wert zugewiesen werden. Mit \CodeStyle{reset()} kann ein vorhandener Wert gelöscht werden, damit beinhaltet es wieder keinen Wert mehr.
+mit \CodeStyle{value()} \textit{(Wirft Exception wenn kein Wert vorhanden)},  \CodeStyle{value_or(DefaultValue)} \textit{(Liefert DefaultValue wenn kein Wert vorhanden)}, \CodeStyle{operator *()} \textit{(Undefiniertes Verhalten wenn kein Wert vorhanden)} oder \CodeStyle{operator ->()} \textit{(Undefiniertes Verhalten wenn kein Wert vorhanden)} kann der Wert gelesen werden.
+
+Mit dem Zuweisungsoperator kann einem Optionalobjekt ein neuer Wert zugewiesen werden. 
+
+Mit \CodeStyle{reset()} kann ein vorhandener Wert gelöscht werden, damit beinhaltet es wieder keinen Wert mehr.
 
 Einige Beispiele:
 \begin{CCode}
 
-...std::optional<int> o; 
+   std::optional<int> o; 
    if (o) { // Abfrage ob optional einen Wert enthaelt
    }
    bool b = o.has_value(); // b wird false
@@ -6669,14 +6676,17 @@ Ein Any-Objekt kann einen Wert von einem beliebigen Typen aufnehmen, und wie \Co
 Mit dem Zuweisungsoperator kann einem Any-objekt ein beliebiger neuer Wert zugewiesen werden.
 
 Mit \CodeStyle{has_value()} kann abgefragt werden, ob das Objekt einen Wert beinhaltet,
+
 mit \CodeStyle{type()} kann der Typ des enthaltenen Objektes abgefragt werden,
-mit \CodeStyle{std::any_cast<>()} (Wirft Exception wenn kein passender Wert vorhanden) kann auf des entahltene Objekt zugegriffen werden.
+
+mit \CodeStyle{std::any_cast<>()} (Wirft Exception wenn kein passender Wert vorhanden) kann auf des enthaltene Objekt zugegriffen werden.
+
 mit \CodeStyle{std::make_any<>()} kann ein Any-Objekt erzeugt werden, welches bereits einen bestimmten Wert enthält.
 
 Einige Beispiele:
 \begin{CCode}
 
-...std::any a = 99;
+   std::any a = 99;
    a.type().name(); // liefert "int"
    int i = std::any_cast<int>(a); // i ist jetzt 99
    float f = std::any_cast<float>(a); // wirft exception (Kein float in a)
@@ -6705,7 +6715,7 @@ Diese sind im Namespace \CodeStyle{std::chrono} abgelegt. In diesem Kapitel werd
 \subsection{Uhren (Clocks)}
 \index{clock}
 Eine \OviIndex{Uhr} besteht aus einem Startzeitpunkt und einer Tickrate (Intervall mit welchem die Uhr aktualisiert wird).
-Eine Uhr kann monoton (Geht nie rückwaerts) oder nicht monoton (Kann auch rückwärts gehen, z.B. Sommerzeitumstellung, Uhrrichten, etc). Aktuell sind folgende Uhren definiert:
+Eine Uhr kann monoton (Geht nie rückwärts) oder nicht monoton (Kann auch rückwärts gehen, z.B. Sommerzeitumstellung, Uhrrichten, etc). Aktuell sind folgende Uhren definiert:
 
 \begin{description}
 \item[ system\_clock] \OviIndex{Systemzeit} das Computers 
@@ -6742,9 +6752,17 @@ Für Zeitdauern und Zeitpunkte sind Addition und Subtraktion definiert, wobei fol
 \item Zeitpunkt - Zeitpunkt: ergibt Zeitdauer
 \item Zeitpunkt + Zeitdauer: ergibt Zeitpunkt
 \item Zeitpunkt - Zeitdauer: ergibt Zeitpunkt
-\item Zeitpunkt - Zeitpunkt: ergibt Zeitdauer
 \item Zeitdauer + Zeitdauer: ergibt Zeitdauer
 \item Zeitdauer - Zeitdauer: ergibt Zeitdauer
+\end{itemize}
+
+Für Zeitdauern sind zudem Multiplikation und Division definiert, wobei folgende Regeln gelten:
+
+\begin{itemize}
+\item Zeitdauer * Zeitdauer: Nicht definiert
+\item Zeitdauer / Zeitdauer: ergibt Skalar
+\item Zeitdauer * Skalar:    ergibt Zeitdauer
+\item Zeitdauer / Skalar:    ergibt Zeitdauer
 \end{itemize}
 
 Bei den Berechnungen werden jeweils die Basis-Timer-Ticks der Operanden in den am Besten passenden gemeinsamen Tick umgewandelt, bevor die Berechnung durchgeführt wird. 
@@ -6823,7 +6841,7 @@ int main()
 \label{sect:DateiEinAusgabe}
 \OviIndex{Dateiausgaben} laufen über Objekte vom Typ \CodeIndex{ofstream}, Eingaben über solche vom Typ \CodeIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile \CodeStyle{<fstream>} mittels \CodeStyle{#include <fstream>} eingebunden werden. (Mit \CodeStyle{#include} werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie \CodeStyle{cin} und \CodeStyle{cout} benutzt werden. (\CodeStyle{cin} und \CodeStyle{cout} sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
 
-Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
+Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert \CodeStyle{true} zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
 
 \begin{CCode}
 #include <fstream>
@@ -6851,7 +6869,7 @@ Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem 
 \CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
 \CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
 
-Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
+Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen \CodeStyle{0x0A} in die Zeichenkombination \CodeStyle{0x0A 0x0D} umgewandelt, was bei binären Daten fatal sein kann.
 \begin{CCode}
 
   ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
@@ -6958,6 +6976,9 @@ selbst neue Manipulatoren zu erzeugen.
 \end{CCode} 
 
 Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, left, right}
+
+Seit \CppVers{20} gibt es mit \CodeStyle{std::format} weitere Formatiermöglichkeiten, welche
+an \CodeStyle{printf()} aus C angelehnt sind.
 
 \subsection{Dateisystem-Bibliothek (Seit \CppVers{17})}
 \label{subsect:Filesystemlibrary}
@@ -7066,6 +7087,7 @@ public:
   bool operator==(const MyIterator& rhs) {return p==rhs.p;}
   bool operator!=(const MyIterator& rhs) {return p!=rhs.p;}
   int& operator*() {return *p;}
+  int* operator->() {return p;}
 };
 
 class MyListIterator : public std::iterator<std::input_iterator_tag, int>
@@ -7079,6 +7101,7 @@ public:
   bool operator==(const MyIterator& rhs) {return p==rhs.p;}
   bool operator!=(const MyIterator& rhs) {return p!=rhs.p;}
   ListElement& operator*() {return *p;}
+  ListElement* operator->() {return p;}
 };
 
 
@@ -7235,6 +7258,9 @@ while(!Vektor.empty()) {       /* Solange Vektor nicht leer ist */
 }
 \end{CCode}
 
+\subsection{Kurzübersicht zu Container array<> aus der \Cpp - Standardbibliothek}
+std::Array funktioniert im Prinzip gleich wie ein Vektor (siehe \autoref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
+
 \subsection{Kurzübersicht zu Container map<> aus der \Cpp - Standardbibliothek}
 Die \OviIndex{map} ist ein \OviIndex{assozitiver Container}, das heisst er verwaltet Wertepaare.
 Ein Wert ist der \OviIndex{Schlüssel} des Paares, und der andere Wert beinhaltet die
@@ -7302,7 +7328,7 @@ Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperat
  (Seit \CppVers{17} gibt es für die meisten Algorithmen mit execution policies überladene Varianten, welche für parallele Ausführung auf mehreren Prozessorkernen und/oder vektorisierte Ausführung optimiert sind. Siehe \autoref{subsect:ExecutionPolicies})
  
 \subsubsection{for\_each()}
-Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer oder ein Objekt mit überladenem \CodeStyle{()} operator.
+Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer, eine Lambdafunktion (Siehe \autoref{subsec:LambdaFunctions}) oder ein Objekt mit überladenem \CodeStyle{()} operator.
 Die Funktion oder der \CodeStyle{operator()} wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \CodeStyle{mem_fn()}\index{mem\_fn()} aus der Standardlibrary benutzt werden (Vor \CppVers{11} \CodeStyle{mem_fun()}\index{mem\_fun()}).
 \begin{CCode}
 
@@ -7348,7 +7374,7 @@ Die Funktion oder der \CodeStyle{operator()} wird für jedes Element in der Seque
 \end{CCode}
 \subsubsection{transform()}
 \CodeIndex{transform()} funktioniert ähnlich wie \CodeStyle{for_each}, nur dass die Rückgabewerte der einzelnen Funktionsaufrufe in einer weiteren Sequenz gesammelt werden. Falls die Zielsequenz identisch zur Quellsequenz ist, überschreibt das Ergebnis das Originalelement.
-Mithilfe eines Einfüge Iterators (Spezieller Iterator) können die Ergebnisse auch an einen Container angefügt werden.
+Mithilfe eines Einfüge-Iterators (Spezieller Iterator) können die Ergebnisse auch an einen Container angefügt werden.
 \begin{CCode}
 #include <iterator>
 #include <algorithm>
@@ -7411,7 +7437,7 @@ template <class T, size_t N> void swap (T (&a)[N], T (&b)[N])
 Für die meisten Typen der Standardlibrary gibt es überladene Versionen, welche den Tausch effizienter ausführen (Bei Container wird meist der Inhalt ausgetauscht, indem einfach die Pointer auf die Inhalte ausgetauscht werden, der Inhalt muss so nicht bewegt werden). Viele Algorithmen der Standardlibrary nutzen die Swap-Funktion, wenn sie Elemente tauschen müssen, deshalb empfiehlt es sich, auch für eigene Klassen eine optimierte Swapfunktion zu schreiben, wenn Algorithmen benutzt werden.
 
 \subsubsection{merge()}  
-Mit \CodeIndex{merge()} können zwei sortierte Sequenzen so zusammengefügt werden, dass die resultierende Sequenz ebenfalls sortiert ist. \CodeStyle{merge/()} benötigt je einen Iterator auf Start und Ende der ersten sowie der zweiten Sequenz und einen Iterator für die resultierende Sequenz.
+Mit \CodeIndex{merge()} können zwei sortierte Sequenzen so zusammengefügt werden, dass die resultierende Sequenz ebenfalls sortiert ist. \CodeStyle{merge()} benötigt je einen Iterator auf Start und Ende der ersten sowie der zweiten Sequenz und einen Iterator für die resultierende Sequenz.
 
 Merge könnte wie folgt definiert sein:
 \begin{CCode}
@@ -7480,7 +7506,7 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 \subsection{Ranges / Views (Bereiche) (Seit \CppVers{20})}
 \label{subsect:Ranges}
 
-\OviIndex{Ranges} \index{Views} dienen als vereinfachte Schnittstelle zu Algorithmen oder Filter von Datenquellen. Ein Range ist ein Bereich von Objekten, der durch einen Anfang und einem Ende oder einem Anfang und einer Länge definiert ist, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang (begin(), sowie einen Iterator der das Ende kennzeichnet (end()). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. Iteratoren eines Ranges enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem Range/View gehörenden Filterungen oder Transformationen aus.  
+\OviIndex{Ranges} \index{Views} dienen als vereinfachte Schnittstelle zu Algorithmen oder Filter von Datenquellen. Ein Range ist ein Bereich von Objekten, der durch einen Anfang und einem Ende oder einem Anfang und einer Länge definiert ist, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang ( \CodeStyle{begin()}), sowie einen Iterator der das Ende kennzeichnet ( \CodeStyle{end()}). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. Iteratoren eines Ranges enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem Range/View gehörenden Filterungen oder Transformationen aus.  
 
 Die meisten Algorithmen sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden, falls der ganze Container bearbeitet werden soll.
 
@@ -7505,7 +7531,7 @@ Ausgabe:
 0 4 16 36 4
 \end{CCode}
 
-Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um aus die Daten der Quell-Ranges zuzugreifen. Filteroperationen finden während der Iteration statt, Transformation nur bei Zugriffen auf die vom Iterator referenzierten Daten.
+Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um auf die Daten der Quell-Ranges zuzugreifen. Filteroperationen finden während der Iteration statt, Transformation nur bei Zugriffen auf die vom Iterator referenzierten Daten.
 
 In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrementation den Iterator auf die  \CodeStyle{Quelle} solange Inkrementieren, bis er wieder auf einen geraden Wert verweist. Bei einem Zugriff auf die Daten wird einfach das Ergebnis des Zugriffs auf den Iterator auf die Quelle zurückgeliefert.
 
