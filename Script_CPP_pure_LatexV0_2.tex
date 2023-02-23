@@ -7797,7 +7797,7 @@ std::for_each(std::execution::par, std::begin(a), std::end(a), f());
 Mit der execution policy  \CodeStyle{std::execution::unseq} kann eine für \OviIndex{Vektorisierte Ausführung}
 optimierte Version des Algorithmus (falls vorhanden) instanziert werden.  \CodeStyle{std::execution::par\_unseq} kombiniert Parallelisierung und Vektorisierung.
  
-Es gibt bereits Compiler, welcher so erzeugten Code teilweise auf eine vorhandene Graphikkarte auslagern, da deren Graphikprozessor(en) für vektorisierte Operationen optimiert ist.
+Es gibt bereits Compiler, welche so erzeugten Code teilweise auf eine vorhandene Graphikkarte auslagern, da deren Graphikprozessor(en) für vektorisierte Operationen optimiert ist.
  
 
 \chapter{\Cpp in Embedded Systemen}
@@ -7805,7 +7805,7 @@ Es gibt bereits Compiler, welcher so erzeugten Code teilweise auf eine vorhanden
 
 Im Vergleich zu C muss der Startupcode von  \Cpp wesentlich mehr Arbeit leisten. Bei
 C müssen nur alle globalen und statischen Variablen vor der ersten Benutzung initialisiert
-werden, dies wird meist durch ein kurzes Codestück vor dem Aufruf von\CodeStyle{ main()} erledigt.
+werden, dies wird meist durch ein kurzes Codestück vor dem Aufruf von \CodeStyle{ main()} erledigt.
 
 Bei  \Cpp müssen zusätzlich die Konstruktoren von allen globalen und statischen Objekten
 vor dem Aufruf von \CodeStyle{main()} ausgeführt werden, und entsprechend deren Destruktoren wenn
