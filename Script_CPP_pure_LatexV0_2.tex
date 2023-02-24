@@ -2001,6 +2001,62 @@ int main()
 
 \end{CCode}
 
+Im Prinzip wird hierbei eine lokale, anonyme Kopie des initialisierende Objektes erzeugt, und die gebundenen Variablen sind Aliase für die entsprechenden Member des anonymen Objektes. Structure Binding kann auch über Referenzen erfolgen, dann sind die gebundenen Variablen Aliase für die Elemente im original (quell-) Objekt. Falls ein temporäres Objekt (Z. B. der Rückgabewert einer Funktion) zur Initialisierung verwendet wurde, wird die Lebensdauer des temporären Objektes verlängert, bis die gebundenen Variablen nicht mehr existieren.  
+ 
+
+\begin{CCode}
+	
+#include <iostream>
+#include <tuple>
+#include <utility>
+
+using namespace std;
+
+auto ReturnMultipleValues()
+{
+   return std::make_tuple(99, "sepp", 5.5);
+}
+
+struct Demo {
+     int x;
+     float pi;
+} D = {99, 3.14f};
+
+
+int main()
+{
+     // Da by reference gebunden, wird lebensdauer
+     // von temporaerem Rückgabeobjekt bis Blockende verlängert 
+     auto &[id, name, score] = ReturnMultipleValues();
+     cout << id << endl;  // gibt 99 aus
+      
+     
+     /* Val1 und Val2 werden mit dem passenden Datentypen definiert und mit */
+     /* den entsprechenden Membern aus der zugewiesenen Struktur initialisiert */
+     auto [Val1, Val2] = D;
+     cout << Val1 << endl; // gibt 99 aus
+     Val1 = 22;
+     cout << D.x << endl; // gibt 99 aus 
+     D.x = 33;
+     cout << Val1 << endl; // gibt 22 aus
+     
+     auto &[Ref1, Ref2] = D;
+     cout << Ref1 << endl; // gibt 33 aus
+     Ref1 = 22;
+     cout << D.x << endl; // gibt 22 aus 
+     D.x = 77;
+     cout << Ref1 << endl; // gibt 77 aus
+      
+     cout << name << endl;  // gibt Sepp aus
+     return 0;
+    // Temporary mit Rueckgabewert von ReturnMultipleValues()
+    // wird erst hier geloescht, da bis hierher
+    // id, name, score noch bezug darauf nehmen
+}
+
+\end{CCode}
+
+
 \section{Felder (Arrays)}
 Felder sehen so aus wie bei den meisten anderen Programmiersprachen. Achtung, die Zählung der Elemente beginnt bei 0! Zudem werden die Bereichsgrenzen nicht überprüft, man kann also ohne Probleme über die Grenzen eines Arrays hinaus zugreifen, was aber über kurz oder lang zu Systemabstürzen oder unvorhersehbarem Verhalten führt (Negative Indices sind auch möglich). Arrays sind eigentlich nichts anders als konstante Zeiger die auf einen für das Array reservierten Speicherblock zeigen.
 
