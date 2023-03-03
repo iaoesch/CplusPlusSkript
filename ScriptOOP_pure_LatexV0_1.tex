@@ -1713,7 +1713,7 @@ Ein \OviIndex{Aktivitätsdiagramm} sieht einem Zustandsdiagramm sehr ähnlich, bri
 In Bild  \ref{fig:Activitydiagramm} ist ein mögliches Aktivitätsdiagramm für einen Billetautomaten zu sehen.
 \begin{figure}[H]
 	  \centering
-		\includegraphics[scale=0.7]{Activitydiagramm}
+		\includegraphics[scale=0.7]{ActivityStandard}
 		\caption{Aktivitätsdiagramm eines Billetautomaten}
 	\label{fig:Activitydiagramm}
 \end{figure}
@@ -1732,11 +1732,39 @@ Mit \OviIndex{Verantwortlichkeitsbereichen} (\OviIndex{Swimlanes}) kann zudem da
 
 \begin{figure}[H]
 	  \centering
-		\includegraphics[scale=0.5, clip]{Swimmlanes}
+		\includegraphics[scale=0.5, clip]{ActivitySwimmlanes}
 		\caption{Aktivitätsdiagramm des Billetautomaten mit Verantwortlichkeitsbereichen}
 	\label{fig:Swimmlanes}
 \end{figure}
 
+Mit \OviIndex{Pins} (\OviIndex{Connectoren}) (Sieh Bild \ref{fig:ActivityWithPins}) kann dargestellt werden welche Objekte mit dem Aktivitätsfluss mitfliessen. Pins sind kleine Rechtecke an der aktivität, welche anzeigen, welche Objekte die Aktivität verlassen und weitergereicht werden, oder welche Objekte eine Aktivität empfangen kann. Das ganze Aktivitätsdiagramm kann zudem Inhalt einer übergeordneten Aktivität sein, in diesem Fall wird es durch ein umfassendes Rechteck eingehüllt, und allfällig eingehende oder ausgehende Daten können mit Parametern (Recheckige Kästchen auf der Umrandung) dargestellt werden.
+ Dazu in Bild \ref{fig:ActivityObjectflow} nochmals unser Billetautomat. Nun sieht man, welche Objekte durch unser System fliessen.
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5, clip]{ActivityWithPins}
+		\caption{Aktivität mit Pin}
+	\label{fig:ActivityWithPins}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5, clip]{ActivityObjectflow}
+		\caption{Aktivitätsdiagramm des Billetautomaten mit Objektfluss}
+	\label{fig:ActivityObjectflow}
+\end{figure}
+
+
+Der Objektfluss kann auch durch zeichnen des Objektes selbst dargestellt werden, siehe Bild \ref{fig:ActivityObjectpassing} 
+
+\begin{figure}[H]
+	  \centering
+		\includegraphics[scale=0.5, clip]{ActivityObjectpassing}
+		\caption{Aktivitätsfluss mit übergabe eines Objektes}
+	\label{fig:ActivityObjectpassing}
+\end{figure}
 
 \section{Paketdiagramm}
 Mit \OviIndex{Paketdiagrammen} werden die Klassen zu Paketen zusammengefasst. Das Ziel dabei ist,
