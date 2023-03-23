@@ -8388,7 +8388,7 @@ Ein Embedded-\Cpp Programm ist ein Subset von Standard \Cpp und lässt sich mit j
 \NextPagePlease
 \section{Hardware Abstraktion}
 Hardware kann in C++ mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
-Hinweis: \CodeStyle{reinterpret_cast<>()} darf nicht in \CodeStyle{constexpr} Funktionen und Variablen, oder zur Initialisierung derselben verwendet werden. Zum Speichern van Adressen wird deshalb der dafür vorgesehene Datentyp \CodeStyle{uintptr_t} verwendet, und der \CodeStyle{reinterpret_cast<>()} zur Umwandlung in einen Pointer erst beim effektiven Zugriff durchgeführt. Auf die Geschwindigkeit hat dies keinen Einfluss.
+Hinweis: \CodeStyle{reinterpret_cast<>()} darf nicht in \CodeStyle{constexpr} Funktionen und Variablen, oder zur Initialisierung derselben verwendet werden. Zum Speichern von Adressen wird deshalb der dafür vorgesehene Datentyp \CodeStyle{uintptr_t} verwendet, und der \CodeStyle{reinterpret_cast<>()} zur Umwandlung in einen Pointer erst beim effektiven Zugriff durchgeführt. Auf die Geschwindigkeit hat dies keinen Einfluss.
  
 \subsection{Mit Klassen}
 \subsubsection{Abstraktion}
@@ -8698,7 +8698,7 @@ void fe()
 \subsection{Vor- und Nachteile}
 \subsubsection{Klassen}
  \begin{itemize}
-    \item Polymorphismus ist möglich
+    \item Runtime-Polymorphismus ist möglich
      
      \item  Identische Komponenten sind vom selben Typ
       \item Verwaltung zur Laufzeit möglich
@@ -8733,7 +8733,7 @@ void f()
  
     \item Maximale geschwindigkeitsoptimierung möglich
     \item Es kann ganz auf ein Objekt verzichtet werden
-    \item Polymorphismus nicht möglich
+    \item Runtime-Polymorphismus nicht möglich
      \item  Identische Komponenten sind nicht vom selben Typ
      \item Verwaltung zur Laufzeit nicht möglich
 \end{itemize}
@@ -8853,12 +8853,12 @@ void f()
 \section{Runtime und Compiletime Polymorphismus}
 Polymorphismus kann in \Cpp in zwei Varianten auftreten. 
 
-Zum einen in Fom des statischen Polymorphismus durch Templates, hier wird zur Compilezeit entschieden welche Funktionen und Methoden generiert und aufgerufen werden. Dabei wird nur für effektiv verwendete Methoden Code generiert. 
+Zum einen in Form des statischen Polymorphismus durch Templates, hier wird zur Compilezeit entschieden welche Funktionen und Methoden generiert und aufgerufen werden. Dabei wird nur für effektiv verwendete Methoden Code generiert. 
 
 Zum anderen der Polymorphismus mit Vererbung und virtuellen Methoden, bei dem zur Laufzeit entschieden wird welche Methoden aufgerufen werden. Bei dieser Variante wird zur Compilezeit für alle Methoden Code generiert. 
  
 \subsection{Runtime Polymorphismus mit virtuellen Methoden}
-Es wird erst zur Laufzeit entschieden, welche Objekte erstellt werden und entsprechend wird ebenfalls erst zur Laufzeit bestimmt, welche Methoden aufgerufen werden.Es werden alle Methoden erzeugt, deren Aufruf möglich wäre.
+Es wird erst zur Laufzeit entschieden, welche Objekte erstellt werden und entsprechend wird ebenfalls erst zur Laufzeit bestimmt, welche Methoden aufgerufen werden. Es werden alle Methoden erzeugt, deren Aufruf möglich wäre.
 \begin{CCode}
 class LedBase {
 public:
