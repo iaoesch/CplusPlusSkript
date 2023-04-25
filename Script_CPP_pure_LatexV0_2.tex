@@ -11595,7 +11595,86 @@ Das Buch beschreibt nicht die UML selbst, sondern wie die UML in den Entwicklung
 Lit\ref{UnifiedModelingLanguageReferenceManual}-Lit\ref{UnifiedSoftwareDevelopmentProcess} sind zur Zeit nur in englisch erhältlich, es kann aber durchaus sein dass diese Bücher in Zukunft auch in deutsch erhältlich sein werden.
 }
  
+\section{Codesmells}
 
+
+Der Begriff  \OviIndex{Code-Smell} wurde durch das Buch \textit{Refactoring} von Martin Fowler bekannt.
+Code-Smell kann als 'übelriechender Code' übersetzt werden, damit wird Code bezeichnet, der zwar funktioniert, aber dringend überarbeitet werden soll, da er schwer verständlich oder schlecht strukturiert ist und bei Überarbeitungen oder Erweiterungen zu Fehlern führen kann.
+
+Die nachfoldende Liste ist ein Auszug aus der
+Seite \emph{'Code-Smell'. In: Wikipedia - Die freie Enzyklopädie. Bearbeitungsstand: 8. September 2021, 13:49 UTC. URL: https://de.wikipedia.org/w/index.php?title=Code-Smell\&oldid=215425036 (Abgerufen: 25. April 2023, 12:41 UTC) }
+
+Die folgenden von Martin Fowler und Kent Beck beschriebenen Smells beziehen sich auf die objektorientierte Programmierung, haben aber naheliegende Entsprechungen unter anderen Programmier-Paradigmen.
+
+\begin{itemize}
+\item	\textbf{Code-Duplizierung},\newline
+    Der gleiche Code kommt an verschiedenen Stellen vor.
+\item	\textbf{Lange Methode},\newline
+    Eine Methode (Funktion, Prozedur) ist zu lang.
+\item	\textbf{Grosse Klasse},\newline
+    Eine Klasse ist zu umfangreich, umfasst zu viele Instanzvariablen und duplizierten Code. Siehe auch Gottobjekt.
+\item	\textbf{Lange Parameterliste},\newline
+    Anstatt ein Objekt an eine Methode zu übergeben, werden Objekt-Attribute extrahiert und der Methode als lange Parameterliste übergeben.
+\item	\textbf{Divergierende Änderungen},\newline
+    Für eine Änderung muss eine Klasse an mehreren Stellen angepasst werden.
+\item	\textbf{Schrotkugeln herausoperieren (engl. Shotgun Surgery)},\newline
+    Dieser Smell ist noch gravierender als divergierende Änderungen: Für eine Änderung müssen weitere Änderungen an vielen Klassen durchgeführt werden.
+\item	\textbf{Neid (engl. Feature Envy)},\newline
+    Eine Methode interessiert sich mehr für die Eigenschaften - insbesondere die Daten - einer anderen Klasse als für jene ihrer eigenen Klasse.
+\item	\textbf{Datenklumpen},\newline
+    Eine Gruppe von Objekten kommt häufig zusammen vor: als Felder in einigen Klassen und als Parameter vieler Methoden.
+\item	\textbf{Neigung zu elementaren Typen (engl. Primitive Obsession)},\newline
+    Elementare Typen werden benutzt, obwohl auch für einfache Aufgaben Klassen und Objekte aussagekräftiger sind.
+\item	\textbf{Case-Anweisungen in objektorientiertem Code},\newline
+    Switch-Case-Anweisungen werden benutzt, obwohl Polymorphismus sie weitgehend überflüssig macht und das damit zusammenhängende Problem des duplizierten Codes löst.
+\item	\textbf{Parallele Vererbungshierarchien},\newline
+    Zu jeder Unterklasse in der einen Hierarchie gibt es immer auch eine Unterklasse in einer anderen Hierarchie.
+\item	\textbf{Faule Klasse},\newline
+    Eine Klasse leistet zu wenig, um ihre Existenz zu rechtfertigen.
+\item	\textbf{Spekulative Allgemeinheit},\newline
+    Es wurden alle möglichen Spezialfälle vorgesehen, die gar nicht benötigt werden; solch allgemeiner Code braucht Aufwand in der Pflege, ohne dass er etwas nützt.
+\item	\textbf{Temporäre Felder},\newline
+    Ein Objekt verwendet eine Variable nur unter bestimmten Umständen - der Code ist schwer zu verstehen und zu debuggen, weil das Feld scheinbar nicht verwendet wird.
+\item	\textbf{Nachrichtenketten},\newline
+    Das Gesetz von Demeter wird verletzt.
+\item	\textbf{Middle Man (Vermittler)},\newline
+    Eine Klasse delegiert alle Methodenaufrufe an eine andere Klasse.
+\item	\textbf{Unangebrachte Intimität},\newline
+    Zwei Klassen haben zu enge Verflechtungen miteinander.
+\item	\textbf{Alternative Klassen mit verschiedenen Schnittstellen},\newline
+    Zwei Klassen machen das gleiche, verwenden hierfür aber unterschiedliche Schnittstellen.
+\item	\textbf{Inkomplette Bibliotheksklasse},\newline
+    Eine Klasse einer Programmbibliothek benötigt Erweiterungen, um in einem für sie geeigneten Bereich verwendet werden zu können.
+\item	\textbf{Datenklasse},\newline
+    Klassen mit Feldern und Zugriffsmethoden ohne Funktionalität.
+\item	\textbf{Ausgeschlagenes Erbe (engl. Refused Bequest)},\newline
+    Unterklassen brauchen die Methoden und Daten gar nicht, die sie von den Oberklassen erben (siehe auch Liskovsches Substitutionsprinzip)
+\item	\textbf{Kommentare},\newline
+    Kommentare erleichtern im Allgemeinen die Verständlichkeit. Kommentare erscheinen jedoch häufig genau dort notwendig zu sein, wo der Code schlecht ist. Kommentare können somit ein Hinweis auf schlechten Code sein.
+\end{itemize}
+
+Neben den von Fowler erwähnte Smells gibt es noch eine Reihe von Code-Smells die oft auch unter Programmierungs-Anti-Pattern erwähnt werden:
+
+\begin{itemize}
+\item	\textbf{Nichtssagender Name (engl. Uncommunicative Name)},\newline
+    Name, der nichts über Eigenschaften oder Verwendung des Benannten aussagt. Aussagekräftige Namen sind wesentlich für das Verständnis von Programmcode.
+\item	\textbf{Redundanter Code},\newline
+    Ein Stück Code, das nicht (mehr) verwendet wird.
+\item	\textbf{Exhibitionismus (engl. Indecent Exposure)},\newline
+    Interne Details einer Klasse sind unnötigerweise Teil ihrer Schnittstelle nach außen.
+\item	\textbf{Contrived complexity (engl.)},\newline
+    Erzwungene Verwendung von Entwurfsmustern, wo einfacheres Design ausreichen würde.
+\item	\textbf{Zu lange Namen},\newline
+    Insbesondere die Verwendung von Architektur- oder Designbestandteilen in den Namen von Klassen oder Methoden.
+\item	\textbf{Zu kurze Namen},\newline
+    Die Verwendung von 'x', 'i' oder Abkürzungen. Der Name einer Variable sollte ihre Funktion beschreiben.
+\item	\textbf{Über-Callback},\newline
+    Ein Callback, der versucht, alles zu tun.
+\item	\textbf{Komplexe Verzweigungen},\newline
+    Verzweigungen, die eine Menge von Bedingungen abprüfen, die mit der Funktionalität des Codeblocks nichts zu tun haben.
+\item	\textbf{Tiefe Verschachtelungen},\newline
+    Verschachtelte if/else/for/do/while-Statements. Sie machen den Code unlesbar.
+\end{itemize}
 \section{\Cpp-Checkliste}
 Sobald eine Funktion virtuell ist, sollte auch der Destruktor virtuell sein.
 
