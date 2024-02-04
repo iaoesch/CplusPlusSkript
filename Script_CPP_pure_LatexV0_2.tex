@@ -7366,6 +7366,852 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
     });
 \end{CCode} 
 
+%8 Ein- und Ausgabe
+%Die Ein-/Ausgabe von C++ läuft über die Klassen  istream und ostream. Diese Klassen enthalten die Definitionen aller Methoden zur grundlegenden Ein-/Ausgabe. Allerdings gibt es keine Exemplare dieser abstrakten Klassen, konkret gibt es nur Ableitungen davon, wie etwa die ifstream oder ofstream-Klassen. Mit den in der Standardlibrary enthaltenen Klassen ist Konsolen- (cin, cout) und Datei-I/O (ifstream, ofstream) sowie das Lesen aus und das Schreiben in Strings (istringstream,  ostringstream möglich.
+%Für andere Kanäle können eigene Klassen oder Libraries selber abgeleitete Klassen definieren.
+%Die Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Streams aus, es gibt aber Varianten für Unicode.
+%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
+% Tabelle 17 zeigt die wichtigsten Methoden die für alle stream Klassen verfügbar sind:
+%Operator bool();
+%Liefert true wenn kein Fehler im Stream vorhanden ist.
+%Bool Operator  !();
+%bool fail();
+%Liefern false wenn kein Fehler im Stream vorhanden ist, Gegenteil von operator bool().
+%bool good();
+%Liefert true wenn weder fail noch eof true sind.
+%
+%Bool eof();
+%Liefert  true, wenn das Dateiende erreicht wurde.
+%tellp()
+%seekp()
+%Position im Dateistrom setzten oder abfragen.
+%Tabelle 16: Methoden der Klasse Stream
+%Die stream- Klassenhierarchie ist in Error: Reference source not found dargestellt. In ios sind die Gemeinsamkeiten aller Streams zusammengefasst. Zur Anwendung wird jeweils eine Instanz von diesen abgeleiteten Klassen angelegt. 
+%
+%ios
+%
+%istream
+%
+%
+%
+%ifstream
+%
+%
+%istrstream
+%
+%
+%
+%
+%ostream
+%
+%
+%
+%ofstream
+%
+%
+%ostrstream
+%
+%
+%
+%
+%
+%
+%
+%iostream
+%
+%
+%
+%iofstream
+%
+%
+%iostrstream
+%
+%
+%
+%
+%Abbildung 15: Klassenhierarchie von Stream
+%
+%8.1 Eingabe in C++
+%Die Klasse istream dient als Abstraktion für alle konkret möglichen Eingabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen. Viele Methoden sind mehrfach überladen.
+% Tabelle 17 zeigt die wichtigsten Methoden der Klassen istream:
+%Operator >> (Type);
+%Einlesen aller möglichen ASCII- und Binär-Daten, je nach Type werden int, float, string, etc eingelesen. Alle Standardtypen werden unterstützt, Anwender und Libraries können diesen Operator für eigene Datentypen überladen.
+%int_type get();
+%get(c_type &ch);
+%get(c_type *s,  streamsize  count);
+%get( char_type* s, streamsize count, char_type delim );
+%Lesen eines Bytes. Das Ergebnis wird als Zahl im Bereich von 0 bis 255  zurückgeliefert, Traits::eof() codiert das Ende der Datei.
+%Lesen eines Bytes. Das Ergebnis wird in ch abgespeichert.
+% Bereich von 0 bis 255  zurückgeliefert.
+%Aus dem Eingabestrom werden count Bytes eingelesen und in den Puffer s abgelegt.
+%Aus dem Eingabestrom werden count Bytes eingelesen, aber maximal bis zum Auftreten von delim und in den Puffer s abgelegt.
+%getline(c_type *s, streamsize count);
+%basic_istream& getline( c_type *s, streamsize count, c_type delim );
+%Aus dem Eingabestrom wird eine Zeile, aber maximal count Bytes eingelesen und in den Puffer s abgelegt.
+%Aus dem Eingabestrom werden Bytes bis zum Zeichen delim, aber maximal count Bytes eingelesen und in den Puffer s abgelegt. delim wird entfernt und nicht mit abgespeichert
+%
+%ignore( streamsize count = 1, 
+%int_type delim = Traits::eof() );
+%
+%Wie getline(), nur werden die gelesenen Zeichen verworfen.
+%
+%read( c_type *s, streamsize count );
+%Aus dem Eingabestrom werden count Bytes eingelesen und in den Puffer s abgelegt.
+%Tabelle 17: Methoden der Klasse InputStream
+%Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte die Methoden get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders wenn der Operator >> nicht die gewünschte Funktionalität liefert. 
+%8.1.1 Eingabe mit den byteorientierten Datei-Stream-Klassen
+%Dateieingaben laufen über Objekte vom Typ ifstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin benutzt werden. (cin ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
+%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
+% Tabelle 17 zeigt die wichtigsten zusätzlichen Methoden der Klassen ifstream:
+%ifstream(Name, Mode)
+%ifstream(Filename)
+%ifstream()
+%Konstruktor, kann Dateiname und allenfalls Mode als Parameter erhalten. (Name: C-String, std::string oder std::filesystem::path)
+%is_open()
+%Liefert true wenn Stream mit einer geöffneten Datei verbunden ist.
+%open(Name, Mode)
+%open(Filename)
+%Verbindet Stream mit  angegebener Datei im angegebenen Mode.
+%Verbindet Stream mit  angegebener Datei.
+%close()
+%Schliesst Datei und löst Verbindung zu Datei
+%<Destruktor>
+%Schliesst Datei und löst Verbindung zu Datei
+%Tabelle 18: Methoden der Klasse InputStream
+%
+%.
+%#include <fstream > 
+%using namespace std; 
+%
+%int main(int argc, char *argv[]) { 
+%   int a = 4;
+%   std::string Text;
+%   ifstream EingabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen 
+%   if (EingabeDatei) {
+%      EingabeDatei >> "a; 
+%      EingabeDatei >> text;
+%      cout << "a ist: " << a <<", Text ist: " << Text << endl; 
+%   } else { 
+%      cout << "Fehler ,?konnte?Datei?nicht?oeffnen" << endl; 
+%   } 
+%   return 0;
+%} 
+%
+%
+%
+%Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden: Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden. ios_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus. 
+%Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann. 
+%
+%
+%ifstream EingabeDatei("c:\\test.txt"); // Dateiobjekt im Text- // modus zum Lesen oeffnen 
+%ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer- 
+%                                                         // modus zum Lesen oeffnen 
+%
+%
+%8.1.2 Eingabe mit den byteorientierten String-Stream-Klassen
+%Mit der Klasse istringstream kann ein String als Quelle eines Streams verwendet werden. Istringstreams verhalten sich wie Streams (Dateien) nur dass aus einem String gelesen wird. Das kann unter anderem zur  Umwandlung zwischen Zahlen und Zeichenketten verwendet werden.
+%
+%
+%string s1 = "Hallo"; 
+%string s2 = s1 + "?Welt"; 
+%s1[1] = ?e?; // s1 wird zu Hello 
+%if (s1 == s2) { }; // Vergleicht Strings 
+%std::cout << s2; // Gibt s2 aus 
+%std::ostringstream os; 
+%int i; 
+%os << "Wert?ist?" << i << ?!?; // Text in stringstream schreiben 
+%string s = os.str(); // Inhalt von stringstream s zuweisen 
+%
+%s = "123"; 
+%std::istringstream is(s); // stringstream mit s initialisieren 
+%is >> i; // Zahl aus is lesen und i zuweisen 
+%
+%
+%8.1.3 Die Standard Eingabe
+%UNIX und Windows sehen für Anwendungen eine Standard-Eingaberichtung vor. Diese wird oft auch mit stdin bezeichnet. C++ Programme können über das globale Object cin auf diesen InputStream zugreifen.
+%8.1.3.1 Programmbeispiel
+%Zum Einlesen von Zeichen von der Tastatur wird am einfachsten der Operatror >> verwendet:
+%include <iostream>
+%
+%void main()
+%
+%      std::string s;
+%      
+%      while(s != "end") {
+%            std::cin >> s;
+%            std::cout << ">" << s << "<" << std::endl;
+%      }
+%}
+%8.2 Ausgabe in C++
+%Die Klasse ostream dient als Abstraktion für alle konkret möglichen Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreibzugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte schreiben. Insbesondere der Operator << ist für elementare Datentypen sowie für viele Objekte überladen. Er ist damit besonders nützlich, wenn es um die Ausgabe von Daten als Text geht, wie es z.B. bei Ausgabe auf die Konsole der Fall ist. Viele Methoden von istream sind mehrfach überladen.
+% Tabelle 17 zeigt die wichtigsten Methoden der Klassen istream:
+%Operator << (Type);
+%Ausgeben aller möglichen ASCII- und Binär-Daten, je nach Type werden int, float, string, etc ausgegeben. Alle Standardtypen werden unterstützt, Anwender und Libraries können diesen Operator für eigene Datentypen überladen.
+%put(ch_type ch);
+%Ausgeben eines Bytes. .
+%Write(
+%const ch_type *s, streamsize count);
+%Aus dem  Puffer s werden count Bytes ausgegeben.
+%Tabelle 19: Methoden der Klasse InputStream
+%Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte die Methoden put() und write() zur Verfügung. Diese Methoden sind zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders wenn der Operator << nicht die gewünschte Funktionalität liefert. 
+%
+%8.2.1 Formatierte Ausgabe 
+%Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der Methode flags() können die Flags gesetzt oder gelesen werden, mit setf() können Flags hinzugefügt werden. 
+%Es sind unter anderem folgende Flags definiert:
+%Wahl des Zahlensystems: ios_base::dec, ios_base::hex, ios_base::oct 
+%Bündigkeit: ios_base::left, ios_base::right
+%Gleitkommaformat: ios_base::scientific, ios_base::fixed
+%
+%Beispiel: 
+%
+%std::ios_base::fmtflags AlteFlags; 
+%AlteFlags = std::cout.flags(); // Flag Zustand lesen 
+%// Ausgabeformat waehlen (Flags zusaetzlich setzen) 
+%std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed); 
+%std::cout << 1.23; // Ausgabe im gewaehlten Format 
+%// Alle Flags loeschen, nur Hex ist gesetzt 
+%std::cout.flags(std::ios_base::hex); 
+%std::cout << 47; 
+%
+%
+%
+%Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode precision () kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden: 
+%
+%std::streamsize OldPrecision; 
+%
+%OldPrecision = std::cout.precision(); // Genauigkeit lesen 
+%// Genauigkeit waehlen 
+%std::cout.precision(5); 
+%// Feldbreite waehlen 
+%std::cout.width(9); 
+%// Fuellzeichen waehlen 
+%std::cout.fill(?*?); 
+%
+%std::cout << 1.23; // Ausgabe im gewaehlten Format // gibt ****1.23000 aus 
+%
+%
+%
+%
+%width() gilt nur für die nächste Ausgabe und wird danach wieder auf 0 zurückgesetzt (Nur soviele 
+%Zeichen wie nötig ausgeben). 
+%Mit Manipulatoren kann das Formatieren und Steuern des Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von Operator-Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen gibt es bereits vordefinierte Manipulatoren, es ist aber auch möglich, selbst neue Manipulatoren zu erzeugen. 
+%
+%
+%// Format waehlen und Ausgabe in der selben Zeile 
+%std::cout << std::setprecision(5) << std::setw(9) << std::setfill(?*?) << 1.23; 
+%// Zahl hexadezimal ausgeben (ersetzt setf()) 
+%std::cout << std::hex << 123545; 
+%
+%Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
+%
+%Seit C++20 gibt es mit std::format weitere Formatiermöglichkeiten, welche an printf() aus C 
+%angelehnt sind. Anstelle des % muss {} als Platzhalter verwendet werden:
+%std::cout << std::format("{} ist {} oder {}!\n", "Pi", 3.14, 3); 
+%Ausgabe : Pi ist 3.14 oder 3
+%
+%Die Platzhalter können auch von 0 an durchnummeriert werden, die Argumente werden dadurch in der Reihenfolge der Nummerierung eingefügt (Ein Nummer kann auch mehrfach verwendet werden):
+%std::cout << std::format("{1} : {2} oder {0}!\n", "Pi", 3.14, 3); 
+%Ausgabe : 3.14 ist 3 oder Pi
+%
+%Platzhalter können auch Formatierungsanweisungen beinhalten, welche durch ein Doppelpunkt eingeleitet werden, und im Aufbau denjenigen von printf() aus C ähnlich sind und folgende Felder enthalten:
+%
+%: fill-and-align?? sign?? # 0 width?? precision?? L type?? 
+%Wobei alle Elemente Optional sind. sign?? # 0 dürfen nur bei Integer oder Fliesskommawerten benutzt werden.
+%
+%fill-and-align
+%Fillchar Alignement
+%Fillchar: Füllzeichen	{:0}
+%Alignement kann '<', '>' oder '^' sein: 
+%'<': Linksbündig	{:<} // Füllt mit Spaces
+%'>': Rechtsbündig	{:0>} // Füllt mit 0
+%'^': Zentriert	{:*^} // Füllt mit *
+%sign	
+%'+'
+%'-'
+%' '
+%Positives unbd negatives Vorzeichen ausgeben
+%Nur negatives Vorzeichen ausgeben (Defaultverhalten)
+%Leerzeichen anstelle Vorzeichen bei positiven Werten
+%#
+%'#', Alternative Form aktivieren
+%Bei Hex, okt oder Bin mit 0x, 0 0der 0b vorangestellt
+%Bei Fliesskomma immer einen Dezimalpunkt ausgeben
+%0
+%'0'
+%Feld mit führenden Nullen füllen, ignoriert wenn gleichzeitig mit alignement Anforderung benutzt
+%width
+%Zahl, {} oder {n}
+%Mindestens soviele Zeichen ausgeben, bei {} oder {n} wird Feldbreite aus Argumentliste geholt.
+%precision
+%.Zahl, .{} oder .{n}
+%Punkt gefolgt von Zahl oder {}
+%Nur bei Text oder Fliesskommazahlen anwendbar.
+%Text: Maximale Anzahl auszugebender Zeichen
+%Fliesskomma: Genauigkeit, Anzahl signifikanter Stellen
+%bei {} oder {n} wird Genauigkeit aus Argumentliste geholt.
+%L
+%'L'
+%Lokalisierte Ausgabe arithmetischer Typen (Dezimaltrenner, Gruppierungszeichen, true oder false in lokaler Sprache)
+%type
+%Bei integer Argumenten
+%b, B:
+%c:
+%d:
+%o:
+%x, X:
+%<Kein>
+%Bei bool Argumenten
+%b, B, d, o, x, X:
+%s oder <Kein>
+%Bei Fliesskomma Arg.
+%a, A:
+%e, E:
+%f, F:
+%g, G:
+%<Kein>:
+%Bei Pointer Argumenten.
+%p, <Kein>:
+%
+%Als Binärzahl ausgeben
+%Zugehöriges ASCII/Unicode Zeichen ausgeben
+%Als Dezimalzahl ausgeben
+%Als Oktalzahl ausgeben
+%Als Hexadezimalzahl ausgeben
+%Bei char und wchar Argumenten wie 'c', sonst wie 'd'
+%
+%Gibt 0 oder 1 Wie bei integer aus
+%Gibt Textrepräsentation für true oder false aus
+%
+%Ausgabe in Hexadezimal
+%Wissenschaftliches Format
+%Ohne Exponent, mit vor und Nachkommastellen
+%'e' oder 'f, was jeweils weniger Platz benötigt
+%Defaultverhalten
+%
+%Sytemabhängige Ausgabe von Adresse
+%
+%
+%char c = 120;
+%auto s0 = std::format("{:6}", 42);    // value of s0 is "    42"
+%auto s1 = std::format("{:6}", 'x');   // value of s1 is "x     "
+%auto s2 = std::format("{:*<6}", 'x'); // value of s2 is "x*****"
+%auto s3 = std::format("{:*>6}", 'x'); // value of s3 is "*****x"
+%auto s4 = std::format("{:*^6}", 'x'); // value of s4 is "**x***"
+%auto s5 = std::format("{:6d}", c);    // value of s5 is "   120"
+%auto s6 = std::format("{:6}", true);  // value of s6 is "true  "
+%double inf = std::numeric_limits<double>::infinity();
+%double nan = std::numeric_limits<double>::quiet_NaN();
+%auto s0 = std::format("{0:},{0:+},{0:-},{0: }", 1);   // value of s0 is "1,+1,1, 1"
+%auto s1 = std::format("{0:},{0:+},{0:-},{0: }", -1);  // value of s1 is "-1,-1,-1,-1"
+%auto s2 = std::format("{0:},{0:+},{0:-},{0: }", inf); // value of s2 is "inf,+inf,inf, inf"
+%auto s3 = std::format("{0:},{0:+},{0:-},{0: }", nan); // value of s3 is "nan,+nan,nan, nan"
+%      
+%
+%char c = 120;
+%auto s1 = std::format("{:+06d}", c);   // value of s1 is "+00120"
+%auto s2 = std::format("{:#06x}", 0xa); // value of s2 is "0x000a"
+%auto s3 = std::format("{:<06}", -42);  // value of s3 is "-42   "
+%                                       // (0 is ignored because of < alignment)
+%
+%auto s1 = std::format("{:10f}", pi);           // s1 = "  3.140000" (width = 10)
+%auto s2 = std::format("{:{}f}", pi, 10);       // s2 = "  3.140000" (width = 10)
+%auto s3 = std::format("{:.5f}", pi);           // s3 = "3.14000" (precision = 5)
+%auto s4 = std::format("{:.{}f}", pi, 5);       // s4 = "3.14000" (precision = 5)
+%auto s5 = std::format("{:10.5f}", pi);         // s5 = "   3.14000"
+%                                               // (width = 10, precision = 5)
+%auto s6 = std::format("{:{}.{}f}", pi, 10, 5); // s6 = "   3.14000"
+%                                               // (width = 10, precision = 5)
+% 
+%auto b1 = std::format("{:{}f}", pi, 10.0);     // throws: width is not of integral type 
+%auto b2 = std::format("{:{}f}", pi, -10);      // throws: width is negative
+%auto b3 = std::format("{:.{}f}", pi, 5.0);     // throws: precision is not of integral type
+%
+%auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
+%
+%
+%Seit C++23 kann die Ausgabe mit std::print und std::println weiter vereinfacht werden:
+%std::print("{} ist {} oder {}!\n", "Pi", 3.14, 3); 
+%Ausgabe : Pi ist 3.14 oder 3
+%8.2.2 Ausgabe mit den byteorientierten Datei-Stream-Klassen
+%Dateiausgaben laufen über Objekte vom Typ ofstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cout benutzt werden. (cout ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
+%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die na?chste Operation bestimmt schief. 
+% Tabelle 17 zeigt die wichtigsten zusätzlichen Methoden der Klassen ofstream:
+%ofstream(Name, Mode)
+%ofstream(Filename)
+%ofstream()
+%Konstruktor, kann Dateiname und allenfalls Mode als Parameter erhalten. (Name: C-String, std::string oder std::filesystem::path)
+%is_open()
+%Liefert true wenn Stream mit einer geöffneten Datei verbunden ist.
+%open(Name, Mode)
+%open(Filename)
+%Verbindet Stream mit  angegebener Datei im angegebenen Mode.
+%Verbindet Stream mit  angegebener Datei.
+%close()
+%Schliesst Datei und löst Verbindung zu Datei
+%<Destruktor>
+%Schliesst Datei und löst Verbindung zu Datei
+%Tabelle 20: Methoden der Klasse ostream
+%
+%#include <fstream > 
+%using namespace std; 
+%
+%int main(int argc, char *argv[]) { 
+%   int a = 4, b = 5;
+%   ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen 
+%   if (AusgabeDatei) {
+%      AusgabeDatei << "Mein?erstes?File" << endl; 
+%      AusgabeDatei << "a?+?b?ist?" << (a + b) << endl; 
+%   } else { 
+%      cout << "Fehler ,?konnte?Datei?nicht?oeffnen" << endl; 
+%   } 
+%return 0 } 
+%
+%
+%Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifiziert werden: Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden. ios_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben. ios_base::binary öffnet eine Datei im Binär- modus, der Default ist Textmodus. 
+%Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann. 
+%
+%
+%ofstream AusgabeDatei("c:\\test.txt", ios_base::app); // Dateiobjekt zum 
+%                                                       // anhaengen erzeugen 
+%
+%ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer- 
+%                                                         // modus erzeugen 
+%
+%ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); // Binaere Datei zum 
+%                                                                      // anhaengen erzeugen 
+%
+%
+%8.2.3 Ausgabe mit den byteorientierten String-Stream-Klassen
+%Mit der Klasse ostringstream kann ein String als Ziel eines Streams verwendet werden. OStringstreams verhalten sich wie Streams (Dateien) nur dass in einem String geschrieben wird. Das kann unter anderem zur  Umwandlung zwischen Zahlen und Zeichenketten verwendet werden.
+%
+%
+%std::ostringstream os; 
+%int i =123; 
+%os << "Wert?ist?" << i << ?!?; // Text in stringstream schreiben 
+%string s = os.str(); // Inhalt von stringstream s zuweisen 
+%
+%std::cout << s;   // gibt 'Wert ist 123' aus
+%
+%8.2.4 Die Standard-Ausgabe
+%UNIX und Windows sehen für Anwendungen eine Standard-Ausgabe vor. Diese wird oft auch mit stdout bezeichnet. C++-Programme können über das globale Objekt cout auf diesen Stream zugreifen. Für Fehlermeldungen ist dagegen die Ausgangsnachricht stderr, die in C++ über cerr ansprechbar ist, besser geeignet. Mit der Umlenkung
+%Programm.exe > Dateiname
+%wird die Ausgabe des Programms nach stdout in die durch ?Dateiname? angegebene Datei umgelenkt, nicht aber die Ausgabe nach stderr.
+%8.3 Kombinierte Ein- und Ausgabe in C++
+%Die Klassen iostream, fstream und stringstream kombinieren die jeweiligen i- und o-Klassen und erlauben das Lesen und Schreiben des entsprechenden Streams. Beim Erzeugen eines fstreams muss  ios_base::out,  ios_base::app::in oder eine Kombination von beiden als Modus angegeben werden. Bei der benutzung stehen sowohl die Methoden von der entsprechenden istream als auch der entsprechenden ostream Klasse zur Verfügung.
+%8.4 Dateisystem-Bibliothek (Seit C++17)
+%Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem 
+%Dateisystem im Namespace std::filesystem definiert. Zum Beispiel: 
+%8.4.1 Klasse std::filesystem::path
+%Eine Klasse welche Dateipfade aufnehmen kann, und Pfadmanipulationen erlaubt (Pfadteile er- gänzen, zusammenfügen, aufteilen, oder Dateiname, Dateiendung oder Pfad extrahieren). 
+%Memberfunktionen von path:
+%path(string)
+%Konstruktor, erzeugt Pfadobjekt mit gegebenem Pfad
+%parent_path
+%Gibt Pfadobjekt mit Parentpfad zurück
+%filename
+%Gibt Pfadobjekt mit Dateiname zurück
+%stem
+%Gibt Pfadobjekt mit Dateiname ohne Erweiterung zurück
+%extension
+%Gibt Pfadobjekt mit Erweiterung zurück (z.b. .txt)
+%c_str
+%Liefert Pfad als C-String (char * auf internen Puffer)
+%String
+%Liefert Pfad als String
+%
+%8.4.2 Funktionen und Templates
+%
+%copy(path from, path to)
+%Kopiert Dateien oder Verzeichnisse
+%copy_file(path from, path to)
+%Kopiert eine Datei
+%create_directory(path)
+%create_directories(path)
+%Erzeugt angegebenes Verzeichnis, Elternverzeichnis muss existieren
+%
+%Erzeugt angegebenes Verzeichnis und allfällige Elternverzeichnisse.
+%Path current_path
+%Liefert aktuelles Arbeitsverzeichnis
+%exists(path)
+%Liefert True wenn angegebenes Dateiobjekt existiert (Verzeichnis oder Datei)
+%file_size(path)
+%Liefert Freien Speicherplatz des durch Pfad referenzierten Datenträgers
+%Remove(path)
+%remove_all(path)
+%Löscht Datei oder leeres Verzeichnis
+%Löscht Datei oder Verzeichnis samt Inhalt
+%Rename(path,path)
+%Verschiebt oder benennt Datei oder Verzeichnis um
+%space(path)
+%Liefert Grösse der durch Pfad referenzierten Datei
+%temp_directory_path
+%Liefert für temporäre Dateien geeignetes Verzeichnis als path objekt
+%is_regular_file(path)
+%Liefert true falls path auf gewöhnliche Datei verweist
+%is_directory(path)
+%Liefert true falls path auf Verzeichnis verweist
+%is_empty(path)
+%Liefert true falls path leere Datei oder leeres Verzeichnis verweist
+%
+%8.4.3 Klasse std::filesystem::directory_iterator 
+%Ein Iterator, welcher über alle Einträge eines Verzeichnisses Iterieren kann und jeweils ein Path- Objekt zurückliefert. Mit * wird ein Path-objekt des aktuellen Eintrags zurückgeliefert, mit ++ zum nächsten Eintrag weitergegangen.
+%Alle Elemente im Verzeichnis c:\MyDirectory ausgeben:
+%
+%for (auto const& entry: std::filesystem::directory_iterator("c:\\MyDirectory")) {
+%        std::cout << entry.path() << '\n';
+%}
+%
+%
+%8.4.4 Klasse recursive_directory_iterator 
+%Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert. Mit * wird ein Path-objekt des aktuellen Eintrags zurückgeliefert, mit ++ zum nächsten Eintrag weitergegangen.
+%Alle Elemente im Verzeichnis c:\MyDirectory und dessen Unterverzeichnissen ausgeben:
+%
+%// Alias for less verbose access
+%namespace fs = std::filesystem;
+%
+%// Set the current path to parent of our directorystructure
+%// Not really neede, we could also use absolute path in line below 
+%fs::current_path("/Users/ivooesch/Unterricht/CPP"); 
+%
+%// Create an iterator to travel our directory structure 
+%auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise"); 
+%
+%// travel directorystructure, print out all entries (using lambda function)
+%std::ranges::for_each(files, [](auto p){ 
+%   // Dateiname mit Pfad ausgeben 
+%   std::cout << p.path() << ?\n?; 
+%}); 
+%
+%Hinweis: foreach ruft die angegebene Funktion/Methode für alle Elemente auf.
+%
+%
+%Alle .txt-Dateien  im Verzeichnis c:\MyDirectory und dessen Unterverzeichnissen ausgeben:
+%
+%// Create an new iterator to travel our directory structure recursively
+%files = fs::recursive_directory_iterator("DirectoryStructureForExcercise"); 
+%
+%// Define filterfunction (Lambda) for textfiles 
+%auto TextFileFilter = [](auto p) { 
+%                              return p.is_regular_file() && p.path().extension() == ".txt"; 
+%                      }; 
+%
+%// traverse directorystructure, filter out unwanted files and print result 
+%std::ranges::for_each(files | std::views::filter(TextFileFilter), [](auto p){ 
+%    
+%    // Dateiname mit Pfad ausgeben 
+%    std::cout << p.path() << ?\n?; 
+%}); 
+%
+%Hinweis: foreach ruft die angegebene Funktion/Methode für alle Elemente auf.
+%
+%8.5 Anwendungs-Beispiele
+%In diesem Kapitel sollen einige typische Situationen aus der Anwendung der Dateiverarbeitung besprochen werden. Sie werden mit den Hilfsmitteln gelöst, welche die Standardbibliothek zur Verfügung stellt.
+%8.5.1 Byteweise Verarbeitung von Dateien
+%Ein Dateiname soll von cin eingelesen werden. cin ist ein InputStream. Die Datei mit dem eingegebenen Namen soll geöffnet werden. Danach soll die Datei byteweise gelesen und ausgegeben werden.
+%8.5.1.1 Vorgehen
+%Zunächst wird der Dateiname eingelesen. Dann wird versucht, eine Datei dieses Namens zu öffnen. Dabei muss überprüft werden ob die Datei geöffnet werden konnte, denn die Datei könnte nicht vorhanden sein. Danach wird die Eingabedatei in der klassischen Schleife bearbeitet:
+%while(!End of inputfile)
+%{
+%   read Byte as int;
+%   write Byte;
+%}
+%Jedes Byte muss als int gelesen werden, um die EOF-Kennung Traits::eof() (End Of File) verarbeiten zu können: Da ein Byte alle Werte von 0 bis 255 annehmen kann, könnte in den 8 Bit des Bytes die EOF-Kennung nicht verschlüsselt werden. Beim Lesen der Datei sowie beim Schließen müssen die möglichen Fehler bearbeitet werden. 
+%Das Programm gibt alle Anfragen nach cerr aus. Dadurch kann man das Programm auch zum Kopieren von Dateien verwenden, wenn man es in nachfolgender Form aufruft. Der Name der Ausgangsdatei wird angefordert, das Ergebnis wird in die Datei ?ZielDatei? gespeichert.
+%ReadByteFile > DestinationFileName
+%8.5.1.2 Programmbeispiel
+%#include <fstream>
+%#include <iostream>
+%#include <string>
+%
+%void main() 
+%   {
+%      // read filename
+%      std::cerr << "filename?: ");
+%      std::string fileName;
+%      
+%      std::cin >> fileName;
+%      
+%      std::cerr << "filename is " << fileName << std::endl;
+%
+%      // try to open the file. There will be an exception if the file does not exist
+%      std::ifstream f(fileName);
+%      
+%      if(!f) {
+%         std::cerr << "File " << fileName + " not found." std::endl;
+%         return;
+%      }
+%
+%
+%      // read each byte of the file
+%      int ch;
+%      
+%         while((ch = f.get()) != Traits::eof()){
+%            std::cout.put(ch);			// copy each byte to stdout
+%         }
+%         f.close();
+%     
+%   }
+%}
+%8.5.2 Blockweise Verarbeitung von Daten
+%Eine Datei soll binär kopiert werden. Sie darf nicht auf sich selbst kopiert werden, denn wenn diese vor dem ersten Lesen zum Schreiben geöffnet würde, wäre der Inhalt gelöscht. Vor Überschreiben einer vorhandenen Datei soll beim Anwender um eine ausdrückliche Bestätigung nachgefragt werden. Alle Programmausnahmen bei der Ein-/Ausgabe sollen abgefangen werden.
+%8.5.2.1 Vorgehen
+%Es soll ein ifstream bzw. ein ofstream mit std::ios::binary benutzt werden. Damit wird ein binäres Kopieren von Dateien möglich. Es ist effizienter, eine Datei blockweise zu bearbeiten. Die Namen der Quell- und der Zieldatei sollen in der Kommandozeile übergeben werden. Wenn eine Datei auf sich selbst kopiert wird, führt dies bei vielen Systemen zum Löschen der Datei. Um dies zu vermeiden, muss auf Gleichheit der Namen der Quell- bzw. der Zieldatei abgefragt werden. Manche Betriebssysteme ignorieren Unterschiede bei der Gross- bzw. Kleinschreibung von Dateinamen. Deshalb wird eine Vergleichsfunktion für Strings benötigt welche Gross/Kleinschreibung ignoriert.
+%Mit exists() aus der filesystem-Bibliothek kann geprüft werden, ob die Zieldatei vorhanden ist. Wenn dies der Fall ist, wird beim Anwender nachgefragt, ob die Datei wirklich überschreiben werden soll. Wenn der Anwender des Programms im Aufruf die Argumente Quelle und Ziel verwechselt, würde mit dieser Abfrage die automatische Überschreibung einer Datei verhindert.
+%Nach dieser umfangreichen Vorbereitung kann in einer read-write-Schleife kopiert werden.
+%8.5.2.2 Programmbeispiel
+%#include <fstream>
+%#include <iostream>
+%#include <string>
+%
+%#include <cctype>      // std::tolower
+%#include <algorithm>   // std::equal
+%#include <string_view> // std::string_view
+%
+%// Compares two strings ignoring case
+%bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs)
+%{
+%    return std::ranges::equal(lhs, rhs, [](unsigned char a, unsigned char b)
+%       {
+%           return std::tolower(a) == std::tolower(b);
+%       });
+%}
+%
+%// Converts string to upperecase, not used in this example
+%void ToUpper(std::string &s) {
+%   transform(s.begin(), s.end(), s.begin(), ::toupper);
+%}
+%
+%using  std::filesystem::path;
+%using  std::filesystem::exists;
+%
+%   static constexpr int BUFSIZE = 80;
+%
+%   void copy(std::string sourceName, std::string destinationName) 
+%   {
+%       
+%       if(EqualsIgnoreCase(sourceName, destinationName)){
+%         std::cerr << "Error, file is copied to itself!";
+%         
+%         return;
+%      }
+%
+%      if(exists(path(destinationName))) 
+%      {
+%         std::cout << "File " << destinationName <<
+%                          " already exists. Overwrite it? (Y/N)";
+%         
+%            char ch;
+%            std::cin >> ch;
+%            if(std::toupper(ch) != 'Y'){
+%               return; // abort
+%            }
+%      }
+%
+%      ifstream myFileInputStream(sourceName, std::ios::binary);
+%      if (! myFileInputStream){
+%         std::cerr << "Error: cannot open File " << sourceName << std::endl;
+%         return;
+%      }
+%      
+%      ofstream myFileOutputStream(destinationName, std::ios::binary);
+%      if (!myFileOutputStream){
+%         std::cerr << "Error: cannot open File " << destinationName << std::endl;
+%         return;
+%      }
+%
+%      int nbytes = -1;
+%      char b[BUFSIZE];  // Nicer: std::array<char, BUFSIZE> b;
+%         while(myFileInputStream.read(b, BUFSIZE)) // nicer: (b, b.size())
+%         {
+%            myFileOutputStream.write(b, myFileInputStream.gcount());
+%         }
+%      
+%   }
+%
+%   int main(int argc, char *argv[]) 
+%   {
+%      if( argc != 3) 
+%      {
+%         std::cerr << "Usage: CopyBlockFile sourceName destinationName" << std::endl;
+%         return(1);
+%      }
+%      copy(args[0], args[1]);
+%   }
+%
+%8.5.3 Verzeichnisse durchgehen und Informationen zusammentragen
+%
+%Ein Programm in C++, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien die Häufigkeit der Worte zählt, das heisst wie oft welche Worte insgesamt über alle Dateien auftreten.
+%*/
+%/*****************************************************************************/
+%/*  Module     : Solution for Exercise 'Filesystem and Algos'   Version 1.0  */
+%/*****************************************************************************/
+%/**
+% *  \brief        Prints number of occurences of all words found in all textfiles
+% *                in given directorystructure (Requires C++23)
+% *
+% *  Function      Prints a list of number of occurences of all words found over all files with
+% *                extension .txt in given directory and its subdirectories
+% *
+% * Looks recursively for all .txt files in a given directory (and its subdirectories)
+% * and counts the occurences of each word over all found .txt files.
+% * As words counts all character sequences separated by white spaces
+% *
+% *  \author    I. Oesch
+% *
+% *  \date      12.1.2023  IO Created
+% *
+% *  \file      main.c
+% */
+%/*****************************************************************************/
+%/* BFH Burgdorf                                                              */
+%/*****************************************************************************/
+%#include <cstdlib>
+%#include <filesystem>
+%#include <fstream>
+%#include <iostream>
+%#include <set>
+%#include <map>
+%#include <vector>
+%#ifndef __clang__
+%#include <ranges>
+%#endif
+%#include <iterator>
+%#include <algorithm>
+%
+%
+%namespace fs = std::filesystem;
+%
+%// Generate a view only returning whole words
+%// read from given stream
+%// (Views stream as sequence of words (strings))
+%typedef std::ranges::istream_view<std::string> WordView;
+%
+%
+%void Aufgabe3()
+%{
+%
+%    // Map to keep list of words and counter for each word
+%    typedef std::map<std::string, int> WordcountType;
+%    WordcountType wordcount;
+%
+%    // Define filterfunction (Lambda) for textfiles
+%    auto TextFileFilter = [](auto p) { 
+%                             return p.is_regular_file() && p.path().extension() == ".txt"; 
+%                          };
+%
+%    // Set the current path to parent of our directorystructure
+%    // Not really neede, we could also use absolute path in line below
+%    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP"); 
+%                    // /DirectoryStructureForExcercise");
+%
+%    // Create an iterator to travel our directory structure
+%    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
+%
+%    // travel directorystructure, filter out wanted files and parse them, passes reference
+%    // to wordlist into lambda
+%    std::ranges::for_each(files | std::views::filter(TextFileFilter), [&wordcount](auto p){
+%
+%       // Create filestream for current file
+%       std::ifstream file(p.path());
+%
+%       // Lets look wordwise into filestream of current file using WordView
+%       // Count all words from stream
+%       std::ranges::for_each(WordView(file), [&wordcount](auto w){wordcount[w]++;});
+%    });
+% 
+%    // Create vector from view with pointers into map
+%    // Fill vector with pointer to words with count in Map to vector
+%    // Attention, pointer in Vector will become invalid if map is modified
+%    auto SortedWords = wordcount
+%                 | std::views::transform([](auto &v){ return &v; })
+%                 | std::ranges::to<std::vector>();
+%
+%    // Sort words on count
+%    std::ranges::stable_sort(SortedWords, {},[](auto &v) {return v->second;});
+%
+%    // Print sorted words
+%    std::ranges::for_each(SortedWords, [](auto vs){std::cout << vs->second << ":: " 
+%                                                                << vs->first << '\n';});
+%
+%}
+%
+%
+%Ein Programm in C++, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
+%/*****************************************************************************/
+%/*  Function      : Word cross reference                                     */
+%/*****************************************************************************/
+%/**
+% *  \brief        Prints which words are used in which files
+% *                in all textfiles in given directorystructure
+% *
+% *  Function      Prints a list of all words found over all files with
+% *                extension .txt in given directory and its subdirectories
+% *                and prints in which files they are used
+% *
+% *  \noparam      None
+% *
+% *  \return       None
+% *
+% *  \author       I. Oesch
+% *
+% *  \date         12.1.2023  IO  Created
+% */
+%/*****************************************************************************/
+%
+%// Same includes as above, ommited to save space
+%
+%namespace fs = std::filesystem;
+%
+%// Generate a view only returning whole words
+%// read from given stream
+%// (Views stream as sequence of words (strings))
+%typedef std::ranges::istream_view<std::string> WordView;
+%
+%void main()
+%{
+%
+%    // Map of words with set of filenames per word
+%    typedef std::map<std::string, std::set<std::string>> WordSetType;
+%    WordSetType FilesForWord;
+%
+%    // Define filterfunction (Lambda) for textfiles
+%    auto TextFileFilter = [](auto p) { 
+%         return p.is_regular_file() && p.path().extension() == ".txt"; 
+%    };
+%
+%    // Set the current path to parent of our directorystructure
+%    // Not really neede, we could also use absolute path in line below
+%    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP"); // /DirectoryStructureForExcercise");
+%
+%    // Create an iterator to travel our directory structure
+%    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
+%
+%    // travel directorystructure, filter out wanted files and parse them
+%    std::ranges::for_each(files | std::views::filter(TextFileFilter), [&FilesForWord](auto p){
+%
+%       // Create filestream for current file
+%       std::ifstream file(p.path());
+%
+%       // Lets look wordwise into filestream of current file using WordView
+%       // and add name of current file to current word
+%       std::ranges::for_each(WordView(file), [&FilesForWord, &p](auto w) {  
+%                FilesForWord[w].insert(p.path().filename());});
+%       });
+%
+%    // Print list of word with associated files
+%    std::ranges::for_each(FilesForWord, [](auto wf){
+%
+%       // Print word
+%       std::cout << wf.first << ":: ";
+%
+%       // Print list of filenames
+%       std::ranges::for_each(wf.second, [](auto f){ std::cout << f << ", ";});
+%       std::cout << '\n';
+%    });
+%}
+%
+
+
 
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
 \label{section:StandardSTL}
