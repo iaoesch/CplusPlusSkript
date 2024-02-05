@@ -5050,7 +5050,7 @@ zurückzugreifen.
 \chapter{Typumwandlungen (Casts)}
 In \Cpp gibt es mehrere Möglichkeiten, um Typen ineinander umzuwandeln. Einerseits
 der aus C 'geerbte' \OviIndex{Castoperator} (Z. B.\CodeStyle{ (int)} ), der aber nicht mehr benutzt
-werden sollte, andererseits die neuen, flexibleren Castoperatoren \CodeStyle{dynamic_cast<>(), static_cast<>(), const_cast<>()} und \CodeStyle{reinterpret_cast<>()}. 
+werden sollte, andererseits die neuen, flexibleren Castoperatoren \CodeStyle{dynamic_cast<>(), static_cast<>(), const_cast<>()}, \CodeStyle{reinterpret_cast<>()} und \CodeStyle{ auto()}. 
 
 \paragraph*{cast type() und (type)}
 Mit dem Castoperator kann wie mit dem aus C bekannten \CodeStyle{(cast)} eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht entweder aus einem Typnamen in Klammern, gefolgt von einem umzuwandelnden Ausdruck, oder einem Typnamen gefolgt von dem umzuwandelnden Ausdruck in Klammern (Funktionsaufrufsyntax).
@@ -5088,6 +5088,12 @@ dp = (D*)    ip; // OK, Zeiger duerfen ineinander umgewandelt werden
 dp = (D*)   cdp; // OK, Zeiger const darf weggecastet werden
 dp = (D*)    a;  // OK, aber vermutlich sinnlos, wandelt int in Adresse um
 \end{CCode}
+
+\paragraph*{\CodeStyle{auto()}}
+\label{subsubsect:autocast}
+\CodeStyle{auto(expression)} Liefert ein hypothetisches \CodeStyle{x} zurück, welches durch den Ausdruck
+\CodeStyle{auto x = expression} entstehen würde. Ist vorallem bei komplexeren Template-Konstrukten nützlich 
+
 
 \paragraph*{\CodeStyle{reinterpret_cast<>()}}
 Mit dem Castoperator \CodeStyle{reinterpret_cast<>()}\index{reinterpret\_cast<>()} kann wie mit dem aus C bekannten \CodeStyle{(cast)} eine \OviIndex{Typumwandlung} erzwungen werden. Der Castoperator besteht aus dem Schlüsselwort \CodeStyle{reinterpret_cast} und einem in spitzen Klammern eingeschlossenen gültigen Datentyp. Der \CodeStyle{reinterpret_cast<>()} wird wie ein Funktionsaufruf benutzt und hat eine entsprechend hohe Priorität. Bei der Umwandlung wird versucht, denn Wert
@@ -7734,7 +7740,7 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 %Ausgabe : Pi ist 3.14 oder 3
 %8.2.2 Ausgabe mit den byteorientierten Datei-Stream-Klassen
 %Dateiausgaben laufen über Objekte vom Typ ofstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cout benutzt werden. (cout ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
-%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die na?chste Operation bestimmt schief. 
+%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geo?ffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
 % Tabelle 17 zeigt die wichtigsten zusätzlichen Methoden der Klassen ofstream:
 %ofstream(Name, Mode)
 %ofstream(Filename)
@@ -11495,7 +11501,7 @@ Neue Schlüsselworte:
 \end{itemize}
 
 \section{\CppVers{23}}
-Bereits in der Planungs- und Diskussionsphase.
+Finalisiert und bereit zur Verabschiedung im Laufe des 2024.
  %\begin{itemize}
     %\item Planned features for \CppVers{23} are library support for coroutines, a modular standard library, executors, and networking. 
      %\item   Literal suffixes for std::size\_t and the corresponding signed type
@@ -11519,7 +11525,7 @@ Sprache (Stand 14.2.2023)
 \item Make declaration order layout mandated 
 \item Removing mixed wide string literal concatenation 
 \item Deducing this 
-\item auto(x) and auto\{x\} 
+\item auto(x) and auto\{x\} (Siehe \autoref{subsubsect:autocast})
 \item Change scope of lambda trailing-return-type 
 \item \#elifdef and \#elifndef 
 \item Non-literal variables (and labels and gotos) in constexpr functions 
@@ -11529,6 +11535,60 @@ Sprache (Stand 14.2.2023)
 \item Multidimensional subscript operator 
 \item Attributes on lambda expressions 
 \item DR: Missing feature test macros for C++20 core papers 
+% lambdas 	P2173R1 	9 	13 		
+%
+%13.1.6*
+%		2022.2 								
+%#warning 	P2437R1 	Yes* 	Yes 		
+%
+%15.0.0*
+%	6.5 	2023.2 								
+%Remove non-encodable wide character literals and multicharacter wide character literals 	P2362R3 	13 	14 		
+%
+%15.0.0*
+%		2023.2 								
+%Labels at the end of compound statements 	P2324R2 	13 	16 			6.5 	2023.2 								
+%Delimited escape sequences 	P2290R3 	13 	15 		
+%
+%15.0.0*
+%		2023.2 								
+%Named universal character escapes 	P2071R2 	13 	15 		
+%
+%15.0.0*
+%		2023.2 								
+%Relaxing some constexpr restrictions 	P2448R2 	13 	17 (partial) 				2024.0 (partial) 								
+%Simpler implicit move 	P2266R3 	13 	13 				2022.2 								
+%static operator() 	P1169R4 	13 	16 				2023.2 								
+%Requirements for optional extended floating-point types 	P1467R9 	13 		N/A 		6.4 									
+%Class template argument deduction from inherited constructors 	P2582R1 	14 													
+%Attribute [[assume]] 	P1774R8 	13 													
+%Support for UTF-8 as a portable source file encoding 	P2295R6 	13* 	15* 	19.0 (Update 2)** 	
+%
+%15.0.0*
+%		2023.2 								
+%static operator[] 	P2589R0 	13 	16 				2023.2 								
+%Permitting static constexpr variables in constexpr functions 	P2647R1 	13 	16 				2023.2 								
+%Extending the lifetime of temporaries in range-based for loop initializer 	P2718R0 		19 												
+%DR20: Meaningful exports 	P2615R0 		17 (partial) 												
+%DR20: consteval needs to propagate up 	P2564R0 	14 	17 				2024.0 								
+%DR: C++ Identifier Syntax using Unicode Standard Annex 31 	P1949R7 	12 	14 		
+%
+%14.0.0*
+%	6.4 	2022.2 								
+%DR11: Allow duplicate attributes 	P2156R1 	11 	13 		
+%
+%13.1.6*
+%	6.5 									
+%DR20: Adjusting the value of feature-test macro __cpp_concepts 	P2493R0 	12 		19.32* 		6.4 									
+%DR98: Relax requirements on wchar_t to match existing practices 	P2460R2 	Yes 	Yes 		
+%
+%15.0.0*
+%		2023.2 								
+%DR: Using unknown pointers and references in constant expressions 	P2280R4 	14 													
+%DR20: The Equality Operator You Are Looking For 	P2468R2 	13 	16 				2023.2 								
+%DR20: char8_t Compatibility and Portability Fix 	P2513R4 	13 	16 	19.34* 			2023.2 								
+%DR: Clarify reporting of diagnostic directives and allow static_assert of non-value-dependent expressions in a template context 
+
 \end{itemize}
 
 Library (Stand 14.2.2022)
@@ -11561,6 +11621,8 @@ Library (Stand 14.2.2022)
 \item DR: std::format() improvements 
 \item DR: lazy\_split\_view and redesigned split\_view 
 \item zip 
+%zip: views::zip, views::zip_transform, views::adjacent, and views::adjacent_transform
+
 \item Heterogeneous erasure overloads for associative containers 
 \item std::byteswap() 
 \item Printing volatile T* 
@@ -11587,7 +11649,183 @@ Library (Stand 14.2.2022)
 \item ranges::join\_with\_view 
 \item ranges::chunk\_view and ranges::slide\_view 
 \item ranges::chunk\_by\_view
+%std::mdspan: a non-owning multidimensional array reference 	P0009R18
+%P2599R2
+%P2604R0
+%P2613R1
+%P2763R1 		17 (partial)*
+%18 	19.39 (17.9)* 	
+%
+%15.0.0*
+%			
+%<flat_map> 	P0429R9 							
+%<flat_set> 	P1222R4 							
+%ranges::find_last(), ranges::find_last_if(), and ranges::find_last_if_not() 	P1223R5 	13 		19.36* 				
+%Freestanding Library: Easy <utility>, <ranges>, and <iterator> 	P1642R11 	13* 		N/A 				
+%views::stride 	P1899R3 	13 		19.34* 				
+%Compatibility between std::tuple and tuple-like objects 	P2165R4 		2.9 (partial)* 	19.36* (partial)*
+%19.37* 	partial* 			
+%Rectifying constant iterators, sentinels, and ranges 	P2278R4 	13 		19.35* (partial)*
+%19.36* 				
+%Formatting Ranges 	P2286R8 		16 	19.37* (partial)*
+%19.39 (17.9)*(partial)* 	
+%
+%15.0.0*
+%			
+%Improve default container formatting 	P2585R1 		16 (partial)*
+%17 		
+%
+%15.0.0*
+%			
+%Formatted output library <print> 	P2093R14
+%P2539R4 	14 	17 (partial)*
+%18 	19.37* 	
+%
+%15.0.0**
+%			
+%Formatting std::thread::id and std::stacktrace 	P2693R1 	14 	17 (partial)* 	19.38* 	
+%
+%15.0.0*
+%			
+%constexpr for integral overloads of std::to_chars() and std::from_chars(). 	P2291R3 	13 	16 	19.34* 	
+%
+%15.0.0*
+%			
+%ranges::contains() and ranges::contains_subrange() 	P2302R4 	13 		19.34* 				
+%Ranges fold algorithms 	P2322R6 	13 		19.35* 				
+%views::cartesian_product 	P2374R4
+%P2540R1 	13 		19.37* 				
+%Adding move-only types support for comparison concepts (equality_comparable, totally_ordered, three_way_comparable) 	P2404R3 			19.36* 				
+%Ranges iterators as inputs to non-ranges algorithms 	P2408R5 			19.34* 				
+%constexpr std::bitset 	P2417R2 	13 	16 	19.34* 	
+%
+%15.0.0*
+%			
+%basic_string::substr() && 	P2438R2 		16 	19.34* 	
+%
+%15.0.0*
+%			
+%views::as_rvalue 	P2446R2 	13 	16 	19.34* 	
+%
+%15.0.0*
+%			
+%Standard Library Modules 	P2465R3 		17 (partial)* 	19.35*
+%(partial)*
+%19.36* 				
+%std::forward_like() 	P2445R1 	14 	16 	19.34* 	
+%
+%15.0.0*
+%			
+%Support exclusive mode for std::fstream 	P2467R1 	12 	18 	19.36* 				
+%views::repeat 	P2474R2 	13 	17 	19.36* 	
+%
+%15.0.0*
+%			
+%Relaxing range adaptors to allow for move-only types 	P2494R2 	14 	17 	19.34* 	
+%
+%15.0.0*
+%			
+%std::basic_string_view range constructor should be explicit 	P2499R0 	12.2 	16 	19.34* 	
+%
+%15.0.0*
+%			
+%std::generator: synchronous coroutine generator for ranges 	P2502R2
+%P2787R0 	14 						
+%Add a conditional noexcept specification to std::apply 	P2517R1 	10 	18 	19.34* 				
+%Explicit lifetime management (std::start_lifetime_as) 	P2590R2
+%P2679R2 							
+%Clarify handling of encodings in localized formatting of chrono types 	P2419R2 			19.34** 				
+%std::move_iterator should not always be input_iterator 	P2520R0 	12.3* 	17* 	19.34** 	
+%
+%15.0.0*
+%			
+%Deduction guides update for explicit object parameter call operators 	LWG3617 			19.34* 				
+%Deduction guides update for static operator() 	P1169R4 	13 	16 	19.39 (17.9)* 	
+%
+%15.0.0*
+%			
+%Standard names and library support for extended floating-point types 	P1467R9 	13 		19.37** 				
+%Monadic operations for std::expected 	P2505R5 	13 	17 	19.36* 	
+%
+%15.0.0*
+%			
+%views::enumerate 	P2164R9 	13 		19.37* 				
+%std::is_implicit_lifetime 	P2674R1 							
+%std::common_reference_t of std::reference_wrapper should be a reference type 	P2655R3 			19.37* 				
+%Disallowing user specialization of std::allocator_traits 	P2652R2 			19.37* 				
+%Deprecating std::numeric_limits::has_denorm 	P2614R2 		18 	19.37* 				
+%std::barrier's phase completion guarantees 	P2588R3 			19.36* 				
+%Making Multi-Param Constructors Of views explicit 	P2711R1 		17 (partial)* 	19.36** 	
+%
+%15.0.0*
+%			
+%Relaxing Ranges Just A Smidge 	P2609R3 			19.37* 				
+%Stashing Stashing Iterators For Proper Flattening 	P2770R0 	14 	18 	19.37* 				
+%DR17: std::visit() for classes derived from std::variant 	P2162R2 	11.3 	13 	19.20**
+%19.30* 	
+%
+%13.1.6*
+%			
+%DR20: Conditionally borrowed ranges 	P2017R1 	11 	16 	19.30* 				
+%DR20: Repairing input range adaptors and std::counted_iterator 	P2259R1 	12 		19.30*(partial)*
+%19.31* 				
+%DR20: views::join should join all views of ranges 	P2328R1 	11.2 	15 	19.30* 	
+%
+%14.0.3*
+%			
+%DR20: view does not require default_initializable 	P2325R3 	11.3 	16 	19.30* 	
+%
+%15.0.0*
+%			
+%DR20: Range adaptor objects bind arguments by value 	P2281R1 	11 	14 	19.29 (16.10)*
+%(partial)*
+%19.31* 	
+%
+%14.0.3*
+%			
+%DR20: constexpr for std::optional and std::variant 	P2231R1 	11.3 (partial)*
+%12 	13 (partial)* 	19.31* 	
+%
+%13.1.6* (partial)
+%			
+%DR20: views::lazy_split and redesigned views::split 	P2210R2 	12 	16 	19.31* 	
+%
+%15.0.0*
+%			
+%DR20: Fix ranges::istream_view 	P2432R1 	12 	16 	19.31* 	
+%
+%15.0.0*
+%			
+%DR20: view with ownership 	P2415R2 	12 	14 	19.31* 	
+%
+%14.0.3*
+%			
+%DR20: Fixing locale handling in chrono formatters 	P2372R3 	13 		19.31* 				
+%DR20: Cleaning up integer-class types 	P2393R1 			19.32* 				
+%DR20: std::format() improvements 	P2216R3 	13 	14 (partial)*
+%15 	19.32* 	
+%
+%14.0.3*
+%			
+%DR20: Add support for non-const-formattable types to std::format 	P2418R2 	13 	15 	19.32* 	
+%
+%14.0.3*
+%			
+%DR20: std::basic_format_string 	P2508R1 	13 	15 	19.35* 	
+%
+%14.0.3*
+%			
+%DR20: Poison Pills are Too Toxic 	P2602R2 	14 		19.36* 				
+%DR20: std::format fill character allowances 	P2572R1 	14 	17 	19.37* 				
+%DR20: Improving std::format's width estimation 	P2675R1 	14 	17 	19.38* 				
+% 
+%
+
+
 \end{itemize}
+
+\section{\CppVers{26}}
+Bereits in der Planungs- und Diskussionsphase.
 
 
 \appendix
