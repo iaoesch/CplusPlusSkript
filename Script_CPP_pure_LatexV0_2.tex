@@ -9095,73 +9095,57 @@ Einsatzbeispiele:
 
 
 \subsection{Atomic}
-\OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden, es können aber auch Mutexes oder andre Locking Mechanismen verwendet werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt oder Taskwechsel) durchgeführt werden, und damit Race Konditionen vermieden werden können. Zudem kann bei Mehrkernprozessoren mit \CodeStyle{std::atomic} die Synchronisation der Caches sichergestellt werden. (Ob zum Beispiel der lesende Kern die Daten in der gleichen Reihenfolge sieht, wie der Schreibende sie geschrieben hat).
+\OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden, es können aber auch Mutexes oder andre Locking Mechanismen verwendet werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt oder Taskwechsel) durchgeführt werden, und damit Race Konditionen vermieden werden können. Zudem kann bei Mehrkernprozessoren mit \CodeStyle{std::atomic} die Synchronisation der Caches sichergestellt werden. (Ob zum Beispiel der lesende Kern die Daten in der gleichen Reihenfolge sieht, wie der Schreibende sie geschrieben hat). Korrekte Synchronisation der Kommunikation von auf mehrere Kerne mit eigenen Caches verteilten Threads ist ein komplexes Thema und wird hier nur gestreift. 
  
- operator=
+Folgende Operationen werden von atomic Objekten angeboten 
+\begin{description}
+\item[operator=] 
 	stores a value into an atomic object
-(public member function)
-is_lock_free
+\item[is\_lock\_free()]
 	checks if the atomic object is lock-free
-(public member function)
-store
+\item[store(x, MemoryOrder)]
 	atomically replaces the value of the atomic object with a non-atomic argument
-(public member function)
-load
+\item[load(MemoryOrder)]
 	atomically obtains the value of the atomic object
-(public member function)
-operator T
+\item[operator T]
 	loads a value from an atomic object
-(public member function)
-exchange
+\item[exchange(x, MemoryOrder)]
 	atomically replaces the value of the atomic object and obtains the value held previously
-(public member function)
-compare_exchange_weakcompare_exchange_strong
+\item[compare\_exchange\_weak compare\_exchange\_strong(x, MemoryOrder)]
 	atomically compares the value of the atomic object with non-atomic argument and performs atomic exchange if equal or atomic load if not
-(public member function)
-wait
-(C++20)
+\item[wait()]
 	blocks the thread until notified and the atomic value changes
-(public member function)
-notify_one
-(C++20)
+\item[notify\_one()]
 	notifies at least one thread waiting on the atomic object
-(public member function)
-notify_all
-(C++20)
+\item[notify\_all()]
 	notifies all threads blocked waiting on the atomic object
-(public member function)
-Constants
-is_always_lock_free
-[static] (C++17)
+\item[statische bool Konstante is\_always\_lock\_free]
 	indicates that the type is always lock-free
-(public static member constant)
-Specialized member functions
-fetch_add
+\item[fetch\_add(x, MemoryOrder)]
 	atomically adds the argument to the value stored in the atomic object and obtains the value held previously
-(public member function)
-fetch_sub
+\item[fetch\_sub(x, MemoryOrder)]
 	atomically subtracts the argument from the value stored in the atomic object and obtains the value held previously
-(public member function)
-fetch_and
+\item[fetch\_and(x, MemoryOrder)]
 	atomically performs bitwise AND between the argument and the value of the atomic object and obtains the value held previously
-(public member function)
-fetch_or
+\item[fetch\_or(x, MemoryOrder)]
 	atomically performs bitwise OR between the argument and the value of the atomic object and obtains the value held previously
-(public member function)
-fetch_xor
+\item[fetch\_xor(x, MemoryOrder)]
 	atomically performs bitwise XOR between the argument and the value of the atomic object and obtains the value held previously
-(public member function)
-operator++operator++(int)operator--operator--(int)
-	increments or decrements the atomic value by one
-(public member function)
-operator+=operator-=operator&=operator|=operator^=
+\item[operatoren ++, --{}--, +=, --=, \&=, \textbar{}=, \^{}=]
+    Führt die entsprechende Operation atomar aus.
+\end{description}
 
-memory_order_relaxed 	Relaxed operation: there are no synchronization or ordering constraints imposed on other reads or writes, only this operation's atomicity is guaranteed (see Relaxed ordering below).
-memory_order_consume 	A load operation with this memory order performs a consume operation on the affected memory location: no reads or writes in the current thread dependent on the value currently loaded can be reordered before this load. Writes to data-dependent variables in other threads that release the same atomic variable are visible in the current thread. On most platforms, this affects compiler optimizations only (see Release-Consume ordering below).
-memory_order_acquire 	A load operation with this memory order performs the acquire operation on the affected memory location: no reads or writes in the current thread can be reordered before this load. All writes in other threads that release the same atomic variable are visible in the current thread (see Release-Acquire ordering below).
-memory_order_release 	A store operation with this memory order performs the release operation: no reads or writes in the current thread can be reordered after this store. All writes in the current thread are visible in other threads that acquire the same atomic variable (see Release-Acquire ordering below) and writes that carry a dependency into the atomic variable become visible in other threads that consume the same atomic (see Release-Consume ordering below).
-memory_order_acq_rel 	A read-modify-write operation with this memory order is both an acquire operation and a release operation. No memory reads or writes in the current thread can be reordered before the load, nor after the store. All writes in other threads that release the same atomic variable are visible before the modification and the modification is visible in other threads that acquire the same atomic variable.
-memory_order_seq_cst 	A load operation with this memory order performs an acquire operation, a store performs a release operation, and read-modify-write performs both an acquire operation and a release operation, plus a single total order exists in which all threads observe all modifications in the same order (see Sequentially-consistent ordering below).
+Mit MemoryOrder kann speezifiziert werden, auf welche Art der Compiler, der Prozeessor und die Cachelogik die Reihenfolge von Lese-und Schreiboperationen optimieren und miteionander Synchronisieren sollen. Wenn nichts anderes angegeben ist, wird bei allen Atomaren Operationen memory\_order\_seq\_cst als Defaultwert angenommen. MemoryOrder kann folgende Werte annehmen:
+
+\begin{description}
+
+\item[memory\_order\_relaxed] 	Nur atomare Operation, keine Synchronisation oder Einhaltung einer Reihenfolge. Braucht am wenigsten Rechenzeit.
+\item[memory\_order\_consume] 	Für eine Leseoperation mit dieser MemoryOrder gilt: Nachfolgende Lese- oder Schreiboperationen welche von dieser Leseoperation \emph{abhängen} dürfen nicht vor dieser Leseoperation ausgeführt werden.
+\item[memory\_order\_acquire] 	Für eine Leseoperation mit dieser MemoryOrder gilt: \emph{Keine} nachfolgende Lese- oder Schreiboperation darf vor dieser Leseoperation ausgeführt werden. 
+\item[memory\_order\_release] 	Für eine Schreiboperation mit dieser MemoryOrder gilt: \emph{Keine} vorgängige Lese- oder Schreiboperation darf nach dieser Schreiboperation ausgeführt werden.
+\item[memory\_order\_acq\_rel] 	Für eine Lese-Modifizier-Schreiboperation mit dieser MemoryOrder gilt: \emph{Keine} vorgängige Lese- oder Schreiboperation darf nach dieser Schreiboperation ausgeführt und \emph{Keine} nachfolgende Lese- oder Schreiboperation darf vor dieser Leseoperation ausgeführtwerden.
+\item[memory\_order\_seq\_cst] 	Für eine Leseoperation wird memory\_order\_acquire, für eine Schreiboperation memory\_order\_release und für eine Lese-Modifizier-Schreiboperation wird memory\_order\_acq\_rel befolgt, zudem sehen alle anderen Threads alle Modifikationen in der selben Reihenfolge.
+\end{description}
 
 
 \subsubsection{Atomic und volatile}
