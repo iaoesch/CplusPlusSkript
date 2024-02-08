@@ -154,7 +154,7 @@
 %\renewcommand{\headrulewidth}{0.5pt}
 
 %Fußzeile links bzw. innen
-\ifoot{Version 1.4\hspace{2ex} I. Oesch}
+\ifoot{Version 1.5\hspace{2ex} I. Oesch}
 %\fancyfoot[L]{Version 1.3\hspace{2ex} I. Oesch}
 %Fußzeile mittig
 \cfoot{\today}
@@ -507,7 +507,7 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item signed
 \item sizeof
 \item static
-\item static\_assert {\tiny (\Cpp11)}
+\item static\_assert {\tiny (\Cpp11)} (Siehe \autoref{subsubsect:assertions})
 \item static\_cast
 \item struct
 \item switch
@@ -676,6 +676,38 @@ Attribut&	Beschreibung\\
 \end{tabular}
 
  
+\section{Assertions (Seit \CppVers{11})}
+\label{subsubsect:assertions}
+Mit \OviIndex{assert()} kann zur Laufzeit eine Bedingung überprüft werden, wenn diese nicht zutrifft wird das Programm mit einer Fehlermeldung abgebrochen.
+Mit \OviIndex{static\_assert()} wird eine Bedingung zur Compilezeit überprüft, und der Compilevorgang mit einer Fehlermeldung abgebrochen wenn die Bedingung nicht zutrifft.
+\begin{CCode}
+#include <cassert>
+
+float Log2(float x)
+{
+   // Aborts Programm at runtime on negative x
+   assert(x > 0, "Internal error, Log2 needs positive Value")
+   
+   // Some code
+   return r;
+}
+
+enum {
+        Timer1_Intererupt = 6,
+        DMA_Interrupt,
+        Timer2_Interrupt,
+         // A lot more definitions
+         USART5_Interrupt,
+         LastInterrupt = USART5_Interrupt
+     }
+          
+// Sanity Check for Interruptdefinitions while compiling
+static_assert(LastInterrupt == 107, "Interrupt enum got corrupted");
+
+
+}
+\end{CCode}
+
 
 
 \section{Module}
@@ -9100,37 +9132,37 @@ Einsatzbeispiele:
 Folgende Operationen werden von atomic Objekten angeboten 
 \begin{description}
 \item[operator=] 
-	stores a value into an atomic object
-\item[is\_lock\_free()]
-	checks if the atomic object is lock-free
-\item[store(x, MemoryOrder)]
-	atomically replaces the value of the atomic object with a non-atomic argument
-\item[load(MemoryOrder)]
-	atomically obtains the value of the atomic object
+	Speichert einen Wert atomar
 \item[operator T]
-	loads a value from an atomic object
+	Liest einen Wert atomar
+\item[store(x, MemoryOrder)]
+	Speichert einen Wert atomar
+\item[load(MemoryOrder)]
+	Liest einen Wert atomar
 \item[exchange(x, MemoryOrder)]
-	atomically replaces the value of the atomic object and obtains the value held previously
-\item[compare\_exchange\_weak compare\_exchange\_strong(x, MemoryOrder)]
-	atomically compares the value of the atomic object with non-atomic argument and performs atomic exchange if equal or atomic load if not
-\item[wait()]
-	blocks the thread until notified and the atomic value changes
+	Atomares Speichern eines Wertes und zurückliefern des vorherigen Wertes 
+\item[compare\_exchange\_weak compare\_exchange\_strong(x, y, MemoryOrder)]
+	Atomares Vergleichen mit x und allfälliges Speichern eines Wertes y und zurückliefern des vorherigen Wertes
+\item[wait(x)]
+	Blockiert bis signalisiert \emph{und} Wert ungleich x ist 
 \item[notify\_one()]
-	notifies at least one thread waiting on the atomic object
+	Signalisiert mindestens einen auf dieses Objekt wartenden Thread
 \item[notify\_all()]
-	notifies all threads blocked waiting on the atomic object
+	Signalisiert alle auf dieses Objekt wartenden Threads
+\item[is\_lock\_free()]
+	Prüft ob dieses Objekt lock-free ist (Ohne Mutex oder ähnlichem funktioniert)
 \item[statische bool Konstante is\_always\_lock\_free]
-	indicates that the type is always lock-free
+	Zeigt an dass dieses Objekt immer lock-free ist (Ohne Mutex oder ähnlichem funktioniert)
 \item[fetch\_add(x, MemoryOrder)]
-	atomically adds the argument to the value stored in the atomic object and obtains the value held previously
+	Atomares Aufaddieren eines Wertes und zurückliefern des vorherigen Wertes
 \item[fetch\_sub(x, MemoryOrder)]
-	atomically subtracts the argument from the value stored in the atomic object and obtains the value held previously
+	Atomares Subtrahieren eines Wertes und zurückliefern des vorherigen Wertes
 \item[fetch\_and(x, MemoryOrder)]
-	atomically performs bitwise AND between the argument and the value of the atomic object and obtains the value held previously
+	Atomares Und-Verknüpen eines Wertes und zurückliefern des vorherigen Wertes
 \item[fetch\_or(x, MemoryOrder)]
-	atomically performs bitwise OR between the argument and the value of the atomic object and obtains the value held previously
+	Atomares Oder-Verknüpen eines Wertes und zurückliefern des vorherigen Wertes
 \item[fetch\_xor(x, MemoryOrder)]
-	atomically performs bitwise XOR between the argument and the value of the atomic object and obtains the value held previously
+	Atomares Exor-Verknüpen eines Wertes und zurückliefern des vorherigen Wertes
 \item[operatoren ++, --{}--, +=, --=, \&=, \textbar{}=, \^{}=]
     Führt die entsprechende Operation atomar aus.
 \end{description}
@@ -11367,7 +11399,7 @@ Siehe \autoref{subsubsect:ControlAutoMember}
    \item Template Alias
    \item Gelockerte Restriktionen bei Unions
    \item Neuer Datentyp \CodeStyle{long long int}
-   \item Static Assertions
+   \item Static Assertions (Siehe \autoref{subsubsect:assertions})
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
    \item Alignementkontrolle bei Objekten
    \item Einfacher Support für Garbagecollection
@@ -11412,7 +11444,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \section{\CppVers{17}}
 Im Dezember 2017 publiziert.
 \begin{itemize}
-    \item Addition of a default text message for \CodeStyle{static_assert}
+    \item Addition of a default text message for \CodeStyle{static_assert} (Siehe \autoref{subsubsect:assertions})
 
     \item Addition of \CodeStyle{std::string_view}, a non-owning reference to a character sequence or string-slice, which is read-only
 
@@ -11589,59 +11621,28 @@ Sprache (Stand 14.2.2023)
 \item Multidimensional subscript operator 
 \item Attributes on lambda expressions 
 \item DR: Missing feature test macros for C++20 core papers 
-% lambdas 	P2173R1 	9 	13 		
-%
-%13.1.6*
-%		2022.2 								
-%#warning 	P2437R1 	Yes* 	Yes 		
-%
-%15.0.0*
-%	6.5 	2023.2 								
-%Remove non-encodable wide character literals and multicharacter wide character literals 	P2362R3 	13 	14 		
-%
-%15.0.0*
-%		2023.2 								
-%Labels at the end of compound statements 	P2324R2 	13 	16 			6.5 	2023.2 								
-%Delimited escape sequences 	P2290R3 	13 	15 		
-%
-%15.0.0*
-%		2023.2 								
-%Named universal character escapes 	P2071R2 	13 	15 		
-%
-%15.0.0*
-%		2023.2 								
-%Relaxing some constexpr restrictions 	P2448R2 	13 	17 (partial) 				2024.0 (partial) 								
-%Simpler implicit move 	P2266R3 	13 	13 				2022.2 								
-%static operator() 	P1169R4 	13 	16 				2023.2 								
-%Requirements for optional extended floating-point types 	P1467R9 	13 		N/A 		6.4 									
-%Class template argument deduction from inherited constructors 	P2582R1 	14 													
-%Attribute [[assume]] 	P1774R8 	13 													
-%Support for UTF-8 as a portable source file encoding 	P2295R6 	13* 	15* 	19.0 (Update 2)** 	
-%
-%15.0.0*
-%		2023.2 								
-%static operator[] 	P2589R0 	13 	16 				2023.2 								
-%Permitting static constexpr variables in constexpr functions 	P2647R1 	13 	16 				2023.2 								
-%Extending the lifetime of temporaries in range-based for loop initializer 	P2718R0 		19 												
-%DR20: Meaningful exports 	P2615R0 		17 (partial) 												
-%DR20: consteval needs to propagate up 	P2564R0 	14 	17 				2024.0 								
-%DR: C++ Identifier Syntax using Unicode Standard Annex 31 	P1949R7 	12 	14 		
-%
-%14.0.0*
-%	6.4 	2022.2 								
-%DR11: Allow duplicate attributes 	P2156R1 	11 	13 		
-%
-%13.1.6*
-%	6.5 									
-%DR20: Adjusting the value of feature-test macro __cpp_concepts 	P2493R0 	12 		19.32* 		6.4 									
-%DR98: Relax requirements on wchar_t to match existing practices 	P2460R2 	Yes 	Yes 		
-%
-%15.0.0*
-%		2023.2 								
-%DR: Using unknown pointers and references in constant expressions 	P2280R4 	14 													
-%DR20: The Equality Operator You Are Looking For 	P2468R2 	13 	16 				2023.2 								
-%DR20: char8_t Compatibility and Portability Fix 	P2513R4 	13 	16 	19.34* 			2023.2 								
-%DR: Clarify reporting of diagnostic directives and allow static_assert of non-value-dependent expressions in a template context 
+\item \#warning 	 		
+\item Remove non-encodable wide character literals and multicharacter wide character literals 			
+\item Labels at the end of compound statements 	 								
+\item Delimited escape sequences 		
+\item Named universal character escapes 
+\item Relaxing some constexpr restrictions 	
+\item Simpler implicit move 	
+\item static operator(), static operator[] 
+\item Requirements for optional extended floating-point types 	
+\item Class template argument deduction from inherited constructors 
+\item Attribute [[assume]] 	
+\item Support for UTF-8 as a portable source file encoding 	
+\item Permitting static constexpr variables in constexpr functions 	
+\item Extending the lifetime of temporaries in range-based for loop initializer 
+\item DR20: Meaningful exports 
+\item DR20: consteval needs to propagate up 	
+\item DR20: Adjusting the value of feature-test macro \_\_cpp\_concepts 
+\item DR98: Relax requirements on wchar\_t to match existing practices 	
+\item DR: Using unknown pointers and references in constant expressions 	
+\item DR20: The Equality Operator You Are Looking For 	
+\item DR20: char8\_t Compatibility and Portability Fix 	
+\item DR: Clarify reporting of diagnostic directives and allow static\_assert of non-value-dependent expressions in a template context 
 
 \end{itemize}
 
@@ -11674,8 +11675,7 @@ Library (Stand 14.2.2022)
 \item DR: constexpr for std::optional and std::variant 
 \item DR: std::format() improvements 
 \item DR: lazy\_split\_view and redesigned split\_view 
-\item zip 
-%zip: views::zip, views::zip_transform, views::adjacent, and views::adjacent_transform
+\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform
 
 \item Heterogeneous erasure overloads for associative containers 
 \item std::byteswap() 
