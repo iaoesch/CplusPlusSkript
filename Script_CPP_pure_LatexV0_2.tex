@@ -673,7 +673,10 @@ Attribut&	Beschreibung\\
 \hline
 \lstinline$[[optimize_for_synchronized]]$(TM TS) &Zeigt an dass diese Funktion für synchronisierte Ausführung optimiert werden soll\\
 \hline
+\lstinline$[[assume(expression)]]$(\CppVers{23}) &Zeigt an dass der angegebene Ausdruck an dieser Stelle immer wahr ist. Kann dem Compiler beim Optimieren helfen\\
+\hline
 \end{tabular}
+
 
  
 \section{Static Assertions (Seit \CppVers{11})}
@@ -10764,6 +10767,17 @@ Compilersettings:\\
 Eine weitere Optimierungsmöglichkeit wäre der Einsatz zweier separater Methoden zum Setzen und Löschen der Leds, (SetLed() und ClearLed()), damit würde das if im Sourcecode und die entsprechenden Befehle im Assemblercode entfallen. Im Gegenzug würde mehr Speicherplatz für den Code benötigt.
 
 \chapter{Standardisierungen}
+
+\newif\ifshowdetails
+\showdetailstrue
+%\showdetailsfalse
+%
+%\ifshowdetails
+%  sucks!
+%\else
+%  is \textbf{great}
+%\fi
+
 \section{\CppVers{11}}
 \index{C++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige dieser Neuerungen zusammenfassend aufgeführt.
 
@@ -11425,6 +11439,19 @@ Siehe \autoref{subsubsect:ControlAutoMember}
 \section{\CppVers{14}}
 \index{C++ 14}
 Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Dieser bietet einige kleinere Verbesserungen sowie Korrekturen an \CppVers{11} an.
+
+
+
+%\newif\ifshowdetails
+%
+%\showdetailsfalse
+%
+%\ifshowdetails
+%  sucks!
+%\else
+%  is \textbf{great}
+%\fi
+
  
 
 \subsection{Neuerungen}
@@ -11578,13 +11605,13 @@ Seit Dezember 2020 verabschiedet.
 
 Neue Schlüsselworte:
 \begin{itemize}
-    \item  \CodeStyle{concept} 
+    \item  \CodeStyle{concept}     (Konzepte, siehe \autoref{sect:Konzepts})
     \item  \CodeStyle{constinit} 
     \item  \CodeStyle{consteval} 
-    \item  \CodeStyle{co_await} 
-    \item  \CodeStyle{co_return} 
-    \item  \CodeStyle{co_yield} 
-    \item  \CodeStyle{requires} 
+    \item  \CodeStyle{co_await}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
+    \item  \CodeStyle{co_return}  (Coroutinen, siehe \autoref{subsec:CoRoutinen})
+    \item  \CodeStyle{co_yield}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
+    \item  \CodeStyle{requires}   (Konzepte, siehe \autoref{sect:Konzepts}) 
     \item  \CodeStyle{char8_t} 
 \end{itemize}
 
@@ -11633,10 +11660,11 @@ Sprache (Stand 14.2.2023)
 \item static operator(), static operator[] 
 \item Requirements for optional extended floating-point types 	
 \item Class template argument deduction from inherited constructors 
-\item Attribute [[assume]] 	
+\item Attribute [[assume]] 	(Siehe \autoref{subsubsect:Attribute})
 \item Support for UTF-8 as a portable source file encoding 	
 \item Permitting static constexpr variables in constexpr functions 	
 \item Extending the lifetime of temporaries in range-based for loop initializer 
+\ifshowdetails
 \item DR20: Meaningful exports 
 \item DR20: consteval needs to propagate up 	
 \item DR20: Adjusting the value of feature-test macro \_\_cpp\_concepts 
@@ -11645,6 +11673,7 @@ Sprache (Stand 14.2.2023)
 \item DR20: The Equality Operator You Are Looking For 	
 \item DR20: char8\_t Compatibility and Portability Fix 	
 \item DR: Clarify reporting of diagnostic directives and allow static\_assert of non-value-dependent expressions in a template context 
+\fi
 
 \end{itemize}
 
