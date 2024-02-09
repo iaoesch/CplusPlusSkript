@@ -676,7 +676,7 @@ Attribut&	Beschreibung\\
 \end{tabular}
 
  
-\section{Assertions (Seit \CppVers{11})}
+\section{Static Assertions (Seit \CppVers{11})}
 \label{subsubsect:assertions}
 Mit \OviIndex{assert()} kann zur Laufzeit eine Bedingung überprüft werden, wenn diese nicht zutrifft wird das Programm mit einer Fehlermeldung abgebrochen.
 Mit \OviIndex{static\_assert()} wird eine Bedingung zur Compilezeit überprüft, und der Compilevorgang mit einer Fehlermeldung abgebrochen wenn die Bedingung nicht zutrifft.
@@ -9127,7 +9127,7 @@ Einsatzbeispiele:
 
 
 \subsection{Atomic}
-\OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden, es können aber auch Mutexes oder andre Locking Mechanismen verwendet werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt oder Taskwechsel) durchgeführt werden, und damit Race Konditionen vermieden werden können. Zudem kann bei Mehrkernprozessoren mit \CodeStyle{std::atomic} die Synchronisation der Caches sichergestellt werden. (Ob zum Beispiel der lesende Kern die Daten in der gleichen Reihenfolge sieht, wie der Schreibende sie geschrieben hat). Korrekte Synchronisation der Kommunikation von auf mehrere Kerne mit eigenen Caches verteilten Threads ist ein komplexes Thema und wird hier nur gestreift. 
+\OviIndex{Atomic} stellt atomare Operationen zur Verfügung, welche soweit möglich direkt durch die Hardware (Mittels atomarer Instruktionen des Mikroprozessors) realisiert werden, es können aber auch Mutexes oder andre Locking Mechanismen verwendet werden. Dabei handelt es sich um triviale Operatioen wie Wertzuweisung, Inkrementierung und bedingte Zuweisung. Bei Atomaren Operationen ist garantiert, dass sie vollständig ohne Unterbrechung (Z. B. Interrupt oder Taskwechsel) durchgeführt werden, und damit Race Konditionen vermieden werden können. Zudem kann bei Mehrkernprozessoren mit \CodeStyle{std::atomic} die Synchronisation der Caches sichergestellt werden. (Ob zum Beispiel der lesende Kern die Daten in der gleichen Reihenfolge sieht, wie der Schreibende sie geschrieben hat). Korrekte Synchronisation der Kommunikation von auf mehrere Kerne mit eigenen Caches verteilten Threads ist ein komplexes Thema und wird hier nur gestreift. Bei Mehrkernsysteemen mit Cache ist bei atomaren Operationen garantiert, dass andere Kerne den Wert vor oder nach der Operaation sehen, wärend der Operation ist die Cachezeile des Wertes für andere Kerne gelockt, d.h. wenn ein Kern gerade auf diesen Wert zugreifen möchte, wird er blockiert bis der Wert in seinem Cache ebenfalls aktualisiert ist.  
  
 Folgende Operationen werden von atomic Objekten angeboten 
 \begin{description}
@@ -9167,17 +9167,19 @@ Folgende Operationen werden von atomic Objekten angeboten
     Führt die entsprechende Operation atomar aus.
 \end{description}
 
-Mit MemoryOrder kann speezifiziert werden, auf welche Art der Compiler, der Prozeessor und die Cachelogik die Reihenfolge von Lese-und Schreiboperationen optimieren und miteionander Synchronisieren sollen. Wenn nichts anderes angegeben ist, wird bei allen Atomaren Operationen memory\_order\_seq\_cst als Defaultwert angenommen. MemoryOrder kann folgende Werte annehmen:
+Mit MemoryOrder kann speezifiziert werden, auf welche Art der Compiler, der Prozeessor und die Cachelogik die Reihenfolge von Lese-und Schreiboperationen optimieren und miteinander Synchronisieren sollen. Wenn nichts anderes angegeben ist, wird bei allen Atomaren Operationen memory\_order\_seq\_cst als Defaultwert angenommen. MemoryOrder kann folgende Werte annehmen:
 
 \begin{description}
 
-\item[memory\_order\_relaxed] 	Nur atomare Operation, keine Synchronisation oder Einhaltung einer Reihenfolge. Braucht am wenigsten Rechenzeit.
+\item[memory\_order\_relaxed] 	Nur atomare Operation, keine Synchronisation mit anderen Speicherzugriffen oder Einhaltung einer Reihenfolge mit anderen Speicherzugriffen. Einzig die Reihenfolge der Änderungen für die betroffene atomare Variable sieht für alle Kerne (Threads) gleich aus. Braucht am wenigsten Rechenzeit.
 \item[memory\_order\_consume] 	Für eine Leseoperation mit dieser MemoryOrder gilt: Nachfolgende Lese- oder Schreiboperationen welche von dieser Leseoperation \emph{abhängen} dürfen nicht vor dieser Leseoperation ausgeführt werden.
 \item[memory\_order\_acquire] 	Für eine Leseoperation mit dieser MemoryOrder gilt: \emph{Keine} nachfolgende Lese- oder Schreiboperation darf vor dieser Leseoperation ausgeführt werden. 
 \item[memory\_order\_release] 	Für eine Schreiboperation mit dieser MemoryOrder gilt: \emph{Keine} vorgängige Lese- oder Schreiboperation darf nach dieser Schreiboperation ausgeführt werden.
 \item[memory\_order\_acq\_rel] 	Für eine Lese-Modifizier-Schreiboperation mit dieser MemoryOrder gilt: \emph{Keine} vorgängige Lese- oder Schreiboperation darf nach dieser Schreiboperation ausgeführt und \emph{Keine} nachfolgende Lese- oder Schreiboperation darf vor dieser Leseoperation ausgeführtwerden.
 \item[memory\_order\_seq\_cst] 	Für eine Leseoperation wird memory\_order\_acquire, für eine Schreiboperation memory\_order\_release und für eine Lese-Modifizier-Schreiboperation wird memory\_order\_acq\_rel befolgt, zudem sehen alle anderen Threads alle Modifikationen in der selben Reihenfolge.
 \end{description}
+
+Hinweis: Je nach Memoryorder muss zwischen einem atomaren Schreibzugriff von Thread A auf Kern A und einem atomaren Lesezugriff von Thread B auf Kern B ein Teil oder der ganze Cache von A geflusht, und  ein Teil oder der ganze Cache von B invalidiert werden, entsprechend können unnötige atomare Operationen viel Rechenzeit beanspruchen.
 
 
 \subsubsection{Atomic und volatile}
