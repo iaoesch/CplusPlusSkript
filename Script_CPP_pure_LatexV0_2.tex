@@ -434,8 +434,8 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \begin{multicols}{4}
 %\begin{itemize}[label={}]
 \begin{description}
-\item alignas {\tiny (\Cpp11)}
-\item alignof {\tiny (\Cpp11)}
+\item alignas {\tiny (\CppVers{11})}
+\item alignof {\tiny (\CppVers{11})}
 \item and
 \item and\_eq\
 \item asm
@@ -450,22 +450,22 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item case
 \item catch
 \item char
-\item char8\_t {\tiny (\Cpp20)}
-\item char16\_t {\tiny (\Cpp11)}
-\item char32\_t {\tiny (\Cpp11)}
+\item char8\_t {\tiny (\CppVers{20})}
+\item char16\_t {\tiny (\CppVers{11})}
+\item char32\_t {\tiny (\CppVers{11})}
 \item class
 \item compl
-\item concept {\tiny (\Cpp20)}
+\item concept {\tiny (\CppVers{20})}
 \item const
-\item consteval {\tiny (\Cpp20)}
-\item constexpr {\tiny (\Cpp11)}
-\item constinit {\tiny (\Cpp20)}
+\item consteval {\tiny (\CppVers{20})}
+\item constexpr {\tiny (\CppVers{11})}
+\item constinit {\tiny (\CppVers{20})}
 \item const\_cast
 \item continue
-\item co\_await {\tiny (\Cpp20)}
-\item co\_return {\tiny (\Cpp20)}
-\item co\_yield {\tiny (\Cpp20)}
-\item decltype {\tiny (\Cpp11)}
+\item co\_await {\tiny (\CppVers{20})}
+\item co\_return {\tiny (\CppVers{20})}
+\item co\_yield {\tiny (\CppVers{20})}
+\item decltype {\tiny (\CppVers{11})}
 \item default
 \item delete
 \item do
@@ -488,10 +488,10 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item mutable
 \item namespace
 \item new
-\item noexcept {\tiny (\Cpp11)}
+\item noexcept {\tiny (\CppVers{11})}
 \item not
 \item not\_eq
-\item nullptr {\tiny (\Cpp11)}
+\item nullptr {\tiny (\CppVers{11})}
 \item operator
 \item or
 \item or\_eq
@@ -501,20 +501,20 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item reflexpr {\tiny (TS)}
 \item register
 \item reinterpret\_cast
-\item requires {\tiny (\Cpp20)}
+\item requires {\tiny (\CppVers{20})}
 \item return
 \item short
 \item signed
 \item sizeof
 \item static
-\item static\_assert {\tiny (\Cpp11)} (Siehe \autoref{subsubsect:assertions})
+\item static\_assert {\tiny (\CppVers{11})} (Siehe \autoref{subsubsect:assertions})
 \item static\_cast
 \item struct
 \item switch
 \item synchronized {\tiny (TS)}
 \item template
 \item this
-\item thread\_local {\tiny (\Cpp11)}
+\item thread\_local {\tiny (\CppVers{11})}
 \item throw
 \item true
 \item try
@@ -540,10 +540,10 @@ Weiter gibt es Bezeichner mit spezieller Bedeutung, welche zwar für Namen von Ob
 \begin{multicols}{4}
 %\begin{itemize}[label={}]
 \begin{description}
-\item final {\tiny (\Cpp11))}
-\item import {\tiny (\Cpp20))}
-\item module {\tiny (\Cpp20))}
-\item override {\tiny (\Cpp11))}
+\item final {\tiny (\CppVers{11}))}
+\item import {\tiny (\CppVers{20}))}
+\item module {\tiny (\CppVers{20}))}
+\item override {\tiny (\CppVers{11}))}
 \item transaction\_safe  {\tiny (TS)}
 \item transaction\_safe\_dynamic  {\tiny (TS)}
 
@@ -1648,7 +1648,7 @@ Beispiel zu Einsatz von shared Pointer:
 	}
 \end{CCode}
 
-\subsection{RValue Referenzen (Seit \Cpp11)}
+\subsection{RValue Referenzen (Seit \CppVers{11})}
 \label{subsec:RValueRefs}
 
 
@@ -1750,7 +1750,7 @@ Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen 
 
 
 
-\section{Typsicherere Enummerationen (Seit \Cpp11)}
+\section{Typsicherere Enummerationen (Seit \CppVers{11})}
 \label{subsubsect:TypsichererEnum}
 Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie \CodeStyle{int}, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf für einen Enum-Wert) angegeben werden .
 
@@ -1780,7 +1780,7 @@ Neue Syntax:
 	
 \end{CCode}
  
- \section{Initialisiererlisten (Seit \Cpp11)}
+ \section{Initialisiererlisten (Seit \CppVers{11})}
  \label{subsubsect:Initialisiererlisten}
  \index{Initialisiererlisten}
  Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
@@ -1886,8 +1886,8 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 	}
 \end{CCode}
 
-Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \Cpp14 sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Seit \CppVers{11} können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 Mit \CppVers{20} kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
 
 
@@ -1966,7 +1966,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
   \chapter{Literale}
  Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
  
- \section{Nullpointer (Seit \Cpp11)}
+ \section{Nullpointer (Seit \CppVers{11})}
  \label{subsubsect:nullptr}
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
  Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
@@ -2007,7 +2007,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  
  
  
- \section{Erweiterte Stringliterale (Seit \Cpp11)}
+ \section{Erweiterte Stringliterale (Seit \CppVers{11})}
  \label{subsubsect:erweiterteStringliterale}
  Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
  
@@ -2072,7 +2072,7 @@ Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable
 		
 \end{CCode}
 
-\subsection{Structured Bindings (Seit \Cpp17)}
+\subsection{Structured Bindings (Seit \CppVers{17})}
 \label{subsubsect:StructuredBindings}
 \index{Structured Bindings}
 Neu können strukturierte Datentypen automatisch in Einzelvariablen umgepackt werden. Dadurch können unter anderem auch mehrere Werte aus einer Funktion/Methode zurückgegeben werden:
@@ -2255,7 +2255,7 @@ if (c > 0) {
 
 \phantomsection
 \label{subsubsect:ifoptionalinitialisierer}
-Seit \Cpp17 können \CodeStyle{if} (und \CodeStyle{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
+Seit \CppVers{17} können \CodeStyle{if} (und \CodeStyle{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 if (int a = 7; b > c) {
    c = a;
@@ -2283,6 +2283,30 @@ if constexpr (Debug) {
     // Do nothing;
 }
 \end{CCode}
+
+\phantomsection
+\label{subsubsect:constevalif}
+Mit \CppVers{23} wurde das \CodeIndex{consteval if} eingeführt, welches bedingte Compilierung ermöglicht. Das \CodeStyle{consteval if} hat keinen \emph{Bedingungsteil} und wird zur Compilezeit ausgewertet. Wenn das \CodeStyle{consteval if} im Kontext eines konstanten Ausdrucks ausgewertet wird, wird der Block nach den \CodeStyle{if}, ansonsten der Block nach dem \CodeStyle{else} verwendet. Der jeweils andere Block wird ignoriert. Der else-Zweig kann weggelassen werden, es müssen aber zwingend nach dem if und nach dem else Blöcke folgen, Einzelstatements ohne geschweifte Klammeren sind nicht zulässig.
+Im Gegensatz zum Präprozessor \#if muss jedoch der Code im  \CodeStyle{constexpr if} syntaktisch korrekt sein, auch wenn er verworfen wird. 
+
+\begin{CCode}
+constexpr float f(int x)
+{
+   // Alternativ wäre auch if ! consteval möglich
+   if consteval {
+      // do whatever is to be done in const case 
+      return 0.0f;
+   } else { 
+      // do whatever is to be done in not const case 
+      return (sin(x));
+   }
+}
+  
+y = f(z);  // non const case, returns sin(z) at runtime  
+y = f(7);  // const case, replaced by 0.0f at compile time  
+  
+\end{CCode}
+
 
 \section{while(), do while()}
 Die Schlaufe wird solange ausgeführt wie die while-Bedingung wahr ist.
@@ -2354,7 +2378,7 @@ while (j < 19) {
 \end{CCode}
 Geschrieben werden
 
-\subsection{Automatische For-Schlaufe (Seit \Cpp11)}
+\subsection{Automatische For-Schlaufe (Seit \CppVers{11})}
 \label{subsec:AutomaticForLoop}
 
 Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
@@ -2392,7 +2416,7 @@ switch (i) {
 
 \phantomsection
 \label{subsubsect:switchoptionalinitialisierer}
-Seit \Cpp17 können \CodeStyle{switch} (und \CodeStyle{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \CodeStyle{switch}-Statement (resp. \CodeStyle{if}-Statement) und die dazugehörigen Blöcke beschränkt:
+Seit \CppVers{17} können \CodeStyle{switch} (und \CodeStyle{if}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das \CodeStyle{switch}-Statement (resp. \CodeStyle{if}-Statement) und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 switch (int a = 7; b) {
    case 1: c = a;
@@ -2556,7 +2580,7 @@ int main (int argc, char *argv[])
 }
 \end{CCode}
 
-\section{Alternative Funktionsdefinition (Seit \Cpp11)}
+\section{Alternative Funktionsdefinition (Seit \CppVers{11})}
 \label{subsubsect:Alternative Funktionsdefinition}
 
 Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
@@ -2589,12 +2613,12 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 
 
 
-\section{constexpr Funktionen (Seit \Cpp11)}
-Seit \Cpp11 können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
+\section{constexpr Funktionen (Seit \CppVers{11})}
+Seit \CppVers{11} können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
 Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
 Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
-\section{Anonyme Funktionen (Lambda Funktionen) (Seit \Cpp11)}
+\section{Anonyme Funktionen (Lambda Funktionen) (Seit \CppVers{11})}
 \label{subsec:LambdaFunctions}
 \OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 
@@ -2603,7 +2627,7 @@ Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 	[capture](parameters)->return_type{body}
 \end{CCode}
 
-Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren. Seit \Cpp14 können auch initialisierte Variablen im Captureblock stehen (\CodeStyle{[x = a + 5 *b]}  a und b werden von der definierenden Funktion gelesen, x ist eine lokale Variable des Lambdablocks)
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren. Seit \CppVers{14} können auch initialisierte Variablen im Captureblock stehen (\CodeStyle{[x = a + 5 *b]}  a und b werden von der definierenden Funktion gelesen, x ist eine lokale Variable des Lambdablocks)
 
 \emph{Parameters} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
@@ -2658,7 +2682,7 @@ Auch generische Lambdafunktionen sind seit \CppVers{14} möglich (Siehe \autoref{
 
 
 
-\section{Coroutinen (Seit \Cpp20)}
+\section{Coroutinen (Seit \CppVers{20})}
 \label{subsec:CoRoutinen}
 \OviIndex{Coroutinen} sind Funktionen, welche unterbrochen und zu einem späteren Zeitpunkt fortgesetzt werden können. Hilfreich bei kooperativem Multitasking ohne Betriebssystem.
 
@@ -3332,13 +3356,15 @@ Eine eigene Speicherverwaltung wird üblicherweise nur dann eingesetzt, wenn die 
 Es ist auch möglich, das Placement-\CodeStyle{new} zu überladen, oder neue Versonen von \CodeStyle{new} mit anderen Argumentenlisten zu definieren.
 \section{Überladbare Operatoren mit veränderter Funktionalität}
 Der Operator \CodeStyle{->()} ist ein unärer Operator und muss wieder einen Pointer auf ein Objekt zurückliefern, auf welchen erneut \CodeStyle{->} mit dem original Membernamen angewendet wird (Wobei möglicherweise erneut ein überladener \CodeStyle{operator ->} zum Zuge kommen kann).
-Die Operatoren \CodeStyle{&&, ||} und \CodeStyle{,} verlieren ihre speziellen Auswertungsregeln, es werden immer beide Operanden ausgewertet, so wie bei den restlichen binären Operatoren (Üblicherweise wird bei \CodeStyle{&&} und \CodeStyle{||} nur der erste Operand ausgewertet, wenn dadurch das Ergebnis schon klar ist, und beim \CodeStyle{,} wird üblicherweise der erste Operand zuerst ausgewertet. 
+Die Operatoren \CodeStyle{&&, ||} und \CodeStyle{,} verlieren ihre speziellen Auswertungsregeln, es werden immer beide Operanden ausgewertet, so wie bei den restlichen binären Operatoren (Üblicherweise wird bei \CodeStyle{&&} und \CodeStyle{||} nur der erste Operand ausgewertet, wenn dadurch das Ergebnis schon klar ist, und beim \CodeStyle{,} wird üblicherweise der erste Operand zuerst ausgewertet.
+
+seit 
 \section{Nicht überladbare Operatoren}
 Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \CodeStyle{:: . .* sizeof alignof typeid ?:}
 
 
-\section{Benutzerdefinierte Literale (Seit \Cpp11)}
+\section{Benutzerdefinierte Literale (Seit \CppVers{11})}
 \index{Benutzerdefinierte Literale}
 \label{subsubsect:BenutzerdefinierteLiterale}
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, wie Zeitdauern in \CodeStyle{std::chrono}, siehe \autoref{subsect:STDChrono:Duration}).
@@ -4249,7 +4275,7 @@ class StudentClass {
 };
 \end{CCode}
 
-\subsection{Vereinheitlichte Initialisierung (Seit \Cpp11)}
+\subsection{Vereinheitlichte Initialisierung (Seit \CppVers{11})}
 \label{subsubsect:VereinheitlichteInitialisierung}
 Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
 passende Konstruktor aufgerufen (falls vorhanden). Auch für POD gelten dieselbem Regeln.
@@ -4707,7 +4733,7 @@ int main (int argc, char *argv[])
 \end{CCode}
 
 
-\subsection{Kontrolliertes Überschreiben von Funktionen (seit \Cpp11)}
+\subsection{Kontrolliertes Überschreiben von Funktionen (seit \CppVers{11})}
 \label{subsubsect:KontrolliertesUeberschreiben}
 
 Mit den Bezeichnern \index{override}{\CodeStyle{override}} und \index{final}\CodeStyle{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürfen weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
@@ -10857,7 +10883,7 @@ Siehe \autoref{subsec:RValueRefs}
 %\label{subsubsect:constexpr}
 Siehe \autoref{subsubsect:constexpr}
 %Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
-%Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \Cpp14 sind fast alle Anweisungen erlaubt).
+%Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind fast alle Anweisungen erlaubt).
 %
 %Beispiel
 %\begin{CCode}
@@ -11603,11 +11629,13 @@ Seit Dezember 2020 verabschiedet.
     \item Mathematical constants 
 \end{itemize}
 
+
+
 Neue Schlüsselworte:
 \begin{itemize}
-    \item  \CodeStyle{concept}     (Konzepte, siehe \autoref{sect:Konzepts})
-    \item  \CodeStyle{constinit} 
-    \item  \CodeStyle{consteval} 
+    \item  \CodeStyle{concept}    (Konzepte, siehe \autoref{sect:Konzepts})
+    \item  \CodeStyle{constinit}  (Siehe \autoref{subsubsect:constinit})
+    \item  \CodeStyle{consteval}  (Siehe \autoref{subsubsect:consteval})
     \item  \CodeStyle{co_await}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
     \item  \CodeStyle{co_return}  (Coroutinen, siehe \autoref{subsec:CoRoutinen})
     \item  \CodeStyle{co_yield}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
@@ -11631,7 +11659,7 @@ Sprache (Stand 14.2.2023)
 \begin{itemize}
 \item Literal suffix for (signed) size\_t 
 \item Make () more optional for lambdas 
-\item if consteval 
+\item if consteval (Siehe \autoref{subsubsect:constevalif})
 \item Removing Garbage Collection Support 
 \item DR: C++ Identifier Syntax using Unicode Standard Annex 31 
 \item DR: Allow Duplicate Attributes 
@@ -11673,6 +11701,8 @@ Sprache (Stand 14.2.2023)
 \item DR20: The Equality Operator You Are Looking For 	
 \item DR20: char8\_t Compatibility and Portability Fix 	
 \item DR: Clarify reporting of diagnostic directives and allow static\_assert of non-value-dependent expressions in a template context 
+\else
+\item Sowie viele Korrekturen und Präzisierungen 
 \fi
 
 \end{itemize}
