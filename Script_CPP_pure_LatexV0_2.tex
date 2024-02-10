@@ -3358,7 +3358,20 @@ Es ist auch möglich, das Placement-\CodeStyle{new} zu überladen, oder neue Verso
 Der Operator \CodeStyle{->()} ist ein unärer Operator und muss wieder einen Pointer auf ein Objekt zurückliefern, auf welchen erneut \CodeStyle{->} mit dem original Membernamen angewendet wird (Wobei möglicherweise erneut ein überladener \CodeStyle{operator ->} zum Zuge kommen kann).
 Die Operatoren \CodeStyle{&&, ||} und \CodeStyle{,} verlieren ihre speziellen Auswertungsregeln, es werden immer beide Operanden ausgewertet, so wie bei den restlichen binären Operatoren (Üblicherweise wird bei \CodeStyle{&&} und \CodeStyle{||} nur der erste Operand ausgewertet, wenn dadurch das Ergebnis schon klar ist, und beim \CodeStyle{,} wird üblicherweise der erste Operand zuerst ausgewertet.
 
-seit 
+\phantomsection
+\label{subsubsect:MehrdimensionalIndexoperator}
+Seit \CppVers{23} kann der Indizierungsoperator auch mehrdimensional überladen werden:
+\begin{CCode}
+class Array3D {
+  ... // Some code and definitions
+  int operator [] (int x, int y, int z);
+}
+
+  Array3D MyArray;
+  Value = MyArray[n, m, i];  // 3D Indexing  
+\end{CCode}
+
+
 \section{Nicht überladbare Operatoren}
 Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \CodeStyle{:: . .* sizeof alignof typeid ?:}
@@ -11657,7 +11670,7 @@ Finalisiert und bereit zur Verabschiedung im Laufe des 2024.
 
 Sprache (Stand 14.2.2023)
 \begin{itemize}
-\item Literal suffix for (signed) size\_t 
+\item Literal suffix 'z' for (signed) size\_t (z. B. size\_t l = 100z;)
 \item Make () more optional for lambdas 
 \item if consteval (Siehe \autoref{subsubsect:constevalif})
 \item Removing Garbage Collection Support 
@@ -11675,14 +11688,14 @@ Sprache (Stand 14.2.2023)
 \item Consistent character literal encoding 
 \item Character sets and encodings 
 \item Extend init-statement to allow alias-declaration 
-\item Multidimensional subscript operator 
+\item Multidimensional subscript operator (Siehe \autoref{subsubsect:MehrdimensionalIndexoperator})
 \item Attributes on lambda expressions 
 \item DR: Missing feature test macros for C++20 core papers 
 \item \#warning 	 		
 \item Remove non-encodable wide character literals and multicharacter wide character literals 			
 \item Labels at the end of compound statements 	 								
 \item Delimited escape sequences 		
-\item Named universal character escapes 
+\item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$)
 \item Relaxing some constexpr restrictions 	
 \item Simpler implicit move 	
 \item static operator(), static operator[] 
