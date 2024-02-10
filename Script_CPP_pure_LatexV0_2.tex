@@ -7238,7 +7238,8 @@ selbst neue Manipulatoren zu erzeugen.
 Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, left, right}
 
 
-
+\phantomsection
+\label{subsubsect:formated}
 \textbf{std::format}
 
 Seit \CppVers{20} gibt es mit \CodeStyle{std::format} weitere Formatiermöglichkeiten, welche
@@ -11609,7 +11610,7 @@ Seit Dezember 2020 verabschiedet.
     \item DR: array new can deduce array size 
 \end{itemize}
 \begin{itemize}
-    \item  Formatting library (Ersatz für printf())
+    \item  Formatting library (Ersatz für printf(), siehe \autoref{subsubsect:formated}))
     \item Calendar and Time Zone library
     \item \CodeStyle{std::source_location}
     \item \CodeStyle{std::span}
@@ -11698,7 +11699,7 @@ Sprache (Stand 14.2.2023)
 \item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$)
 \item Relaxing some constexpr restrictions 	
 \item Simpler implicit move 	
-\item static operator(), static operator[] 
+\item static operator(), static operator[] Dürfen nun auch (statische) Klassenmethoden sein
 \item Requirements for optional extended floating-point types 	
 \item Class template argument deduction from inherited constructors 
 \item Attribute [[assume]] 	(Siehe \autoref{subsubsect:Attribute})
@@ -11777,180 +11778,66 @@ Library (Stand 14.2.2022)
 \item ranges::join\_with\_view 
 \item ranges::chunk\_view and ranges::slide\_view 
 \item ranges::chunk\_by\_view
-%std::mdspan: a non-owning multidimensional array reference 	P0009R18
-%P2599R2
-%P2604R0
-%P2613R1
-%P2763R1 		17 (partial)*
-%18 	19.39 (17.9)* 	
-%
-%15.0.0*
-%			
-%<flat_map> 	P0429R9 							
-%<flat_set> 	P1222R4 							
-%ranges::find_last(), ranges::find_last_if(), and ranges::find_last_if_not() 	P1223R5 	13 		19.36* 				
-%Freestanding Library: Easy <utility>, <ranges>, and <iterator> 	P1642R11 	13* 		N/A 				
-%views::stride 	P1899R3 	13 		19.34* 				
-%Compatibility between std::tuple and tuple-like objects 	P2165R4 		2.9 (partial)* 	19.36* (partial)*
-%19.37* 	partial* 			
-%Rectifying constant iterators, sentinels, and ranges 	P2278R4 	13 		19.35* (partial)*
-%19.36* 				
-%Formatting Ranges 	P2286R8 		16 	19.37* (partial)*
-%19.39 (17.9)*(partial)* 	
-%
-%15.0.0*
-%			
-%Improve default container formatting 	P2585R1 		16 (partial)*
-%17 		
-%
-%15.0.0*
-%			
-%Formatted output library <print> 	P2093R14
-%P2539R4 	14 	17 (partial)*
-%18 	19.37* 	
-%
-%15.0.0**
-%			
-%Formatting std::thread::id and std::stacktrace 	P2693R1 	14 	17 (partial)* 	19.38* 	
-%
-%15.0.0*
-%			
-%constexpr for integral overloads of std::to_chars() and std::from_chars(). 	P2291R3 	13 	16 	19.34* 	
-%
-%15.0.0*
-%			
-%ranges::contains() and ranges::contains_subrange() 	P2302R4 	13 		19.34* 				
-%Ranges fold algorithms 	P2322R6 	13 		19.35* 				
-%views::cartesian_product 	P2374R4
-%P2540R1 	13 		19.37* 				
-%Adding move-only types support for comparison concepts (equality_comparable, totally_ordered, three_way_comparable) 	P2404R3 			19.36* 				
-%Ranges iterators as inputs to non-ranges algorithms 	P2408R5 			19.34* 				
-%constexpr std::bitset 	P2417R2 	13 	16 	19.34* 	
-%
-%15.0.0*
-%			
-%basic_string::substr() && 	P2438R2 		16 	19.34* 	
-%
-%15.0.0*
-%			
-%views::as_rvalue 	P2446R2 	13 	16 	19.34* 	
-%
-%15.0.0*
-%			
-%Standard Library Modules 	P2465R3 		17 (partial)* 	19.35*
-%(partial)*
-%19.36* 				
-%std::forward_like() 	P2445R1 	14 	16 	19.34* 	
-%
-%15.0.0*
-%			
-%Support exclusive mode for std::fstream 	P2467R1 	12 	18 	19.36* 				
-%views::repeat 	P2474R2 	13 	17 	19.36* 	
-%
-%15.0.0*
-%			
-%Relaxing range adaptors to allow for move-only types 	P2494R2 	14 	17 	19.34* 	
-%
-%15.0.0*
-%			
-%std::basic_string_view range constructor should be explicit 	P2499R0 	12.2 	16 	19.34* 	
-%
-%15.0.0*
-%			
-%std::generator: synchronous coroutine generator for ranges 	P2502R2
-%P2787R0 	14 						
-%Add a conditional noexcept specification to std::apply 	P2517R1 	10 	18 	19.34* 				
-%Explicit lifetime management (std::start_lifetime_as) 	P2590R2
-%P2679R2 							
-%Clarify handling of encodings in localized formatting of chrono types 	P2419R2 			19.34** 				
-%std::move_iterator should not always be input_iterator 	P2520R0 	12.3* 	17* 	19.34** 	
-%
-%15.0.0*
-%			
-%Deduction guides update for explicit object parameter call operators 	LWG3617 			19.34* 				
-%Deduction guides update for static operator() 	P1169R4 	13 	16 	19.39 (17.9)* 	
-%
-%15.0.0*
-%			
-%Standard names and library support for extended floating-point types 	P1467R9 	13 		19.37** 				
-%Monadic operations for std::expected 	P2505R5 	13 	17 	19.36* 	
-%
-%15.0.0*
-%			
-%views::enumerate 	P2164R9 	13 		19.37* 				
-%std::is_implicit_lifetime 	P2674R1 							
-%std::common_reference_t of std::reference_wrapper should be a reference type 	P2655R3 			19.37* 				
-%Disallowing user specialization of std::allocator_traits 	P2652R2 			19.37* 				
-%Deprecating std::numeric_limits::has_denorm 	P2614R2 		18 	19.37* 				
-%std::barrier's phase completion guarantees 	P2588R3 			19.36* 				
-%Making Multi-Param Constructors Of views explicit 	P2711R1 		17 (partial)* 	19.36** 	
-%
-%15.0.0*
-%			
-%Relaxing Ranges Just A Smidge 	P2609R3 			19.37* 				
-%Stashing Stashing Iterators For Proper Flattening 	P2770R0 	14 	18 	19.37* 				
-%DR17: std::visit() for classes derived from std::variant 	P2162R2 	11.3 	13 	19.20**
-%19.30* 	
-%
-%13.1.6*
-%			
-%DR20: Conditionally borrowed ranges 	P2017R1 	11 	16 	19.30* 				
-%DR20: Repairing input range adaptors and std::counted_iterator 	P2259R1 	12 		19.30*(partial)*
-%19.31* 				
-%DR20: views::join should join all views of ranges 	P2328R1 	11.2 	15 	19.30* 	
-%
-%14.0.3*
-%			
-%DR20: view does not require default_initializable 	P2325R3 	11.3 	16 	19.30* 	
-%
-%15.0.0*
-%			
-%DR20: Range adaptor objects bind arguments by value 	P2281R1 	11 	14 	19.29 (16.10)*
-%(partial)*
-%19.31* 	
-%
-%14.0.3*
-%			
-%DR20: constexpr for std::optional and std::variant 	P2231R1 	11.3 (partial)*
-%12 	13 (partial)* 	19.31* 	
-%
-%13.1.6* (partial)
-%			
-%DR20: views::lazy_split and redesigned views::split 	P2210R2 	12 	16 	19.31* 	
-%
-%15.0.0*
-%			
-%DR20: Fix ranges::istream_view 	P2432R1 	12 	16 	19.31* 	
-%
-%15.0.0*
-%			
-%DR20: view with ownership 	P2415R2 	12 	14 	19.31* 	
-%
-%14.0.3*
-%			
-%DR20: Fixing locale handling in chrono formatters 	P2372R3 	13 		19.31* 				
-%DR20: Cleaning up integer-class types 	P2393R1 			19.32* 				
-%DR20: std::format() improvements 	P2216R3 	13 	14 (partial)*
-%15 	19.32* 	
-%
-%14.0.3*
-%			
-%DR20: Add support for non-const-formattable types to std::format 	P2418R2 	13 	15 	19.32* 	
-%
-%14.0.3*
-%			
-%DR20: std::basic_format_string 	P2508R1 	13 	15 	19.35* 	
-%
-%14.0.3*
-%			
-%DR20: Poison Pills are Too Toxic 	P2602R2 	14 		19.36* 				
-%DR20: std::format fill character allowances 	P2572R1 	14 	17 	19.37* 				
-%DR20: Improving std::format's width estimation 	P2675R1 	14 	17 	19.38* 				
-% 
-%
-
-
-\end{itemize}
+\item  std::mdspan: a non-owning multidimensional array reference 	
+\item <flat\_map>  	
+\item <flat\_set> 	
+\item ranges::find\_last(), ranges::find\_last\_if(), and ranges::find\_last\_if\_not()  	
+\item Freestanding Library: Easy <utility>, <ranges>, and <iterator> 	 	
+\item views::stride  	
+\item Compatibility between std::tuple and tuple-like objects  	
+\item Rectifying constant iterators, sentinels, and ranges 	 	
+\item Formatting Ranges  	
+\item Improve default container formatting 	 	
+\item Formatted output library <print>  	
+\item Formatting std::thread::id and std::stacktrace  	
+\item constexpr for integral overloads of std::to\_chars() and std::from\_chars().  	
+\item ranges::contains() and ranges::contains\_subrange()  	
+\item Adding move-only types support for comparison concepts (equality\_comparable, totally\_ordered, three\_way\_comparable)  	
+\item constexpr std::bitset  	
+\item basic\_string::substr() \&\& 	 	
+\item views::as\_rvalue  	
+\item Standard Library Modules  	
+\item std::forward\_like()  	
+\item Support exclusive mode for std::fstream 	 	
+\item views::repeat  	
+\item Relaxing range adaptors to allow for move-only types  	
+\item std::basic\_string\_view range constructor should be explicit  	
+\item std::generator: synchronous coroutine generator for ranges  	
+\item Add a conditional noexcept specification to std::apply  	
+\item Explicit lifetime management (std::start\_lifetime\_as)  	
+\item Clarify handling of encodings in localized formatting of chrono types  	
+\item std::move\_iterator should not always be input\_iterator  	
+\item Deduction guides update for explicit object parameter call operators  	
+\item Deduction guides update for static operator()  	
+\item Standard names and library support for extended floating-point types  	
+\item Monadic operations for std::expected  	
+\item views::enumerate  	
+\item std::is\_implicit\_lifetime  	
+\item std::common\_reference\_t of std::reference\_wrapper should be a reference type  	
+\item Disallowing user specialization of std::allocator\_traits  	
+\item Deprecating std::numeric\_limits::has\_denorm  	
+\item std::barrier's phase completion guarantees  	
+\item Making Multi-Param Constructors Of views explicit  	
+\item Relaxing Ranges Just A Smidge  	
+\item Stashing Stashing Iterators For Proper Flattening  	
+\item DR17: std::visit() for classes derived from std::variant 	 	
+\item DR20: Conditionally borrowed ranges  	
+\item DR20: Repairing input range adaptors and std::counted\_iterator  	
+\item DR20: views::join should join all views of ranges  	
+\item DR20: view does not require default\_initializable  	
+\item DR20: Range adaptor objects bind arguments by value  	
+\item DR20: constexpr for std::optional and std::variant  	
+\item DR20: views::lazy\_split and redesigned views::split  	
+\item DR20: Fix ranges::istream\_view  	
+\item DR20: view with ownership  	
+\item R20: Fixing locale handling in chrono formatters 	 	
+\item DR20: Cleaning up integer-class types  	
+\item DR20: std::format() improvements  	
+\item DR20: Add support for non-const-formattable types to std::format 	 	
+\item DR20: std::basic\_format\_string  	
+\item DR20: Poison Pills are Too Toxic  	
+\item DR20: std::format fill character allowances  	
+\item DR20: Improving std::format's width estimation \end{itemize}
 
 \section{\CppVers{26}}
 Bereits in der Planungs- und Diskussionsphase.
