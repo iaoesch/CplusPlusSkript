@@ -92,6 +92,7 @@
 \usepackage{lmodern}
 \usepackage{textcomp}
 \usepackage{makeidx}
+\usepackage[pdf]{graphviz}
 
 
 %Kopf- und Fußzeile
@@ -3479,7 +3480,7 @@ int main(int argc, char *argv[]) {
 \end{CCode}
 
 \section{Aufbau einer Klasse}
-\label{sect:AttributeKlassen}
+\label{sect:AufbauKlasse}
 Eine Klasse kann folgende Elemente beinhalten:
 
   \begin{labeling}{Basisklasse(n)}
@@ -7101,6 +7102,129 @@ int main()
 \label{sect:DateiEinAusgabe}
 \OviIndex{Dateiausgaben} laufen über Objekte vom Typ \CodeIndex{ofstream}, Eingaben über solche vom Typ \CodeIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile \CodeStyle{<fstream>} mittels \CodeStyle{#include <fstream>} eingebunden werden. (Mit \CodeStyle{#include} werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie \CodeStyle{cin} und \CodeStyle{cout} benutzt werden. (\CodeStyle{cin} und \CodeStyle{cout} sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
 
+
+Die Ein-/Ausgabe von C++ läuft über die Klassen  istream und ostream. Diese Klassen enthalten die Definitionen aller Methoden zur grundlegenden Ein-/Ausgabe. Allerdings gibt es keine Exemplare dieser abstrakten Klassen, konkret gibt es nur Ableitungen davon, wie etwa die ifstream oder ofstream-Klassen. Mit den in der Standardlibrary enthaltenen Klassen ist Konsolen- (cin, cout) und Datei-I/O (ifstream, ofstream) sowie das Lesen aus und das Schreiben in Strings (istringstream,  ostringstream möglich.
+Für andere Kanäle können eigene Klassen oder Libraries selber abgeleitete Klassen definieren.
+
+Die Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Streams aus, es gibt aber Varianten für Unicode.
+
+Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
+ Tabelle 17 zeigt die wichtigsten Methoden die für alle stream Klassen verfügbar sind:
+%Operator bool();
+%Liefert true wenn kein Fehler im Stream vorhanden ist.
+%Bool Operator  !();
+%bool fail();
+%Liefern false wenn kein Fehler im Stream vorhanden ist, Gegenteil von operator bool().
+%bool good();
+%Liefert true wenn weder fail noch eof true sind.
+%
+%Bool eof();
+%Liefert  true, wenn das Dateiende erreicht wurde.
+%tellp()
+%seekp()
+%Position im Dateistrom setzten oder abfragen.
+%Tabelle 16: Methoden der Klasse Stream
+%Die stream- Klassenhierarchie ist in Error: Reference source not found dargestellt. In ios sind die Gemeinsamkeiten aller Streams zusammengefasst. Zur Anwendung wird jeweils eine Instanz von diesen abgeleiteten Klassen angelegt. 
+%
+%ios
+%
+%istream
+%
+%
+%
+%ifstream
+%
+%
+%istrstream
+%
+%
+%
+%
+%ostream
+%
+%
+%
+%ofstream
+%
+%
+%ostrstream
+%
+%
+%
+%
+%
+%
+%
+%iostream
+%
+%
+%
+%iofstream
+%
+%
+%iostrstream
+%
+%
+%
+%
+%Abbildung 15: Klassenhierarchie von Stream
+%
+
+%\digraph{abc}{
+%      rankdir=LR;
+%      a_1 -> b_2 -> c;
+%   }
+
+\digraph[scale=0.5]{UMLIOSClassdiagram}{
+
+      %digraph UML_Class_diagram {
+%	graph [
+%		label="I/O System Klassenhierarchie"
+%		labelloc="t"
+%		fontname="Helvetica,Arial,sans-serif"
+%	]
+	node [
+%		fontname="Helvetica,Arial,sans-serif"
+		shape=record
+		style=filled
+		fillcolor=gray95
+	]
+%	edge [fontname="Helvetica,Arial,sans-serif"]
+%	edge [arrowhead=vee style=dashed]
+	
+%	edge [dir=back arrowtail=empty style=""]
+ 	edge [dir=back arrowtail=empty ]
+	basic_ios -> basic_istream 
+	basic_ios -> basic_ostream 
+	ios_base -> basic_ios 
+	basic_istream -> basic_iostream 
+	basic_ostream -> basic_iostream 
+	basic_istream -> basic_istringstream  
+    basic_iostream -> basic_stringstream
+	basic_ostream -> basic_ostringstream  
+	basic_istream -> basic_ifstream  
+    basic_iostream -> basic_fstream
+	basic_ostream -> basic_ofstream  
+	
+	ios_base[label = <{<b>ios_base    </b> }>]
+	basic_ios[label = <{<b>basic_ios</b> <br/> &lt;CharT, Traits&gt;}>]
+	basic_istream[label = <{<b>basic_istream</b> <br/> &lt;CharT, Traits&gt;}>]
+	basic_ostream[label = <{<b>basic_ostream</b>    <br/> &lt;CharT, Traits&gt;}>]
+	basic_iostream[label = <{<b>basic_iostream</b>   <br/> &lt;CharT, Traits&gt;}>]
+	basic_istringstream[label = <{<b>basic_istringstream</b>.   <br/> &lt;CharT, Traits&gt;}>]
+	basic_ostringstream[label = <{<b>basic_ostringstream</b>       <br/> &lt;CharT, Traits&gt;}>]
+	basic_stringstream[label = <{<b>basic_stringstream</b>.     <br/> &lt;CharT, Traits&gt;}>]
+
+	basic_ifstream[label = <{<b>basic_ifstream</b>   <br/> &lt;CharT, Traits&gt;}>]
+	basic_fstream[label = <{<b>basic_fstream</b>   <br/> &lt;CharT, Traits&gt;}>]
+	basic_ofstream[label = <{<b>basic_ofstream</b>      <br/> &lt;CharT, Traits&gt;}>]
+	
+	{ rank = same;basic_istringstream;  basic_stringstream;  basic_ostringstream } 
+	{ rank = sink;basic_ifstream;  basic_fstream;  basic_ofstream } 
+	
+}
+
+
 Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert \CodeStyle{true} zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
 
 \begin{CCode}
@@ -7448,70 +7572,7 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 \end{CCode} 
 
 %8 Ein- und Ausgabe
-%Die Ein-/Ausgabe von C++ läuft über die Klassen  istream und ostream. Diese Klassen enthalten die Definitionen aller Methoden zur grundlegenden Ein-/Ausgabe. Allerdings gibt es keine Exemplare dieser abstrakten Klassen, konkret gibt es nur Ableitungen davon, wie etwa die ifstream oder ofstream-Klassen. Mit den in der Standardlibrary enthaltenen Klassen ist Konsolen- (cin, cout) und Datei-I/O (ifstream, ofstream) sowie das Lesen aus und das Schreiben in Strings (istringstream,  ostringstream möglich.
-%Für andere Kanäle können eigene Klassen oder Libraries selber abgeleitete Klassen definieren.
-%Die Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Streams aus, es gibt aber Varianten für Unicode.
-%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
-% Tabelle 17 zeigt die wichtigsten Methoden die für alle stream Klassen verfügbar sind:
-%Operator bool();
-%Liefert true wenn kein Fehler im Stream vorhanden ist.
-%Bool Operator  !();
-%bool fail();
-%Liefern false wenn kein Fehler im Stream vorhanden ist, Gegenteil von operator bool().
-%bool good();
-%Liefert true wenn weder fail noch eof true sind.
-%
-%Bool eof();
-%Liefert  true, wenn das Dateiende erreicht wurde.
-%tellp()
-%seekp()
-%Position im Dateistrom setzten oder abfragen.
-%Tabelle 16: Methoden der Klasse Stream
-%Die stream- Klassenhierarchie ist in Error: Reference source not found dargestellt. In ios sind die Gemeinsamkeiten aller Streams zusammengefasst. Zur Anwendung wird jeweils eine Instanz von diesen abgeleiteten Klassen angelegt. 
-%
-%ios
-%
-%istream
-%
-%
-%
-%ifstream
-%
-%
-%istrstream
-%
-%
-%
-%
-%ostream
-%
-%
-%
-%ofstream
-%
-%
-%ostrstream
-%
-%
-%
-%
-%
-%
-%
-%iostream
-%
-%
-%
-%iofstream
-%
-%
-%iostrstream
-%
-%
-%
-%
-%Abbildung 15: Klassenhierarchie von Stream
-%
+
 %8.1 Eingabe in C++
 %Die Klasse istream dient als Abstraktion für alle konkret möglichen Eingabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen. Viele Methoden sind mehrfach überladen.
 % Tabelle 17 zeigt die wichtigsten Methoden der Klassen istream:
