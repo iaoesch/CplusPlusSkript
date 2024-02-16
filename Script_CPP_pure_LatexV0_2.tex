@@ -7106,9 +7106,10 @@ int main()
 Die Ein-/Ausgabe von C++ läuft über die Klassen  istream und ostream. Diese Klassen enthalten die Definitionen aller Methoden zur grundlegenden Ein-/Ausgabe. Allerdings gibt es keine Exemplare dieser abstrakten Klassen, konkret gibt es nur Ableitungen davon, wie etwa die ifstream oder ofstream-Klassen. Mit den in der Standardlibrary enthaltenen Klassen ist Konsolen- (cin, cout) und Datei-I/O (ifstream, ofstream) sowie das Lesen aus und das Schreiben in Strings (istringstream,  ostringstream möglich.
 Für andere Kanäle können eigene Klassen oder Libraries selber abgeleitete Klassen definieren.
 
-Die Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Streams aus, es gibt aber Varianten für Unicode.
+Die standard Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Streams aus. Für andere Varianten müssen die basic\_xyz<> templates für die entsprechenden Typen instanziert werde, es gibt bereits Varianten für Unicode.
 
-Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
+Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert \CodeStyle{true} zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
+
  Tabelle 17 zeigt die wichtigsten Methoden die für alle stream Klassen verfügbar sind:
 %Operator bool();
 %Liefert true wenn kein Fehler im Stream vorhanden ist.
@@ -7124,56 +7125,9 @@ Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob
 %seekp()
 %Position im Dateistrom setzten oder abfragen.
 %Tabelle 16: Methoden der Klasse Stream
-%Die stream- Klassenhierarchie ist in Error: Reference source not found dargestellt. In ios sind die Gemeinsamkeiten aller Streams zusammengefasst. Zur Anwendung wird jeweils eine Instanz von diesen abgeleiteten Klassen angelegt. 
-%
-%ios
-%
-%istream
-%
-%
-%
-%ifstream
-%
-%
-%istrstream
-%
-%
-%
-%
-%ostream
-%
-%
-%
-%ofstream
-%
-%
-%ostrstream
-%
-%
-%
-%
-%
-%
-%
-%iostream
-%
-%
-%
-%iofstream
-%
-%
-%iostrstream
-%
-%
-%
-%
-%Abbildung 15: Klassenhierarchie von Stream
-%
 
-%\digraph{abc}{
-%      rankdir=LR;
-%      a_1 -> b_2 -> c;
-%   }
+Die stream- Klassenhierarchie ist in nachfolgendem Diagramm dargestellt. In ios sind die Gemeinsamkeiten aller Streams zusammengefasst. Zur Anwendung wird jeweils eine Instanz von diesen abgeleiteten Klassen angelegt. 
+
 
 \digraph[scale=0.5]{UMLIOSClassdiagram}{
 
@@ -7193,6 +7147,8 @@ Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob
 %	edge [arrowhead=vee style=dashed]
 	
 %	edge [dir=back arrowtail=empty style=""]
+
+ 	
  	edge [dir=back arrowtail=empty ]
 	basic_ios -> basic_istream 
 	basic_ios -> basic_ostream 
@@ -7205,6 +7161,25 @@ Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob
 	basic_istream -> basic_ifstream  
     basic_iostream -> basic_fstream
 	basic_ostream -> basic_ofstream  
+	
+	edge [dir=back arrowtail=empty weight=1000]
+ 	edge [style=invis]
+ 	rank=same {a0->ios_base->a2}
+ 	rank=same {b0->basic_ios->b2}
+ 	rank=same {basic_istream->c1->basic_ostream}
+ 	rank=same {d0->basic_iostream->d2}
+ 	a0->b0->basic_istream->d0->basic_istringstream
+ 	a2->b2->basic_ostream->d2->basic_ostringstream
+ 	basic_istringstream->basic_stringstream->basic_ostringstream
+ 	basic_ifstream->basic_fstream->basic_ofstream
+ 	a0[style=invis]
+ 	a2[style=invis]
+ 	b0[style=invis]
+ 	b2[style=invis]
+ 	c1[style=invis]
+ 	d0[style=invis]
+ 	d2[style=invis]
+
 	
 	ios_base[label = <{<b>ios_base    </b> }>]
 	basic_ios[label = <{<b>basic_ios</b> <br/> &lt;CharT, Traits&gt;}>]
@@ -7225,7 +7200,6 @@ Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob
 }
 
 
-Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert \CodeStyle{true} zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
 
 \begin{CCode}
 #include <fstream>
@@ -7366,8 +7340,8 @@ Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, 
 \label{subsubsect:formated}
 \textbf{std::format}
 
-Seit \CppVers{20} gibt es mit \CodeStyle{std::format} weitere Formatiermöglichkeiten, welche
-an \CodeStyle{printf()} aus C angelehnt sind sowie an Python angelehnt sind. Anstelle des \% muss \{\} als Platzhalter verwendet werden:
+Seit \CppVers{20} gibt es mit \CodeIndex{std::format} \index{format} weitere \OviIndex{Formatiermöglichkeiten}, welche
+an \CodeIndex{printf()} aus C angelehnt sind sowie an Python angelehnt sind. Anstelle des \% muss \{\} als Platzhalter verwendet werden:
 \begin{CCode}
 std::cout << std::format("{}is {} or {}!\n", "Pi", 3.14, 3); 
 \end{CCode} 
@@ -7519,7 +7493,7 @@ auto b3 = std::format("{:.{}f}", pi, 5.0);     // throws: precision is not of in
 auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
 
 
-Seit C++23 kann die Ausgabe mit std::print und std::println weiter vereinfacht werden:
+Seit C++23 kann die Ausgabe mit \OviIndex{std::print} und std::println weiter vereinfacht werden:
 std::print("{}is {} or {}!\n", "Pi", 3.14, 3); 
 Ausgabe : Pi is 3.14 or 3
 
@@ -7528,19 +7502,19 @@ Ausgabe : Pi is 3.14 or 3
 \subsection{Dateisystem-Bibliothek (Seit \CppVers{17})}
 \label{subsect:Filesystemlibrary}
 
-Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem Dateisystem definiert.
+Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem \OviIndex{Dateisystem} definiert.
 Zum Beispiel:
 
- \emph{path}
+ \OviIndex{path}
  
 Eine Klasse welche Dateipfade aufnehmen kann, und Pfadmanipulationen erlaubt (Pfadteile ergänzen, zusammenfügen, aufteilen, oder Dateiname, Dateiendung oder Pfad extrahieren).
  
- \emph{directory\_iterator}
+ \OviIndex{directory\_iterator}
 
 Ein Iterator, welcher über alle Einträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert.
 
 
- \emph{recursive\_directory\_iterator}
+ \OviIndex{recursive\_directory\_iterator}
 
 Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert.
 
@@ -8364,34 +8338,8 @@ Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implemen
 
 \OviIndex{Container} sind eine Art universelle Behälter für Daten. Dazu gehören Listen, Vektoren und Mengen. Bei den Containern ist nicht vorgeschrieben wie sie implementiert sind, sondern nur welche Eigenschaften sie besitzen müssen. Ein Vektor muss z.B. effizienten wahlfreien (direkten) Zugriff auf seine Elemente erlauben, eine Liste hingegen muss effizientes Einfügen und Entfernen von Objekten ermöglichen. Eine Map wiederum ordnet zwei Elemente einander zu. Dabei dient eines als Schlüssel und das andere als Wert. Mit einem Schlüssel kann man jederzeit den dazugehörigen Wert aus der Map holen. Eine Map ist somit ein assoziativer Container und kann als kleine Datenbank betrachtet werden.
 
-\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende einer Sequenz). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
+\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende (genauer: Hinter das Ende) einer Sequenz). Für den einfacheren Umgang mit Sequenzen gibt es seit \CppVers{20} Ranges (Siehe \autoref{subsect:Ranges}). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
 
-%Weiter gibt es noch \OviIndex{Einfüge-Iteratoren} (OviIndex{Insert Iterator}), welche die geschriebenen Werte einfach in eine Sequenz einfügen (Inkrement und Dekrement haben bei einem Einfüge-Iterator keine Funktion.) 
-%
-%Hier eine mögliche Implementierung des Insert Iterators
-%\begin{CCode}
-%template <class Container>
-  %class insert_iterator :
-    %public iterator<output_iterator_tag,void,void,void,void>
-%{
-%protected:
-  %Container* container;
-  %typename Container::iterator iter;
-%
-%public:
-  %typedef Container container_type;
-  %explicit insert_iterator (Container& x, typename Container::iterator i)
-    %: container(&x), iter(i) {}
-  %insert_iterator<Container>& operator= (typename Container::const_reference value)
-    %{ iter=container->insert(iter,value); ++iter; return *this; }
-  %insert_iterator<Container>& operator* ()
-    %{ return *this; }
-  %insert_iterator<Container>& operator++ ()
-    %{ return *this; }
-  %insert_iterator<Container>& operator++ (int)
-    %{ return *this; }
-%};
-%\end{CCode}
 
 \OviIndex{Algorithmen} wiederum können auf Sequenzen und Container angewendet werden. Es gibt unter anderem folgende Algorithmen: Suchen, Sortieren, Doppelte oder mehrfache Einträge entfernen, Zufällig Mischen, Suchen und entfernen, Eine Operation auf alle Elemente anwenden, Alle Elemente zählen die eine Bedingung erfüllen, ...
 
@@ -8472,62 +8420,63 @@ public:
 \end{CCode}
  
 
-\subsection{Kurzübersicht zu Container list<> aus der \Cpp - Standardbibliothek}
-Als Beispiel erstellen wir eine \OviIndex{Liste} von \CodeStyle{int}'s
-\begin{CCode}
-#include<list>
-#include<algorithm>
+\subsection{Kurzübersicht zu Container aus der \Cpp - Standardbibliothek}
+In C++ gibt es bereits vordefinierte Klassen, die eine Menge von Objekten verwalten können. Insbesondere in der Form von Vektoren (Dynamischen Arrays), Listen, Sets und Hashtabellen. Alle Container können beliebige Datentypen verwalten, der Gewünschte Datentyp muss bei der Erzeugung angegeben werden. Container können auch verschachtelt werden, z.b. ein Array von Listen.
+Mit Hilfe von Iteratoren kann ein Container abgearbeitet werden, d.h. man kann von Objekt zu Objekt durch den Container  iterieren. 
+%Ein Beispiel für die Programmierung mit einem Iterator finden Sie in Kapitel 7.3.
 
-std::list<int> MyList;   //Erstellen einer Liste von Integerwerten
-  
-MyList.push_back(123);   //Element am Ende der Liste einfuegen
-MyList.push_front(456);  //Element am Anfang der Liste einfuegen
-MyList.pop_back();       //Letztes Element am Ende der Liste entfernen
-MyList.pop_front();      //Erstes Element am Anfang der Liste entfernen
-len = MyList.size();     //Liefert die Anzahl Elemente der Liste zurueck
-if (MyList.empty());     //Liefert TRUE wenn die Liste leer ist
-Val = MyList.front();    //Liefert den Wert des ersten Elementes zurueck
-Val = MyList.back();     //Liefert den Wert des letzten Elementes zurueck
+%7.1.1 Sequenteille Container
+Bei \OviIndex{sequentiellen Containern} sind die Elemente aufeinanderfolgend abgelegt, dazu gehören unter anderem  Array, Vector, deque, forward\_list und list.
 
-std::list<int>::iterator ptr; //Definieren eines Iterators (Zeigers) fuer 
-                              //eine Liste aus int's
+%7.1.2 Assoziative Container
+Bei \OviIndex{assoziativen Containern} sind die Elemente über \OviIndex{Schlüssel} abrufbar. Der Schlüssel kann von jedem beliebigen Datentyp sein, muss aber mit dem < Operator vergleichbar sein, dazu gehören unter anderem  Map, Multimap, Set und multiseet.
 
-ptr = MyList.begin();    //Iterator auf erstes Element der Liste zeigen lassen;
-std::cout << *ptr;       //Element, auf das ptr zeigt ausgeben
-int Value = *ptr;        //Value den Wert auf den ptr zeigt zuweisen
-ptr++;                   //Iterator auf das naechste Listenelement zeigen lassen;
-if (ptr == MyList.end()) //Pruefen ob der Iterator das Listenende erreicht hat
+%7.1.3 Ungeordnete Assoziative Container
+Bei \OviIndex{ungeordneten assoziativen Containern} sind die Elemente über Schlüssel abrufbar. Der Schlüssel kann von jedem beliebigen Datentyp sein, für den eine Hashfunktion definiert ist (Diese kann auch von dem Benutzer geliefert werden), dazu gehören unter anderem  unordered\_map, unordered\_multimap, unordered\_set und unordered\_multiset.
 
-MyList.sort();           //Sortieren der Liste, optimiert fuer Liste
-\end{CCode}
+%7.1.4 Container Adapter
+Mit den \OviIndex{Container Adapter} \index{Adapter} können Container mit einer spezifischen Schnittstelle versehen werden. Der  Container muss dabei jeweils adapterspezifische Bedingungen erfüllen (Eine Map z. B. kann nie ein Stack sein). Dazu gehören unter anderem stack, queue und Priority\_queue.
 
-Ein einfaches Beispiel, diesmal aber mit einer Liste von \CodeStyle{unsigned long} Werten (Es können Listen von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
 
-\begin{CCode}
-std::list<unsigned long>Liste;     /* Liste fuer unsigned long erstellen */
+Nachfolgend eine kleine Auswahl vorhandener Container. 
+\subsubsection{Kurzübersicht zu Container array<> aus der \Cpp - Standardbibliothek}
+\OviIndex{std::Array} \index{Array} funktioniert im Prinzip gleich wie ein Vektor (siehe \autoref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
+%7.1.1.1 Array
+%Array mit konstanter Grösse, Grösseninformaion ist Teil des Typs und geht nicht verloren. Indizierter Zugriff ist möglich.
+%#include <array>
+%
+%std::array<std:string, 10> Arr; // Array von 10 strings 
+%
+%cout << Arr[5];       // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
+%cout << Arr.at(5);    // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
+%for (auto s: Arr) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
+%   cout << s;
+%}
+%cout << Arr.size();   // Grösse des Arrays ausgeben
+%
+\subsubsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 
-Liste.push_back(12);               /* Einige Werte in die Liste einfuegen */
-Liste.push_back(23);
-Liste.push_back(34);
-Liste.push_back(45);
-
-std::list<unsigned long>::iterator ptr; /* Iterator fuer Liste */
-
-/* Alle Elemente der Liste ausgeben */
-for(ptr = Liste.begin(); ptr != Liste.end(); ptr++) {   
-   std::cout << *ptr;
-}
-
-while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
-   std::cout << Liste.front();     /* Erstes Element ausgeben */
-   Liste.pop_front();              /* Erstes Element entfernen */
-}
-\end{CCode}
-
- 
-
-\subsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 \label{subsect:Vector}
+%7.1.1.2 Vector
+%Vector kann als dynamisches Array betrachtet werden, d.h. ein Array das mit den Daten wächst und schrumpft. Es erlaubt wahlfreien Zugriff auf seine Elemente, sowie das Einfügen und Entfernen von Objekten. Die Grösse kann zur Laufzeit verändert werden. Indizierter Zugriff sowie Anhängen oder Entfernen am Ende ist effizient möglich.
+%#include <vector>
+%
+%std::vector<int> Arr1;     // leerer vector von ints 
+%std::vector<int> Arr2(10); // vector von 10 ints 
+%
+%Arr1.push_back(7);         // Haengt 7 hinten am Vector an (Hat nun Grösse 1)
+%Arr1.resize(15);           // Arr1 hat nun Grösse von 15
+%Arr2.pop_back();           // Letztes Element entfernen, (Hat nun Grösse 9)
+%Arr2.insert(std::next(Arr2.begin(), 7), 22); // Fuegt 22 an Pos 7 ein, (Hat nun Grösse 10)
+%
+%cout << Arr2[5];      // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
+%cout << Arr2.at(5);   // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
+%for (auto s: Arr2) {  // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
+%   cout << s;
+%}
+%cout << Arr2.size();   // Grösse des Arrays ausgeben
+%
+
 Als Beispiel erstellen wir ein Array von \CodeStyle{double}'s. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit \CodeStyle{[]} (Ohne Bereichsüberprüfung) und der Methode \CodeStyle{at()} (Mit Bereichsüberprüfung) möglich. 
 \begin{CCode}
 #include<vector>
@@ -8586,139 +8535,42 @@ while(!Vektor.empty()) {       /* Solange Vektor nicht leer ist */
 }
 \end{CCode}
 
-\subsection{Kurzübersicht zu Container array<> aus der \Cpp - Standardbibliothek}
-std::Array funktioniert im Prinzip gleich wie ein Vektor (siehe \autoref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
-
-\subsection{Kurzübersicht zu Container map<> aus der \Cpp - Standardbibliothek}
-Die \OviIndex{map} ist ein \OviIndex{assozitiver Container}, das heisst er verwaltet Wertepaare.
-Ein Wert ist der \OviIndex{Schlüssel} des Paares, und der andere Wert beinhaltet die
-Daten, welche unter diesem Schlüssel abgelegt sind. Der Schlüssel kann wie
-der Index bei einem gewöhnlichen Array betrachtet werden, mit dem
-Schlüssel erhält man Zugriff auf die dazugehörigen Daten. Deshalb muss
-jeder Schlüssel innerhalb einer map einmalig sein. Die Daten werden innerhalb der
-map nach dem Schlüssel in aufsteigender Reihenfolge sortiert, und beim
-Iterieren in dieser Reihenfolge abgearbeitet. Zur einfachen Benutzung
-der map wurde der Indexoperator \CodeStyle{[]} überladen, so dass der Schlüssel direkt als
-Index verwendet werden kann. Wird ein nicht existierender Schlüssel
-benutzt, erzeugt die map automatisch einen leeren Eintrag für diesen
-Schlüssel und liefert eine Referenz darauf zurück.
-
-Der Schlüssel muss ein Datentyp mit einer eindeutigen Ordnung sein, d. H.
-die Relation '\CodeStyle{<}' muss definiert und eindeutig sein. (Sonst könnten die
-Schlüssel nicht sortiert werden).
-
-Der Wert kann ein beliebiger Datentyp sein (Im Extremfall eine Liste
-oder eine weitere map). 
-
-Als Beispiel erstellen wir eine map mit Studenten und ihren Noten.
-
+\subsubsection{Kurzübersicht zu Container deque (Double ended queue)}
+\index{deque}
+Wie vector, zusätzlich ist Einfügen und Entfernen auch am Anfang effizient möglich.
 \begin{CCode}
-#include<map>
-#include<algorithm>
-#include<string>
+#include <deque>
 
-using namespace std;          // Um std::map, std::cout... usw zu vereinfachen 
+std::deque<double> Arr;    // leere deque doubles 
+Arr.resize(15);            // Arr hat nun Grösse von 15
 
-map<string, double> MyMap;    //Erstellen einer Map von Studenten und Noten
-  
-void f(void) 
-{  
-   MyMap["Hans"]   = 5.5;        //Ein paar Eintraege...
-   MyMap["Fritz"]  = 5.0;        
-   MyMap["Franz"]  = 5.5;
-   MyMap["Max"]    = 4.5;
-   MyMap["Moritz"] = 4.5;
-   MyMap["Max"]    = 5.5;        // Vorheriger Wert von Max wird ueberschrieben
-
-   float Note = MyMap["Fritz"];        // Lesen ist auch moeglich
-
-   map<string, double>::iterator ptr; //Definieren eines Iterators (Zeigers) in die Map
-
-   ptr = MyMap.begin();          //Iterator auf erstes Element der Map zeigen lassen
-
-   while(ptr != MyMap.end()) {   // Fuer alle Elemente in der Map
-    
-      // Name und Note ausgeben (first und second sind durch map vorgegeben)
-      cout << ptr->first << " hat die Note " << ptr->second << endl;   
-      ptr++;
-   }
-}
-
+Arr.pop_front();          // Entfernt vorderstes Element (Hat nun Grösse 14)
+Arr2.push_front(6);       // fügt 6 vorne an (Hat nun Grösse 15)
 \end{CCode}
 
-Mit einer map ist es sehr einfach, Daten zu verwalten. Für einen bestimmten Schlüssel kann es aber nur einen Eintrag geben. Falls mehrere Einträge mit demselben Schlüssel möglich sein sollen,
-muss eine Multimap verwendet werden.
-
-Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Suchen von
-Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator \CodeStyle{[]} Sucht \emph{und} fügt hinzu, falls nicht gefunden)
 
 
-%7.1 Container
-%In C++ gibt es bereits vordefinierte Klassen, die eine Menge von Objekten verwalten können. Insbesondere in der Form von Vektoren (Dynamischen Arrays), Listen, Sets und Hashtabellen. Alle Container können beliebige Datentypen verwalten, der Gewünschte Datentyp muss bei der Erzeugung angegeben werden. Container können auch verschachtelt werden, z.b. ein Array von Listen.
-%Mit Hilfe von Iteratoren kann ein Container abgearbeitet werden, d.h. man kann von Objekt zu Objekt durch den Container  iterieren. Ein Beispiel für die Programmierung mit einem Iterator finden Sie in Kapitel 7.3.
-%Nachfolgend eine kleine Auswahl vorhandener Container. 
-%
-%7.1.1 Sequenteille Container
-%Bei sequentiellen Containern sind die Elemente aufeinanderfolgend abgelegt.
-%7.1.1.1 Array
-%Array mit konstanter Grösse, Grösseninformaion ist Teil des Typs und geht nicht verloren. Indizierter Zugriff ist möglich.
-%#include <array>
-%
-%std::array<std:string, 10> Arr; // Array von 10 strings 
-%
-%cout << Arr[5];       // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
-%cout << Arr.at(5);    // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
-%for (auto s: Arr) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
-%   cout << s;
-%}
-%cout << Arr.size();   // Grösse des Arrays ausgeben
-%
-%7.1.1.2 Vector
-%Vector kann als dynamisches Array betrachtet werden, d.h. ein Array das mit den Daten wächst und schrumpft. Es erlaubt wahlfreien Zugriff auf seine Elemente, sowie das Einfügen und Entfernen von Objekten. Die Grösse kann zur Laufzeit verändert werden. Indizierter Zugriff sowie Anhängen oder Entfernen am Ende ist effizient möglich.
-%#include <vector>
-%
-%std::vector<int> Arr1;     // leerer vector von ints 
-%std::vector<int> Arr2(10); // vector von 10 ints 
-%
-%Arr1.push_back(7);         // Haengt 7 hinten am Vector an (Hat nun Grösse 1)
-%Arr1.resize(15);           // Arr1 hat nun Grösse von 15
-%Arr2.pop_back();           // Letztes Element entfernen, (Hat nun Grösse 9)
-%Arr2.insert(std::next(Arr2.begin(), 7), 22); // Fuegt 22 an Pos 7 ein, (Hat nun Grösse 10)
-%
-%cout << Arr2[5];      // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
-%cout << Arr2.at(5);   // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
-%for (auto s: Arr2) {  // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
-%   cout << s;
-%}
-%cout << Arr2.size();   // Grösse des Arrays ausgeben
-%
-%7.1.1.3 deque (Double ended queue)
-%Wie vector, zusätzlich ist Einfügen und Entfernen auch am Anfang effizient möglich.
-%#include <deque>
-%
-%std::deque<double> Arr;    // leere deque doubles 
-%Arr.resize(15);            // Arr hat nun Grösse von 15
-%
-%Arr.pop_front();          // Entfernt vorderstes Element (Hat nun Grösse 14)
-%Arr2.push_front(6);       // fügt 6 vorne an (Hat nun Grösse 15)
-%
-%
-%7.1.1.4 forward_list
-%Einfach verkettete Liste. Indizierter Zugriff ist nicht möglich,  Anhängen oder Entfernen am Anfang ist effizient möglich.
-%#include <forward_list>
-%
-%std::forward_list<int> List; // leere Liste von ints 
-%
-%List.push_front(7);        // Fuegt 7 vorne an Liste an (Hat nun Grösse 1)
-%List.insert(List.begin(), 22); // Fuegt 22 nach begin() ein, (Hat nun Grösse 2)
-%List.pop_front();           // erstes Element entfernen, (Hat nun Grösse 1)
-%
-%cout << List.front(); // vorderstes Element ausgeben 
-%for (auto x: List) {  // Gibt alle Elemente aus, x nimmt der Reihe nach alle Werte von List an
-%   cout << x;
-%}
-%cout << List.size();   // Grösse der Liste ausgeben
-%
+
+\subsubsection{forward\_list}
+\index{forward\_list}
+Einfach verkettete Liste. Indizierter Zugriff ist nicht möglich,  Anhängen oder Entfernen am Anfang ist effizient möglich.
+\begin{CCode}
+#include <forward_list>
+
+std::forward_list<int> List; // leere Liste von ints 
+
+List.push_front(7);        // Fuegt 7 vorne an Liste an (Hat nun Grösse 1)
+List.insert(List.begin(), 22); // Fuegt 22 nach begin() ein, (Hat nun Grösse 2)
+List.pop_front();           // erstes Element entfernen, (Hat nun Grösse 1)
+
+cout << List.front(); // vorderstes Element ausgeben 
+for (auto x: List) {  // Gibt alle Elemente aus, x nimmt der Reihe nach alle Werte von List an
+   cout << x;
+}
+cout << List.size();   // Grösse der Liste ausgeben
+\end{CCode}
+
+\subsubsection{Kurzübersicht zu Container list<> aus der \Cpp - Standardbibliothek}
 %7.1.1.5 list
 %Doppelt verkettete Liste. Indizierter Zugriff ist nicht möglich, Anhängen oder Entfernen am Anfang und am Ende sowie Einfügen ist effizient möglich.
 %#include <list>
@@ -8737,42 +8589,167 @@ Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperat
 %   cout << x;
 %}
 %cout << List.size();   // Grösse der Liste ausgeben
-%7.1.2 Assoziative Container
-%Bei assoziativen Containern sind die Elemente über Schlüssel abrufbar. Der Schlüssel kann von jedem beliebigen Datentyp sein, muss aber mit dem < Operator vergleichbar sein.
+
+Als Beispiel erstellen wir eine \OviIndex{Liste} \index{list} von \CodeStyle{int}'s
+\begin{CCode}
+#include<list>
+#include<algorithm>
+
+std::list<int> MyList;   //Erstellen einer Liste von Integerwerten
+  
+MyList.push_back(123);   //Element am Ende der Liste einfuegen
+MyList.push_front(456);  //Element am Anfang der Liste einfuegen
+MyList.pop_back();       //Letztes Element am Ende der Liste entfernen
+MyList.pop_front();      //Erstes Element am Anfang der Liste entfernen
+len = MyList.size();     //Liefert die Anzahl Elemente der Liste zurueck
+if (MyList.empty());     //Liefert TRUE wenn die Liste leer ist
+Val = MyList.front();    //Liefert den Wert des ersten Elementes zurueck
+Val = MyList.back();     //Liefert den Wert des letzten Elementes zurueck
+
+std::list<int>::iterator ptr; //Definieren eines Iterators (Zeigers) fuer 
+                              //eine Liste aus int's
+
+ptr = MyList.begin();    //Iterator auf erstes Element der Liste zeigen lassen;
+std::cout << *ptr;       //Element, auf das ptr zeigt ausgeben
+int Value = *ptr;        //Value den Wert auf den ptr zeigt zuweisen
+ptr++;                   //Iterator auf das naechste Listenelement zeigen lassen;
+if (ptr == MyList.end()) //Pruefen ob der Iterator das Listenende erreicht hat
+
+MyList.sort();           //Sortieren der Liste, optimiert fuer Liste
+\end{CCode}
+
+Ein einfaches Beispiel, diesmal aber mit einer Liste von \CodeStyle{unsigned long} Werten (Es können Listen von beliebigen Typen oder Klassen erstellt werden, einfach den gewünschten Typ in den spitzen Klammern angeben):
+
+\begin{CCode}
+std::list<unsigned long>Liste;     /* Liste fuer unsigned long erstellen */
+
+Liste.push_back(12);               /* Einige Werte in die Liste einfuegen */
+Liste.push_back(23);
+Liste.push_back(34);
+Liste.push_back(45);
+
+std::list<unsigned long>::iterator ptr; /* Iterator fuer Liste */
+
+/* Alle Elemente der Liste ausgeben */
+for(ptr = Liste.begin(); ptr != Liste.end(); ptr++) {   
+   std::cout << *ptr;
+}
+
+while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
+   std::cout << Liste.front();     /* Erstes Element ausgeben */
+   Liste.pop_front();              /* Erstes Element entfernen */
+}
+\end{CCode}
+
+ 
+
+
+
+\subsubsection{Kurzübersicht zu Container map<> aus der \Cpp - Standardbibliothek}
+Die \OviIndex{map} ist ein \OviIndex{assozitiver Container}, das heisst er verwaltet Wertepaare.
+Ein Wert ist der \OviIndex{Schlüssel} des Paares, und der andere Wert beinhaltet die
+Daten, welche unter diesem Schlüssel abgelegt sind. Maps werden üblicherweise als \OviIndex{Binärbaum}
+realisiert.. 
+Der Schlüssel kann wie der Index bei einem gewöhnlichen Array betrachtet werden, mit dem
+Schlüssel erhält man Zugriff auf die dazugehörigen Daten. Deshalb muss
+jeder Schlüssel innerhalb einer map einmalig sein. Die Daten werden innerhalb der
+map nach dem Schlüssel in aufsteigender Reihenfolge sortiert, und beim
+Iterieren in dieser Reihenfolge abgearbeitet. Zur einfachen Benutzung
+der map wurde der Indexoperator \CodeStyle{[]} überladen, so dass der Schlüssel direkt als
+Index verwendet werden kann. Wird ein nicht existierender Schlüssel
+benutzt, erzeugt die map automatisch einen leeren Eintrag für diesen
+Schlüssel und liefert eine Referenz darauf zurück. Suchen (Zugriff über Schlüssel) ist effizient.
+
+
+Der Schlüssel muss ein Datentyp mit einer eindeutigen Ordnung sein, d. H.
+die Relation '\CodeStyle{<}' muss definiert und eindeutig sein. (Sonst könnten die
+Schlüssel nicht sortiert werden).
+
+Der Wert kann ein beliebiger Datentyp sein (Im Extremfall eine Liste
+oder eine weitere map). 
 %7.1.2.1 Map
-%Üblicherweise ein Binärbaum, Daten werden über einen Schlüssel abgerufen oder abgespeichert, jeder Schlüssel darf nur einmal vorkommen. Suchen (Zugriff über Schlüssel) ist effizient.
-%#include <map>
-%
-%std::map<std:string, double> Map; // Leere Map 
-%
-%Map["Hans"] = 5.5;    // Unter Schlüssel Hans wird 5.5 abgelegt
-%Map["Sepp"] = 5.0;    // Unter Schlüssel Sepp wird 5.0 abgelegt
-%Map["Max"] = 4.5;     // Unter Schlüssel Max wird 4.5 abgelegt
-%Map["Sepp"] = 3.0;    // Unter Schlüssel Sepp wird 5.0 durch 3.0 ersetzt
-%cout << Map["Sepp"];  // Gibt 3.0 aus 
-%cout << Map["Hans"];  // Gibt 5.5 aus 
-%cout << Map;    // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
-%for (auto s: Map) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
-%   cout << s->first << ": " << s->second << std::endl;  // ->first: Schlüssel, 
-%                                                       // ->second: Wert zu diesem Schlüssel
-%}
-%7.1.2.2 Multimap
-%Ähnlich wie map, es sind jedoch mehrere Einträge mit demselben Schlüssel erlaubt.
-%7.1.2.3 Set, Multiset
-%Ähnlich wie die entsprechenden Maps, es werden jedoch nur die Schlüssel abgelegt, entsprechen in etwa Mengen aus der Mengenlehre.
-%7.1.3 Ungeordnete Assoziative Container
-%Bei ungeordneten assoziativen Containern sind die Elemente über Schlüssel abrufbar. Der Schlüssel kann von jedem beliebigen Datentyp sein, für den eine Hashfunktion definiert ist (Diese kann auch von dem Benutzer geliefert werden).
-%7.1.3.1 unordered_map, unordered_multimap, unordered_set, unordered_multiset
-%Funktionieren wie die entsprechenden assoziativen Container, basieren jedoch auf einer Hashtabelle. Erlauben das schnelle Auffinden eines Objektes mit einem Schlüssel (Suchbegriff).
-%7.1.4 Container Adapter
-%Mit den Adapter können Container mit einer spezifischen Schnittstelle versehen werden. Der  Container muss dabei jeweils adapterspezifische Bedingungen erfüllen (Eine Map z. B. kann nie ein Stack sein).
-%7.1.4.1 stack
-%Lässt den darunterliegenden Container als Stack (LIFO) nutzen, also eine Struktur, die das Hinzufügen und Entfernen von Objekten an einem Ende erlaubt.
-%7.1.4.2 queue
-%Lässt den darunterliegenden Container als Queue (FIFO) nutzen, also eine Struktur, die das Hinzufügen an einem Ende und das Entfernen von Objekten am anderen Ende erlaubt.
-%7.1.4.3 Priority_queue
-%Lässt den darunterliegenden Container als priorisierte Queue nutzen, d.h. Elemente mit hoher Priorität können Elemente mit niedriger Priorität überholen. (Im Prinzip sortiertes Einfügen und entnehmen am Anfang)
-%7.2 
+%Üblicherweise ein \OviIndex{Binärbaum}, Daten werden über einen Schlüssel abgerufen oder abgespeichert, jeder Schlüssel darf nur einmal vorkommen. Suchen (Zugriff über Schlüssel) ist effizient.
+
+
+Als Beispiel erstellen wir eine map mit Studenten und ihren Noten.
+
+\begin{CCode}
+#include<map>
+#include<algorithm>
+#include<string>
+
+using namespace std;          // Um std::map, std::cout... usw zu vereinfachen 
+
+map<string, double> MyMap;    //Erstellen einer leeren Map von Studenten und Noten
+  
+void f(void) 
+{  
+   MyMap["Hans"]   = 5.5;  // Unter Schlüssel Hans wird 5.5 abgelegt
+   MyMap["Fritz"]  = 5.0;        
+   MyMap["Franz"]  = 5.5;
+   MyMap["Max"]    = 4.5;  // Unter Schlüssel Max wird 4.5 abgelegt
+   MyMap["Max"]    = 5.5;  // Vorheriger Wert von Max wird ueberschrieben
+   MyMap["Sepp"] = 5.0;    // Unter Schlüssel Sepp wird 5.0 abgelegt
+   MyMap["Sepp"] = 3.0;    // Unter Schlüssel Sepp wird 5.0 durch 3.0 ersetzt
+   MyMap.at("Moritz") = 7; // wirft Exception bei Unbekanntem Schluessel 
+   MyMap.at("Max") = 7;    // Unter Schlüssel Max wird 7 abgelegt 
+
+   float Note = MyMap["Fritz"];        // Lesen ist auch moeglich
+   cout << Map["Sepp"];  // Gibt 3.0 aus 
+   cout << Map["Hans"];  // Gibt 5.5 aus 
+   cout << Map.at("Moritz"); // wirft Exception bei Unbekanntem Schluessel 
+   cout << Map["Moritz"]; // Erzeugt neuen, mit 0 initialisierten Eintrag
+                          // und gibt 0 aus  
+
+   map<string, double>::iterator ptr; //Definieren eines Iterators (Zeigers) in die Map
+
+   ptr = MyMap.begin();          //Iterator auf erstes Element der Map zeigen lassen
+
+   while(ptr != MyMap.end()) {   // Fuer alle Elemente in der Map
+    
+      // Name und Note ausgeben (first und second sind durch map vorgegeben)
+      cout << ptr->first << " hat die Note " << ptr->second << endl;   
+      ptr++;
+   }
+
+   for (auto s: Map) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
+      cout << s->first << ": " << s->second << std::endl;  // ->first: Schlüssel, 
+                                                       // ->second: Wert zu diesem Schlüssel
+   }
+}
+
+\end{CCode}
+
+Mit einer map ist es sehr einfach, Daten zu verwalten. Für einen bestimmten Schlüssel kann es aber nur einen Eintrag geben. Falls mehrere Einträge mit demselben Schlüssel möglich sein sollen,
+muss eine Multimap verwendet werden.
+
+Für die map gibt es noch weitere, hier nicht vorgestellte Operationen wie das Suchen von
+Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperator \CodeStyle{[]} Sucht \emph{und} fügt hinzu, falls nicht gefunden)
+
+
+\subsubsection{Multimap}
+\index(Multimap)
+Ähnlich wie map, es sind jedoch mehrere Einträge mit demselben Schlüssel erlaubt.
+\subsubsection{Set, Multiset}
+\index(Set)
+\index(Multiset)
+Ähnlich wie die entsprechenden Maps, es werden jedoch nur die Schlüssel abgelegt, entsprechen in etwa Mengen aus der Mengenlehre.
+\subsubsection{unordered\_map, unordered\_multimap, unordered\_set, unordered\_multiset}
+\index(unordered\_map)
+\index(unordered\_multimap)
+\index(unordered\_set)
+\index(unordered\_multiset)
+Funktionieren wie die entsprechenden assoziativen Container, basieren jedoch auf einer \OviIndex{Hashtabelle}. Erlauben das schnelle Auffinden eines Objektes mit einem Schlüssel (Suchbegriff).
+\subsubsection{Container Adapter stack}
+\index(stack)
+Lässt den darunterliegenden Container als Stack (LIFO) nutzen, also eine Struktur, die das Hinzufügen und Entfernen von Objekten an einem Ende erlaubt.
+\subsubsection{Container Adapter queue}
+\index(queue)
+Lässt den darunterliegenden Container als Queue (FIFO) nutzen, also eine Struktur, die das Hinzufügen an einem Ende und das Entfernen von Objekten am anderen Ende erlaubt.
+\subsubsection{Container Adapter Priority\_queue}
+\index(Priority\_queue)
+Lässt den darunterliegenden Container als priorisierte Queue nutzen, d.h. Elemente mit hoher Priorität können Elemente mit niedriger Priorität überholen. (Im Prinzip sortiertes Einfügen und entnehmen immer am Anfang)
+
 
 
 \subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
@@ -9271,7 +9248,7 @@ Folgende Operationen werden von atomic Objekten angeboten
     Führt die entsprechende Operation atomar aus.
 \end{description}
 
-Mit MemoryOrder kann speezifiziert werden, auf welche Art der Compiler, der Prozeessor und die Cachelogik die Reihenfolge von Lese-und Schreiboperationen optimieren und miteinander Synchronisieren sollen. Wenn nichts anderes angegeben ist, wird bei allen Atomaren Operationen memory\_order\_seq\_cst als Defaultwert angenommen. MemoryOrder kann folgende Werte annehmen:
+Mit \OviIndex{MemoryOrder} kann speezifiziert werden, auf welche Art der Compiler, der Prozeessor und die Cachelogik die Reihenfolge von Lese-und Schreiboperationen optimieren und miteinander Synchronisieren sollen. Wenn nichts anderes angegeben ist, wird bei allen Atomaren Operationen memory\_order\_seq\_cst als Defaultwert angenommen. MemoryOrder kann folgende Werte annehmen:
 
 \begin{description}
 
@@ -9287,11 +9264,11 @@ Hinweis: Je nach Memoryorder muss zwischen einem atomaren Schreibzugriff von Thr
 
 
 \subsubsection{Atomic und volatile}
-Vereinfacht könnte man sageen, \CodeStyle{volatile} unterdrückt Optimierungen das Compileres, und \CodeStyle{std::atomic} unterdrückt Optimierungen der Hardware. Für Hardwarezugriff ist \CodeStyle{volatile} zweckmaessig, für die Kommunikation zwischen mehreren Threads, welche auf verschiedenen Prozessorcores laufen, muss \CodeStyle{std::atomic} verwendet werden, da nur so sichergestellt werden kann, dass nicht veraltete Werte aus dem lokalen Cache verwendet werden und die Reihenfolge der Schreib / Leseinstruktionen durch die HW (Pielines, Caches) nicht umgestellt wird. Je nach Einsatz kan auch eine Kombination von  \CodeStyle{volatile}  und \CodeStyle{std::atomic} angemessen sein.
+Vereinfacht könnte man sagen, \CodeStyle{volatile} unterdrückt Optimierungen das Compileres, und \CodeStyle{std::atomic} unterdrückt Optimierungen der Hardware. Für Hardwarezugriff ist \CodeStyle{volatile} zweckmaessig, für die Kommunikation zwischen mehreren Threads, welche auf verschiedenen Prozessorcores laufen, muss \CodeStyle{std::atomic} verwendet werden, da nur so sichergestellt werden kann, dass nicht veraltete Werte aus dem lokalen Cache verwendet werden und die Reihenfolge der Schreib / Leseinstruktionen durch die HW (Pipelines, Caches) nicht umgestellt wird. Je nach Einsatz kan auch eine Kombination von  \CodeStyle{volatile}  und \CodeStyle{std::atomic} angemessen sein.
 
 \subsection{Execution policies (Seit \CppVers{17})}
 \label{subsect:ExecutionPolicies}
-Seit \CppVers{17} sind viele Algorithmen aus der Standardlibrary mit Execution policies überladen, so dass \OviIndex{parallele Ausführung} und/oder vektorisierte Ausführung der Algorithmen möglich wird. Mit  \CodeStyle{std::execution::par} wird eine optimierte Version des entsprechenden Algorithmus instanziert, welche die Arbeit optimal auf die vorhandenen Prozessorcores verteilt.
+Seit \CppVers{17} sind viele Algorithmen aus der Standardlibrary mit \OviIndex{Execution policies} überladen, so dass \OviIndex{parallele Ausführung} und/oder vektorisierte Ausführung der Algorithmen möglich wird. Mit  \CodeStyle{std::execution::par} wird eine optimierte Version des entsprechenden Algorithmus instanziert, welche die Arbeit optimal auf die vorhandenen Prozessorcores verteilt.
 
 Codebeispiel:
 \begin{CCode}
@@ -11573,7 +11550,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 
 \section{\CppVers{17}}
 Im Dezember 2017 publiziert.
-\begin{itemize}
+\begin{itemize}                                                                    
     \item Addition of a default text message for \CodeStyle{static_assert} (Siehe \autoref{subsubsect:assertions})
 
     \item Addition of \CodeStyle{std::string_view}, a non-owning reference to a character sequence or string-slice, which is read-only
