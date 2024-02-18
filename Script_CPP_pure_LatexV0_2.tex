@@ -409,7 +409,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in C++ (Anonyme) Namespaces (Siehe \autoref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
+ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in \Cpp (Anonyme) Namespaces (Siehe \autoref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
 
 \section{Kommentare}
 \Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \CodeStyle{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \CodeStyle{/*} eingeleitet und endet mit \CodeStyle{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
@@ -575,7 +575,7 @@ Zeichen&Ersatz (Digraph)\\
 
 
 \section{Präprozessorbefehle}
-Der Präprozessor wird in C++ noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
+Der Präprozessor wird in \Cpp noch eingesetzt, aber in vielen Gebieten durch die neuen Möglichkeiten von \Cpp abgelöst.
 
 Präprozessorbefehle erkennt man an dem vorangestellten \#. Dabei handelt es sich nicht um C oder \Cpp Befehle, sondern um spezielle Präprozessorbefehle. Diese Befehle dienen zum Verändern und Ersetzen von Text und dem bedingten Compilieren. Nachfolgend einige oft verwendete Präprozessorbefehle.
 
@@ -1085,7 +1085,7 @@ Präzedenzen der Opeeratoren:
 \hline
 Prio &Operator &Description &Associativity \\
 \hline
-1 &\lstinline$:: $&Scope resolution &Left-to-right ? \\
+1 &\lstinline$:: $&Scope resolution &Left-to-right  \\
 \hline
 2 &\lstinline$a++  a-- $&Suffix/postfix increment and decrement &\\
 &\lstinline$type() type{}$&Functional cast &\\
@@ -1093,18 +1093,18 @@ Prio &Operator &Description &Associativity \\
 &\lstinline$a[] $&Subscript &\\
 &\lstinline$.   -> $&Member access &\\
 \hline
-3 &\lstinline$++a   --a $&Prefix increment and decrement &Right-to-left ? \\
+3 &\lstinline$++a   --a $&Prefix increment and decrement &Right-to-left \\
 &\lstinline$+a   -a $&Unary plus and minus &\\
 &\lstinline$!   ~ $&Logical NOT and bitwise NOT &\\
 &\lstinline$(type) $&C-style cast &\\
 &\lstinline$*a $&Indirection (dereference) &\\
 &\lstinline$&a $&Address-of &\\
-&\lstinline$sizeof $&Size-of[note 1] &\\
-&\lstinline$co_await $&await-expression (C++20) &\\
+&\lstinline$sizeof $&Size-of&\\
+&\lstinline$co_await $&await-expression (\CppVers{20}) &\\
 &\lstinline$new   new[] $&Dynamic memory allocation &\\
 &\lstinline$delete delete[]$&Dynamic memory deallocation &\\
 \hline
-4 &\lstinline$.*   ->* $&Pointer-to-member &Left-to-right ? \\
+4 &\lstinline$.*   ->* $&Pointer-to-member &Left-to-right  \\
 \hline
 5 &\lstinline$a*b  a/b  a%b$&Multiplication, division, and remainder &\\
 \hline
@@ -1112,75 +1112,36 @@ Prio &Operator &Description &Associativity \\
 \hline
 7 &\lstinline$<<   >> $&Bitwise left shift and right shift &\\
 \hline
-8 &\lstinline$<=> $&Three-way comparison operator (since C++20) &\\
+8 &\lstinline$<=> $&Three-way comparison operator (since \CppVers{20}) &\\
 \hline
-9 &\lstinline$<  <=  >  >= $&For relational operators < and ? and > and ? respectively &\\
+9 &\lstinline$<  <=  >  >= $&For relational operators < and $\leq$ and > and $\geq$ respectively &\\
 \hline
-10 &\lstinline$==   != $&For equality operators = and ? respectively &\\
+10 &\lstinline$==   != $&For equality operators = and $\neq$ respectively &\\
 \hline
 11 &\lstinline$a&b $&Bitwise AND &\\
 \hline
 12 &\lstinline$^ $&Bitwise XOR (exclusive or) &\\
- \hline
+\hline
 13 &\lstinline$| $&Bitwise OR (inclusive or) &\\
 \hline
 14 &\lstinline$&& $&Logical AND &\\
 \hline
 15 &\lstinline$|| $&Logical OR &\\
 \hline
-16 &\lstinline$a?b:c $&Ternary conditional[note 2] &Right-to-left ? \\
+16 &\lstinline$a?b:c $&Ternary conditional[note 2] &Right-to-left \\
 &\lstinline$throw $&throw operator &\\
-&\lstinline$co_yield $&yield-expression (C++20) &\\
-&\lstinline$= $&Direct assignment (provided by default for C++ classes) &\\
+&\lstinline$co_yield $&yield-expression (\CppVers{20}) &\\
+&\lstinline$= $&Direct assignment (provided by default for \Cpp classes) &\\
 &\lstinline$+=   -= $&Compound assignment by sum and difference &\\
 &\lstinline$*=   /=   %= $&Compound assignment by product, quotient, and remainder &\\
 &\lstinline$<<=   >>= $&Compound assignment by bitwise left shift and right shift &\\
 &\lstinline$&=   ^=   |= $&Compound assignment by bitwise AND, XOR, and OR &\\
 \hline
-17 &\lstinline$, $&Comma &Left-to-right ?\\
+17 &\lstinline$, $&Comma &Left-to-right \\
 
 
 \hline
-%\lstinline$::$&	Scoperesolution ('Bereichsauflösung')&\lstinline$ApfelKlasse::GetTotal();$\\
 \end{tabular}
-%Precedence 	Operator 	Description 	Associativity
-%1 	:: 	Scope resolution 	Left-to-right ?
-%2 	a++   a-- 	Suffix/postfix increment and decrement
-%type()   type{} 	Functional cast
-%a() 	Function call
-%a[] 	Subscript
-%.   -> 	Member access
-%3 	++a   --a 	Prefix increment and decrement 	Right-to-left ?
-%+a   -a 	Unary plus and minus
-%!   ~ 	Logical NOT and bitwise NOT
-%(type) 	C-style cast
-%*a 	Indirection (dereference)
-%&a 	Address-of
-%sizeof 	Size-of[note 1]
-%co_await 	await-expression (C++20)
-%new   new[] 	Dynamic memory allocation
-%delete   delete[] 	Dynamic memory deallocation
-%4 	.*   ->* 	Pointer-to-member 	Left-to-right ?
-%5 	a*b   a/b   a%b 	Multiplication, division, and remainder
-%6 	a+b   a-b 	Addition and subtraction
-%7 	<<   >> 	Bitwise left shift and right shift
-%8 	<=> 	Three-way comparison operator (since C++20)
-%9 	<   <=   >   >= 	For relational operators < and ? and > and ? respectively
-%10 	==   != 	For equality operators = and ? respectively
-%11 	a&b 	Bitwise AND
-%12 	^ 	Bitwise XOR (exclusive or)
-%13 	| 	Bitwise OR (inclusive or)
-%14 	&& 	Logical AND
-%15 	|| 	Logical OR
-%16 	a?b:c 	Ternary conditional[note 2] 	Right-to-left ?
-%throw 	throw operator
-%co_yield 	yield-expression (C++20)
-%= 	Direct assignment (provided by default for C++ classes)
-%+=   -= 	Compound assignment by sum and difference
-%*=   /=   %= 	Compound assignment by product, quotient, and remainder
-%<<=   >>= 	Compound assignment by bitwise left shift and right shift
-%&=   ^=   |= 	Compound assignment by bitwise AND, XOR, and OR
-%17 	, 	Comma 	Left-to-right ?
 
 \section{Blöcke}
 Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
@@ -2037,6 +1998,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  \end{CCode}
  
  R und U können auch kombiniert werden.
+
 
 
 \chapter{Variablen}
@@ -3494,7 +3456,7 @@ Eine Klasse kann folgende Elemente beinhalten:
 \section{Attribute}
 \label{sect:AttributeKlassen}
 In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte}) \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}) definiert werden. Mit \CodeStyle{mutable} (Siehe \autoref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
-Als Attribute sind grundsätzlich alle Datentypen (inklusive Benutzerdefinierte wie Klassen) von C++ zulässig.
+Als Attribute sind grundsätzlich alle Datentypen (inklusive Benutzerdefinierte wie Klassen) von \Cpp zulässig.
 
 \section{Methoden}
 \label{sect:MethodenKlassen}
@@ -6687,9 +6649,14 @@ int main(int argc, char*argv[])
 
 \emph{Ein wichtiger Punkt zu \CodeStyle{shared_from_this()}:}
 
-\CodeStyle{shared_from_this()} darf nicht in einem Konstruktor
+\CodeStyle{shared_from_this()} darf nicht in einem eigenen Konstruktor
 aufgerufen werden.
 
+Zitat cppreference.com:
+\begin{quote}
+ in particular, shared\_from\_this cannot be
+ called during  construction of *this.
+\end{quote}
 
 Grund:
 
@@ -6710,51 +6677,16 @@ shared Pointer zugeordnet, entsprechend liefert
 noch keinen gültigen Pointer...
 
 
-%Noch ein wichtiger Punkt zu shared_from_this():
-%
-%shared_from_this() darf nicht in einem Konstruktor
-%aufgerufen werden.
-%
-%(Zitat cppreference.com:
- %in particular, shared_from_this cannot be
- %called during  construction of *this.
-%)
-%
-%Grund:
-%
-%Bei make_shared laeuft folgendes ab:
-%
-%1. Invaliden shared pointer erzeugen
-%2. Speicher fuer gewuenschtes Objekt allozieren
-%3. Konstruktor des gewuenschtes Objekt aufrufen
-%4. Shared Pointer auf neues Objekt zeigen lassen
-    %und referenzcounter initialisieren.
-%
-%d.h. in Schritt 3 ist das neue Objekt noch keinem
-%shared Pointer zugeordnet, entsprechend liefert
-%shared_from_this() in einem Konstruktor
-%noch keinen gueltigen pointer...
-%
-%> Ich verstehe den Ablauf von shared_from_this() noch nicht so ganz. Sie > sagen, im Schritt 3 wird noch keinem  shared Pointer zugeordnet. Aber
-%> die Zuweisung machen Sie ja im Schritt 4.
-%Eben, weil die Zuweisung erst im Schritt 4 geschieht, ist im Schritt
-%3 das Objekt noch keinem Shared Pointer zugeordnet.
-%
-%> Ist das gemeint, wenn ich den Konstruktor Aufruf verlasse, wird der
-%> shared Pointer aufgeräumt, den ich via-shared_from_this() erzeugt
-%> habe?
-%Nein, im Konstruktor liefert shared_from_this keinen validen shared pointer zurueck, weil das Objekt noch keinem shared pointer gehoert.
-%
 %Beispiel aus cppreference.com:
-%
+%\begin{CCode}
 %class Bad
 %{
-    %public:
-    %std::shared_ptr<Bad> getptr() {
-        %// Schlecht, es wird jedesmal ein neuer shared pointer erzeugt
-        %return std::shared_ptr<Bad>(this);
-    %}
-    %~Bad() { std::cout << "Bad::~Bad() called\n"; }
+%    public:
+%    std::shared_ptr<Bad> getptr() {
+%        // Schlecht, es wird jedesmal ein neuer shared pointer erzeugt
+%        return std::shared_ptr<Bad>(this);
+%    }
+%    ~Bad() { std::cout << "Bad::~Bad() called\n"; }
 %};
 %
 %// getptr() ist schlecht, da bei jedem AUfruf ein neuer sharedpointer
@@ -6767,95 +6699,95 @@ noch keinen gültigen Pointer...
 %
 %int main()
 %{
-    %// (A) Good, common  shared pointer:
-    %std::shared_ptr<Bad> bpa1 = std::make_shared<Bad>();
-    %std::shared_ptr<Bad> bpa2 = bpa1;
+%    // (A) Good, common  shared pointer:
+%    std::shared_ptr<Bad> bpa1 = std::make_shared<Bad>();
+%    std::shared_ptr<Bad> bpa2 = bpa1;
 %
-    %// (B) Bad, each shared_ptr thinks it's the only owner of the object
-    %Bad *RawPtr = new Bad();
-    %std::shared_ptr<Bad> bpb1 = RawPtr ;
-    %std::shared_ptr<Bad> bpb2 = RawPtr ;
+%    // (B) Bad, each shared_ptr thinks it's the only owner of the object
+%    Bad *RawPtr = new Bad();
+%    std::shared_ptr<Bad> bpb1 = RawPtr ;
+%    std::shared_ptr<Bad> bpb2 = RawPtr ;
 %
 %
-    %// (C) Bad, each shared_ptr thinks it's the only owner of the object
-    %std::shared_ptr<Bad> bpc1 = std::make_shared<Bad>();
-    %std::shared_ptr<Bad> bpc2 = bpc1->getptr();
+%    // (C) Bad, each shared_ptr thinks it's the only owner of the object
+%    std::shared_ptr<Bad> bpc1 = std::make_shared<Bad>();
+%    std::shared_ptr<Bad> bpc2 = bpc1->getptr();
 %
-    %// (C) ist eigentlich dasselbe wie (B), der Zugriff auf den
-    %// Raw-Pointer ist einfach in getptr() versteckt, der this-Pointer
-    %// ist ein Raw-Pointer (und kein shared Pointer).
+%    // (C) ist eigentlich dasselbe wie (B), der Zugriff auf den
+%    // Raw-Pointer ist einfach in getptr() versteckt, der this-Pointer
+%    // ist ein Raw-Pointer (und kein shared Pointer).
 %}
 %
 %
 %
 %Class Good : public std::enable_shared_from_this<Good>
 %{
-    %public:
-    %std::shared_ptr<Good> getptr() {
-        %return shared_from_this();
-    %}
+%    public:
+%    std::shared_ptr<Good> getptr() {
+%        return shared_from_this();
+%    }
 %};
 %
 %
 %int main()
 %{
-    %// (A) Good, common  shared pointer:
-    %std::shared_ptr<Good > bpa1 = std::make_shared<Good >();
-    %std::shared_ptr<Good > bpa2 = bpa1;
+%    // (A) Good, common  shared pointer:
+%    std::shared_ptr<Good > bpa1 = std::make_shared<Good >();
+%    std::shared_ptr<Good > bpa2 = bpa1;
 %
-    %// (B) Bad, each shared_ptr thinks it's the only owner of the object
-    %Bad *RawPtr = new Good ();
-    %std::shared_ptr<Good > bpb1 = RawPtr ;
-    %std::shared_ptr<Good > bpb2 = RawPtr ;
+%    // (B) Bad, each shared_ptr thinks it's the only owner of the object
+%    Bad *RawPtr = new Good ();
+%    std::shared_ptr<Good > bpb1 = RawPtr ;
+%    std::shared_ptr<Good > bpb2 = RawPtr ;
 %
 %
-    %// (C) Good, common  shared pointer:
-    %std::shared_ptr<Good > bpc1 = std::make_shared<Good >();
-    %std::shared_ptr<Good > bpc2 = bpc1->getptr();
+%    // (C) Good, common  shared pointer:
+%    std::shared_ptr<Good > bpc1 = std::make_shared<Good >();
+%    std::shared_ptr<Good > bpc2 = bpc1->getptr();
 %
-    %// (C) ist eigentlich dasselbe wie (A), die Kopie von
-    %// bpc1  ist einfach in getptr() versteckt, es wird
-    %// nicht der this-Pointer verwendet, sondern
-    %// eine Kopie vom shared pointer bpc1
+%    %// (C) ist eigentlich dasselbe wie (A), die Kopie von
+%    %// bpc1  ist einfach in getptr() versteckt, es wird
+%    %// nicht der this-Pointer verwendet, sondern
+%    %// eine Kopie vom shared pointer bpc1
 %
 %}
 %
 %
 %// Detailierte Funktion von C, nur Prinzip:
 %// std::shared_ptr<Good > bpc1 = std::make_shared<Good >();
-%bpc1.ptr = nullptr;
-%bpc1.UsageCount = new int;
-%*(bpc1.UsageCount) = 0;
+%   bpc1.ptr = nullptr;
+%   bpc1.UsageCount = new int;
+%   *(bpc1.UsageCount) = 0;
 %
-%temp = new Good()  // Konstruktor von Good wird aufgerufen
-                   %// Im Konstruktor wird
-                   %// this.WeakThis.ptr auf nullptr
-                   %// gesetzt, shared_from_this()
-                   %// kann an dieser Stelle desshalb noch
-                   %// nicht funktionieren
-%bpc1.ptr = temp;
-%*(bpc1.UsageCount) = 1;  // Ein Pointer zeigt auf Objekt
+%   temp = new Good()  // Konstruktor von Good wird aufgerufen
+%                      // Im Konstruktor wird
+%                      // this.WeakThis.ptr auf nullptr
+%                      // gesetzt, shared_from_this()
+%                      // kann an dieser Stelle desshalb noch
+%                      // nicht funktionieren
+%   bpc1.ptr = temp;
+%   *(bpc1.UsageCount) = 1;  // Ein Pointer zeigt auf Objekt
 %
-%// WeakPointer in Basisklasse std::enable_shared_from_this<Good> setzen
+%   // WeakPointer in Basisklasse std::enable_shared_from_this<Good> setzen
 %
-%bpc1.ptr->SetWeakSharedThis(bpc1);
-%// this.WeakThis.UsageCount = bpc1.UsageCount;
-%// this.WeakThis.ptr = bpc1.ptr ;
+%   bpc1.ptr->SetWeakSharedThis(bpc1);
+%   this.WeakThis.UsageCount = bpc1.UsageCount;
+%   this.WeakThis.ptr = bpc1.ptr ;
 %
-%// Ab jetzt funktioniert shared_from_this()
+%   Ab jetzt funktioniert shared_from_this()
 %
 %std::shared_ptr<Good > bpc2 = bpc1->getptr();
 %
-%// bpc1->getptr();
+%   bpc1->getptr();
 %////return shared_from_this();
 %////// shared_from_this();
-%tmp.ptr = this.WeakThis.ptr;
-%tmp.UsageCount = this.WeakThis.UsageCount;
-%// We have another shared pointer now, increment Usagecount
-%(*tmp.UsageCount) ++;
-%return tmp;
-%bpc2 = tmp; 
-
+%  tmp.ptr = this.WeakThis.ptr;
+%  tmp.UsageCount = this.WeakThis.UsageCount;
+%  // We have another shared pointer now, increment Usagecount
+%  (*tmp.UsageCount) ++;
+%  return tmp;
+%  bpc2 = tmp; 
+%\end{CCode}
 
 \section{Variant, Optional, Any (Seit \CppVers{17})}
 \label{sect:VariantOptionalAny}
@@ -7103,7 +7035,7 @@ int main()
 \OviIndex{Dateiausgaben} laufen über Objekte vom Typ \CodeIndex{ofstream}, Eingaben über solche vom Typ \CodeIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile \CodeStyle{<fstream>} mittels \CodeStyle{#include <fstream>} eingebunden werden. (Mit \CodeStyle{#include} werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie \CodeStyle{cin} und \CodeStyle{cout} benutzt werden. (\CodeStyle{cin} und \CodeStyle{cout} sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
 
 
-Die Ein-/Ausgabe von C++ läuft über die Klassen  istream und ostream. Diese Klassen enthalten die Definitionen aller Methoden zur grundlegenden Ein-/Ausgabe. Allerdings gibt es keine Exemplare dieser abstrakten Klassen, konkret gibt es nur Ableitungen davon, wie etwa die ifstream oder ofstream-Klassen. Mit den in der Standardlibrary enthaltenen Klassen ist Konsolen- (cin, cout) und Datei-I/O (ifstream, ofstream) sowie das Lesen aus und das Schreiben in Strings (istringstream,  ostringstream möglich.
+Die Ein-/Ausgabe von \Cpp läuft über die Klassen  istream und ostream. Diese Klassen enthalten die Definitionen aller Methoden zur grundlegenden Ein-/Ausgabe. Allerdings gibt es keine Exemplare dieser abstrakten Klassen, konkret gibt es nur Ableitungen davon, wie etwa die ifstream oder ofstream-Klassen. Mit den in der Standardlibrary enthaltenen Klassen ist Konsolen- (cin, cout) und Datei-I/O (ifstream, ofstream) sowie das Lesen aus und das Schreiben in Strings (istringstream,  ostringstream möglich.
 Für andere Kanäle können eigene Klassen oder Libraries selber abgeleitete Klassen definieren.
 
 Die standard Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Streams aus. Für andere Varianten müssen die basic\_xyz<> templates für die entsprechenden Typen instanziert werde, es gibt bereits Varianten für Unicode.
@@ -7111,20 +7043,22 @@ Die standard Streamklassen gehen grundsätzlich von Byte-Orientierten (ASCII) Str
 Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit \CodeStyle{if(Objekt)} überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall \CodeStyle{false} zurück. Die Methode \CodeStyle{eof()} liefert \CodeStyle{true} zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode \CodeStyle{good()} liefert \CodeStyle{true} zurück, wenn die nächste Streamoperation klappen könnte, wenn sie \CodeStyle{false} liefert, geht die nächste Operation bestimmt schief.
 
  Tabelle 17 zeigt die wichtigsten Methoden die für alle stream Klassen verfügbar sind:
-%Operator bool();
-%Liefert true wenn kein Fehler im Stream vorhanden ist.
-%Bool Operator  !();
-%bool fail();
-%Liefern false wenn kein Fehler im Stream vorhanden ist, Gegenteil von operator bool().
-%bool good();
-%Liefert true wenn weder fail noch eof true sind.
-%
-%Bool eof();
-%Liefert  true, wenn das Dateiende erreicht wurde.
-%tellp()
-%seekp()
-%Position im Dateistrom setzten oder abfragen.
+ 
+ \begin {tabular}{|p{0.22\textwidth}|p{0.70\textwidth}|}%p{0.29\textwidth}|}
+\hline
+
+\lstinline$operator bool()$&Liefert true wenn kein Fehler im Stream vorhanden ist.\\
+\hline
+\lstinline$bool operator !()$\newline \lstinline$bool fail()$& Liefern false wenn kein Fehler im Stream vorhanden ist, Gegenteil von operator bool().\\
+\hline
+\lstinline$bool good()$&Liefert true wenn weder fail noch eof true sind.\\
+\hline
+\lstinline$bool eof()$&Liefert true, wenn das Dateiende erreicht wurde.\\
+\hline
+\lstinline$tellp()$ \newline \lstinline$seekp()$ &Position im Dateistrom setzten oder abfragen.\\
 %Tabelle 16: Methoden der Klasse Stream
+\hline
+\end {tabular}
 
 Die stream- Klassenhierarchie ist in nachfolgendem Diagramm dargestellt. In ios sind die Gemeinsamkeiten aller Streams zusammengefasst. Zur Anwendung wird jeweils eine Instanz von diesen abgeleiteten Klassen angelegt. 
 
@@ -7199,59 +7133,82 @@ Die stream- Klassenhierarchie ist in nachfolgendem Diagramm dargestellt. In ios 
 	
 }
 
+\subsection{Eingabe in \Cpp}
+Die Klasse istream dient als Abstraktion für alle konkret möglichen Eingabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen. Viele Methoden sind mehrfach überladen.
+ Tabelle 17 zeigt die wichtigsten Methoden der Klassen istream:
+ 
+ 
+  \begin {tabular}{|p{0.22\textwidth}|p{0.70\textwidth}|}%p{0.29\textwidth}|}
+\hline
+\lstinline$operator >> (Type)$&Einlesen aller möglichen ASCII- und Binär-Daten, je nach Type werden int, float, string, etc eingelesen. Alle Standardtypen werden unterstützt, Anwender und Libraries können diesen Operator für eigene Datentypen überladen.\\
+\hline
+\lstinline$int_type get()$&Lesen eines Bytes. Das Ergebnis wird als Zahl im Bereich von 0 bis 255  zurückgeliefert, Traits::eof() codiert das Ende der Datei.\\
+
+\lstinline$get(c_type &ch)$&Wie get(): Lesen eines Bytes. Das Ergebnis wird in ch abgespeichert.\\
+\hline
+
+\lstinline$get(c_type *s,  streamsize  count)$&Aus dem Eingabestrom werden count Bytes eingelesen und in den Puffer s abgelegt.\\
 
 
-\begin{CCode}
-#include <fstream>
+\lstinline$get( char_type* s, streamsize count, char_type delim )$&
 
-using namespace std;
+Aus dem Eingabestrom werden count Bytes eingelesen, aber maximal bis zum Auftreten von delim und in den Puffer s abgelegt.\\
+\hline
 
-int main(int argc, char *argv[]) 
-{
-  int a = 4, b = 5;
-  ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
-  if (AusgabeDatei) {
-    AusgabeDatei << "Mein erstes File" << endl;
-    AusgabeDatei << "a + b ist " << (a + b) << endl;
-  } else {
-    cout << "Fehler, konnte Datei nicht oeffnen" << endl;
-  }
-  return 0
-} 
-\end{CCode}
+\lstinline$getline(c_type *s, streamsize count)$&
+Aus dem Eingabestrom wird eine Zeile, aber maximal count Bytes eingelesen und in den Puffer s abgelegt.\\
 
 
+\lstinline$basic_istream& getline( c_type *s, streamsize count, c_type delim )$&
+Aus dem Eingabestrom werden Bytes bis zum Zeichen delim, aber maximal count Bytes eingelesen und in den Puffer s abgelegt. delim wird entfernt und nicht mit abgespeichert\\
+\hline
 
-Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
-Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit \CodeStyle{|} (binäres or) kombiniert werden.
-\CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
-\CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
 
-Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen \CodeStyle{0x0A} in die Zeichenkombination \CodeStyle{0x0A 0x0D} umgewandelt, was bei binären Daten fatal sein kann.
-\begin{CCode}
+\lstinline$ignore( streamsize count = 1, int_type delim = Traits::eof() )$&
 
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
-                                                          // anhaengen erzeugen
+Wie getline(), nur werden die gelesenen Zeichen verworfen.\\
+\hline
 
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          // modus erzeugen
 
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
-                                                          // Binaere Datei zum 
-                                                          // anhaengen erzeugen
 
-  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
-                                                          // modus zum Lesen oeffnen
+\lstinline$read( c_type *s, streamsize count )$&
+Aus dem Eingabestrom werden count Bytes eingelesen und in den Puffer s abgelegt.\\
+%Tabelle 17: Methoden der Klasse InputStream
+\hline
+\end {tabular}
 
-  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          // modus zum Lesen oeffnen
+Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die iStreamobjekte
+die Methoden \CodeStyle{get(), getline(), read()} und \CodeStyle{ignore()} zur Verfügung. Diese Methoden sind
+zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
+wenn die Operatoren \CodeStyle{>>} nicht die gewünschte Funktionalität liefern. 
 
-\end{CCode}
+
+
+\subsection{Ausgabe in \Cpp}
+Die Klasse ostream dient als Abstraktion für alle konkret möglichen Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreibzugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte schreiben. Insbesondere der Operator << ist für elementare Datentypen sowie für viele Objekte überladen. Er ist damit besonders nützlich, wenn es um die Ausgabe von Daten als Text geht, wie es z.B. bei Ausgabe auf die Konsole der Fall ist. Viele Methoden von ostream sind mehrfach überladen.
+
+ Tabelle 17 zeigt die wichtigsten Methoden der Klassen ostream:
+ 
+\begin {tabular}{|p{0.22\textwidth}|p{0.70\textwidth}|}%p{0.29\textwidth}|}
+\hline
+\lstinline$Operator << (Type)$&
+Ausgeben aller möglichen ASCII- und Binär-Daten, je nach Type werden int, float, string, etc ausgegeben. Alle Standardtypen werden unterstützt, Anwender und Libraries können diesen Operator für eigene Datentypen überladen.\\
+\hline
+\lstinline$put(ch_type ch)$&
+Ausgeben eines Bytes.\\
+\hline
+\lstinline$Write(const ch_type *s, streamsize count)$&
+Aus dem  Puffer s werden count Bytes ausgegeben.\\
+\hline
+
+%Tabelle 19: Methoden der Klasse InputStream
+\end {tabular}
+
 
 Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
-die Methoden \CodeStyle{put(), write(), get(), getline(), read()} und \CodeStyle{ignore()} zur Verfügung. Diese Methoden sind
+die Methoden \CodeStyle{put()} und \CodeStyle{write()} zur Verfügung. Diese Methoden sind
 zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
-wenn die Operatoren \CodeStyle{<<} und \CodeStyle{>>} nicht die gewünschte Funktionalität liefern. 
+wenn die Operatoren \CodeStyle{<<} nicht die gewünschte Funktionalität liefern. 
 
 \subsection{Formatierte Ausgabe}
 \index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
@@ -7265,6 +7222,8 @@ Wahl des Zahlensystems: \CodeStyle{ios_base::dec, ios_base::hex, ios_base::oct}
 Bündigkeit: \CodeStyle{ios_base::left, ios_base::right}
 
 Gleitkommaformat: \CodeStyle{ios_base::scientific, ios_base::fixed}
+
+
 
  
 Beispiel:
@@ -7287,6 +7246,8 @@ Beispiel:
   
 
 \end{CCode} 
+
+
 
 Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
 \CodeStyle{precision()} kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
@@ -7312,6 +7273,11 @@ definiert werden, mit \CodeStyle{width()} die Feldbreite und mit \CodeStyle{fill
 
 \end{CCode} 
 
+
+
+
+
+
 \CodeStyle{width()} gilt nur für die nächste Ausgabe und wird danach wieder
 auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
 
@@ -7335,7 +7301,6 @@ selbst neue Manipulatoren zu erzeugen.
 
 Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, left, right}
 
-
 \phantomsection
 \label{subsubsect:formated}
 \textbf{std::format}
@@ -7356,9 +7321,9 @@ Ausgabe : 3.14 is 3 or Pi
 Platzhalter können auch Formatierungsanweisungen beinhalten, welche durch ein Doppelpunkt eingeleitet werden, und im Aufbau denjenigen von printf() aus C ähnlich sind und folgende Felder enthalten:
 
 
-: fill-and-align?? sign?? \# 0 width?? precision?? L type?? 
+: fill-and-align sign \# 0 width precision L type
 
-Wobei alle Elemente Optional sind. sign?? \# 0 dürfen nur bei Integer oder Fliesskommawerten benutzt werden.
+Wobei alle Elemente Optional sind. sign \# 0 dürfen nur bei Integer oder Fliesskommawerten benutzt werden.
 
 
 
@@ -7443,14 +7408,6 @@ type&\emph{Bei integer Argumenten}\\
 
 
 
-
-
-
-
-
-
-
-
 \hline
 \end{tabular}
  
@@ -7493,11 +7450,74 @@ auto b3 = std::format("{:.{}f}", pi, 5.0);     // throws: precision is not of in
 auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
 
 
-Seit C++23 kann die Ausgabe mit \OviIndex{std::print} und std::println weiter vereinfacht werden:
+Seit \CppVers{23} kann die Ausgabe mit \OviIndex{std::print} und std::println weiter vereinfacht werden:
 std::print("{}is {} or {}!\n", "Pi", 3.14, 3); 
 Ausgabe : Pi is 3.14 or 3
 
 \end{CCode} 
+
+\subsection{Kombinierte Ein- und Ausgabe in \Cpp}
+Die Klasse iostream kombiniert die Möglichkeiten eines istream mit der eines ostreams, Sie dient als Abstraktion für alle konkret möglichen Ein/Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istream und ostream unterstüzt.
+
+
++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte die Methoden get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders wenn der Operator >> nicht die gewünschte Funktionalität liefert. 
+
+
+
+\begin{CCode}
+#include <fstream>
+
+using namespace std;
+
+int main(int argc, char *argv[]) 
+{
+  int a = 4, b = 5;
+  ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
+  if (AusgabeDatei) {
+    AusgabeDatei << "Mein erstes File" << endl;
+    AusgabeDatei << "a + b ist " << (a + b) << endl;
+  } else {
+    cout << "Fehler, konnte Datei nicht oeffnen" << endl;
+  }
+  return 0
+} 
+\end{CCode}
+
+
+
+Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
+Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit \CodeStyle{|} (binäres or) kombiniert werden.
+\CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
+\CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+
+Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen \CodeStyle{0x0A} in die Zeichenkombination \CodeStyle{0x0A 0x0D} umgewandelt, was bei binären Daten fatal sein kann.
+\begin{CCode}
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
+                                                          // anhaengen erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
+                                                          // Binaere Datei zum 
+                                                          // anhaengen erzeugen
+
+  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
+                                                          // modus zum Lesen oeffnen
+
+  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus zum Lesen oeffnen
+
+\end{CCode}
+
+
 
 \subsection{Dateisystem-Bibliothek (Seit \CppVers{17})}
 \label{subsect:Filesystemlibrary}
@@ -7545,36 +7565,6 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
     });
 \end{CCode} 
 
-%8 Ein- und Ausgabe
-
-%8.1 Eingabe in C++
-%Die Klasse istream dient als Abstraktion für alle konkret möglichen Eingabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen. Viele Methoden sind mehrfach überladen.
-% Tabelle 17 zeigt die wichtigsten Methoden der Klassen istream:
-%Operator >> (Type);
-%Einlesen aller möglichen ASCII- und Binär-Daten, je nach Type werden int, float, string, etc eingelesen. Alle Standardtypen werden unterstützt, Anwender und Libraries können diesen Operator für eigene Datentypen überladen.
-%int_type get();
-%get(c_type &ch);
-%get(c_type *s,  streamsize  count);
-%get( char_type* s, streamsize count, char_type delim );
-%Lesen eines Bytes. Das Ergebnis wird als Zahl im Bereich von 0 bis 255  zurückgeliefert, Traits::eof() codiert das Ende der Datei.
-%Lesen eines Bytes. Das Ergebnis wird in ch abgespeichert.
-% Bereich von 0 bis 255  zurückgeliefert.
-%Aus dem Eingabestrom werden count Bytes eingelesen und in den Puffer s abgelegt.
-%Aus dem Eingabestrom werden count Bytes eingelesen, aber maximal bis zum Auftreten von delim und in den Puffer s abgelegt.
-%getline(c_type *s, streamsize count);
-%basic_istream& getline( c_type *s, streamsize count, c_type delim );
-%Aus dem Eingabestrom wird eine Zeile, aber maximal count Bytes eingelesen und in den Puffer s abgelegt.
-%Aus dem Eingabestrom werden Bytes bis zum Zeichen delim, aber maximal count Bytes eingelesen und in den Puffer s abgelegt. delim wird entfernt und nicht mit abgespeichert
-%
-%ignore( streamsize count = 1, 
-%int_type delim = Traits::eof() );
-%
-%Wie getline(), nur werden die gelesenen Zeichen verworfen.
-%
-%read( c_type *s, streamsize count );
-%Aus dem Eingabestrom werden count Bytes eingelesen und in den Puffer s abgelegt.
-%Tabelle 17: Methoden der Klasse InputStream
-%Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte die Methoden get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders wenn der Operator >> nicht die gewünschte Funktionalität liefert. 
 %8.1.1 Eingabe mit den byteorientierten Datei-Stream-Klassen
 %Dateieingaben laufen über Objekte vom Typ ifstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin benutzt werden. (cin ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
 %Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
@@ -7644,7 +7634,7 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 %
 %
 %8.1.3 Die Standard Eingabe
-%UNIX und Windows sehen für Anwendungen eine Standard-Eingaberichtung vor. Diese wird oft auch mit stdin bezeichnet. C++ Programme können über das globale Object cin auf diesen InputStream zugreifen.
+%UNIX und Windows sehen für Anwendungen eine Standard-Eingaberichtung vor. Diese wird oft auch mit stdin bezeichnet. \Cpp Programme können über das globale Object cin auf diesen InputStream zugreifen.
 %8.1.3.1 Programmbeispiel
 %Zum Einlesen von Zeichen von der Tastatur wird am einfachsten der Operatror >> verwendet:
 %include <iostream>
@@ -7658,196 +7648,7 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 %            std::cout << ">" << s << "<" << std::endl;
 %      }
 %}
-%8.2 Ausgabe in C++
-%Die Klasse ostream dient als Abstraktion für alle konkret möglichen Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreibzugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte schreiben. Insbesondere der Operator << ist für elementare Datentypen sowie für viele Objekte überladen. Er ist damit besonders nützlich, wenn es um die Ausgabe von Daten als Text geht, wie es z.B. bei Ausgabe auf die Konsole der Fall ist. Viele Methoden von istream sind mehrfach überladen.
-% Tabelle 17 zeigt die wichtigsten Methoden der Klassen istream:
-%Operator << (Type);
-%Ausgeben aller möglichen ASCII- und Binär-Daten, je nach Type werden int, float, string, etc ausgegeben. Alle Standardtypen werden unterstützt, Anwender und Libraries können diesen Operator für eigene Datentypen überladen.
-%put(ch_type ch);
-%Ausgeben eines Bytes. .
-%Write(
-%const ch_type *s, streamsize count);
-%Aus dem  Puffer s werden count Bytes ausgegeben.
-%Tabelle 19: Methoden der Klasse InputStream
-%Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte die Methoden put() und write() zur Verfügung. Diese Methoden sind zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders wenn der Operator << nicht die gewünschte Funktionalität liefert. 
 %
-%8.2.1 Formatierte Ausgabe 
-%Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der Methode flags() können die Flags gesetzt oder gelesen werden, mit setf() können Flags hinzugefügt werden. 
-%Es sind unter anderem folgende Flags definiert:
-%Wahl des Zahlensystems: ios_base::dec, ios_base::hex, ios_base::oct 
-%Bündigkeit: ios_base::left, ios_base::right
-%Gleitkommaformat: ios_base::scientific, ios_base::fixed
-%
-%Beispiel: 
-%
-%std::ios_base::fmtflags AlteFlags; 
-%AlteFlags = std::cout.flags(); // Flag Zustand lesen 
-%// Ausgabeformat waehlen (Flags zusaetzlich setzen) 
-%std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed); 
-%std::cout << 1.23; // Ausgabe im gewaehlten Format 
-%// Alle Flags loeschen, nur Hex ist gesetzt 
-%std::cout.flags(std::ios_base::hex); 
-%std::cout << 47; 
-%
-%
-%
-%Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode precision () kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden: 
-%
-%std::streamsize OldPrecision; 
-%
-%OldPrecision = std::cout.precision(); // Genauigkeit lesen 
-%// Genauigkeit waehlen 
-%std::cout.precision(5); 
-%// Feldbreite waehlen 
-%std::cout.width(9); 
-%// Fuellzeichen waehlen 
-%std::cout.fill(?*?); 
-%
-%std::cout << 1.23; // Ausgabe im gewaehlten Format // gibt ****1.23000 aus 
-%
-%
-%
-%
-%width() gilt nur für die nächste Ausgabe und wird danach wieder auf 0 zurückgesetzt (Nur soviele 
-%Zeichen wie nötig ausgeben). 
-%Mit Manipulatoren kann das Formatieren und Steuern des Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von Operator-Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen gibt es bereits vordefinierte Manipulatoren, es ist aber auch möglich, selbst neue Manipulatoren zu erzeugen. 
-%
-%
-%// Format waehlen und Ausgabe in der selben Zeile 
-%std::cout << std::setprecision(5) << std::setw(9) << std::setfill(?*?) << 1.23; 
-%// Zahl hexadezimal ausgeben (ersetzt setf()) 
-%std::cout << std::hex << 123545; 
-%
-%Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
-%
-%Seit C++20 gibt es mit std::format weitere Formatiermöglichkeiten, welche an printf() aus C 
-%angelehnt sind. Anstelle des % muss {} als Platzhalter verwendet werden:
-%std::cout << std::format("{} ist {} oder {}!\n", "Pi", 3.14, 3); 
-%Ausgabe : Pi ist 3.14 oder 3
-%
-%Die Platzhalter können auch von 0 an durchnummeriert werden, die Argumente werden dadurch in der Reihenfolge der Nummerierung eingefügt (Ein Nummer kann auch mehrfach verwendet werden):
-%std::cout << std::format("{1} : {2} oder {0}!\n", "Pi", 3.14, 3); 
-%Ausgabe : 3.14 ist 3 oder Pi
-%
-%Platzhalter können auch Formatierungsanweisungen beinhalten, welche durch ein Doppelpunkt eingeleitet werden, und im Aufbau denjenigen von printf() aus C ähnlich sind und folgende Felder enthalten:
-%
-%: fill-and-align?? sign?? # 0 width?? precision?? L type?? 
-%Wobei alle Elemente Optional sind. sign?? # 0 dürfen nur bei Integer oder Fliesskommawerten benutzt werden.
-%
-%fill-and-align
-%Fillchar Alignement
-%Fillchar: Füllzeichen	{:0}
-%Alignement kann '<', '>' oder '^' sein: 
-%'<': Linksbündig	{:<} // Füllt mit Spaces
-%'>': Rechtsbündig	{:0>} // Füllt mit 0
-%'^': Zentriert	{:*^} // Füllt mit *
-%sign	
-%'+'
-%'-'
-%' '
-%Positives unbd negatives Vorzeichen ausgeben
-%Nur negatives Vorzeichen ausgeben (Defaultverhalten)
-%Leerzeichen anstelle Vorzeichen bei positiven Werten
-%#
-%'#', Alternative Form aktivieren
-%Bei Hex, okt oder Bin mit 0x, 0 0der 0b vorangestellt
-%Bei Fliesskomma immer einen Dezimalpunkt ausgeben
-%0
-%'0'
-%Feld mit führenden Nullen füllen, ignoriert wenn gleichzeitig mit alignement Anforderung benutzt
-%width
-%Zahl, {} oder {n}
-%Mindestens soviele Zeichen ausgeben, bei {} oder {n} wird Feldbreite aus Argumentliste geholt.
-%precision
-%.Zahl, .{} oder .{n}
-%Punkt gefolgt von Zahl oder {}
-%Nur bei Text oder Fliesskommazahlen anwendbar.
-%Text: Maximale Anzahl auszugebender Zeichen
-%Fliesskomma: Genauigkeit, Anzahl signifikanter Stellen
-%bei {} oder {n} wird Genauigkeit aus Argumentliste geholt.
-%L
-%'L'
-%Lokalisierte Ausgabe arithmetischer Typen (Dezimaltrenner, Gruppierungszeichen, true oder false in lokaler Sprache)
-%type
-%Bei integer Argumenten
-%b, B:
-%c:
-%d:
-%o:
-%x, X:
-%<Kein>
-%Bei bool Argumenten
-%b, B, d, o, x, X:
-%s oder <Kein>
-%Bei Fliesskomma Arg.
-%a, A:
-%e, E:
-%f, F:
-%g, G:
-%<Kein>:
-%Bei Pointer Argumenten.
-%p, <Kein>:
-%
-%Als Binärzahl ausgeben
-%Zugehöriges ASCII/Unicode Zeichen ausgeben
-%Als Dezimalzahl ausgeben
-%Als Oktalzahl ausgeben
-%Als Hexadezimalzahl ausgeben
-%Bei char und wchar Argumenten wie 'c', sonst wie 'd'
-%
-%Gibt 0 oder 1 Wie bei integer aus
-%Gibt Textrepräsentation für true oder false aus
-%
-%Ausgabe in Hexadezimal
-%Wissenschaftliches Format
-%Ohne Exponent, mit vor und Nachkommastellen
-%'e' oder 'f, was jeweils weniger Platz benötigt
-%Defaultverhalten
-%
-%Sytemabhängige Ausgabe von Adresse
-%
-%
-%char c = 120;
-%auto s0 = std::format("{:6}", 42);    // value of s0 is "    42"
-%auto s1 = std::format("{:6}", 'x');   // value of s1 is "x     "
-%auto s2 = std::format("{:*<6}", 'x'); // value of s2 is "x*****"
-%auto s3 = std::format("{:*>6}", 'x'); // value of s3 is "*****x"
-%auto s4 = std::format("{:*^6}", 'x'); // value of s4 is "**x***"
-%auto s5 = std::format("{:6d}", c);    // value of s5 is "   120"
-%auto s6 = std::format("{:6}", true);  // value of s6 is "true  "
-%double inf = std::numeric_limits<double>::infinity();
-%double nan = std::numeric_limits<double>::quiet_NaN();
-%auto s0 = std::format("{0:},{0:+},{0:-},{0: }", 1);   // value of s0 is "1,+1,1, 1"
-%auto s1 = std::format("{0:},{0:+},{0:-},{0: }", -1);  // value of s1 is "-1,-1,-1,-1"
-%auto s2 = std::format("{0:},{0:+},{0:-},{0: }", inf); // value of s2 is "inf,+inf,inf, inf"
-%auto s3 = std::format("{0:},{0:+},{0:-},{0: }", nan); // value of s3 is "nan,+nan,nan, nan"
-%      
-%
-%char c = 120;
-%auto s1 = std::format("{:+06d}", c);   // value of s1 is "+00120"
-%auto s2 = std::format("{:#06x}", 0xa); // value of s2 is "0x000a"
-%auto s3 = std::format("{:<06}", -42);  // value of s3 is "-42   "
-%                                       // (0 is ignored because of < alignment)
-%
-%auto s1 = std::format("{:10f}", pi);           // s1 = "  3.140000" (width = 10)
-%auto s2 = std::format("{:{}f}", pi, 10);       // s2 = "  3.140000" (width = 10)
-%auto s3 = std::format("{:.5f}", pi);           // s3 = "3.14000" (precision = 5)
-%auto s4 = std::format("{:.{}f}", pi, 5);       // s4 = "3.14000" (precision = 5)
-%auto s5 = std::format("{:10.5f}", pi);         // s5 = "   3.14000"
-%                                               // (width = 10, precision = 5)
-%auto s6 = std::format("{:{}.{}f}", pi, 10, 5); // s6 = "   3.14000"
-%                                               // (width = 10, precision = 5)
-% 
-%auto b1 = std::format("{:{}f}", pi, 10.0);     // throws: width is not of integral type 
-%auto b2 = std::format("{:{}f}", pi, -10);      // throws: width is negative
-%auto b3 = std::format("{:.{}f}", pi, 5.0);     // throws: precision is not of integral type
-%
-%auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
-%
-%
-%Seit C++23 kann die Ausgabe mit std::print und std::println weiter vereinfacht werden:
-%std::print("{} ist {} oder {}!\n", "Pi", 3.14, 3); 
-%Ausgabe : Pi ist 3.14 oder 3
 %8.2.2 Ausgabe mit den byteorientierten Datei-Stream-Klassen
 %Dateiausgaben laufen über Objekte vom Typ ofstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cout benutzt werden. (cout ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
 %Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geo?ffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
@@ -7909,12 +7710,12 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 %std::cout << s;   // gibt 'Wert ist 123' aus
 %
 %8.2.4 Die Standard-Ausgabe
-%UNIX und Windows sehen für Anwendungen eine Standard-Ausgabe vor. Diese wird oft auch mit stdout bezeichnet. C++-Programme können über das globale Objekt cout auf diesen Stream zugreifen. Für Fehlermeldungen ist dagegen die Ausgangsnachricht stderr, die in C++ über cerr ansprechbar ist, besser geeignet. Mit der Umlenkung
+%UNIX und Windows sehen für Anwendungen eine Standard-Ausgabe vor. Diese wird oft auch mit stdout bezeichnet. \Cpp-Programme können über das globale Objekt cout auf diesen Stream zugreifen. Für Fehlermeldungen ist dagegen die Ausgangsnachricht stderr, die in \Cpp über cerr ansprechbar ist, besser geeignet. Mit der Umlenkung
 %Programm.exe > Dateiname
 %wird die Ausgabe des Programms nach stdout in die durch ?Dateiname? angegebene Datei umgelenkt, nicht aber die Ausgabe nach stderr.
-%8.3 Kombinierte Ein- und Ausgabe in C++
+%8.3 Kombinierte Ein- und Ausgabe in \Cpp
 %Die Klassen iostream, fstream und stringstream kombinieren die jeweiligen i- und o-Klassen und erlauben das Lesen und Schreiben des entsprechenden Streams. Beim Erzeugen eines fstreams muss  ios_base::out,  ios_base::app::in oder eine Kombination von beiden als Modus angegeben werden. Bei der benutzung stehen sowohl die Methoden von der entsprechenden istream als auch der entsprechenden ostream Klasse zur Verfügung.
-%8.4 Dateisystem-Bibliothek (Seit C++17)
+%8.4 Dateisystem-Bibliothek (Seit \CppVers{17})
 %Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem 
 %Dateisystem im Namespace std::filesystem definiert. Zum Beispiel: 
 %8.4.1 Klasse std::filesystem::path
@@ -8156,7 +7957,7 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 %
 %8.5.3 Verzeichnisse durchgehen und Informationen zusammentragen
 %
-%Ein Programm in C++, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien die Häufigkeit der Worte zählt, das heisst wie oft welche Worte insgesamt über alle Dateien auftreten.
+%Ein Programm in \Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien die Häufigkeit der Worte zählt, das heisst wie oft welche Worte insgesamt über alle Dateien auftreten.
 %*/
 %/*****************************************************************************/
 %/*  Module     : Solution for Exercise 'Filesystem and Algos'   Version 1.0  */
@@ -8252,7 +8053,7 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
 %}
 %
 %
-%Ein Programm in C++, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
+%Ein Programm in \Cpp\Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
 %/*****************************************************************************/
 %/*  Function      : Word cross reference                                     */
 %/*****************************************************************************/
@@ -8421,7 +8222,7 @@ public:
  
 
 \subsection{Kurzübersicht zu Container aus der \Cpp - Standardbibliothek}
-In C++ gibt es bereits vordefinierte Klassen, die eine Menge von Objekten verwalten können. Insbesondere in der Form von Vektoren (Dynamischen Arrays), Listen, Sets und Hashtabellen. Alle Container können beliebige Datentypen verwalten, der Gewünschte Datentyp muss bei der Erzeugung angegeben werden. Container können auch verschachtelt werden, z.b. ein Array von Listen.
+In \Cpp gibt es bereits vordefinierte Klassen, die eine Menge von Objekten verwalten können. Insbesondere in der Form von Vektoren (Dynamischen Arrays), Listen, Sets und Hashtabellen. Alle Container können beliebige Datentypen verwalten, der Gewünschte Datentyp muss bei der Erzeugung angegeben werden. Container können auch verschachtelt werden, z.b. ein Array von Listen.
 Mit Hilfe von Iteratoren kann ein Container abgearbeitet werden, d.h. man kann von Objekt zu Objekt durch den Container  iterieren. 
 %Ein Beispiel für die Programmierung mit einem Iterator finden Sie in Kapitel 7.3.
 
@@ -9815,7 +9616,7 @@ einigen Compilern unterstützt. Grundsätzlich ist es jedem Programmierer freigest
 Ein Embedded-\Cpp Programm ist ein Subset von Standard \Cpp und lässt sich mit jedem standardkonformen \Cpp Compiler übersetzen.
 \NextPagePlease
 \section{Hardware Abstraktion}
-Hardware kann in C++ mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
+Hardware kann in \Cpp mit Klassen oder mit Templates abstrahiert werden. Die (geschwindikeits-) effizienteste Methode ist mit Templates, hat jedoch den Nachteil dass für mehrere identische Pheriperiekomponenten je eine eigene Klasse instanziert wird, welche nicht miteinander kompatibel sind. Sie können weder zusammengefasst noch gemeinsam bearbeitet werden.
 Hinweis: \CodeStyle{reinterpret_cast<>()} darf nicht in \CodeStyle{constexpr} Funktionen und Variablen, oder zur Initialisierung derselben verwendet werden. Zum Speichern von Adressen wird deshalb der dafür vorgesehene Datentyp \CodeStyle{uintptr_t} verwendet, und der \CodeStyle{reinterpret_cast<>()} zur Umwandlung in einen Pointer erst beim effektiven Zugriff durchgeführt. Auf die Geschwindigkeit hat dies keinen Einfluss.
  
 \subsection{Mit Klassen}
@@ -11413,30 +11214,6 @@ Siehe \autoref{subsubsect:TemplateVarArg}
 Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
 (Siehe \autoref{subsubsect:erweiterteStringliterale})
 
-%\begin{CCode}
-%u8"Ein UTF-8 String"  // hat den Typ const char[]
-%u"Ein UTF-16 String"  // hat den Typ const char16_t[]
-%U"Ein UTF-32 String"  // hat den Typ const char32_t[]
-%\end{CCode}
-%
-%Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
-%\begin{CCode}
-%u8"Ein spezielles UTF-8 Zeichen: \u2018" 
-%u"Ein spezielles UTF-16 Zeichen: \u2018" 
-%U"Ein spezielles UTF-32 Zeichen: \U00002018"  
-%\end{CCode}
-%
-%Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichenet, der eigentliche String wird mit "'\emph{Begrenzung}( und )\emph{Begrenzung}"' eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
-%
-%Beispiel:
-%\begin{CCode}
-%R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
-%
-%// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
-%R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
-%\end{CCode}
-%
-%R und U können auch kombiniert werden.
 
 \item{Benutzerdefinierte Literale},
 %\index{Benutzerdefinierte Literale}
@@ -11713,7 +11490,7 @@ Sprache (Stand 14.2.2023)
 \item Make () more optional for lambdas 
 \item if consteval (Siehe \autoref{subsubsect:constevalif})
 \item Removing Garbage Collection Support 
-\item DR: C++ Identifier Syntax using Unicode Standard Annex 31 
+\item DR: \Cpp Identifier Syntax using Unicode Standard Annex 31 
 \item DR: Allow Duplicate Attributes 
 \item Narrowing contextual conversions in static\_assert and constexpr if 
 \item Trimming whitespaces before line splicing 
@@ -11729,7 +11506,7 @@ Sprache (Stand 14.2.2023)
 \item Extend init-statement to allow alias-declaration 
 \item Multidimensional subscript operator (Siehe \autoref{subsubsect:MehrdimensionalIndexoperator})
 \item Attributes on lambda expressions 
-\item DR: Missing feature test macros for C++20 core papers 
+\item DR: Missing feature test macros for \CppVers{20} core papers 
 \item \#warning 	 		
 \item Remove non-encodable wide character literals and multicharacter wide character literals 			
 \item Labels at the end of compound statements 	 								
