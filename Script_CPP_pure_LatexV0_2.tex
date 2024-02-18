@@ -7210,6 +7210,7 @@ die Methoden \CodeStyle{put()} und \CodeStyle{write()} zur Verfügung. Diese Meth
 zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
 wenn die Operatoren \CodeStyle{<<} nicht die gewünschte Funktionalität liefern. 
 
+
 \subsection{Formatierte Ausgabe}
 \index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
 Methode \CodeStyle{flags()} können die Flags gesetzt oder gelesen werden, mit
@@ -7457,17 +7458,89 @@ Ausgabe : Pi is 3.14 or 3
 \end{CCode} 
 
 \subsection{Kombinierte Ein- und Ausgabe in \Cpp}
-Die Klasse iostream kombiniert die Möglichkeiten eines istream mit der eines ostreams, Sie dient als Abstraktion für alle konkret möglichen Ein/Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istream und ostream unterstüzt.
-
-
-+++++++++++++++++++++++++++++++++++
+Die Klasse iostream kombiniert die Möglichkeiten eines istream mit der eines ostreams, Sie dient als Abstraktion für alle konkret möglichen Ein/Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istream und ostream unterstützt.
 
 
 
+\subsection{Datei Ein- und Ausgabe in \Cpp}
+
+Die Datei Ein- und Ausgabe läuft in  \Cpp über die Klassen ifstreeam, ofstream und fstream (Bidirektional).
+Alle Streamklassen bieten folgende zusätzliche Methoden an:
+
+\begin {tabular}{|p{0.22\textwidth}|p{0.70\textwidth}|}%p{0.29\textwidth}|}
+\hline
+\lstinline$i/o/fstream(Name, Mode)$ \newline
+\lstinline$i/o/fstream(Filename)$\newline
+\lstinline$i/o/fstream()$&
+Konstruktor, kann Dateiname und allenfalls Mode als Parameter erhalten. (Name: C-String, std::string oder std::filesystem::path)\\
+\hline
+\lstinline$is_open()$&Liefert true wenn Stream mit einer geöffneten Datei verbunden ist.\\
+\hline
+\lstinline$open(Name, Mode)$ & Verbindet Stream mit  angegebener Datei im angegebenen Mode.\\
+\lstinline$open(Filename)$ & Verbindet Stream mit  angegebener Datei.\\
+\hline
+\lstinline$close()$&Schliesst Datei und löst Verbindung zu Datei\\
+\hline
+\lstinline$<Destruktor>$&Schliesst Datei und löst Verbindung zu Datei\\
+%Tabelle 18: Methoden der Klasse InputStream
+\hline
+\end {tabular}
+
+Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
+
+Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
+Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit \CodeStyle{|} (binäres or) kombiniert werden.
+\CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
+\CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
 
 
-Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte die Methoden get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders wenn der Operator >> nicht die gewünschte Funktionalität liefert. 
+Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen \CodeStyle{0x0A} in die Zeichenkombination \CodeStyle{0x0A 0x0D} umgewandelt, was bei binären Daten fatal sein kann.
+\begin{CCode}
 
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
+                                                          // anhaengen erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus erzeugen
+
+  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
+                                                          // Binaere Datei zum 
+                                                          // anhaengen erzeugen
+
+  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
+                                                          // modus zum Lesen oeffnen
+
+  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
+                                                          // modus zum Lesen oeffnen
+
+\end{CCode}
+
+\subsubsection{Datei Eingabe in \Cpp mir ifstream}  
+
+Dateieingaben laufen über Objekte vom Typ ifstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin benutzt werden. (cin ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
+
+\begin{CCode}
+
+#include <fstream > 
+using namespace std; 
+
+int main(int argc, char *argv[]) { 
+   int a = 4;
+   std::string Text;
+   ifstream EingabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen 
+   if (EingabeDatei) {
+      EingabeDatei >> "a; 
+      EingabeDatei >> text;
+      cout << "a ist: " << a <<", Text ist: " << Text << endl; 
+   } else { 
+      cout << "Fehler , konnte Datei nicht oeffnen" << endl; 
+   } 
+   return 0;
+} 
+\end{CCode}
+
+\subsubsection{Datei Ausgabe in \Cpp mir ofstream}  
+Dateiausgaben laufen über Objekte vom Typ ofstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cout benutzt werden. (cout ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
 
 
 \begin{CCode}
@@ -7490,32 +7563,78 @@ int main(int argc, char *argv[])
 \end{CCode}
 
 
+\subsubsection{Kombinierete Datei Ein- und Ausgabe in \Cpp mir fstream}  
 
-Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
-Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit \CodeStyle{|} (binäres or) kombiniert werden.
-\CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
-\CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+Die Klasse fstream kombiniert die Möglichkeiten eines ifstream mit der eines ofstreams, Sie dient zuzm gleichzeitigen Lesen aus und Schreiben in eine Datei. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von ifstream und ofstream unterstützt.
 
-Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen \CodeStyle{0x0A} in die Zeichenkombination \CodeStyle{0x0A 0x0D} umgewandelt, was bei binären Daten fatal sein kann.
+\subsection{String Ein- und Ausgabe in \Cpp}
+Mit den String-Stream Klassen kann mit Strings wie mit Dateien (Streams) umgegangen werden
+
+
+\subsubsection{Eingabe mit der byteorientierten istringstream Klasse}
+Mit der Klasse istringstream kann ein String als Quelle eines Streams verwendet werden. Istringstreams verhalten sich wie Streams (Dateien) nur dass aus einem String gelesen wird. Das kann unter anderem zur  Umwandlung zwischen Zahlen und Zeichenketten verwendet werden.
+
 \begin{CCode}
+#include <sstream>
 
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
-                                                          // anhaengen erzeugen
+s = "123"; 
+int i;
 
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          // modus erzeugen
+std::istringstream is(s); // stringstream mit s initialisieren 
+is >> i; // Zahl aus is lesen und i zuweisen 
+\end{CCode}
 
-  ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
-                                                          // Binaere Datei zum 
-                                                          // anhaengen erzeugen
+\subsubsection{Ausgabe mit der byteorientierten ostringstream Klasse}
 
-  ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
-                                                          // modus zum Lesen oeffnen
+Mit der Klasse ostringstream kann ein String als Ziel eines Streams verwendet werden. oStringstreams verhalten sich wie Streams (Dateien) nur dass in einem String geschrieben wird. Das kann unter anderem zur  Umwandlung zwischen Zahlen und Zeichenketten verwendet werden.
 
-  ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          // modus zum Lesen oeffnen
+\begin{CCode}
+#include <sstream>
+
+std::ostringstream os; 
+int i = 123; 
+
+os << "Wert ist " << i << "!"; // Text in stringstream schreiben 
+string s = os.str(); // Inhalt von stringstream s zuweisen 
+
+std::cout << s;   // gibt 'Wert ist 123 !' aus
 
 \end{CCode}
+
+\subsubsection{Kombinierete String Ein- und Ausgabe in \Cpp mit stringstream}  
+
+Die Klasse stringstream kombiniert die Möglichkeiten eines istringstream mit der eines ostringstream, Sie dient zuzm gleichzeitigen Lesen aus und Schreiben in einen String. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istringstream und ostringstream unterstützt.
+
+
+\subsection{Die Standard Ein und Ausgabe}
+\subsubsection{Die Standard Eingabe}
+UNIX und Windows sehen für Anwendungen eine Standard-Eingaberichtung vor. Diese wird oft auch mit stdin bezeichnet. \Cpp Programme können über das globale Object cin auf diesen InputStream zugreifen.
+
+Zum Einlesen von Zeichen von der Tastatur wird am einfachsten der Operator >> verwendet:
+
+\begin{CCode}
+include <iostream>
+
+void main()
+
+      std::string s;
+      
+      while(s != "end") {
+            std::cin >> s;
+            std::cout << ">" << s << "<" << std::endl;
+      }
+}
+\end{CCode}
+
+\subsubsection{Die Standard Ausgabe}
+
+UNIX und Windows sehen für Anwendungen eine Standard-Ausgabe vor. Diese wird oft auch mit stdout bezeichnet. \Cpp-Programme können über das globale Objekt cout auf diesen Stream zugreifen. Für Fehlermeldungen ist dagegen die Ausgangsnachricht stderr, die in \Cpp über cerr ansprechbar ist, besser geeignet. Mit der Umlenkung
+Programm.exe > Dateiname
+wird die Ausgabe des Programms nach stdout in die durch 'Dateiname' angegebene Datei umgelenkt, nicht aber die Ausgabe nach stderr.
+
+
++++++++++++++++++++++++++++++++++++
+
 
 
 
@@ -7565,156 +7684,6 @@ Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses 
     });
 \end{CCode} 
 
-%8.1.1 Eingabe mit den byteorientierten Datei-Stream-Klassen
-%Dateieingaben laufen über Objekte vom Typ ifstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin benutzt werden. (cin ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
-%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
-% Tabelle 17 zeigt die wichtigsten zusätzlichen Methoden der Klassen ifstream:
-%ifstream(Name, Mode)
-%ifstream(Filename)
-%ifstream()
-%Konstruktor, kann Dateiname und allenfalls Mode als Parameter erhalten. (Name: C-String, std::string oder std::filesystem::path)
-%is_open()
-%Liefert true wenn Stream mit einer geöffneten Datei verbunden ist.
-%open(Name, Mode)
-%open(Filename)
-%Verbindet Stream mit  angegebener Datei im angegebenen Mode.
-%Verbindet Stream mit  angegebener Datei.
-%close()
-%Schliesst Datei und löst Verbindung zu Datei
-%<Destruktor>
-%Schliesst Datei und löst Verbindung zu Datei
-%Tabelle 18: Methoden der Klasse InputStream
-%
-%.
-%#include <fstream > 
-%using namespace std; 
-%
-%int main(int argc, char *argv[]) { 
-%   int a = 4;
-%   std::string Text;
-%   ifstream EingabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen 
-%   if (EingabeDatei) {
-%      EingabeDatei >> "a; 
-%      EingabeDatei >> text;
-%      cout << "a ist: " << a <<", Text ist: " << Text << endl; 
-%   } else { 
-%      cout << "Fehler ,?konnte?Datei?nicht?oeffnen" << endl; 
-%   } 
-%   return 0;
-%} 
-%
-%
-%
-%Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden: Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden. ios_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus. 
-%Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann. 
-%
-%
-%ifstream EingabeDatei("c:\\test.txt"); // Dateiobjekt im Text- // modus zum Lesen oeffnen 
-%ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer- 
-%                                                         // modus zum Lesen oeffnen 
-%
-%
-%8.1.2 Eingabe mit den byteorientierten String-Stream-Klassen
-%Mit der Klasse istringstream kann ein String als Quelle eines Streams verwendet werden. Istringstreams verhalten sich wie Streams (Dateien) nur dass aus einem String gelesen wird. Das kann unter anderem zur  Umwandlung zwischen Zahlen und Zeichenketten verwendet werden.
-%
-%
-%string s1 = "Hallo"; 
-%string s2 = s1 + "?Welt"; 
-%s1[1] = ?e?; // s1 wird zu Hello 
-%if (s1 == s2) { }; // Vergleicht Strings 
-%std::cout << s2; // Gibt s2 aus 
-%std::ostringstream os; 
-%int i; 
-%os << "Wert?ist?" << i << ?!?; // Text in stringstream schreiben 
-%string s = os.str(); // Inhalt von stringstream s zuweisen 
-%
-%s = "123"; 
-%std::istringstream is(s); // stringstream mit s initialisieren 
-%is >> i; // Zahl aus is lesen und i zuweisen 
-%
-%
-%8.1.3 Die Standard Eingabe
-%UNIX und Windows sehen für Anwendungen eine Standard-Eingaberichtung vor. Diese wird oft auch mit stdin bezeichnet. \Cpp Programme können über das globale Object cin auf diesen InputStream zugreifen.
-%8.1.3.1 Programmbeispiel
-%Zum Einlesen von Zeichen von der Tastatur wird am einfachsten der Operatror >> verwendet:
-%include <iostream>
-%
-%void main()
-%
-%      std::string s;
-%      
-%      while(s != "end") {
-%            std::cin >> s;
-%            std::cout << ">" << s << "<" << std::endl;
-%      }
-%}
-%
-%8.2.2 Ausgabe mit den byteorientierten Datei-Stream-Klassen
-%Dateiausgaben laufen über Objekte vom Typ ofstream. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels #include <fstream> eingebunden werden. (Mit #include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cout benutzt werden. (cout ist eigentlich nichts anderes als ein vordefiniertes Dateiobjekt) 
-%Nach der Erzeugung eines Streamobjektes sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geo?ffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief. 
-% Tabelle 17 zeigt die wichtigsten zusätzlichen Methoden der Klassen ofstream:
-%ofstream(Name, Mode)
-%ofstream(Filename)
-%ofstream()
-%Konstruktor, kann Dateiname und allenfalls Mode als Parameter erhalten. (Name: C-String, std::string oder std::filesystem::path)
-%is_open()
-%Liefert true wenn Stream mit einer geöffneten Datei verbunden ist.
-%open(Name, Mode)
-%open(Filename)
-%Verbindet Stream mit  angegebener Datei im angegebenen Mode.
-%Verbindet Stream mit  angegebener Datei.
-%close()
-%Schliesst Datei und löst Verbindung zu Datei
-%<Destruktor>
-%Schliesst Datei und löst Verbindung zu Datei
-%Tabelle 20: Methoden der Klasse ostream
-%
-%#include <fstream > 
-%using namespace std; 
-%
-%int main(int argc, char *argv[]) { 
-%   int a = 4, b = 5;
-%   ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen 
-%   if (AusgabeDatei) {
-%      AusgabeDatei << "Mein?erstes?File" << endl; 
-%      AusgabeDatei << "a?+?b?ist?" << (a + b) << endl; 
-%   } else { 
-%      cout << "Fehler ,?konnte?Datei?nicht?oeffnen" << endl; 
-%   } 
-%return 0 } 
-%
-%
-%Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifiziert werden: Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden. ios_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben. ios_base::binary öffnet eine Datei im Binär- modus, der Default ist Textmodus. 
-%Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann. 
-%
-%
-%ofstream AusgabeDatei("c:\\test.txt", ios_base::app); // Dateiobjekt zum 
-%                                                       // anhaengen erzeugen 
-%
-%ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer- 
-%                                                         // modus erzeugen 
-%
-%ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); // Binaere Datei zum 
-%                                                                      // anhaengen erzeugen 
-%
-%
-%8.2.3 Ausgabe mit den byteorientierten String-Stream-Klassen
-%Mit der Klasse ostringstream kann ein String als Ziel eines Streams verwendet werden. OStringstreams verhalten sich wie Streams (Dateien) nur dass in einem String geschrieben wird. Das kann unter anderem zur  Umwandlung zwischen Zahlen und Zeichenketten verwendet werden.
-%
-%
-%std::ostringstream os; 
-%int i =123; 
-%os << "Wert?ist?" << i << ?!?; // Text in stringstream schreiben 
-%string s = os.str(); // Inhalt von stringstream s zuweisen 
-%
-%std::cout << s;   // gibt 'Wert ist 123' aus
-%
-%8.2.4 Die Standard-Ausgabe
-%UNIX und Windows sehen für Anwendungen eine Standard-Ausgabe vor. Diese wird oft auch mit stdout bezeichnet. \Cpp-Programme können über das globale Objekt cout auf diesen Stream zugreifen. Für Fehlermeldungen ist dagegen die Ausgangsnachricht stderr, die in \Cpp über cerr ansprechbar ist, besser geeignet. Mit der Umlenkung
-%Programm.exe > Dateiname
-%wird die Ausgabe des Programms nach stdout in die durch ?Dateiname? angegebene Datei umgelenkt, nicht aber die Ausgabe nach stderr.
-%8.3 Kombinierte Ein- und Ausgabe in \Cpp
-%Die Klassen iostream, fstream und stringstream kombinieren die jeweiligen i- und o-Klassen und erlauben das Lesen und Schreiben des entsprechenden Streams. Beim Erzeugen eines fstreams muss  ios_base::out,  ios_base::app::in oder eine Kombination von beiden als Modus angegeben werden. Bei der benutzung stehen sowohl die Methoden von der entsprechenden istream als auch der entsprechenden ostream Klasse zur Verfügung.
 %8.4 Dateisystem-Bibliothek (Seit \CppVers{17})
 %Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem 
 %Dateisystem im Namespace std::filesystem definiert. Zum Beispiel: 
