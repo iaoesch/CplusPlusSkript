@@ -181,7 +181,12 @@
 
 \raggedbottom
 
-\definecolor{Mygray}{gray}{0.8}
+\definecolor{Mygray}{gray}{0.9}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
 %\fcolorbox{black}{Mygray}{
 % \definecolor{myspecialcolor}{colscale}{val}
 % 
@@ -209,6 +214,9 @@ language={[ISO]C++},
 breaklines=true,
 basicstyle={\footnotesize \ttfamily},
 backgroundcolor=\color{Mygray},
+commentstyle=\color{mygreen},
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve},     % string literal style
 %frame=single,
 tab=\rightarrowfill}
 %\begin{framed} 
@@ -1295,146 +1303,6 @@ int main(int argc, char *argv[])
 
 \OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren. (Siehe \autoref{sect:DateiEinAusgabe}) sowie seit \CppVers{20} mit \CodeStyle{std::format}.
 
-%\section{Datei Ein- und Ausgabe}
-%\OviIndex{Dateiausgaben} laufen über Objekte vom Typ \OviIndex{ofstream}, Eingaben über solche vom Typ \OviIndex{ifstream}. Um Dateiobjekte erzeugen zu können, muss das Headerfile <fstream> mittels \#include <fstream> eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt). Dateiobjekte können anschliessend wie cin und cout benutzt werden. (cin und cout sind eigentlich nichts anderes als zwei vordefinierte Dateiobjekte)
-%
-%Nach der Erzeugung eines \OviIndex{Streamobjektes} sollte man mit if(Objekt) überprüfen, ob die Datei (Stream) erfolgreich geöffnet werden konnte. Das Objekt liefert im Fehlerfall false zurück. Die Methode eof() liefert true zurück, wenn das Dateiende erreicht ist (Oder ein Fehler vorliegt). Die Methode good() liefert true zurück, wenn die nächste Streamoperation klappen könnte, wenn sie false liefert, geht die nächste Operation bestimmt schief.
-%
-%\begin{CCode}
-%#include <fstream>
-%
-%using namespace std;
-%
-%int main(int argc, char *argv[]) 
-%{
-  %int a = 4, b = 5;
-  %ofstream AusgabeDatei("c:\\test.txt"); // Dateiobjekt erzeugen
-  %if (AusgabeDatei) {
-    %AusgabeDatei << "Mein erstes File" << endl;
-    %AusgabeDatei << "a + b ist " << (a + b) << endl;
-  %} else {
-    %cout << "Fehler, konnte Datei nicht oeffnen" << endl;
-  %}
-  %return 0
-%} 
-%\end{CCode}
-%
-%
-%
-%Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizert werden:
-%Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit | (binäres or) kombiniert werden.
-%ios\_base::app öffnet eine Datei zum Anhängen, der default ist überschreiben.
-%ios\_base::binary öffnet eine Datei im Binärmodus, der Default ist Textmodus.
-%
-%Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen 0x0A in die Zeichenkombination 0x0A 0x0D umgewandelt, was bei binären Daten fatal sein kann.
-%\begin{CCode}
-%
-  %ofstream AusgabeDatei("c:\\test.txt", ios_base::app);    // Dateiobjekt zum 
-                                                          %// anhaengen erzeugen
-%
-  %ofstream AusgabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          %// modus erzeugen
-%
-  %ofstream AusgabeDatei("c:\\test.txt", ios_base::binary|ios_base::app); 
-                                                          %// Binaere Datei zum 
-                                                          %// anhaengen erzeugen
-%
-  %ifstream EingabeDatei("c:\\test.txt");                   // Dateiobjekt im Text-
-                                                          %// modus zum Lesen oeffnen
-%
-  %ifstream EingabeDatei("c:\\test.txt", ios_base::binary); // Dateiobjekt im Binaer-
-                                                          %// modus zum Lesen oeffnen
-%
-%\end{CCode}
-%
-%Zur Behandlung von einzelnen Zeichen oder ganzen Zeilen stellen die Streamobjekte
-%die Methoden put(), write(), get(), getline(), read() und ignore() zur Verfügung. Diese Methoden sind
-%zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonders
-%wenn die Operatoren $<<$ und $>>$ nicht die gewünschte Funktionalität liefern. 
-%
-%\subsection{Formatierte Ausgabe}
-%\index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
-%Methode Flags() können die Flags gesetzt oder gelesen werden, mit
-%setf können Flags hinzugefügt werden.
-%
-%Es sind unter anderem folgende Flags definiert:
-%
-%Wahl des Zahlensystems: ios\_base::dec, ios\_base::hex, ios\_base::oct 
-%
-%Bündigkeit: ios\_base::left, ios\_base::right
-%
-%Gleitkommaformat: ios\_base::scientific, ios\_base::fixed
-%
- %
-%Beispiel:
-%\begin{CCode}
-%
-%
-  %std::ios_base::fmtflags AlteFlags;
-  %
-  %AlteFlags = std::cout.flags(); // Flag Zustand lesen
-%
-  %// Ausgabeformat waehlen (Flags zusaetzlich setzen)
-  %std::cout.setf(std::ios_base::left|std::ios_base::oct|std::ios_base::fixed);
-  %
-  %std::cout << 1.23; // Ausgabe im gewaehlten Format
-  %
-  %// Alle Flags loeschen, nur Hex ist gesetzt
-  %std::cout.flags(std::ios_base::hex);
-  %
-  %std::cout << 47;
-  %
-%
-%\end{CCode} 
-%
-%Flags bleiben solange aktiv, bis sie wieder explizit rückgesetzt werden. Mit der Methode 
-%precision kann die Genauigkeit (Anzahl signifikanter Stellen) von Fliesskommawerten
-%definiert werden, mit width() die Feldbreite und mit fill() das Füllzeichen gewählt werden:
-%\begin{CCode}
-%
-  %std::streamsize OldPrecision;
-  %
-  %OldPrecision = std::cout.precision(); // Genauigkeit lesen
-%
-  %// Genauigkeit waehlen
-  %std::cout.precision(5);
-  %
-  %// Feldbreite waehlen
-  %std::cout.width(9);
-  %
-  %// Fuellzeichen waehlen
-  %std::cout.fill('*');
-%
-%
-  %std::cout << 1.23; // Ausgabe im gewaehlten Format 
-                %// gibt ****1.23000 aus
-%
-%\end{CCode} 
-%
-%width() gilt nur für die nächste Ausgabe und wird danach wieder
-%auf 0 zurückgesetzt (Nur soviele Zeichen wie nötig ausgeben).
-%
-%
-%Mit \OviIndex{Manipulatoren} kann das Formatieren und Steuern des
-%Ausgabestreams vereinfacht werden. Manipulatoren sind eine geschickte Kombination von
-%Operator Überladung, Templates, Hilfsfunktion und Funktionsobjekt. Für viele Anwendungen
-%gibt es bereits vordefinierte Manuipulatoren, es ist aber auch möglich,
-%selbst neue Manipulatoren zu erzeugen.
-%
-%\begin{CCode}
-%
-%
-  %// Format waehlen und Ausgabe in der selben Zeile
-  %std::cout <<  std::setprecision(5) << std::setw(9) << std::setfill('*') << 1.23;
-%
-  %//  Zahl hexadezimal ausgeben (ersetzt setf())
-  %std::cout << std::hex << 123545;
-%
-%\end{CCode} 
-%
-%Einige weitere Manipulatoren: flush, endl, setbase(), dec, hex, oct, left, right
-%
- %
 \section{Hauptprogramm}
 Jedes lauffähige \Cpp Programm muss eine Funktion \CodeStyle{main()} enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente \CodeStyle{argc} und \CodeStyle{argv} enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
 
@@ -6570,14 +6438,17 @@ class Troublemaker {
    Troublemaker() { }
 
 
-   // Gefaehrlich, Aufruf erzeugt einen neuen Sharedpointer, so verwalten
-   // mehrere Sharedpointer das Objekt
+   // Gefaehrlich, Aufruf erzeugt einen neuen Sharedpointer mit einem
+   // eigenen Referenzcounter, so verwalten mehrere Sharedpointer das Objekt
+   //  ( Ein Objekt darf nur einmal direkt einem Sharedpointer zugewiesen
+   //    werden, anschliessend duerfen weitere Sharedpointer auf dieses Objekt
+   //    nur ueber Zuweisungen von anderen Sharedpointern erzeugt werden)
    Troublemaker(OtherClass &OtherObject) { 
                      OtherObject.register(std::shared_ptr<Troublemaker>(this)); 
                   }
 
-    // Gefaehrlich, jeder Aufruf erzeugt einen neuen Sharedpointer, so verwalten
-    // mehrere Sharedpointer das Objekt
+    // Gefaehrlich, jeder Aufruf erzeugt einen neuen Sharedpointer mit einem
+    // eigenen Referenzcounter, so verwalten mehrere Sharedpointer das Objekt
    std::shared_ptr<Troublemaker> GetThis() { 
                      return std::shared_ptr<Troublemaker>(this);
                   }
@@ -6677,117 +6548,56 @@ shared Pointer zugeordnet, entsprechend liefert
 noch keinen gültigen Pointer...
 
 
-%Beispiel aus cppreference.com:
-%\begin{CCode}
-%class Bad
-%{
-%    public:
-%    std::shared_ptr<Bad> getptr() {
-%        // Schlecht, es wird jedesmal ein neuer shared pointer erzeugt
-%        return std::shared_ptr<Bad>(this);
-%    }
-%    ~Bad() { std::cout << "Bad::~Bad() called\n"; }
-%};
-%
-%// getptr() ist schlecht, da bei jedem AUfruf ein neuer sharedpointer
-%// mit einem eigenen Referenzcounter erzeugt wird.
-%// Ein Objekt darf nur einmal direkt einem Sharedpointer zugewiesen
-%// werden, anschliessend duerfen weitere Sharedpointer auf
-%// dieses Objekt nur
-%// ueber Zuweisungen von anderen Sharedpointern erzeugt werden
-%
-%
-%int main()
-%{
-%    // (A) Good, common  shared pointer:
-%    std::shared_ptr<Bad> bpa1 = std::make_shared<Bad>();
-%    std::shared_ptr<Bad> bpa2 = bpa1;
-%
-%    // (B) Bad, each shared_ptr thinks it's the only owner of the object
-%    Bad *RawPtr = new Bad();
-%    std::shared_ptr<Bad> bpb1 = RawPtr ;
-%    std::shared_ptr<Bad> bpb2 = RawPtr ;
-%
-%
-%    // (C) Bad, each shared_ptr thinks it's the only owner of the object
-%    std::shared_ptr<Bad> bpc1 = std::make_shared<Bad>();
-%    std::shared_ptr<Bad> bpc2 = bpc1->getptr();
-%
-%    // (C) ist eigentlich dasselbe wie (B), der Zugriff auf den
-%    // Raw-Pointer ist einfach in getptr() versteckt, der this-Pointer
-%    // ist ein Raw-Pointer (und kein shared Pointer).
-%}
-%
-%
-%
-%Class Good : public std::enable_shared_from_this<Good>
-%{
-%    public:
-%    std::shared_ptr<Good> getptr() {
-%        return shared_from_this();
-%    }
-%};
-%
-%
-%int main()
-%{
-%    // (A) Good, common  shared pointer:
-%    std::shared_ptr<Good > bpa1 = std::make_shared<Good >();
-%    std::shared_ptr<Good > bpa2 = bpa1;
-%
-%    // (B) Bad, each shared_ptr thinks it's the only owner of the object
-%    Bad *RawPtr = new Good ();
-%    std::shared_ptr<Good > bpb1 = RawPtr ;
-%    std::shared_ptr<Good > bpb2 = RawPtr ;
-%
-%
-%    // (C) Good, common  shared pointer:
-%    std::shared_ptr<Good > bpc1 = std::make_shared<Good >();
-%    std::shared_ptr<Good > bpc2 = bpc1->getptr();
-%
-%    %// (C) ist eigentlich dasselbe wie (A), die Kopie von
-%    %// bpc1  ist einfach in getptr() versteckt, es wird
-%    %// nicht der this-Pointer verwendet, sondern
-%    %// eine Kopie vom shared pointer bpc1
-%
-%}
-%
-%
-%// Detailierte Funktion von C, nur Prinzip:
-%// std::shared_ptr<Good > bpc1 = std::make_shared<Good >();
-%   bpc1.ptr = nullptr;
-%   bpc1.UsageCount = new int;
-%   *(bpc1.UsageCount) = 0;
-%
-%   temp = new Good()  // Konstruktor von Good wird aufgerufen
-%                      // Im Konstruktor wird
-%                      // this.WeakThis.ptr auf nullptr
-%                      // gesetzt, shared_from_this()
-%                      // kann an dieser Stelle desshalb noch
-%                      // nicht funktionieren
-%   bpc1.ptr = temp;
-%   *(bpc1.UsageCount) = 1;  // Ein Pointer zeigt auf Objekt
-%
-%   // WeakPointer in Basisklasse std::enable_shared_from_this<Good> setzen
-%
-%   bpc1.ptr->SetWeakSharedThis(bpc1);
-%   this.WeakThis.UsageCount = bpc1.UsageCount;
-%   this.WeakThis.ptr = bpc1.ptr ;
-%
-%   Ab jetzt funktioniert shared_from_this()
-%
-%std::shared_ptr<Good > bpc2 = bpc1->getptr();
-%
-%   bpc1->getptr();
-%////return shared_from_this();
-%////// shared_from_this();
-%  tmp.ptr = this.WeakThis.ptr;
-%  tmp.UsageCount = this.WeakThis.UsageCount;
-%  // We have another shared pointer now, increment Usagecount
-%  (*tmp.UsageCount) ++;
-%  return tmp;
-%  bpc2 = tmp; 
-%\end{CCode}
+
+Detailierter Ablauf mit shared from this, nur Prinzip:
+\begin{CCode}
+
+   std::shared_ptr<NiceGui> sp1 = std::make_shared<NiceGui>();
+   std::shared_ptr<NiceGui> sp2 = sp1->GetThis();
+      
+\end{CCode}
+  
+könnte zu folgendem (internen) Code führen
+
+\begin{CCode}
+
+// std::shared_ptr<NiceGui> sp1 = std::make_shared<NiceGui>();
+   sp1.ptr = nullptr;
+   sp1.UsageCount = new int;
+   *(sp1.UsageCount) = 0;
+
+   temp = new NiceGui() // Konstruktor von NiceGui wird aufgerufen
+                        // Dieser ruft Konstruktor der Basisklasse 
+                        // enable_shared_from_this auf. In diesem 
+                        // Konstruktor wird this.WeakThis.ptr auf
+                        // nullptr gesetzt, shared_from_this()
+                        // kann an dieser Stelle desshalb noch
+                        // nicht funktionieren
+   sp1.ptr = temp;
+   *(sp1.UsageCount) = 1;  // Ein Pointer zeigt auf Objekt
+
+   // WeakPointer in Basisklasse std::enable_shared_from_this<Good> setzen
+
+   sp1.ptr->SetWeakSharedThis(bpc1);
+      // SetWeakSharedThis() fuehrt zu folgendem Code:
+      sp1.ptr->.WeakThis.UsageCount = sp1.UsageCount;
+      sp1.ptr->.WeakThis.ptr = sp1.ptr ;
+
+   // Ab jetzt funktioniert shared_from_this()
+
+// std::shared_ptr<NiceGui> sp2 = sp1->getptr();
+
+     // in sp1->getptr():
+         //return shared_from_this();
+            // in shared_from_this();
+               tmp.ptr = this.WeakThis.ptr;
+               tmp.UsageCount = this.WeakThis.UsageCount;
+               // We have another shared pointer now, increment Usagecount
+               (*tmp.UsageCount) ++;
+            return tmp;
+     sp2 = tmp; 
+\end{CCode}
+
 
 \section{Variant, Optional, Any (Seit \CppVers{17})}
 \label{sect:VariantOptionalAny}
