@@ -7633,60 +7633,17 @@ Programm.exe > Dateiname
 wird die Ausgabe des Programms nach stdout in die durch 'Dateiname' angegebene Datei umgelenkt, nicht aber die Ausgabe nach stderr.
 
 
-+++++++++++++++++++++++++++++++++++
-
-
-
-
 \subsection{Dateisystem-Bibliothek (Seit \CppVers{17})}
 \label{subsect:Filesystemlibrary}
 
-Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem \OviIndex{Dateisystem} definiert.
+Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem \OviIndex{Dateisystem} im Namespace std::filesystem definiert.
+
 Zum Beispiel:
 
  \OviIndex{path}
  
 Eine Klasse welche Dateipfade aufnehmen kann, und Pfadmanipulationen erlaubt (Pfadteile ergänzen, zusammenfügen, aufteilen, oder Dateiname, Dateiendung oder Pfad extrahieren).
  
- \OviIndex{directory\_iterator}
-
-Ein Iterator, welcher über alle Einträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert.
-
-
- \OviIndex{recursive\_directory\_iterator}
-
-Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert.
-
-\begin{CCode}
-    // Set the current path to parent of our directorystructure
-    // Not really neede, we could also use absolute path in line below
-    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP");
-
-    // Create an iterator to travel our directory structure
-    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
-
-    // travel directorystructure, print out all entries
-    std::ranges::for_each(files, [](auto p){
-          // Dateiname mit Pfad ausgeben
-          std::cout << p.path() << '\n';
-    });
-
-    // Create an new iterator to travel our directory structure
-    files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
-
-    // Define filterfunction (Lambda) for textfiles
-    auto TextFileFilter = [](auto p) { return p.is_regular_file() && p.path().extension() == ".txt"; };
-
-    // travel directorystructure, filter out unwanted files and print result
-    std::ranges::for_each(files | std::views::filter(TextFileFilter), [](auto p){
-          // Dateiname mit Pfad ausgeben
-          std::cout << p.path() << '\n';
-    });
-\end{CCode} 
-
-%8.4 Dateisystem-Bibliothek (Seit \CppVers{17})
-%Im Header <filesystem> sind nützlich Klassen, Templates und Methoden zum Umgang mit dem 
-%Dateisystem im Namespace std::filesystem definiert. Zum Beispiel: 
 \subsubsection{Klasse std::filesystem::path}
 Eine Klasse welche Dateipfade aufnehmen kann, und Pfadmanipulationen erlaubt (Pfadteile ergänzen, zusammenfügen, aufteilen, oder Dateiname, Dateiendung oder Pfad extrahieren). 
 
@@ -7744,363 +7701,386 @@ Memberfunktionen von path:
 \end {tabular}
 
 
-%8.4.3 Klasse std::filesystem::directory_iterator 
-%Ein Iterator, welcher über alle Einträge eines Verzeichnisses Iterieren kann und jeweils ein Path- Objekt zurückliefert. Mit * wird ein Path-objekt des aktuellen Eintrags zurückgeliefert, mit ++ zum nächsten Eintrag weitergegangen.
-%Alle Elemente im Verzeichnis c:\MyDirectory ausgeben:
-%
-%for (auto const& entry: std::filesystem::directory_iterator("c:\\MyDirectory")) {
-%        std::cout << entry.path() << '\n';
-%}
-%
-%
-%8.4.4 Klasse recursive_directory_iterator 
-%Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert. Mit * wird ein Path-objekt des aktuellen Eintrags zurückgeliefert, mit ++ zum nächsten Eintrag weitergegangen.
-%Alle Elemente im Verzeichnis c:\MyDirectory und dessen Unterverzeichnissen ausgeben:
-%
-%// Alias for less verbose access
-%namespace fs = std::filesystem;
-%
-%// Set the current path to parent of our directorystructure
-%// Not really neede, we could also use absolute path in line below 
-%fs::current_path("/Users/ivooesch/Unterricht/CPP"); 
-%
-%// Create an iterator to travel our directory structure 
-%auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise"); 
-%
-%// travel directorystructure, print out all entries (using lambda function)
-%std::ranges::for_each(files, [](auto p){ 
-%   // Dateiname mit Pfad ausgeben 
-%   std::cout << p.path() << ?\n?; 
-%}); 
-%
-%Hinweis: foreach ruft die angegebene Funktion/Methode für alle Elemente auf.
-%
-%
-%Alle .txt-Dateien  im Verzeichnis c:\MyDirectory und dessen Unterverzeichnissen ausgeben:
-%
-%// Create an new iterator to travel our directory structure recursively
-%files = fs::recursive_directory_iterator("DirectoryStructureForExcercise"); 
-%
-%// Define filterfunction (Lambda) for textfiles 
-%auto TextFileFilter = [](auto p) { 
-%                              return p.is_regular_file() && p.path().extension() == ".txt"; 
-%                      }; 
-%
-%// traverse directorystructure, filter out unwanted files and print result 
-%std::ranges::for_each(files | std::views::filter(TextFileFilter), [](auto p){ 
-%    
-%    // Dateiname mit Pfad ausgeben 
-%    std::cout << p.path() << ?\n?; 
-%}); 
-%
-%Hinweis: foreach ruft die angegebene Funktion/Methode für alle Elemente auf.
-%
-%8.5 Anwendungs-Beispiele
-%In diesem Kapitel sollen einige typische Situationen aus der Anwendung der Dateiverarbeitung besprochen werden. Sie werden mit den Hilfsmitteln gelöst, welche die Standardbibliothek zur Verfügung stellt.
-%8.5.1 Byteweise Verarbeitung von Dateien
-%Ein Dateiname soll von cin eingelesen werden. cin ist ein InputStream. Die Datei mit dem eingegebenen Namen soll geöffnet werden. Danach soll die Datei byteweise gelesen und ausgegeben werden.
-%8.5.1.1 Vorgehen
-%Zunächst wird der Dateiname eingelesen. Dann wird versucht, eine Datei dieses Namens zu öffnen. Dabei muss überprüft werden ob die Datei geöffnet werden konnte, denn die Datei könnte nicht vorhanden sein. Danach wird die Eingabedatei in der klassischen Schleife bearbeitet:
-%while(!End of inputfile)
-%{
-%   read Byte as int;
-%   write Byte;
-%}
-%Jedes Byte muss als int gelesen werden, um die EOF-Kennung Traits::eof() (End Of File) verarbeiten zu können: Da ein Byte alle Werte von 0 bis 255 annehmen kann, könnte in den 8 Bit des Bytes die EOF-Kennung nicht verschlüsselt werden. Beim Lesen der Datei sowie beim Schließen müssen die möglichen Fehler bearbeitet werden. 
-%Das Programm gibt alle Anfragen nach cerr aus. Dadurch kann man das Programm auch zum Kopieren von Dateien verwenden, wenn man es in nachfolgender Form aufruft. Der Name der Ausgangsdatei wird angefordert, das Ergebnis wird in die Datei ?ZielDatei? gespeichert.
-%ReadByteFile > DestinationFileName
-%8.5.1.2 Programmbeispiel
-%#include <fstream>
-%#include <iostream>
-%#include <string>
-%
-%void main() 
-%   {
-%      // read filename
-%      std::cerr << "filename?: ");
-%      std::string fileName;
-%      
-%      std::cin >> fileName;
-%      
-%      std::cerr << "filename is " << fileName << std::endl;
-%
-%      // try to open the file. There will be an exception if the file does not exist
-%      std::ifstream f(fileName);
-%      
-%      if(!f) {
-%         std::cerr << "File " << fileName + " not found." std::endl;
-%         return;
-%      }
-%
-%
-%      // read each byte of the file
-%      int ch;
-%      
-%         while((ch = f.get()) != Traits::eof()){
-%            std::cout.put(ch);			// copy each byte to stdout
-%         }
-%         f.close();
-%     
-%   }
-%}
-%8.5.2 Blockweise Verarbeitung von Daten
-%Eine Datei soll binär kopiert werden. Sie darf nicht auf sich selbst kopiert werden, denn wenn diese vor dem ersten Lesen zum Schreiben geöffnet würde, wäre der Inhalt gelöscht. Vor Überschreiben einer vorhandenen Datei soll beim Anwender um eine ausdrückliche Bestätigung nachgefragt werden. Alle Programmausnahmen bei der Ein-/Ausgabe sollen abgefangen werden.
-%8.5.2.1 Vorgehen
-%Es soll ein ifstream bzw. ein ofstream mit std::ios::binary benutzt werden. Damit wird ein binäres Kopieren von Dateien möglich. Es ist effizienter, eine Datei blockweise zu bearbeiten. Die Namen der Quell- und der Zieldatei sollen in der Kommandozeile übergeben werden. Wenn eine Datei auf sich selbst kopiert wird, führt dies bei vielen Systemen zum Löschen der Datei. Um dies zu vermeiden, muss auf Gleichheit der Namen der Quell- bzw. der Zieldatei abgefragt werden. Manche Betriebssysteme ignorieren Unterschiede bei der Gross- bzw. Kleinschreibung von Dateinamen. Deshalb wird eine Vergleichsfunktion für Strings benötigt welche Gross/Kleinschreibung ignoriert.
-%Mit exists() aus der filesystem-Bibliothek kann geprüft werden, ob die Zieldatei vorhanden ist. Wenn dies der Fall ist, wird beim Anwender nachgefragt, ob die Datei wirklich überschreiben werden soll. Wenn der Anwender des Programms im Aufruf die Argumente Quelle und Ziel verwechselt, würde mit dieser Abfrage die automatische Überschreibung einer Datei verhindert.
-%Nach dieser umfangreichen Vorbereitung kann in einer read-write-Schleife kopiert werden.
-%8.5.2.2 Programmbeispiel
-%#include <fstream>
-%#include <iostream>
-%#include <string>
-%
-%#include <cctype>      // std::tolower
-%#include <algorithm>   // std::equal
-%#include <string_view> // std::string_view
-%
-%// Compares two strings ignoring case
-%bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs)
-%{
-%    return std::ranges::equal(lhs, rhs, [](unsigned char a, unsigned char b)
-%       {
-%           return std::tolower(a) == std::tolower(b);
-%       });
-%}
-%
-%// Converts string to upperecase, not used in this example
-%void ToUpper(std::string &s) {
-%   transform(s.begin(), s.end(), s.begin(), ::toupper);
-%}
-%
-%using  std::filesystem::path;
-%using  std::filesystem::exists;
-%
-%   static constexpr int BUFSIZE = 80;
-%
-%   void copy(std::string sourceName, std::string destinationName) 
-%   {
-%       
-%       if(EqualsIgnoreCase(sourceName, destinationName)){
-%         std::cerr << "Error, file is copied to itself!";
-%         
-%         return;
-%      }
-%
-%      if(exists(path(destinationName))) 
-%      {
-%         std::cout << "File " << destinationName <<
-%                          " already exists. Overwrite it? (Y/N)";
-%         
-%            char ch;
-%            std::cin >> ch;
-%            if(std::toupper(ch) != 'Y'){
-%               return; // abort
-%            }
-%      }
-%
-%      ifstream myFileInputStream(sourceName, std::ios::binary);
-%      if (! myFileInputStream){
-%         std::cerr << "Error: cannot open File " << sourceName << std::endl;
-%         return;
-%      }
-%      
-%      ofstream myFileOutputStream(destinationName, std::ios::binary);
-%      if (!myFileOutputStream){
-%         std::cerr << "Error: cannot open File " << destinationName << std::endl;
-%         return;
-%      }
-%
-%      int nbytes = -1;
-%      char b[BUFSIZE];  // Nicer: std::array<char, BUFSIZE> b;
-%         while(myFileInputStream.read(b, BUFSIZE)) // nicer: (b, b.size())
-%         {
-%            myFileOutputStream.write(b, myFileInputStream.gcount());
-%         }
-%      
-%   }
-%
-%   int main(int argc, char *argv[]) 
-%   {
-%      if( argc != 3) 
-%      {
-%         std::cerr << "Usage: CopyBlockFile sourceName destinationName" << std::endl;
-%         return(1);
-%      }
-%      copy(args[0], args[1]);
-%   }
-%
-%8.5.3 Verzeichnisse durchgehen und Informationen zusammentragen
-%
-%Ein Programm in \Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien die Häufigkeit der Worte zählt, das heisst wie oft welche Worte insgesamt über alle Dateien auftreten.
-%*/
-%/*****************************************************************************/
-%/*  Module     : Solution for Exercise 'Filesystem and Algos'   Version 1.0  */
-%/*****************************************************************************/
-%/**
-% *  \brief        Prints number of occurences of all words found in all textfiles
-% *                in given directorystructure (Requires C++23)
-% *
-% *  Function      Prints a list of number of occurences of all words found over all files with
-% *                extension .txt in given directory and its subdirectories
-% *
-% * Looks recursively for all .txt files in a given directory (and its subdirectories)
-% * and counts the occurences of each word over all found .txt files.
-% * As words counts all character sequences separated by white spaces
-% *
-% *  \author    I. Oesch
-% *
-% *  \date      12.1.2023  IO Created
-% *
-% *  \file      main.c
-% */
-%/*****************************************************************************/
-%/* BFH Burgdorf                                                              */
-%/*****************************************************************************/
-%#include <cstdlib>
-%#include <filesystem>
-%#include <fstream>
-%#include <iostream>
-%#include <set>
-%#include <map>
-%#include <vector>
-%#ifndef __clang__
-%#include <ranges>
-%#endif
-%#include <iterator>
-%#include <algorithm>
-%
-%
-%namespace fs = std::filesystem;
-%
-%// Generate a view only returning whole words
-%// read from given stream
-%// (Views stream as sequence of words (strings))
-%typedef std::ranges::istream_view<std::string> WordView;
-%
-%
-%void Aufgabe3()
-%{
-%
-%    // Map to keep list of words and counter for each word
-%    typedef std::map<std::string, int> WordcountType;
-%    WordcountType wordcount;
-%
-%    // Define filterfunction (Lambda) for textfiles
-%    auto TextFileFilter = [](auto p) { 
-%                             return p.is_regular_file() && p.path().extension() == ".txt"; 
-%                          };
-%
-%    // Set the current path to parent of our directorystructure
-%    // Not really neede, we could also use absolute path in line below
-%    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP"); 
-%                    // /DirectoryStructureForExcercise");
-%
-%    // Create an iterator to travel our directory structure
-%    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
-%
-%    // travel directorystructure, filter out wanted files and parse them, passes reference
-%    // to wordlist into lambda
-%    std::ranges::for_each(files | std::views::filter(TextFileFilter), [&wordcount](auto p){
-%
-%       // Create filestream for current file
-%       std::ifstream file(p.path());
-%
-%       // Lets look wordwise into filestream of current file using WordView
-%       // Count all words from stream
-%       std::ranges::for_each(WordView(file), [&wordcount](auto w){wordcount[w]++;});
-%    });
-% 
-%    // Create vector from view with pointers into map
-%    // Fill vector with pointer to words with count in Map to vector
-%    // Attention, pointer in Vector will become invalid if map is modified
-%    auto SortedWords = wordcount
-%                 | std::views::transform([](auto &v){ return &v; })
-%                 | std::ranges::to<std::vector>();
-%
-%    // Sort words on count
-%    std::ranges::stable_sort(SortedWords, {},[](auto &v) {return v->second;});
-%
-%    // Print sorted words
-%    std::ranges::for_each(SortedWords, [](auto vs){std::cout << vs->second << ":: " 
-%                                                                << vs->first << '\n';});
-%
-%}
-%
-%
-%Ein Programm in \Cpp\Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
-%/*****************************************************************************/
-%/*  Function      : Word cross reference                                     */
-%/*****************************************************************************/
-%/**
-% *  \brief        Prints which words are used in which files
-% *                in all textfiles in given directorystructure
-% *
-% *  Function      Prints a list of all words found over all files with
-% *                extension .txt in given directory and its subdirectories
-% *                and prints in which files they are used
-% *
-% *  \noparam      None
-% *
-% *  \return       None
-% *
-% *  \author       I. Oesch
-% *
-% *  \date         12.1.2023  IO  Created
-% */
-%/*****************************************************************************/
-%
-%// Same includes as above, ommited to save space
-%
-%namespace fs = std::filesystem;
-%
-%// Generate a view only returning whole words
-%// read from given stream
-%// (Views stream as sequence of words (strings))
-%typedef std::ranges::istream_view<std::string> WordView;
-%
-%void main()
-%{
-%
-%    // Map of words with set of filenames per word
-%    typedef std::map<std::string, std::set<std::string>> WordSetType;
-%    WordSetType FilesForWord;
-%
-%    // Define filterfunction (Lambda) for textfiles
-%    auto TextFileFilter = [](auto p) { 
-%         return p.is_regular_file() && p.path().extension() == ".txt"; 
-%    };
-%
-%    // Set the current path to parent of our directorystructure
-%    // Not really neede, we could also use absolute path in line below
-%    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP"); // /DirectoryStructureForExcercise");
-%
-%    // Create an iterator to travel our directory structure
-%    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
-%
-%    // travel directorystructure, filter out wanted files and parse them
-%    std::ranges::for_each(files | std::views::filter(TextFileFilter), [&FilesForWord](auto p){
-%
-%       // Create filestream for current file
-%       std::ifstream file(p.path());
-%
-%       // Lets look wordwise into filestream of current file using WordView
-%       // and add name of current file to current word
-%       std::ranges::for_each(WordView(file), [&FilesForWord, &p](auto w) {  
-%                FilesForWord[w].insert(p.path().filename());});
-%       });
-%
-%    // Print list of word with associated files
-%    std::ranges::for_each(FilesForWord, [](auto wf){
-%
-%       // Print word
-%       std::cout << wf.first << ":: ";
-%
-%       // Print list of filenames
-%       std::ranges::for_each(wf.second, [](auto f){ std::cout << f << ", ";});
-%       std::cout << '\n';
-%    });
-%}
-%
+\subsubsection{Klasse std::filesystem::directory\_iterator} 
+\index{directory\_iterator}
+Ein Iterator, welcher über alle Einträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert. Mit * wird ein Path-objekt des aktuellen Eintrags zurückgeliefert, mit ++ zum nächsten Eintrag weitergegangen.
+
+Alle Elemente im Verzeichnis \verb$c:\MyDirectory$ ausgeben:
+\begin{CCode}
+for (auto const& entry: std::filesystem::directory_iterator("c:\\MyDirectory")) {
+        std::cout << entry.path() << '\n';
+}
+\end{CCode}
+
+\subsubsection{Klasse recursive\_directory\_iterator} 
+\index{recursive\_directory\_iterator}
+Ein Iterator, welcher über alle Einträge und Untereinträge eines Verzeichnisses Iterieren kann und jeweils ein Path-Objekt zurückliefert. Mit * wird ein Path-objekt des aktuellen Eintrags zurückgeliefert, mit ++ zum nächsten Eintrag weitergegangen.
+
+Alle Elemente im Verzeichnis \verb$c:\MyDirectory$ und dessen Unterverzeichnissen ausgeben:
+\begin{CCode}
+// Alias for less verbose access
+namespace fs = std::filesystem;
+
+// Set the current path to parent of our directorystructure
+// Not really neede, we could also use absolute path in line below 
+fs::current_path("/Users/ivooesch/Unterricht/CPP"); 
+
+// Create an iterator to travel our directory structure 
+auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise"); 
+
+// travel directorystructure, print out all entries (using lambda function)
+std::ranges::for_each(files, [](auto p){ 
+   // Dateiname mit Pfad ausgeben 
+   std::cout << p.path() << '\n'; 
+}); 
+\end{CCode}
+Hinweis: foreach ruft die angegebene Funktion/Methode für alle Elemente auf.
+
+
+Alle .txt-Dateien  im Verzeichnis \verb$c:\MyDirectory$ und dessen Unterverzeichnissen ausgeben:
+\begin{CCode}
+// Create an new iterator to travel our directory structure recursively
+files = fs::recursive_directory_iterator("DirectoryStructureForExcercise"); 
+
+// Define filterfunction (Lambda) for textfiles 
+auto TextFileFilter = [](auto p) { 
+                              return p.is_regular_file() && p.path().extension() == ".txt"; 
+                      }; 
+
+// traverse directorystructure, filter out unwanted files and print result 
+std::ranges::for_each(files | std::views::filter(TextFileFilter), [](auto p){ 
+    
+    // Dateiname mit Pfad ausgeben 
+    std::cout << p.path() << '\n'; 
+}); 
+\end{CCode}
+Hinweis: foreach ruft die angegebene Funktion/Methode für alle Elemente auf.
+
+\subsection{Anwendungs-Beispiele}
+In diesem Kapitel sollen einige typische Situationen aus der Anwendung der Dateiverarbeitung besprochen werden. Sie werden mit den Hilfsmitteln gelöst, welche die Standardbibliothek zur Verfügung stellt.
+\subsubsection{Byteweise Verarbeitung von Dateien}
+Ein Dateiname soll von cin eingelesen werden. cin ist ein InputStream. Die Datei mit dem eingegebenen Namen soll geöffnet werden. Danach soll die Datei byteweise gelesen und ausgegeben werden.
+\paragraph{Vorgehen}
+Zunächst wird der Dateiname eingelesen. Dann wird versucht, eine Datei dieses Namens zu öffnen. Dabei muss überprüft werden ob die Datei geöffnet werden konnte, denn die Datei könnte nicht vorhanden sein. Danach wird die Eingabedatei in der klassischen Schleife bearbeitet:
+\begin{CCode}
+while(!End of inputfile)
+{
+   read Byte as int;
+   write Byte;
+}
+\end{CCode}
+Jedes Byte muss als int gelesen werden, um die EOF-Kennung Traits::eof() (End Of File) verarbeiten zu können: Da ein Byte alle Werte von 0 bis 255 annehmen kann, könnte in den 8 Bit des Bytes die EOF-Kennung nicht verschlüsselt werden. Beim Lesen der Datei sowie beim Schliessen müssen die möglichen Fehler bearbeitet werden. 
+
+Das Programm gibt alle Anfragen nach cerr aus. Dadurch kann man das Programm auch zum Kopieren von Dateien verwenden, wenn man es in nachfolgender Form aufruft. Der Name der Ausgangsdatei wird angefordert, das Ergebnis wird in die Datei 'ZielDatei' gespeichert.
+
+ReadByteFile > DestinationFileName
+\paragraph{Programmbeispiel}
+Und hier der dazugehörige Code:
+
+\begin{CCode}
+#include <fstream>
+#include <iostream>
+#include <string>
+
+void main() 
+   {
+      // read filename
+      std::cerr << "filename?: ");
+      std::string fileName;
+      
+      std::cin >> fileName;
+      
+      std::cerr << "filename is " << fileName << std::endl;
+
+      // try to open the file. There will be an exception if the file does not exist
+      std::ifstream f(fileName);
+      
+      if(!f) {
+         std::cerr << "File " << fileName + " not found." std::endl;
+         return;
+      }
+
+
+      // read each byte of the file
+      int ch;
+      
+         while((ch = f.get()) != Traits::eof()){
+            std::cout.put(ch);			// copy each byte to stdout
+         }
+         f.close();
+     
+   }
+}
+\end{CCode}
+
+\subsubsection{Blockweise Verarbeitung von Daten}
+
+Eine Datei soll binär kopiert werden. Sie darf nicht auf sich selbst kopiert werden, denn wenn diese vor dem ersten Lesen zum Schreiben geöffnet würde, wäre der Inhalt gelöscht. Vor Überschreiben einer vorhandenen Datei soll beim Anwender um eine ausdrückliche Bestätigung nachgefragt werden. Alle Programmausnahmen bei der Ein-/Ausgabe sollen abgefangen werden.
+\paragraph{Vorgehen}
+Es soll ein ifstream bzw. ein ofstream mit std::ios::binary benutzt werden. Damit wird ein binäres Kopieren von Dateien möglich. Es ist effizienter, eine Datei blockweise zu bearbeiten. Die Namen der Quell- und der Zieldatei sollen in der Kommandozeile übergeben werden. Wenn eine Datei auf sich selbst kopiert wird, führt dies bei vielen Systemen zum Löschen der Datei. Um dies zu vermeiden, muss auf Gleichheit der Namen der Quell- bzw. der Zieldatei abgefragt werden. Manche Betriebssysteme ignorieren Unterschiede bei der Gross- bzw. Kleinschreibung von Dateinamen. Deshalb wird eine Vergleichsfunktion für Strings benötigt welche Gross/Kleinschreibung ignoriert.
+
+Mit exists() aus der filesystem-Bibliothek kann geprüft werden, ob die Zieldatei vorhanden ist. Wenn dies der Fall ist, wird beim Anwender nachgefragt, ob die Datei wirklich überschreiben werden soll. Wenn der Anwender des Programms im Aufruf die Argumente Quelle und Ziel verwechselt, würde mit dieser Abfrage die automatische Überschreibung einer Datei verhindert.
+
+Nach dieser umfangreichen Vorbereitung kann in einer read-write-Schleife kopiert werden.
+\paragraph{Programmbeispiel}
+Und hier der dazugehörige Code:
+
+\begin{CCode}
+#include <fstream>
+#include <iostream>
+#include <string>
+
+#include <cctype>      // std::tolower
+#include <algorithm>   // std::equal
+#include <string_view> // std::string_view
+
+// Compares two strings ignoring case
+bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs)
+{
+    return std::ranges::equal(lhs, rhs, [](unsigned char a, unsigned char b)
+       {
+           return std::tolower(a) == std::tolower(b);
+       });
+}
+
+// Converts string to upperecase, not used in this example
+void ToUpper(std::string &s) {
+   transform(s.begin(), s.end(), s.begin(), ::toupper);
+}
+
+using  std::filesystem::path;
+using  std::filesystem::exists;
+
+   static constexpr int BUFSIZE = 80;
+
+   void copy(std::string sourceName, std::string destinationName) 
+   {
+       
+       if(EqualsIgnoreCase(sourceName, destinationName)){
+         std::cerr << "Error, file is copied to itself!";
+         
+         return;
+      }
+
+      if(exists(path(destinationName))) 
+      {
+         std::cout << "File " << destinationName <<
+                          " already exists. Overwrite it? (Y/N)";
+         
+            char ch;
+            std::cin >> ch;
+            if(std::toupper(ch) != 'Y'){
+               return; // abort
+            }
+      }
+
+      ifstream myFileInputStream(sourceName, std::ios::binary);
+      if (! myFileInputStream){
+         std::cerr << "Error: cannot open File " << sourceName << std::endl;
+         return;
+      }
+      
+      ofstream myFileOutputStream(destinationName, std::ios::binary);
+      if (!myFileOutputStream){
+         std::cerr << "Error: cannot open File " << destinationName << std::endl;
+         return;
+      }
+
+      int nbytes = -1;
+      char b[BUFSIZE];  // Nicer: std::array<char, BUFSIZE> b;
+         while(myFileInputStream.read(b, BUFSIZE)) // nicer: (b, b.size())
+         {
+            myFileOutputStream.write(b, myFileInputStream.gcount());
+         }
+      
+   }
+
+int main(int argc, char *argv[]) 
+{
+      if( argc != 3) 
+      {
+         std::cerr << "Usage: CopyBlockFile sourceName destinationName" << std::endl;
+         return(1);
+      }
+      copy(args[0], args[1]);
+}
+\end{CCode}
+
+\subsubsection{Verzeichnisse durchgehen und Informationen zusammentragen}
+
+Ein Programm in \Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien die Häufigkeit der Worte zählt, das heisst wie oft welche Worte insgesamt über alle Dateien auftreten.
+
+\begin{CCode}
+/*****************************************************************************/
+/*  Module     : Solution for Exercise 'Filesystem and Algos'   Version 1.0  */
+/*****************************************************************************/
+/**
+ *  \brief        Prints number of occurences of all words found in all textfiles
+ *                in given directorystructure (Requires C++23)
+ *
+ *  Function      Prints a list of number of occurences of all words found over all files with
+ *                extension .txt in given directory and its subdirectories
+ *
+ * Looks recursively for all .txt files in a given directory (and its subdirectories)
+ * and counts the occurences of each word over all found .txt files.
+ * As words counts all character sequences separated by white spaces
+ *
+ *  \author    I. Oesch
+ *
+ *  \date      12.1.2023  IO Created
+ *
+ *  \file      main.c
+ */
+/*****************************************************************************/
+/* BFH Burgdorf                                                              */
+/*****************************************************************************/
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <map>
+#include <vector>
+#ifndef __clang__
+#include <ranges>
+#endif
+#include <iterator>
+#include <algorithm>
+
+
+namespace fs = std::filesystem;
+
+// Generate a view only returning whole words
+// read from given stream
+// (Views stream as sequence of words (strings))
+typedef std::ranges::istream_view<std::string> WordView;
+
+
+void Aufgabe3()
+{
+
+    // Map to keep list of words and counter for each word
+    typedef std::map<std::string, int> WordcountType;
+    WordcountType wordcount;
+
+    // Define filterfunction (Lambda) for textfiles
+    auto TextFileFilter = [](auto p) { 
+                             return p.is_regular_file() && p.path().extension() == ".txt"; 
+                          };
+
+    // Set the current path to parent of our directorystructure
+    // Not really neede, we could also use absolute path in line below
+    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP"); 
+                    // /DirectoryStructureForExcercise");
+
+    // Create an iterator to travel our directory structure
+    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
+
+    // travel directorystructure, filter out wanted files and parse them, passes reference
+    // to wordlist into lambda
+    std::ranges::for_each(files | std::views::filter(TextFileFilter), [&wordcount](auto p){
+
+       // Create filestream for current file
+       std::ifstream file(p.path());
+
+       // Lets look wordwise into filestream of current file using WordView
+       // Count all words from stream
+       std::ranges::for_each(WordView(file), [&wordcount](auto w){wordcount[w]++;});
+    });
+ 
+    // Create vector from view with pointers into map
+    // Fill vector with pointer to words with count in Map to vector
+    // Attention, pointer in Vector will become invalid if map is modified
+    auto SortedWords = wordcount
+                 | std::views::transform([](auto &v){ return &v; })
+                 | std::ranges::to<std::vector>();
+
+    // Sort words on count
+    std::ranges::stable_sort(SortedWords, {},[](auto &v) {return v->second;});
+
+    // Print sorted words
+    std::ranges::for_each(SortedWords, [](auto vs){std::cout << vs->second << ":: " 
+                                                                << vs->first << '\n';});
+
+}
+\end{CCode}
+
+Ein Programm in \Cpp\Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
+
+\begin{CCode}
+/*****************************************************************************/
+/*  Function      : Word cross reference                                     */
+/*****************************************************************************/
+/**
+ *  \brief        Prints which words are used in which files
+ *                in all textfiles in given directorystructure
+ *
+ *  Function      Prints a list of all words found over all files with
+ *                extension .txt in given directory and its subdirectories
+ *                and prints in which files they are used
+ *
+ *  \noparam      None
+ *
+ *  \return       None
+ *
+ *  \author       I. Oesch
+ *
+ *  \date         12.1.2023  IO  Created
+ */
+/*****************************************************************************/
+
+// Same includes as above, ommited to save space
+
+namespace fs = std::filesystem;
+
+// Generate a view only returning whole words
+// read from given stream
+// (Views stream as sequence of words (strings))
+typedef std::ranges::istream_view<std::string> WordView;
+
+void main()
+{
+
+    // Map of words with set of filenames per word
+    typedef std::map<std::string, std::set<std::string>> WordSetType;
+    WordSetType FilesForWord;
+
+    // Define filterfunction (Lambda) for textfiles
+    auto TextFileFilter = [](auto p) { 
+         return p.is_regular_file() && p.path().extension() == ".txt"; 
+    };
+
+    // Set the current path to parent of our directorystructure
+    // Not really neede, we could also use absolute path in line below
+    fs::current_path("/Users/ivooesch/Unterricht/CAS_EBSX/CPP"); // /DirectoryStructureForExcercise");
+
+    // Create an iterator to travel our directory structure
+    auto files = fs::recursive_directory_iterator("DirectoryStructureForExcercise");
+
+    // travel directorystructure, filter out wanted files and parse them
+    std::ranges::for_each(files | std::views::filter(TextFileFilter), [&FilesForWord](auto p){
+
+       // Create filestream for current file
+       std::ifstream file(p.path());
+
+       // Lets look wordwise into filestream of current file using WordView
+       // and add name of current file to current word
+       std::ranges::for_each(WordView(file), [&FilesForWord, &p](auto w) {  
+                FilesForWord[w].insert(p.path().filename());});
+       });
+
+    // Print list of word with associated files
+    std::ranges::for_each(FilesForWord, [](auto wf){
+
+       // Print word
+       std::cout << wf.first << ":: ";
+
+       // Print list of filenames
+       std::ranges::for_each(wf.second, [](auto f){ std::cout << f << ", ";});
+       std::cout << '\n';
+    });
+}
+\end{CCode}
 
 
 
@@ -8216,46 +8196,45 @@ Mit den \OviIndex{Container Adapter} \index{Adapter} können Container mit einer 
 Nachfolgend eine kleine Auswahl vorhandener Container. 
 \subsubsection{Kurzübersicht zu Container array<> aus der \Cpp - Standardbibliothek}
 \OviIndex{std::Array} \index{Array} funktioniert im Prinzip gleich wie ein Vektor (siehe \autoref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
-%7.1.1.1 Array
-%Array mit konstanter Grösse, Grösseninformaion ist Teil des Typs und geht nicht verloren. Indizierter Zugriff ist möglich.
-%#include <array>
-%
-%std::array<std:string, 10> Arr; // Array von 10 strings 
-%
-%cout << Arr[5];       // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
-%cout << Arr.at(5);    // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
-%for (auto s: Arr) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
-%   cout << s;
-%}
-%cout << Arr.size();   // Grösse des Arrays ausgeben
-%
+Die Grösseninformation ist Teil des Typs und geht nicht verloren. Indizierter Zugriff ist möglich.
+\begin{CCode}
+#include <array>
+
+std::array<std:string, 10> Arr; // Array von 10 strings 
+
+cout << Arr[5];       // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
+cout << Arr.at(5);    // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
+for (auto s: Arr) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
+   cout << s;
+}
+cout << Arr.size();   // Grösse des Arrays ausgeben
+\end{CCode}
+
 \subsubsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 
 \label{subsect:Vector}
-%7.1.1.2 Vector
-%Vector kann als dynamisches Array betrachtet werden, d.h. ein Array das mit den Daten wächst und schrumpft. Es erlaubt wahlfreien Zugriff auf seine Elemente, sowie das Einfügen und Entfernen von Objekten. Die Grösse kann zur Laufzeit verändert werden. Indizierter Zugriff sowie Anhängen oder Entfernen am Ende ist effizient möglich.
-%#include <vector>
-%
-%std::vector<int> Arr1;     // leerer vector von ints 
-%std::vector<int> Arr2(10); // vector von 10 ints 
-%
-%Arr1.push_back(7);         // Haengt 7 hinten am Vector an (Hat nun Grösse 1)
-%Arr1.resize(15);           // Arr1 hat nun Grösse von 15
-%Arr2.pop_back();           // Letztes Element entfernen, (Hat nun Grösse 9)
-%Arr2.insert(std::next(Arr2.begin(), 7), 22); // Fuegt 22 an Pos 7 ein, (Hat nun Grösse 10)
-%
-%cout << Arr2[5];      // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
-%cout << Arr2.at(5);   // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
-%for (auto s: Arr2) {  // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
-%   cout << s;
-%}
-%cout << Arr2.size();   // Grösse des Arrays ausgeben
-%
+Vector kann als dynamisches Array betrachtet werden, d.h. ein Array das mit den Daten wächst und schrumpft. Es erlaubt wahlfreien Zugriff auf seine Elemente, sowie das Einfügen und Entfernen von Objekten. Die Grösse kann zur Laufzeit verändert werden. Indizierter Zugriff sowie Anhängen oder Entfernen am Ende ist effizient möglich.
 
 Als Beispiel erstellen wir ein Array von \CodeStyle{double}'s. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit \CodeStyle{[]} (Ohne Bereichsüberprüfung) und der Methode \CodeStyle{at()} (Mit Bereichsüberprüfung) möglich. 
 \begin{CCode}
 #include<vector>
 #include<algorithm>
+
+std::vector<int> Arr1;     // leerer vector von ints 
+std::vector<int> Arr2(10); // vector von 10 ints 
+
+Arr1.push_back(7);         // Haengt 7 hinten am Vector an (Hat nun Grösse 1)
+Arr1.resize(15);           // Arr1 hat nun Grösse von 15
+Arr2.pop_back();           // Letztes Element entfernen, (Hat nun Grösse 9)
+Arr2.insert(std::next(Arr2.begin(), 7), 22); // Fuegt 22 an Pos 7 ein, (Hat nun Grösse 10)
+
+cout << Arr2[5];      // Indizierter zugriff ohne Test auf Bereichsüberschreitung 
+cout << Arr2.at(5);   // Indizierter zugriff, wirft Exception bei Bereichsüberschreitung 
+for (auto s: Arr2) {  // Gibt alle Elemente aus, s nimmt der Reihe nach alle Werte von Arr an
+   cout << s;
+}
+cout << Arr2.size();   // Grösse des Arrays ausgeben
+
 
 std::vector<double> MyVector; //Erstellen eines Vektors (Arrays) von Doublewerten
   
@@ -8346,24 +8325,26 @@ cout << List.size();   // Grösse der Liste ausgeben
 \end{CCode}
 
 \subsubsection{Kurzübersicht zu Container list<> aus der \Cpp - Standardbibliothek}
-%7.1.1.5 list
-%Doppelt verkettete Liste. Indizierter Zugriff ist nicht möglich, Anhängen oder Entfernen am Anfang und am Ende sowie Einfügen ist effizient möglich.
-%#include <list>
-%
-%std::list<int> List; // leere Liste von ints 
-%
-%List.push_front(7);       // Fuegt 7 vorne an Liste an (Hat nun Grösse 1)
-%List.push_back(42);        // haengt 42 hinten an Liste an (Hat nun Grösse 2)
-%List.insert(List.begin(), 22); // Fuegt 22 vor begin() ein, (Hat nun Grösse 3)
-%List.pop_front();           // erstes Element entfernen, (Hat nun Grösse 2)
-%List.pop_back();           // letztes Element entfernen, (Hat nun Grösse 1)
-%
-%cout << List.front(); // vorderstes Element ausgeben 
-%cout << List.back();  // letztes Element ausgeben 
-%for (auto x: List) {  // Gibt alle Elemente aus, x nimmt der Reihe nach alle Werte von List an
-%   cout << x;
-%}
-%cout << List.size();   // Grösse der Liste ausgeben
+
+Doppelt verkettete Liste. Indizierter Zugriff ist nicht möglich, Anhängen oder Entfernen am Anfang und am Ende sowie Einfügen ist effizient möglich.
+\begin{CCode}
+#include <list>
+
+std::list<int> List; // leere Liste von ints 
+
+List.push_front(7);       // Fuegt 7 vorne an Liste an (Hat nun Grösse 1)
+List.push_back(42);        // haengt 42 hinten an Liste an (Hat nun Grösse 2)
+List.insert(List.begin(), 22); // Fuegt 22 vor begin() ein, (Hat nun Grösse 3)
+List.pop_front();           // erstes Element entfernen, (Hat nun Grösse 2)
+List.pop_back();           // letztes Element entfernen, (Hat nun Grösse 1)
+
+cout << List.front(); // vorderstes Element ausgeben 
+cout << List.back();  // letztes Element ausgeben 
+for (auto x: List) {  // Gibt alle Elemente aus, x nimmt der Reihe nach alle Werte von List an
+   cout << x;
+}
+cout << List.size();   // Grösse der Liste ausgeben
+\end{CCode}
 
 Als Beispiel erstellen wir eine \OviIndex{Liste} \index{list} von \CodeStyle{int}'s
 \begin{CCode}
@@ -8442,8 +8423,6 @@ Schlüssel nicht sortiert werden).
 
 Der Wert kann ein beliebiger Datentyp sein (Im Extremfall eine Liste
 oder eine weitere map). 
-%7.1.2.1 Map
-%Üblicherweise ein \OviIndex{Binärbaum}, Daten werden über einen Schlüssel abgerufen oder abgespeichert, jeder Schlüssel darf nur einmal vorkommen. Suchen (Zugriff über Schlüssel) ist effizient.
 
 
 Als Beispiel erstellen wir eine map mit Studenten und ihren Noten.
@@ -12782,6 +12761,7 @@ STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, 
 GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
 RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
 POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
+SFINAE& Substitution Failure Is Not An Error\\
 \end{tabular}
 }
 
