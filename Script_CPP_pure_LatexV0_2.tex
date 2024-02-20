@@ -181,7 +181,7 @@
 
 \raggedbottom
 
-\definecolor{Mygray}{gray}{0.9}
+\definecolor{Mygray}{gray}{0.95}
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
@@ -1489,7 +1489,6 @@ Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird b
 
 Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.)
 
-
 Beispiel:
 \begin{CCode}
 	
@@ -1560,7 +1559,6 @@ Beispiel:
   d.f();      // Kein temporaeres Objekt, f()& wird aufgerufen
 	
 \end{CCode}
-
 
 
 Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
@@ -1801,6 +1799,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
  Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
  
+ 
  \begin{CCode}
  	class StrangeClass {
  		public:
@@ -1827,9 +1826,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  	
  	lsc.DoSomething(&a);
  	lsc.DoSomething(nullptr); // ok, std::nulptr_t
- 	
- 	
- 	
+ 		
  	
  \end{CCode}
  
@@ -3213,6 +3210,7 @@ Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \label{subsubsect:BenutzerdefinierteLiterale}
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, wie Zeitdauern in \CodeStyle{std::chrono}, siehe \autoref{subsect:STDChrono:Duration}).
 
+
 Numerische Literale können dabei als Strings, als \CodeStyle{unsigned long long} oder als \CodeStyle{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
 
 \begin{CCode}
@@ -3362,6 +3360,8 @@ Für POD (Standard-Typen aus C wie int, float, Pointer, ...) macht der Defaultkon
 Seit \CppVers{11} kann mit dem Schlüsselworte \CodeStyle{delete} das automatische Erzeugen der entsprechenden Mehthode unterdrückt, und mit \CodeStyle{default} das automatische Erzeugen der entsprechenden Methode erzwungen werden (Siehe \autoref{subsubsect:ControlAutoMember}).
 
 \subsection{Rule of 3, 5, 0}
+\label{subsect:Ruleof350}
+\index{Rule of 3, 5, 0}
 Bei den \emph{Konstruktorn}, \emph{Kopierkonstruktoren}, \emph{Move-Konstruktoren}, \emph{Zuweisungsoperatoren}, \emph{Move-Zuweisungsoperatoren} und den \emph{Destruktorn} galt bis \CppVers{11} die Regel der 3: Entweder \emph{Kopierkonstruktor}, \emph{Zuweisungsoperator} und \emph{Destruktor} alle 3 Methoden selber definieren, oder keine selbst definieren.
 
 Ab \CppVers{11} gilt die Regel der 5: Entweder \emph{Kopierkonstruktor}, \emph{Move-Konstruktor}, \emph{Zuweisungsoperator}, \emph{Move-Zuweisungsoperator} und \emph{Destruktor} alle 5 Methoden selber definieren, oder keine selbst definieren.
@@ -3683,6 +3683,7 @@ private:
 		
 }
 \end{CCode}
+
 
 
 \subsection{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen (Seit \CppVers{11})}
@@ -5961,7 +5962,8 @@ Neu können Templates Variable Argumentenlisten haben.
 
 Ein einfaches Beispiel:
 \begin{CCode}
-	template <typename... BasisKlassen> class VariableKlasse : public BasisKlassen... {
+	template <typename... BasisKlassen> 
+	class VariableKlasse : public BasisKlassen... {
 		public:
 		
 		// Konstruktor (Mit variabler Argumentenliste)
@@ -5988,6 +5990,7 @@ Entspricht folgender Klassendefinition:
 	};
 \end{CCode}
 
+
 Und benutzt würde das ganze folgendermassen:
 \begin{CCode}
 	
@@ -5999,10 +6002,13 @@ Und benutzt würde das ganze folgendermassen:
 	Klasse4 obj4;
 	Klasse5 obj5;
 	
-	
 	KombinierteKlasse MeinObjekt(obj1, obj2, obj3);
 	
+	
 	VariableKlasse<Klasse1, Klasse2, Klasse3, Klasse4, Klasse5> WeiteresObjekt(obj1, obj2, obj3, obj4, obj5);
+	
+	// Erschliesst automatisch benoetigtes Template aus Parameterliste
+	auto WeiteresObjekt = VariableKlasse(obj1, obj2, obj3, obj4);
 	
 \end{CCode}
 
@@ -6013,6 +6019,7 @@ Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor
 sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
 für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \CodeStyle{&&} müsste
 noch \textquotesingle perfektes Forwarding\textquotesingle {} mit \CodeStyle{std::forward()} eingebaut werden).  
+
 \begin{CCode}
 	template<typename T>
 	class Wraper {
@@ -10431,69 +10438,6 @@ Eine weitere Optimierungsmöglichkeit wäre der Einsatz zweier separater Methoden 
 %\label{subsec:RValueRefs}
 Siehe \autoref{subsec:RValueRefs}
 
-%\OviIndex{RValue Referenzen} werden durch T \&\&r (im Gegensatz zu T \&r bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
-%Objekte erzeugt, welche jedoch 'Schreibgeschützt' sind. 
-%
-%Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man mus nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
-%
-%Beispiel:
-%\begin{CCode}
-%
-%
-%class Demo {
-%		// ...
-%		Demo(const Demo &Src);            // Kopierkonstruktor
-%		Demo(Demo&&Src);                  // Move-Konstruktor
-%		Demo& operator=(const Demo &Src); // Zuweisungsoperator (Kopierend)
-%		Demo& operator=(Demo &&Src);      // Zuweisungsoperator (Schiebend)
-%	};	
-%  
-%  
-%  Demo f1() {
-%  
-%     ...
-%     
-%     return Demo(xyz);      // Temproaeres Demoobjekt wird erzeugt
-%                            // Hier kommt Move-Konstruktor zum Zug
-%                            // Welcher Inhalt vom temporaeren Objekt
-%                            // uebernimmt statt kopiert
-%   
-%  }
-%
-%  void f2(Demo d) {
-%  
-%     ...
-%   
-%  }
-%  
-%  
-%  f2( Demo(abc) )           // Temproaeres Demoobjekt wird erzeugt
-%                            // Hier kommt Move-Konstruktor zum Zug
-%                            // Welcher Inhalt vom temporaeren Objekt
-%                            // uebernimmt statt kopiert
-%  
-%  
-%  Demo q(xyz);
-%  
-%  f2(q);                    // Kein temporaeres Objekt, normaler
-%                            // Kopierkonstruktor wird verwendet
-% 
-%\end{CCode}
-%
-%Mit \OviIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
-%\begin{CCode}
-%
-%  Demo q(xyz);
-%  
-%  f2(std::move(q));         // Inhalt von q nutzen (q als ein temporaeres Objekt
-%                            // betrachten), Movekonstruktor wird verwendet
-%                            
-%  q.DoSomething();          // Achtung: q ist nun ein leeres Objekt und hat
-%                            // keine Resourcen mehr, kann gefaehrlich sein 
-%                            
-%  q = Demo(qrs);            // q wieder mit neuem Inhalt fuellen                          
-% 
-%\end{CCode}
 
 \item{constexpr},
 %\label{subsubsect:constexpr}
@@ -10779,42 +10723,6 @@ Siehe \autoref{subsubsect:KontrolliertesUeberschreiben}
 \item{Nullpointer},
 %\label{subsubsect:nullptr}
 Siehe \autoref{subsubsect:nullptr}
-%Neu gibt es ein Schlüsselwort für den Nullpointer: \OviIndex{nullptr}
-%Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. nullptr besitzt sogar einen eigenen Datentypen (\OviIndex{std::nullptr\_t}), somit können Funktionen für nullptr überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit nullptr nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit std::nulptr\_t kann dies umgangen werden.
-%
-%\begin{CCode}
-%class StrangeClass {
-%    public:
-%    void DoSomething(float *p);
-%    void DoSomething(int *p);
-%};
-%
-%StrangeClass sc;
-%int a;
-%
-%sc.DoSomething(&a);
-%sc.DoSomething(nullptr); // Error float* or int* ???
-%
-%
-%class LessStrangeClass {
-%    public:
-%    void DoSomething(float *p);
-%    void DoSomething(int *p);
-%    void DoSomething(std::nulptr_t p);  // Variant for nullptr
-%};
-%
-%LessStrangeClass lsc;
-%int a;
-%
-%lsc.DoSomething(&a);
-%lsc.DoSomething(nullptr); // ok, std::nulptr_t
-%
-%	
-%
-%
-%
-%\end{CCode}
-%  
 
 \item{Typsicherere Enummerationen},
 %\label{subsubsect:TypsichererEnum}
@@ -10861,116 +10769,6 @@ Siehe \autoref{subsubsect:ExpliziteUmwandlungsoperatoren}
 %\label{subsubsect:TemplateVarArg}
 Siehe \autoref{subsubsect:TemplateVarArg}
 
-%Neu können Templates Variable Argumentenlisten haben.
-%\begin{CCode}
-%template<typename... Values> class tuple;
-%\end{CCode}
-%
-%Ein einfaches Beispiel:
-%\begin{CCode}
-%template <typename... BasisKlassen> class VariableKlasse : public BasisKlassen... {
-%public:
-%
-%    // Konstruktor (Mit variabler Argumentenliste)
-%    VariableKlasse (const BasisKlassen&... Quellen) : BasisKlassen(Quellen)... {};
-%    
-%};
-%\end{CCode}
-%Mit typename... P oder class... P wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit ... abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
-%Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
-%Der Operator sizeof...(P) liefert die Anzahl Elemente im Pack als konstanten Integerwert.
-%
-%Die folgende Zeile
-%\begin{CCode}
-%typedef VariableKlasse<Klasse1, Klasse2, Klasse3> KombinierteKlasse;
-%\end{CCode}
-%
-%Entspricht folgender Klassendefinition:
-%\begin{CCode}
-%class KombinierteKlasse : public Klasse1, Klasse2, Klasse3 {
-%public:
-%
-%    // Konstruktor (Parameterliste von Variadic Template wird expandiert)
-%    KombinierteKlasse (const Klasse1 &Quelle1, const Klasse2 &Quelle2, const Klasse3 &Quelle3) : Klasse1(Quelle1), Klasse2(Quelle2), Klasse3(Quelle3) {}
-%};
-%\end{CCode}
-%
-%Und benutzt würde das ganze folgendermassen:
-%\begin{CCode}
-%
-%/* Erzeugen von Objekten der Klassen Klasse1 bis Klasse5 */
-%
-%Klasse1 obj1;
-%Klasse2 obj2;
-%Klasse3 obj3;
-%Klasse4 obj4;
-%Klasse5 obj5;
-%
-%
-%KombinierteKlasse MeinObjekt(obj1, obj2, obj3);
-%
-%VariableKlasse<Klasse1, Klasse2, Klasse3, Klasse4, Klasse5> WeiteresObjekt(obj1, obj2, obj3, obj4, obj5);
-%
-%\end{CCode}
-%
-%
-%Ein weiteres Beispiel:
-%
-%Die Klasse Wraper besitzt ein parametrisierbares Attribut, und einen Konstruktor, welcher
-%sich dem Konstruktor des parametrisierbaren Attributes anpasst. Dieses Template funktioniert
-%für beliebige Klassen mit beliebigen Konstruktoren. (Einzig für r-Value Referenzen \&\& müsste
-%noch \textquotesingle perfektes Forwarding\textquotesingle {} mit std::forward() eingebaut werden).  
-%\begin{CCode}
-%template<typename T>
-%class Wraper {
-%   private:
-%   T Member;
-%
-%   public:
-%   template<typename... Args>
-%   Wraper(Args&&... args) : Member(args...) {};
-%  
-%   // Perfect forwarding:
-%   // Wraper(Args&&... args) : Member(std::forward<Args>(args)...) {};
-%
-%
-%};
-%
-%
-%class Demo1
-%{
-%    int   i;
-%    float f;
-%
-%    public:
-%    Demo1(int ni, float nf) : i(ni), f(nf) {};
-%};
-%
-%class Demo2
-%{
-%    long   l;
-%    double d;
-%    short  s;
-%
-%    public:
-%    Demo2(long nl, double nd, short ns) : l(nl), d(nd), s(ns) {};
-%};
-%
-%
-%int main()
-%{
-%
-%    Wraper<Demo1> w1(10, 4.5f);
-%
-%    short s = 17;
-%    Wraper<Demo2> w2(13L, 13.3, s);
-%
-%
-%    return 0;
-%}
-%
-%\end{CCode}
-%
 
 \item{Erweiterte Stringliterale},
 %\label{subsubsect:erweiterteStringliterale}
@@ -10982,54 +10780,10 @@ Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu we
 %\index{Benutzerdefinierte Literale}
 %\label{subsubsect:BenutzerdefinierteLiterale}
 Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}.
-%Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen).
-%
-%Numerische Literale können dabei als Strings, als unsigned long long oder als long double Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
-%
-%\begin{CCode}
-%// Erhaelt einen String mit der Zeichenkette vor dem Suffix
-%OutputType operator "" _Magic(const char * literal_string); 
-%
-%OutputType operator "" _kg(unsigned long long); // Erhaelt den Integerwert des Literals
-%OutputType operator "" _rad(long double);       // Erhaelt den Fliesskommawert des Literals
-%\end{CCode}
-%
-%Die Operatorfunktionen können dabei einen beliebigen Rückgabewert liefern, im Allgemeinen sollte ein passendes Objekt erzeugt werden. (Der Suffix \_kg könnte zum Beispiel ein Objekt der Klasse Gewicht liefern).
-%
-%Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp:
-%
-%\begin{CCode}
-%OutputType operator "" _suffix(const char     * StringValues, size_t StringLaenge);
-%OutputType operator "" _suffix(const wchar_t  * StringValues, size_t StringLaenge);
-%OutputType operator "" _suffix(const char16_t * StringValues, size_t StringLaenge);
-%OutputType operator "" _suffix(const char32_t * StringValues, size_t StringLaenge);
-%\end{CCode}
-%
-%Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
 
 \item{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen},
 Siehe \autoref{subsubsect:ControlAutoMember}
-%Diverse spezielle Methoden wie Zuweisungsoperator, Konstruktor, new, ... werden vom Compiler automatisch erzeugt. Neu kann der Programmierer einfacher darauf Einfluss nehmen:
-%
-%\begin{CCode}
-%class Demo {
-%    Demo() = default;                       // Den Defaultkonstruktor anfordern.
-%    Demo(const Demo&) = delete;             // Den Kopierkonstruktor verbieten.
-%    Demo & operator=(const Demo&) = delete; // Den Zuweisungsoperator verbieten.
-%    void f(double i);                    
-%    void f(int) = delete;                   // f darf nicht mit int aufgerufen 
-%                                            // werden
-%    template<class T> void f(T) = delete;   // f mit irgend etwas anderem als 
-%		                                        // double aufrufen ist verboten
-%};
-%
-%\end{CCode}
-%Ohne die beiden letzten delete könnte f auch mit int aufgerufen werden, int würde in diesem Fall in double umgewandelt werden.
-
-%\subsection{Weitere Neuerungen}
-
-%\begin{itemize}
-	 \item Geänderte Definiton von POD (plain old data)
+   \item Geänderte Definiton von POD (plain old data)
    \item Template Alias
    \item Gelockerte Restriktionen bei Unions
    \item Neuer Datentyp \CodeStyle{long long int}
@@ -11415,7 +11169,8 @@ Library (Stand 14.2.2022)
 \item DR20: std::basic\_format\_string  	
 \item DR20: Poison Pills are Too Toxic  	
 \item DR20: std::format fill character allowances  	
-\item DR20: Improving std::format's width estimation \end{itemize}
+\item DR20: Improving std::format's width estimation 
+\end{itemize}
 
 \section{\CppVers{26}}
 Bereits in der Planungs- und Diskussionsphase.
@@ -12721,7 +12476,7 @@ Die folgenden von Martin Fowler und Kent Beck beschriebenen Smells beziehen sich
 \item	\textbf{Temporäre Felder},\newline
     Ein Objekt verwendet eine Variable nur unter bestimmten Umständen - der Code ist schwer zu verstehen und zu debuggen, weil das Feld scheinbar nicht verwendet wird.
 \item	\textbf{Nachrichtenketten},\newline
-    Das Gesetz von Demeter wird verletzt.
+    Das Gesetz von Demeter wird verletzt. (Objekte sollen nur mit Objekten in ihrer unmittelbaren Nachbarschaft kommunizieren)
 \item	\textbf{Middle Man (Vermittler)},\newline
     Eine Klasse delegiert alle Methodenaufrufe an eine andere Klasse.
 \item	\textbf{Unangebrachte Intimität},\newline
@@ -12765,7 +12520,7 @@ Sobald eine Funktion virtuell ist, sollte auch der Destruktor virtuell sein.
 
 Wenn eine Klasse einen Destruktor benötigt, sind im allgemeinen auch der
 Copykonstruktor und der Zuweisungsoperator selbst zu schreiben, oder allenfalls
-als privat zu deklarieren.
+als privat zu deklarieren. Siehe auch 'Rule of 3, 5, 0', \autoref{subsect:Ruleof350}
 
 Für jede Klasse je eine eigene Deklarations- (Header-) und Implementationsdatei. (Ausnahme
 Hilfsklassen)
