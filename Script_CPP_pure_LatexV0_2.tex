@@ -1613,6 +1613,7 @@ Neue Syntax:
  \index{Initialisiererlisten}
  Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
  
+ 
  Beispiel:
  \begin{CCode}
  	
@@ -4061,7 +4062,7 @@ Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten seh
 	   // Objekt erzeugen und Smartpointer zuweisen
      std::unique_ptr<Student> q = std::make_unique<Student>("Fritz", 28); 
 	  
-..   // Integer Objekt erzeugen und Smartpointer zuweisen
+     // Integer Objekt erzeugen und Smartpointer zuweisen
      auto p = std::make_unique<int>(42);
 			....
 			
@@ -4123,40 +4124,40 @@ class StudentClass {
 \subsection{Vereinheitlichte Initialisierung (Seit \CppVers{11})}
 \label{subsubsect:VereinheitlichteInitialisierung}
 Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
-passende Konstruktor aufgerufen (falls vorhanden). Auch für POD gelten dieselbem Regeln.
+passende Konstruktor aufgerufen (falls vorhanden). Auch für POD gelten dieselben Regeln.
 
 Beispiel:
 \begin{CCode}
-...
-...class DemoClass {
-...
-......private:
-......int a;
-......float b;	
+
+class DemoClass {
+
+   private:
+   int a;
+   float b;	
 		
-......public:
-......DemoClass(int _a, float _b) : a(_a), b(_b) {};
+   public:
+   DemoClass(int _a, float _b) : a(_a), b(_b) {};
 		
-...};
+};
 	
-...int i = 2;   // i mit 2 initialisieren
-   int k(6);    // k mit 6 initialisieren
-...int p{7};    // p mit 7 initialisieren
-   int q{};     // q mit 0 initialisieren
+int i = 2;   // i mit 2 initialisieren
+int k(6);    // k mit 6 initialisieren
+int p{7};    // p mit 7 initialisieren
+int q{};     // q mit 0 initialisieren
   
-...DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
-...DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
+DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
+DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
 	
-...// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
+// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
 	
-...DemoClass f() {
-......return {2, 2.7f};
-...}
+DemoClass f() {
+   return {2, 2.7f};
+}
 	
-...void f2(DemoClass c) {
-...}
+void f2(DemoClass c) {
+}
 	
-...f2({5, 1.23f});
+f2({5, 1.23f});
 	
 	
 \end{CCode}
@@ -5223,7 +5224,7 @@ Mit \CodeStyle{constexpr} (\CppVers{11}), \CodeStyle{consteval} (\CppVers{20})  
  \section{constexpr (Seit \CppVers{11})}
  \label{subsubsect:constexpr}
  Mit dem Schlüsselwort \CodeIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label, reinterpret-cast<>} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden.). Ansonsten dürfen \CodeStyle{constexpr}-Funktionen wie gewöhnliche Funktionen benutzt werden. Wenn sie anstelle von Konstanten genutzt werden, müssen alle ihre Argumente an dieser Stelle Konstant sein (Literale, Enums, \CodeStyle{constexpr} Funktionen oder Konstanten/Objekte, Adressen von globalen Objekten, Referenzen auf Konstanten)
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften in \CppVers{11} neben der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten. Seit \CppVers{14} sind jedoch fast alle Anweisungen erlaubt, neu darf alles ausser \CodeStyle{try, goto, asm, label, reinterpret-cast<>} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. Ansonsten dürfen \CodeStyle{constexpr}-Funktionen wie gewöhnliche Funktionen benutzt werden. Wenn sie anstelle von Konstanten genutzt werden, müssen alle ihre Argumente an dieser Stelle Konstant sein (Literale, Enums, \CodeStyle{constexpr} Funktionen oder Konstanten/Objekte, Adressen von globalen Objekten, Referenzen auf Konstanten)
  
  
  Beispiel
@@ -6075,8 +6076,7 @@ Bei \OviIndex{verschachtelten Templates} wird \CodeStyle{>>} als schliessendes K
  
 \section{extern Templates (Seit \CppVers{11})}
 \label{subsubsect:externTemplates}
-Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit \CodeStyle{extern} kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
-
+Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit \CodeStyle{extern} kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template mindestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
 
 \begin{CCode}
 	extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
@@ -10505,6 +10505,11 @@ Eine weitere Optimierungsmöglichkeit wäre der Einsatz zweier separater Methoden 
 %\else
 %  is \textbf{great}
 %\fi
+\section{\Cpp}
+Im Jahr 1985 Erste von Bjarne Stroustrup, dem Erfinder von C++ veröffentlichte Version.
+
+\section{\CppVers{98}}
+1998: Erste standardisierte Version von C++.
 
 \section{\CppVers{11}}
 \index{C++11}Im August 2011 wurde ein überarbeiteter \Cpp Standard verabschiedet. Dieser führt viele Neuerungen im Sprachumfang sowie der Standardlibrary ein. Nachfolgend werden einige dieser Neuerungen zusammenfassend aufgeführt.
@@ -10521,103 +10526,18 @@ Siehe \autoref{subsec:RValueRefs}
 \item{constexpr},
 %\label{subsubsect:constexpr}
 Siehe \autoref{subsubsect:constexpr}
-%Mit dem Schlüsselwort \OviIndex{constexpr} können Ausdrücke und Rückgabewerte von Funktionen als
-%Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. constexpr-Funktionen dürfen neben der return-Anweisung keine weiteren Anweisungen mehr enthalten. (Seit \CppVers{14} sind fast alle Anweisungen erlaubt).
-%
-%Beispiel
-%\begin{CCode}
-%
-%constexpr int GetLength() 
-%{
-%   return 15;
-%}
-% 
-%int AnArray[GetLength() + 3]; // Ok, Arraygrösse ist konstant
-%
-%constexpr int MakeDouble(int x) 
-%{
-%   return x * 2;
-%}
-%
-%int AnotherArray[MakeDouble(8) + 3]; // Ok, Arraygrösse ist konstant
-%
-%
-%constexpr double Erdanziehung = 9.81;
-%constexpr double MondAnziehung = Erdanziehung / 6.0;
-%\end{CCode}
-%
-%Entsprechend können auch Konstruktoren als constexpr definiert werden, dies erlaubt das Erzeugen konstanter Objekte. constexpr-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
-%
-%Mit constexpr kann insbesondere auch in Embedded Umgebungen effizienter, maschinenennaher und typsicherer Code erzeugt werden, da Berechnungen soweit möglich bereits vom Compiler vorgenommen werden. Zusammen mit Inline-Methoden eröffnen sich so neue Optimierungsmöglichleiten.
-
 \item{extern Templates},
 %\label{subsubsect:externTemplates}
 Siehe \autoref{subsubsect:externTemplates}
-%Mit dem Schlüsselwort extern kann das Instantiieren eines Templates unterdrückt werden. Damit kann das Template benutzt werden, ohne dass der Compiler im aktuellen Modul dafür Code erzeugt. Bisher wurde in jedem Modul, welches ein Template benutzte, auch der Code dafür erzeugt. Dies hatte viel redundanten Code zur Folge, welcher meist vom Linker wieder entfernt wurde. Mit extern kann das Erzeugen gleich von vornherein unterbunden werden. Selbstverständlich muss das Template minsdestens in einem Modul des Projektes weiterhin instantiiert werden. (Analog zu globalen Variablen und Funktionen)
-%
-%
-%\begin{CCode}
-%extern template class std::vector<DemoClass>; // Template darf in diesem Modul benutzt werden, der Code wird aber woanders erzeugt.
-%\end{CCode}
 
 \item{Initialisiererlisten},
 %\label{subsubsect:Initialisiererlisten}
 Siehe \autoref{subsubsect:Initialisiererlisten}
 %\index{Initialisiererlisten}
-%Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ std::initializer\_list entgegennimmt.
-%
-%Beispiel:
-%\begin{CCode}
-%
-%class DemoClass {
-%   public:
-%   DemoClass(std::initializer_list<int> list);
-%};
-%
-%
-%DemoClass TheObject = {1, 4, 5, 6}; // Calls initializer-list constructor
-%
-%\end{CCode}
-%
-%Das Template std::initializer\_list kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten Initialisiert werden.
 
 \item{Vereinheitlichte Initialisierung},
 %\label{subsubsect:VereinheitlichteInitialisierung}
 Siehe \autoref{subsubsect:VereinheitlichteInitialisierung}
-%Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
-%passende Konstruktor aufgerufen (falls vorhanden).
-%
-%Beispiel:
-%\begin{CCode}
-%
-%class DemoClass {
-%
-%	 private:
-%	 int a;
-%	 float b;	
-%
-%   public:
-%   DemoClass(int _a, float _b) : a(_a), b(_b) {};
-%	 
-%};
-%
-%
-%DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
-%DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
-%
-%// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
-%
-%DemoClass f() {
-%   return {2, 2.7f};
-%}
-%
-%void f2(DemoClass c) {
-%}
-%
-%f2({5, 1.23f});
-%
-%
-%\end{CCode}
 
 \item{Automatische Typerkennung},
 %\label{subsubsect:AutomatischeTyperkennung}
@@ -10743,61 +10663,10 @@ Siehe \autoref{subsubsect:Alternative Funktionsdefinition}
 \item{Vereinfachte Objektkonstruktion},
 %\label{subsubsect:VereinfachteObjektkonstruktion}
 Siehe \autoref{subsubsect:VereinfachteObjektkonstruktion}
-%\index{Vereinfachte Objektkonstruktion}
-%Neu dürfen Konstruktoren andere Konstruktoren der selben Klasse aufrufen, und es können Konstruktoren der Basisklasse übernommen werden. Zudem können \OviIndex{Defaultwerte} für Membervariablen festgelegt werden.
-%
-%\begin{CCode}
-%class Demo  {
-%    int x;
-% 
-%public:
-%    Demo(int _x) : x(_x) {}
-%    Demo() : Demo(42) {}    // Ruft bestehenden Konstruktor auf
-%};
-%
-%
-%class Example : public Demo {
-%
-%    using Demo::Demo; // Konstruktoren von Demo uebernehmen
-%};
-%
-%
-%class Test {
-%public:
-%    Test() {}   // Setzt x auf den Defaultwert 5 (Siehe unten)       
-%    Test(int _x) : x(_x) {} // Setzt x auf den uebergebenen Wert 
-% 
-%private:
-%    int x = 5;  // Jeder Konstuktor setzt diesen Wert auf 5, ausser es sei
-%		            // im Konstruktor etwas anderes definiert
-%		
-%}\end{CCode}
-%
 
 \item{Kontrolliertes Überschreiben von Funktionen},
 %\label{subsubsect:KontrolliertesUeberschreiben}
 Siehe \autoref{subsubsect:KontrolliertesUeberschreiben}
-%Mit den Bezeichnern \index{override}\emph{override} und \index{final}\emph{final} kann das versehentliche überschreiben / nicht-überschreiben von Methoden verhindert werden. Diese beiden Bezeichner sind keine Schlüsselworte, d.h. sie dürften weiterhin als Namen verwendet werden. Sie haben nur innerhalb von Methodendeklarationen eine spezielle Bedeutung. 
-%
-%Methoden mit dem Bezeichner override müssen eine Methode der Basisklasse überschrieben, sonst wird eine Fehlermeldung ausgegeben, Methoden mit dem Bezeichner final dürfen von keiner abgeleiteten Klasse überschrieben werden.
-%
-%\begin{CCode}
-%class Basisklasse {
-%    public:
-%    virtual void ModifizierbareFunktion(float);
-%    virtual void NichtWeiterUeberschreibbareFunktion(float) final;
-%};
-% 
-%class Abgeleitet : Basisklasse {
-%    public:
-%    virtual void ModifizierbareFunktion(int) override; // Fehler, keine passende Methode in 
-%		                                                   // der Basisklasse (int statt float verwendet)
-%    virtual void NichtWeiterUeberschreibbareFunktion(float);// Fehler, darf nicht ueberschrieben werden
-%		
-%};
-%
-%
-%\end{CCode}
 
 \item{Nullpointer},
 %\label{subsubsect:nullptr}
