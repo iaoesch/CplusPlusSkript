@@ -1901,6 +1901,7 @@ Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable
 		
 \end{CCode}
 
+
 \subsection{Structured Bindings (Seit \CppVers{17})}
 \label{subsubsect:StructuredBindings}
 \index{Structured Bindings}
@@ -10542,25 +10543,6 @@ Siehe \autoref{subsubsect:VereinheitlichteInitialisierung}
 \item{Automatische Typerkennung},
 %\label{subsubsect:AutomatischeTyperkennung}
 Siehe \autoref{subsubsect:AutomatischeTyperkennung}
-%\index{Automatische Typerkennung}
-%Mit dem Schlüselwort \OviIndex{auto} wird der benötigte Datentyp einer Variable vom Compiler automatisch bestimmt. Dazu wird anstelle des Datentypen bei der Variablendefinition das Schlüsselwort auto benutzt. Mit dem Schlüsselwort \OviIndex{decltype} kann eine Variable vom Typ des angegeben Ausdrucks definiert werden:
-%\begin{CCode}
-%
-%auto Smart = FunktionMitKompliziertemRueckgabetyp(....);  // Smart erhält automatisch den passenden Typen
-%
-%auto Magic = 5;  // Magic erhält den Typ int
-%
-%
-%decltype(Magic) OtherMagicVariable = 0; // Selber Typ wie Magic
-%
-%for (auto itr = myvec.cbegin(); itr != myvec.cend(); ++itr) {
-%   ...
-%}
-%
-%
-%
-%
-%\end{CCode}
 
 \item{Automatische For-Schlaufe},
 %\label{subsec:AutomaticForLoop}
@@ -11003,7 +10985,7 @@ Sprache (Stand 14.2.2023)
 
 Library (Stand 14.2.2022)
 \begin{itemize}
-\item Stacktrace library 
+\item Stacktrace library Liefert aktuelle Funktionafrufsverschachtelung und weitere Informationen
 \item <stdatomic.h> 
 \item std::is\_scoped\_enum 
 \item basic\_string::contains(), basic\_string\_view::contains() 
