@@ -7266,20 +7266,99 @@ auto b2 = std::format("{:{}f}", pi, -10);      // throws: width is negative
 auto b3 = std::format("{:.{}f}", pi, 5.0);     // throws: precision is not of integral type
 
 auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
-
+\end{CCode}
 
 Seit \CppVers{23} kann die Ausgabe mit \OviIndex{std::print} und std::println weiter vereinfacht werden:
+\begin{CCode}
 std::print("{}is {} or {}!\n", "Pi", 3.14, 3); 
-Ausgabe : Pi is 3.14 or 3
+\end{CCode} 
+Ausgabe : 
+
+\begin{ConsoleOutput}
+Pi is 3.14 or 3
+\end{ConsoleOutput} 
+
+\subsection{Definieren von Formatierungen für eigene Datentypen}
+
+Um eigene Datentype mit \CodeStyle{std::format} ausgeben zu können, muss
+das Template \CodeStyle{std::formatter} \index{formatter} \index{Benutzerdefinierte Formatierungen} für den eigenen Datentypen
+spezialisiert werden. Dazu müssen die Methoden \CodeStyle{parse} als
+constexpr (Muss zur Compilezeit ausführbar sein) 
+und \CodeStyle{format} als const realisiert werden. 
+
+\CodeStyle{parse} muss bei Bedarf
+den Inhalt von \{ \} parsen, und allenfalls daraus gewonnene Informationen
+lokal für die spaetere Ausgabe speichen. 
+
+\CodeStyle{format} muss das erhaltene Argument im gewünschten Format ausgeben,
+und dabei allenfalls auf die von \CodeStyle{parse} gespeicherten Formatinformationen 
+zurückgreifen.
+
+\begin{CCode}
+#include <iostream>
+#include <format>
+
+using namespace std;
+
+enum MyEnum{ Hot, Cold};
+
+template<>                                                         
+struct std::formatter<MyEnum> {
+
+    // We just use the string formatter
+    std::formatter<std::string> formatter;                                 
+
+    constexpr auto parse(std::format_parse_context& context) {
+      // Let the string formatter do our work 
+      return formatter.parse(context);                          
+    }
+
+    auto format(const MyEnum& TheValue, std::format_context& context) const {
+        
+        std::string Result;
+        
+         // Determine which string to output
+        switch(TheValue) {
+
+        case Hot:  Result = "Hot"; break;
+        case Cold: Result = "Cold"; break;
+        default:   Result = "<unknown>";  break;
+        }
+
+        // And use the string formater to do the output
+        return formatter.format(Result, context);  // (4)
+    }
+
+};
+
+
+int main()
+{
+    MyEnum e1 = Hot;
+    MyEnum e2 = (MyEnum)5;
+    cout << std::format("{}  {}  {}\n", e1, Cold, e2);
+    // Since we let the string formater do our work
+    // all string formats ar working...
+    cout << std::format("{:*^10}\n", Cold);
+
+    return 0;
+}
 
 \end{CCode} 
+Ausgabe : 
+
+\begin{ConsoleOutput}
+Hot  Cold  <unknown>
+***Cold***
+\end{ConsoleOutput} 
+
+
 
 \subsection{Kombinierte Ein- und Ausgabe in \Cpp}
 Die Klasse iostream kombiniert die Möglichkeiten eines istream mit der eines ostreams, Sie dient als Abstraktion für alle konkret möglichen Ein/Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istream und ostream unterstützt.
 
-
-
 \subsection{Datei Ein- und Ausgabe in \Cpp}
+
 
 Die Datei Ein- und Ausgabe läuft in  \Cpp über die Klassen ifstreeam, ofstream und fstream (Bidirektional).
 Alle Streamklassen bieten folgende zusätzliche Methoden an:
