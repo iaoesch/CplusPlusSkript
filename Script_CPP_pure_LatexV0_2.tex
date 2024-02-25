@@ -11661,6 +11661,242 @@ int main(int argc, char*argv[])
 }
 \end{CCode}
 
+\section{selbstdfinierte Formatter}
+\begin{CCode}
+#include <iostream>
+
+#include <map>
+#include <string>
+
+
+#include <format>
+
+using namespace std;
+
+
+#include <iostream>
+#include <format>
+
+using namespace std;
+
+enum MyEnum{ Hot, Cold};
+
+
+template<>
+struct std::formatter<MyEnum> {
+
+    // We just use the string formatter
+    std::formatter<std::string> formatter;
+
+    constexpr auto parse(std::format_parse_context& context) {
+        // Let the string formatter do our work
+        return formatter.parse(context);
+    }
+
+    auto format(const MyEnum& TheValue, std::format_context& context) const {
+
+        std::string Result;
+
+        // Determine which string to output
+        switch(TheValue) {
+
+        case Hot:  Result = "Hot"; break;
+        case Cold: Result = "Cold"; break;
+        default:   Result = "<unknown>";  break;
+        }
+
+        // And use the string formater to do the output
+        return formatter.format(Result, context);  // (4)
+    }
+
+};
+
+
+class MyComplex {
+   // friend auto std::formatter<MyComplex>::format(const MyEnum& TheValue, std::format_context& context) const;
+public:
+    double real, imag;
+    MyComplex(double i, double r) : real(r), imag(i) {}
+};
+
+
+// helper type for the visitor #4
+template<class... Ts>
+struct overloaded : Ts... { using Ts::operator()...; };
+// explicit deduction guide (not needed as of C++20)
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+
+template<>
+struct std::formatter<MyComplex> {
+
+    // We just use the string formatter for the whole thing
+    std::formatter<std::string> formatter;
+
+    // And additional infos for both number parts
+    std::string value_format;
+    std::optional<int> ArgumentIndexWidth;
+    std::optional<int> ArgumentIndexPrecision;
+
+    constexpr auto parse(std::format_parse_context& context) {
+        {
+            bool Nested = false;
+            char LastChar = ' ';
+            value_format = "{:";
+            enum ParseNested {OutsideBracket, InsideBracket} ParseNested = OutsideBracket;
+            int Index = -1;
+            bool ParsingPrecision = false;
+
+            for (auto it= begin(context); it != end(context); ++it) {
+                char c= *it;
+                if (c == ':') {
+                    Nested = true;
+                    value_format+= '}';
+                    context.advance_to(it+1);
+                    LastChar = c;
+                    break;
+                }
+                else
+                {
+                    switch (ParseNested) {
+
+                       case OutsideBracket:
+                         if (c=='{') {
+                            ParseNested = InsideBracket;
+                            Index = -1;
+                            if (LastChar == '.') {
+                                ParsingPrecision = true;
+                            }
+                         }
+                         value_format += c;
+                         break;
+
+                       case InsideBracket:
+                           if (c=='}') {
+                               ParseNested = OutsideBracket;
+                               value_format += c;
+                               if (Index < 0) {
+                                   Index = context.next_arg_id();
+                               } else {
+                                   context.check_arg_id(Index);
+                               }
+                               if (ParsingPrecision) {
+                                   ArgumentIndexPrecision = Index;
+
+                               } else {
+                                   ArgumentIndexWidth = Index;
+                               }
+
+                           } else if ((c >= '0') && (c <= '9')) {
+                               Index = c - '0';
+                           } else {
+                               // ToDo: Throw whatever required
+                               value_format += c;
+                           }
+                       break;
+                    }
+                }
+                LastChar = c;
+            }
+            if (Nested == false) {
+                value_format = "{}";
+            }
+        }
+        return formatter.parse(context);
+    }
+
+    auto format(const MyComplex& TheValue, std::format_context& context) const {
+
+        int NumberOfAdditionalArgs = 0;
+        std::string temp;
+        std::size_t FirstArg = 0;
+        std::size_t SecondArg = 0;
+        if (ArgumentIndexPrecision) {
+            NumberOfAdditionalArgs = 1;
+            auto Arg = context.arg(*ArgumentIndexPrecision);
+            FirstArg = std::visit_format_arg(overloaded{
+                                                 [](auto arg) -> size_t { return 14;},
+                                                        [](size_t arg) -> size_t { return arg;},
+                                                        [](int arg) -> size_t { return arg;},
+
+                                                        [](std::monostate arg) -> size_t { return 9;},
+            }, Arg);
+            //FirstArg = std::get<int>(Arg);
+
+        }
+
+        if (ArgumentIndexWidth) {
+            NumberOfAdditionalArgs++;
+            SecondArg = FirstArg;
+            std::cout << *ArgumentIndexWidth;
+            auto Arg = context.arg(*ArgumentIndexWidth);
+            FirstArg = std::visit_format_arg(overloaded{
+                [](auto arg) -> size_t { return 14;},
+                [](size_t arg) -> size_t { return arg;},
+                [](int arg) -> size_t { return arg;},
+
+                [](std::monostate arg) -> size_t { return 9;},
+            }, Arg);
+            //FirstArg = std::get<int>(Arg);
+        }
+        const std::string formatString = "(" + value_format + "+j" + value_format +")";
+        decltype(std::basic_format_args(make_format_args(TheValue.real, TheValue.imag))) args;
+        switch(NumberOfAdditionalArgs) {
+        case 0: args = std::basic_format_args(make_format_args(TheValue.real, TheValue.imag)); break;
+        case 1: args = std::basic_format_args(make_format_args(TheValue.real, FirstArg, TheValue.imag, FirstArg)); break;
+        case 2: args = std::basic_format_args(make_format_args(TheValue.real, FirstArg, SecondArg, TheValue.imag, FirstArg, SecondArg)); break;
+
+        }
+
+        //auto args = std::basic_format_args(make_format_args(TheValue.real, TheValue.imag));
+        std::vformat_to(std::back_inserter(temp), formatString, args);
+        return formatter.format(temp, context);
+    }
+};
+
+
+int main()
+{
+    MyEnum e1 = Hot;
+    MyEnum e2 = (MyEnum)5;
+    cout << std::format("{}  {}  {}\n", e1, Cold, e2);
+    // Since we let the string formater do our work
+    // all string formats ar working...
+    cout << std::format("{:*^10}\n", Cold);
+
+    MyComplex c1(3.1, 4.1);
+    cout << std::format("<{}>\n", c1);
+    cout << std::format("<{:4.2f:*^20}>\n", c1);
+    cout << std::format("<{:#<6.2f:*^20}>\n", c1);
+    cout << std::format("<{:#<{}.{}f:*^{}}>\n", c1, 6, 2, 40);
+
+    return 0;
+}
+
+/* Ausgabe:
+Hot  Cold  <unknown>
+***Cold***
+<(4.1+j3.1)>
+<****(4.10+j3.10)****>
+<**(4.10##+j3.10##)**>
+*/
+
+
+
+\end{CCode}
+
+
+\begin{ConsoleOutput}
+Hot  Cold  <unknown>
+***Cold***
+<(4.1+j3.1)>
+<****(4.10+j3.10)****>
+<**(4.10##+j3.10##)**>
+1<************(4.10##+j3.10##)************>
+\end{ConsoleOutput} 
+
+
 \NextPagePlease 
  
 \section{Zusammenarbeit von C und \Cpp}
