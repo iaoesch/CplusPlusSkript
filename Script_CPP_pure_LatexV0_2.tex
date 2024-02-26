@@ -11882,6 +11882,422 @@ Hot  Cold  <unknown>
 <**(4.10##+j3.10##)**>
 */
 
+#include <cmath>
+#include <iostream>
+
+#include <map>
+#include <string>
+
+
+#include <format>
+
+using namespace std;
+
+/* needs:
+export CPLUS_INCLUDE_PATH=/usr/local/Cellar/gcc/13.2.0/include/c++/13:/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/include
+export LIBRARY_PATH=$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk/usr/lib
+g++-13 --std=c++20 main.cpp
+*/
+
+#include <iostream>
+#include <format>
+
+using namespace std;
+
+enum MyEnum{ Hot, Cold};
+
+
+template<>
+struct std::formatter<MyEnum> {
+
+    // We just use the string formatter
+    std::formatter<std::string> formatter;
+
+    constexpr auto parse(std::format_parse_context& context) {
+        // Let the string formatter do our work
+        return formatter.parse(context);
+    }
+
+    auto format(const MyEnum& TheValue, std::format_context& context) const {
+
+        std::string Result;
+
+        // Determine which string to output
+        switch(TheValue) {
+
+        case Hot:  Result = "Hot"; break;
+        case Cold: Result = "Cold"; break;
+        default:   Result = "<unknown>";  break;
+        }
+
+        // And use the string formater to do the output
+        return formatter.format(Result, context);  // (4)
+    }
+
+};
+
+
+class MyComplex {
+   // friend auto std::formatter<MyComplex>::format(const MyEnum& TheValue, std::format_context& context) const;
+public:
+    double real, imag;
+    MyComplex(double i, double r) : real(r), imag(i) {}
+};
+
+#if 0
+struct std::formatter<Color> : std::formatter<string_view> {
+    auto format(const Color& col, std::format_context& ctx) const {
+        std::string temp;
+        std::format_to(std::back_inserter(temp), "({}, {}, {})",
+                       col.r, col.g, col.b);
+        return std::formatter<string_view>::format(temp, ctx);
+    }
+#endif
+
+#if 0
+template<>
+struct std::formatter<MyComplex> {
+
+    // We just use the string formatter
+    std::formatter<std::string> formatter;
+    std::string value_format;
+  //  std::formatter<double> Numberformatter;
+
+    // nested: {:{:5}}  {:{5:5}} {:{:{5}}} {:{:{}}}
+    //           ^^       ^^^      ^^        ^^
+    // unnesteed:  {} {:5} {5:6} {:{}} {:{3}}
+
+    constexpr auto parse(std::format_parse_context& context) {
+        {
+            bool Nested = false;
+            value_format = "{:";
+            for (auto it= begin(context); it != end(context); ++it) {
+                char c= *it;
+                if (c == '|') {
+                    Nested = true;
+                    value_format+= '}';
+                    context.advance_to(it+1);
+                    break;
+                }
+                else
+                {
+                    value_format+= c;
+                }
+
+            }
+            if (Nested == false) {
+                value_format = "{}";
+            }
+        }
+        // ...
+       // bool        curly{false};
+
+        // Let the string formatter do our work
+        // cheeck for a possible nested format
+   //     if ((context.begin()[0] == '{')
+   //         &&((context.begin()[1] == ':')
+   //             || context.begin()[2] == ':')) {
+   //         context.advance_to(context.begin()+1);
+   //         Numberformatter.parse(context);
+  //          context.advance_to(context.begin()+1);
+    //    }
+
+        return formatter.parse(context);
+    }
+
+    auto format(const MyComplex& TheValue, std::format_context& context) const {
+
+        std::string temp;
+        const std::string formatString = "(" + value_format + "+j" + value_format +")";
+        std::vformat_to(std::back_inserter(temp), formatString,
+                        std::basic_format_args(make_format_args(TheValue.real, TheValue.imag)));
+        return formatter.format(temp, context);
+#if 0
+        auto&& out= context.out();
+        format_to(out, curly ? "{{" : "[");
+        if (v.size() > 0)
+            format_to(out, value_format, v[0]);
+        for (int i= 1; i < v.size(); ++i)
+            format_to(out, ", " + value_format, v[i]);
+        return format_to(out, curly ? "}}" : "]");
+    }auto&& out= ctx.out();
+    format_to(out, curly ? "{{" : "[");
+    if (v.size() > 0)
+        format_to(out, value_format, v[0]);
+    for (int i= 1; i < v.size(); ++i)
+        format_to(out, ", " + value_format, v[i]);
+    return format_to(out, curly ? "}}" : "]");
+}
+        std::string Result = std::format_to();
+        // Determine which string to output
+        switch(TheValue) {
+
+        case Hot:  Result = "Hot"; break;
+        case Cold: Result = "Cold"; break;
+        default:   Result = "<unknown>";  break;
+        }
+#endif
+        // And use the string formater to do the output
+      //  return formatter.format(Result, context);  // (4)
+    }
+
+};
+#endif
+#if 0
+struct std::formatter<Color> : std::formatter<string_view> {
+    auto format(const Color& col, std::format_context& ctx) const {
+        std::string temp;
+        std::format_to(std::back_inserter(temp), "({}, {}, {})",
+                       col.r, col.g, col.b);
+        return std::formatter<string_view>::format(temp, ctx);
+    }
+#endif
+
+// helper type for the visitor #4
+template<class... Ts>
+struct overloaded : Ts... { using Ts::operator()...; };
+// explicit deduction guide (not needed as of C++20)
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+
+template<>
+struct std::formatter<MyComplex> {
+
+    // We just use the string formatter for the whole thing
+    std::formatter<std::string> formatter;
+
+    // And additional infos for both number parts
+    std::string value_format;
+    std::optional<int> ArgumentIndexWidth;
+    std::optional<int> ArgumentIndexPrecision;
+    bool PolarOutput = false;
+    bool DegreeOutput = false;
+    bool EulerOutput = false;
+
+    constexpr auto parse(std::format_parse_context& context) {
+        {
+            bool Nested = false;
+            char LastChar = ' ';
+            value_format = "{:";
+            enum ParseNested {OutsideBracket, InsideBracket} ParseNested = OutsideBracket;
+            int Index = -1;
+            bool ParsingPrecision = false;
+
+            for (auto it= begin(context); it != end(context); ++it) {
+                char c= *it;
+                if (c == ':') {
+                    Nested = true;
+                    value_format+= '}';
+                    context.advance_to(it+1);
+                    // Stop parsing, rest is for string formatter
+                    break;
+                }
+                else
+                {
+                    switch (ParseNested) {
+
+                       case OutsideBracket:
+                         if (c=='{') {
+                            ParseNested = InsideBracket;
+                            Index = -1;
+                            if (LastChar == '.') {
+                                ParsingPrecision = true;
+                            }
+                         } else if (c=='#') {
+                             if ((it+1!=end(context)) && (it[1] != '<') && (it[1] != '^') && (it[1] != '>')) {
+                                PolarOutput = true;
+                                break;
+                             }
+                         } else if (c=='d') {
+                             DegreeOutput = true;
+                             break;
+                         } else if (c=='x') {
+                             EulerOutput = true;
+                             break;
+                         }
+                         value_format += c;
+                         break;
+
+                       case InsideBracket:
+                           if (c=='}') {
+                               ParseNested = OutsideBracket;
+                               value_format += c;
+                               if (Index < 0) {
+                                   Index = context.next_arg_id();
+                               } else {
+                                   context.check_arg_id(Index);
+                               }
+                               if (ParsingPrecision) {
+                                   ArgumentIndexPrecision = Index;
+
+                               } else {
+                                   ArgumentIndexWidth = Index;
+                               }
+
+                           } else if ((c >= '0') && (c <= '9')) {
+                               Index = c - '0';
+                           } else {
+                               // ToDo: Throw whatever required
+                               throw std::format_error("Invalid format args for QuotableString.");
+                               value_format += c;
+                           }
+                       break;
+                    }
+                }
+                LastChar = c;
+            }
+            if (Nested == false) {
+                value_format = "{}";
+            }
+        }
+        return formatter.parse(context);
+    }
+
+    auto format(const MyComplex& TheValue, std::format_context& context) const {
+
+        int NumberOfAdditionalArgs = 0;
+        std::string temp;
+        std::size_t FirstArg = 0;
+        std::size_t SecondArg = 0;
+        if (ArgumentIndexPrecision) {
+            NumberOfAdditionalArgs = 1;
+            auto Arg = context.arg(*ArgumentIndexPrecision);
+            FirstArg = std::visit_format_arg(overloaded{
+                                                 [](auto arg) -> size_t { throw format_error("Precision or width must be positive integer");},
+                                                        [](size_t arg) -> size_t { return arg;},
+                                                        [](int arg) -> size_t { return arg;},
+
+                                                     //   [](std::monostate arg) -> size_t { return 9;},
+            }, Arg);
+            //FirstArg = std::get<int>(Arg);
+
+        }
+//UTF-16-Kodierung:	0x2221 Winkelsymbol
+        if (ArgumentIndexWidth) {
+            NumberOfAdditionalArgs++;
+            SecondArg = FirstArg;
+            std::cout << *ArgumentIndexWidth;
+            auto Arg = context.arg(*ArgumentIndexWidth);
+            FirstArg = std::visit_format_arg(overloaded{
+                [](auto arg) -> size_t { throw format_error("Precision or width must be positive integer");},
+                [](size_t arg) -> size_t { return arg;},
+                [](int arg) -> size_t { return arg;},
+
+          //      [](std::monostate arg) -> size_t { return 9;},
+            }, Arg);
+            //FirstArg = std::get<int>(Arg);
+        }
+        std::string formatString;
+        auto Real = TheValue.real;
+        auto Imag = TheValue.imag;
+        if (PolarOutput) {
+            decltype(Real) Value = std::sqrt(Real*Real + Imag * Imag);
+            decltype(Real) Argument = (Real == 0.0 && Imag == 0.0)?0.0:std::atan2(Real, Imag);
+            if (EulerOutput) {
+                formatString = "(" + value_format + "e^j" + value_format +")";
+            } else if (DegreeOutput) {
+                Argument = 180.0/numbers::pi*Argument;
+                formatString = "(" + value_format + "\u2221" + value_format +"°)";
+            } else {
+                formatString = "(" + value_format + "\u2221" + value_format +")";
+            }
+            Real = Value;
+            Imag = Argument;
+        } else {
+            if (Imag < 0) {
+                Imag = -Imag;
+                formatString = "(" + value_format + " - j" + value_format +")";
+            } else {
+                formatString = "(" + value_format + " + j" + value_format +")";
+            }
+        }
+        decltype(std::basic_format_args(make_format_args(Real, Imag))) args;
+        switch(NumberOfAdditionalArgs) {
+        case 0: args = std::basic_format_args(make_format_args(Real, Imag)); break;
+        case 1: args = std::basic_format_args(make_format_args(Real, FirstArg, Imag, FirstArg)); break;
+        case 2: args = std::basic_format_args(make_format_args(Real, FirstArg, SecondArg, Imag, FirstArg, SecondArg)); break;
+
+        }
+
+        //auto args = std::basic_format_args(make_format_args(TheValue.real, TheValue.imag));
+        std::vformat_to(std::back_inserter(temp), formatString, args);
+        return formatter.format(temp, context);
+    }
+};
+
+
+int main()
+{
+    MyEnum e1 = Hot;
+    MyEnum e2 = (MyEnum)5;
+    cout << std::format("{}  {}  {}\n", e1, Cold, e2);
+    // Since we let the string formater do our work
+    // all string formats ar working...
+    cout << std::format("{:*^10}\n", Cold);
+
+    MyComplex c1(3.1, 4.1);
+    cout << std::format("<{}>\n", c1);
+    cout << std::format("<{:4.2f:*^20}>\n", c1);
+    cout << std::format("<{:#<6.2f:*^20}>\n", c1);
+    cout << std::format("<{:#<{}.{}f:*^{}}>\n", c1, 6, 2, 40);
+    cout << std::format("<{2:#<{1}.{3}f:*^{0}}>\n", 45, 10, c1, 3);
+    cout << std::format("<{:#<6.2#f:*^20}>\n", c1);
+    cout << std::format("<{:#<{}.{}#f:*^{}}>\n", c1, 6, 2, 40);
+    cout << std::format("<{2:#<{1}.{3}#f:*^{0}}>\n", 45, 10, c1, 3);
+    cout << std::format("<{:#<6.2#xf:*^20}>\n", c1);
+    cout << std::format("<{:#<{}.{}#xf:*^{}}>\n", c1, 6, 2, 40);
+    cout << std::format("<{2:#<{1}.{3}#xf:*^{0}}>\n", 45, 10, c1, 3);
+    cout << std::format("<{:#<6.2#df:*^20}>\n", c1);
+    cout << std::format("<{:#<{}.{}#df:*^{}}>\n", c1, 6, 2, 40);
+    cout << std::format("<{2:#<{1}.{3}#df:*^{0}}>\n", 45, 10, c1, 3);
+
+    return 0;
+}
+
+/* Ausgabe:
+Hot  Cold  <unknown>
+***Cold***
+<(4.1+j3.1)>
+<****(4.10+j3.10)****>
+<**(4.10##+j3.10##)**>
+*/
+
+
+#if 0
+
+int main()
+{
+    std::map<std::string, float> Grades;
+
+    cout << format("{}", 4);
+
+    std::string Name;
+    float Note;
+
+    do {
+    cout << "Name und Notee durch leerzeichengetrennt eingeben:" << std::endl;
+    std::cin >> Name >> Note;
+
+   // auto i = F();
+
+    Grades[Name] = Note;
+
+    } while(Name != "end");
+
+    Grades.erase("end");
+
+    std::cout << "Alle eintraege:" << std::endl;
+
+    //std::for_each(Grades, [](auto &e){cout << e.second})
+
+    for (auto Entry: Grades) {
+        std::cout << Entry.first << "boekommt eine " << Entry.second << std::endl;
+    }
+
+    return 0;
+}
+#endif
 
 
 \end{CCode}
