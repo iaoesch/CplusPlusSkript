@@ -6188,28 +6188,23 @@ noch \textquotesingle perfektes Forwarding\textquotesingle {} mit \CodeStyle{std
 	
 \end{CCode}
 
+Ein weiters Beispiel
 
+\begin{CCode}
 
-
+// Create some callable objects 
 class Demo {
     int z;
 public:
     Demo(int _z) : z(_z) {}
 
-    int operator() (int w);
-    int operator() (int w, float f, char c);
+    int operator() (int w) {return w * z;}
+    int operator() (int w, float f, char c) {
+        return w * z * f * c;
+    }
 
 };
 
-
-int Demo::operator()(int w)
-{
-    return w * z;
-}
-int Demo::operator()(int w, float f, char c)
-{
-    return w * z * f * c;
-}
 
 int worker(int y)
 {
@@ -6221,12 +6216,15 @@ int hardworker(int y, int i)
     return y+2+i;
 }
 
+// Will accept any callable object with one parameter
 template <class T>
 int f(T t, int i)
 {
     return t(i);
 }
 
+// Will accept any callable object and pass
+// all additional parameters on
 template <class T, class... Args>
 int v(T t, Args ...p)
 {
@@ -6234,61 +6232,11 @@ int v(T t, Args ...p)
 }
 
 
-class Fibonacci {
-    int Last;
-    int Current;
-    int Limit;
-
-public:
-    constexpr Fibonacci(int F0, int F1, int Limit) :
-        Last(F1 - F0),
-        Current(F0),
-        Limit(Limit)
-    {}
-
-    constexpr int GetCurrentValue() const{
-        return Current;
-    }
-
-    constexpr void NextValue() {
-        int New = Last + Current;
-       // if (New <= Limit) {
-           Last = Current;
-           Current = New;
-       // }
-    }
-
-    bool IsExhausted() const {
-        return (Current > Limit);
-    }
-
-    class Iterator {
-        Fibonacci &MySource;
-
-    public:
-        explicit Iterator(Fibonacci &MySource) : MySource(MySource) {}
-        int operator *() const {return MySource.GetCurrentValue();}
-        void operator ++() {MySource.NextValue();}
-        bool operator ==(const Iterator &Other) const {return Other.MySource.IsExhausted();}
-    };
-
-    Iterator begin()  {return Iterator(*this);}
-    Iterator end()  {return Iterator(*this);}
-
-};
-
-constexpr int nthFibonacci(int n, Fibonacci F)
-{
-    for (int i = 0; i < n; i++) {
-        F.NextValue();
-    }
-    return F.GetCurrentValue();
-}
-
 #include <iostream>
 
 int main()
 {
+    // A callable object
     Demo d(3);
 
     int z = f(d, 7);
@@ -6297,24 +6245,13 @@ int main()
 
     z = f(worker, 6);
 
-    //z = f(hardworker, 6, 7);
+    //z = f(hardworker, 6, 7); // wont work, too many args
 
+    // V accept any number of arguments
     z = v(hardworker, 6, 7);
     z = v(worker, 6);
     z = v(d, 6, 7.0f, '6');
 
-    Test();
-
-    auto what = [dummy = 0]()mutable->int{return dummy++;};
-
-    Fibonacci Fib(0,1,200);
-    for(auto f: Fib) {
-        std::cout << f << ", ";
-    }
-    std::cout << std::endl;
-
-    constexpr int c = nthFibonacci(6, Fibonacci(0,1,200));
-    std::cout << "6th fibonacci is: " << c << std::endl;
 }
 \end{CCode}
 
