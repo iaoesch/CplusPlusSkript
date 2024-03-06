@@ -2226,6 +2226,66 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 
 Dies funktioniert für Arrays und alle Objekte, welche die Methoden \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
 
+\begin{CCode}
+class Fibonacci {
+    int Last;
+    int Current;
+    int Limit;
+
+public:
+    Fibonacci(int F0, int F1, int Limit) :
+        Last(F1 - F0),
+        Current(F0),
+        Limit(Limit)
+    {}
+
+    int GetCurrentValue() const{
+        return Current;
+    }
+
+    void NextValue() {
+        int New = Last + Current;
+        Last = Current;
+        Current = New;
+    }
+
+    bool IsExhausted() const {
+        return (Current > Limit);
+    }
+
+    class Iterator {
+        Fibonacci &MySource;
+
+    public:
+        explicit Iterator(Fibonacci &MySource) : MySource(MySource) {}
+        
+        int operator *() const {return MySource.GetCurrentValue();}
+        void operator ++() {MySource.NextValue();}
+        bool operator ==(const Iterator &Other) const {return Other.MySource.IsExhausted();}
+    };
+
+    Iterator begin()  {return Iterator(*this);}
+    Iterator end()  {return Iterator(*this);}
+};
+
+
+#include <iostream>
+
+int main()
+{
+    Fibonacci Fib(0,1,200);
+    for(auto f: Fib) {
+        std::cout << f << ", ";
+    }
+}	
+\end{CCode}
+
+Output:
+
+\begin{ConsoleOutput}
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144,
+\end{ConsoleOutput} 
+
 
 \section{switch()}
 Auswahlanweisung, der Programmfluss wird bei demjenigen \CodeStyle{case} - Statement weitergeführt, welches mit dem Wert der \CodeStyle{switch}-Anweisung übereinstimmt. Es können nur Konstanten bei den \CodeStyle{case} Zweigen stehen, es können keine Bereiche (wie 3-7) angegeben werden. Das Programm verlässt die Switch-struktur, sobald es auf ein \CodeStyle{break} oder das Ende der Struktur trifft. Wenn nach einem \CodeStyle{case} Statement kein \CodeStyle{break} steht, fährt das Programm mit den Anweisungen des nächsten \CodeStyle{case} weiter. (Dies sollte jedoch vermieden werden, wenn dieses Verhalten erwünscht ist, kann dies seit \CppVers{17} mit dem Attribut  \CodeIndex{[[fallthrough]]} als bewusste Entscheidung markiert werden, und entsprechende Compilerwarnungen werden unterdrückt). Falls kein \CodeStyle{case} zutrifft, wird beim \CodeStyle{default}-Statement weitergefahren, falls vorhanden. Der Defaultfall kann weggelassen werden.
@@ -5251,6 +5311,63 @@ Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an
  \end{CCode}
  
 Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
+
+Ein etwas kompleexeres Beispiel für \CodeStyle{constexpr}:
+Es soll die nte Fibonaccizahl in einer Konstanten abgespeichert werden, dazu wird eine Klasse verwendet, welche die Fibonaccizahlen der Reihe nach generiert. Beachten: Der Konstruktor und alle anderen verwendeten Methoden müssen zwingend \CodeStyle{constexpr} (oder \CodeStyle{consteval}) sein, sonst ist die Ausführung zur Compilezeit nicht möglich.
+
+\begin{CCode}
+class Fibonacci {
+    int Last;
+    int Current;
+    int Limit;
+
+public:
+    constexpr Fibonacci(int F0, int F1, int Limit) :
+        Last(F1 - F0),
+        Current(F0),
+        Limit(Limit)
+    {}
+
+    constexpr int GetCurrentValue() const{
+        return Current;
+    }
+
+    constexpr void NextValue() {
+        int New = Last + Current;
+        Last = Current;
+        Current = New;
+       
+    }
+
+    bool IsExhausted() const {
+        return (Current > Limit);
+    }
+};
+
+constexpr int nthFibonacci(int n, Fibonacci F)
+{
+    for (int i = 0; i < n; i++) {
+        F.NextValue();
+    }
+    return F.GetCurrentValue();
+}
+
+#include <iostream>
+
+int main()
+{
+    // Wird zur Compilezeit ausgewertet
+    constexpr int c = nthFibonacci(6, Fibonacci(0,1,200));
+    std::cout << "6th fibonacci is: " << c << std::endl;
+}
+ \end{CCode}
+ 
+Ausgabe des Programms:
+ 
+\begin{ConsoleOutput}
+ 6th fibonacci is: 8
+\end{ConsoleOutput} 
+
  
  \section{consteval (Seit \CppVers{20})}
  \label{subsubsect:consteval}
@@ -6070,6 +6187,137 @@ noch \textquotesingle perfektes Forwarding\textquotesingle {} mit \CodeStyle{std
 	}
 	
 \end{CCode}
+
+
+
+
+class Demo {
+    int z;
+public:
+    Demo(int _z) : z(_z) {}
+
+    int operator() (int w);
+    int operator() (int w, float f, char c);
+
+};
+
+
+int Demo::operator()(int w)
+{
+    return w * z;
+}
+int Demo::operator()(int w, float f, char c)
+{
+    return w * z * f * c;
+}
+
+int worker(int y)
+{
+    return y+2;
+}
+
+int hardworker(int y, int i)
+{
+    return y+2+i;
+}
+
+template <class T>
+int f(T t, int i)
+{
+    return t(i);
+}
+
+template <class T, class... Args>
+int v(T t, Args ...p)
+{
+    return t(p...);
+}
+
+
+class Fibonacci {
+    int Last;
+    int Current;
+    int Limit;
+
+public:
+    constexpr Fibonacci(int F0, int F1, int Limit) :
+        Last(F1 - F0),
+        Current(F0),
+        Limit(Limit)
+    {}
+
+    constexpr int GetCurrentValue() const{
+        return Current;
+    }
+
+    constexpr void NextValue() {
+        int New = Last + Current;
+       // if (New <= Limit) {
+           Last = Current;
+           Current = New;
+       // }
+    }
+
+    bool IsExhausted() const {
+        return (Current > Limit);
+    }
+
+    class Iterator {
+        Fibonacci &MySource;
+
+    public:
+        explicit Iterator(Fibonacci &MySource) : MySource(MySource) {}
+        int operator *() const {return MySource.GetCurrentValue();}
+        void operator ++() {MySource.NextValue();}
+        bool operator ==(const Iterator &Other) const {return Other.MySource.IsExhausted();}
+    };
+
+    Iterator begin()  {return Iterator(*this);}
+    Iterator end()  {return Iterator(*this);}
+
+};
+
+constexpr int nthFibonacci(int n, Fibonacci F)
+{
+    for (int i = 0; i < n; i++) {
+        F.NextValue();
+    }
+    return F.GetCurrentValue();
+}
+
+#include <iostream>
+
+int main()
+{
+    Demo d(3);
+
+    int z = f(d, 7);
+
+    z = f(Demo(5), 2);
+
+    z = f(worker, 6);
+
+    //z = f(hardworker, 6, 7);
+
+    z = v(hardworker, 6, 7);
+    z = v(worker, 6);
+    z = v(d, 6, 7.0f, '6');
+
+    Test();
+
+    auto what = [dummy = 0]()mutable->int{return dummy++;};
+
+    Fibonacci Fib(0,1,200);
+    for(auto f: Fib) {
+        std::cout << f << ", ";
+    }
+    std::cout << std::endl;
+
+    constexpr int c = nthFibonacci(6, Fibonacci(0,1,200));
+    std::cout << "6th fibonacci is: " << c << std::endl;
+}
+\end{CCode}
+
 
 \section{Template-Verschachtelung $>>$ (Seit \CppVers{11})}
 \label{subsubsect:TemplateVerschatelung}
