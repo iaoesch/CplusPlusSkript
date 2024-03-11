@@ -5689,6 +5689,33 @@ Complex c(x, y);
 
 \end{CCode}
 
+\subsection{Deduction Guides (Seit \CppVers{17})}
+\oviindex{deduction guide} (Herleitungsleitfaden)
+
+Syntax: Finktionsdeklaration in trailing reeturn type syntax:
+Finktionsdeklaration gefolgt von -> und gewuenschtem Typ
+
+f(int x, int y) -> f<double>;
+
+Wobei f ein template name sein muss.
+tbd
+\begin{CCode}
+template<typename T>
+struct Thingy
+{
+  T t;
+};
+
+Thingy(const char *) -> Thingy<std::string>;
+
+Thingy thing{"A String"}; //thing.t is a `std::string`.
+
+
+template<class Iter>
+container(Iter b, Iter e) -> container<typename std::iterator_traits<Iter>::value_type>;
+
+
+\end{CCode}
 
 
 \subsection{Default Templateparameter}
@@ -5959,6 +5986,9 @@ template <int X, int Y>   struct GGT {
 template <int X> struct GGT<X, 0> {
         static const long result = X;
 };
+
+int t = GGT<124, 72>::result;
+
 \end{CCode}
 
 \subsection{Templateklassen und Vererbung}
@@ -6414,6 +6444,9 @@ String gelesen, oder in einen String geschrieben wird:
     
 
 \end{CCode}
+\subsection{Allokatoren}
+Strings können wie alle Container können mit \OviIndex{Allokatoren} parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
+
 
 \section{Resourcenverwaltung mit Unique Pointer und Shared Pointer}  \label{sec:StdSmartpointer}
 Korrektes Resourcenmanagement ist in \Cpp essenziell, erfordert jedoch vom Programmierer sorgfältiges und diszipliniertes Arbeiten und klare Schnittstellendefinitionen. Besonders im Zusammenhang mit der Weitergabe von Pointer an andere Objekte/Methoden ist nicht immer klar, wer jetzt für das Freigeben der Resource zuständig ist.
@@ -8262,6 +8295,7 @@ In \Cpp gibt es bereits vordefinierte Klassen, die eine Menge von Objekten verwa
 Mit Hilfe von Iteratoren kann ein Container abgearbeitet werden, d.h. man kann von Objekt zu Objekt durch den Container  iterieren. 
 %Ein Beispiel für die Programmierung mit einem Iterator finden Sie in Kapitel 7.3.
 
+
 %7.1.1 Sequenteille Container
 Bei \OviIndex{sequentiellen Containern} sind die Elemente aufeinanderfolgend abgelegt, dazu gehören unter anderem  Array, Vector, deque, forward\_list und list.
 
@@ -8273,6 +8307,10 @@ Bei \OviIndex{ungeordneten assoziativen Containern} sind die Elemente über Schlü
 
 %7.1.4 Container Adapter
 Mit den \OviIndex{Container Adapter} \index{Adapter} können Container mit einer spezifischen Schnittstelle versehen werden. Der  Container muss dabei jeweils adapterspezifische Bedingungen erfüllen (Eine Map z. B. kann nie ein Stack sein). Dazu gehören unter anderem stack, queue und Priority\_queue.
+
+\subsubsection{Allokatoren}
+Alle Container können mit \OviIndex{Allokatoren} parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
+
 
 
 Nachfolgend eine kleine Auswahl vorhandener Container. 
@@ -8291,6 +8329,7 @@ for (auto s: Arr) {   // Gibt alle Elemente aus, s nimmt der Reihe nach alle Wer
 }
 cout << Arr.size();   // Grösse des Arrays ausgeben
 \end{CCode}
+
 
 \subsubsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 
