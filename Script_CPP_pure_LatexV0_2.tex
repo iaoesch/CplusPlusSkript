@@ -5690,32 +5690,50 @@ Complex c(x, y);
 \end{CCode}
 
 \subsection{Deduction Guides (Seit \CppVers{17})}
-\oviindex{deduction guide} (Herleitungsleitfaden)
+\OviIndex{deduction guide} (Herleitungsleitfaden)
+Wenn ein Template mithilfe eines Konstruktors ohne Parametrisierung erzeugt wird, versucht der Compiler die Parameter aus den Argumenten zu erschliessen. Gelegentlich entspricht das Ergenis jedoch nicht den gewünschten Parametern. In diesen Fällen kann dem Compiler mit Deduction Guides eine Vorgabe gemacht werden.
 
 Syntax: Finktionsdeklaration in trailing reeturn type syntax:
 Finktionsdeklaration gefolgt von -> und gewuenschtem Typ
-
+\begin{CCode}
 f(int x, int y) -> f<double>;
+\end{CCode}
+Wobei f ein template name sein muss. Hier würde es zur Folge haben, dass beim Aufruf von f mit int-Parametern das Template mit double instanziert würde.
 
-Wobei f ein template name sein muss.
-tbd
+
 \begin{CCode}
 template<typename T>
-struct Thingy
+struct NoCStrings
 {
   T t;
 };
 
-Thingy(const char *) -> Thingy<std::string>;
+// If somebody gives a c-string, we still use std::string
+NoCStrings(const char *) -> NoCStrings<std::string>;
 
-Thingy thing{"A String"}; //thing.t is a `std::string`.
+NoCStrings Text{"A String"}; //Text.t is a `std::string`.
 
+//Without the detectionsguide it would be a char *
+\end{CCode}
 
-template<class Iter>
-container(Iter b, Iter e) -> container<typename std::iterator_traits<Iter>::value_type>;
+Es können auch ganze Gruppen von Datentypen in den Leitfaden aufgenommen werden, im
+nachfolgenden Beispiel wird bei alle Pointer das Template mit dem Typen, auf welchen der
+Pointer zeigt instanziert.
+
+\begin{CCode}
+// Here we don't want to have a container of Pointers, but a container of the Values
+// pointed to by the pointer
+// The Constructor is still called with Pointers and will fill the Container with the 
+// Values or Range referred by the pointers
+template<class T>
+container(T *b, T*e) -> container<T>;
 
 
 \end{CCode}
+
+Wichtig, Detectionguides sagen nur aus, wie das Template zu instanzieren ist, der Konstrukter
+erhält genau die Parameter, welche ihm übergeben wurden, und muss diese so verwenden,
+dass sie zum erzeugten Template passen.
 
 
 \subsection{Default Templateparameter}
@@ -6445,7 +6463,7 @@ String gelesen, oder in einen String geschrieben wird:
 
 \end{CCode}
 \subsection{Allokatoren}
-Strings können wie alle Container können mit \OviIndex{Allokatoren} parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
+Strings können wie alle Container können mit \OviIndex{Allokatoren} (Siehe \autoref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
 
 
 \section{Resourcenverwaltung mit Unique Pointer und Shared Pointer}  \label{sec:StdSmartpointer}
@@ -8309,7 +8327,7 @@ Bei \OviIndex{ungeordneten assoziativen Containern} sind die Elemente über Schlü
 Mit den \OviIndex{Container Adapter} \index{Adapter} können Container mit einer spezifischen Schnittstelle versehen werden. Der  Container muss dabei jeweils adapterspezifische Bedingungen erfüllen (Eine Map z. B. kann nie ein Stack sein). Dazu gehören unter anderem stack, queue und Priority\_queue.
 
 \subsubsection{Allokatoren}
-Alle Container können mit \OviIndex{Allokatoren} parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
+Alle Container können mit \OviIndex{Allokatoren} (Siehe auch \autoref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
 
 
 
@@ -8840,8 +8858,10 @@ In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrement
 
 Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurückgeliefert.
 
+\section{Allokatorent (Seit \CppVers{11})}
+\label{sect:Allokatoren}
 
-
+Die Allokatoren-Bibliothek bietet verschiedene Klassen fürs Speichermanagement, welche für unterschiedliche Einsätze optimiert sind. Selbstverständlich können auch eigene Allokatoren geschrieben weerden, falls die zur Verfügung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary können mit Allokatoren parametrisiert werden, falls für die entsprechenden Objekte nicht die Standard-Speicherverwaltung zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln können, falls ein Speicher aufgebraucht ist.
 
 \section{Multithreading support (Seit \CppVers{11})}
 \label{sect:Multithreading}
