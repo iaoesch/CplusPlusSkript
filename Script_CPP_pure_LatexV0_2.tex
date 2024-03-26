@@ -6322,22 +6322,22 @@ Mit Konzepten können Anforderungen an Templateparameter definiert werden, und so
 \OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requirements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingeführten Schlüsselwörter  \CodeStyle{concept} und  \CodeStyle{requires} 
 zum tragen.
 
-Konzepte sind im wesentlichen Templates, welche weder instanziert noch ausfï¿½hrbaren Code ergeben. Sie werden vom Compiler nur mit den angegebenen Parametern (Typen) ausgewertet, und mï¿½ssen \CodeStyle{true} liefern wenn die Parameter das Konzept erfï¿½llen:
+Konzepte sind im wesentlichen Templates, welche weder instanziert noch ausführbaren Code ergeben. Sie werden vom Compiler nur mit den angegebenen Parametern (Typen) ausgewertet, und müssen \CodeStyle{true} liefern wenn die Parameter das Konzept erfüllen:
 \begin{CCode}
 template<typename T>
 concept Konzeptname = boolscher ausdruck;
 \end{CCode}
-Wobei der boolsche Ausdruck auch eine beliebige verknï¿½pfung von boolschen Ausdrï¿½cken mit \CodeStyle{||} oder \CodeStyle{&&} sein darf,
-der Ausdruck muss einfach zur Compilezeit auswertbar sein und sollte von den Templateparametern abhï¿½ngen.
+Wobei der boolsche Ausdruck auch eine beliebige verknüpfung von boolschen Ausdrücken mit \CodeStyle{||} oder \CodeStyle{&&} sein darf,
+der Ausdruck muss einfach zur Compilezeit auswertbar sein und sollte von den Templateparametern abhängen.
 
 Beispiel:
 \begin{CCode}
 template<typename T>
 concept TwoByteValue = sizeof(T) == 2;
 \end{CCode}
-Alle Typen welche 2 Bytes im Speicher belegen, erfï¿½llen dieses Konzept. (Auch Strukturen oder Klassen, welche nur 2 Bytes belegen)
+Alle Typen welche 2 Bytes im Speicher belegen, erfüllen dieses Konzept. (Auch Strukturen oder Klassen, welche nur 2 Bytes belegen)
 
-Das \CodeStyle{requires} Statement liefert \CodeStyle{true} zurück, wenn sich der enthaltene Ausdruck Compilieren lï¿½sst, ansonsten \CodeStyle{false}. Ein \CodeStyle{requires} Statement darf auch mehrere Ausdrï¿½cke enthalten, diese mï¿½ssen sich alle Compilieren lassen, damit \CodeStyle{true} zurï¿½ckgeliefert wird. Das \CodeStyle{requires} Statement darf fï¿½r die nachfolgenden zu testenden Ausdrï¿½cke auch Variablen definieren, welche nur zum Testen der Compilierbarkeit verwendet werden. (Es werden keine echten Variablen erzeugt).
+Das \CodeStyle{requires} Statement liefert \CodeStyle{true} zurück, wenn sich der enthaltene Ausdruck Compilieren lässt, ansonsten \CodeStyle{false}. Ein \CodeStyle{requires} Statement darf auch mehrere Ausdrücke enthalten, diese müssen sich alle Compilieren lassen, damit \CodeStyle{true} zurückgeliefert wird. Das \CodeStyle{requires} Statement darf für die nachfolgenden zu testenden Ausdrücke auch Variablen definieren, welche nur zum Testen der Compilierbarkeit verwendet werden. (Es werden keine echten Variablen erzeugt).
 
 \begin{CCode}
 template<typename T>
@@ -8955,11 +8955,11 @@ Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach de
 
 Die Allokatoren-Bibliothek bietet verschiedene Klassen fürs Speichermanagement, welche für unterschiedliche Einsätze optimiert sind. Selbstverständlich können auch eigene Allokatoren geschrieben weerden, falls die zur Verfügung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary können mit Allokatoren parametrisiert werden, falls für die entsprechenden Objekte nicht die Standard-Speicherverwaltung zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln können, falls ein Speicher aufgebraucht ist.
 
-Im Nachfolgenden Beispiel wird der Speicher fï¿½r die Elemente einer Liste aus einem Array von Bytes entnommen.
-Der Speicher wird bei \CodeStyle{monotonic_buffer_resource} nicht zurï¿½ckgegeben, erst wenn \CodeStyle{monotonic_buffer_resource}
-aufhï¿½rt zu existieren steht der gesammte Speicher auf einmal wieder zur Verfï¿½gung. D.h. wenn die Liste Blï¿½cke freigibt, stehen
-diese nicht wieder zur Verfï¿½gung.  \CodeStyle{monotonic_buffer_resource} ist dafï¿½r sehr schnell, weil keine 
-Verwaltung der Blï¿½cke notwendig ist.
+Im Nachfolgenden Beispiel wird der Speicher für die Elemente einer Liste aus einem Array von Bytes entnommen.
+Der Speicher wird bei \CodeStyle{monotonic_buffer_resource} nicht zurückgegeben, erst wenn \CodeStyle{monotonic_buffer_resource}
+aufhört zu existieren steht der gesammte Speicher auf einmal wieder zur Verfügung. D.h. wenn die Liste Blöcke freigibt, stehen
+diese nicht wieder zur Verfügung.  \CodeStyle{monotonic_buffer_resource} ist dafür sehr schnell, weil keine 
+Verwaltung der Blöcke notwendig ist.
 
 \begin{CCode}
         // Reserve a block of memory
@@ -8982,9 +8982,9 @@ Verwaltung der Blï¿½cke notwendig ist.
     
 \end{CCode}
 
-Verschiedene Buffferresourcen kï¿½nnen beliebig verkettet werden. (Wenn einer Resource der Speicher ausgeht, fordert sie
+Verschiedene Buffferresourcen können beliebig verkettet werden. (Wenn einer Resource der Speicher ausgeht, fordert sie
 bei ihrem Nachfolger Speicher an. Als Ende einer Kette kann die \CodeStyle{null_memory_resource} verwendet werden, diese
-lï¿½st direkt eine Exception aus, wenn von ihr Speicher angefordert wird.
+läst direkt eine Exception aus, wenn von ihr Speicher angefordert wird.
 
 
 \section{Multithreading support (Seit \CppVers{11})}
