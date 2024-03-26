@@ -3865,6 +3865,18 @@ friend void OtherClass::Intrude(MyClass *mc);  // Methode intrude der Klasse
                                                // Member zugreifen 
 friend class BigBrother;            // Alle Methoden der Klasse BigBrother
                                     // duerfen auf private Member zugreifen 
+                                    
+// Hidden friend function, darf auf private Member zugreifen, wird inline
+// in der Klasse definiert, ist aber KEINE Memberfunktion                              
+friend std::ostream &operator << (std::ostream &s, const MyClass &mc) 
+{
+   s << mc.i;
+   return s;
+}
+
+                                     
+                                    
+
   int i;
   int k;
 
