@@ -3890,7 +3890,10 @@ friend std::ostream &operator << (std::ostream &s, const MyClass &mc)
 \end{CCode}
 
 Achtung, die Klasse gibt anderen das Recht auf sie zuzugreifen, und nicht umgekehrt. Die \CodeStyle{friend} Deklaration muss deshalb immer in der betroffenen Klasse stehen. Mit \CodeStyle{friend} kann man den Zugriffsschutz für eine bestimmte Funktion oder Klasse ausschalten. Eine Klasse kann beliebig viele Friends deklarieren.
-Man sollte damit aber zurückhaltend umgehen, da damit das Prinzip der Kapselung verletzt wird.
+
+Freundschaft wird weder vererbt noch weitervermittelt (friends von friends werden nicht zu friends), sondern gilt explizit nur für die aufgeführten Elemente.
+
+Man sollte mit \CodeStyle{friend} aber zurückhaltend umgehen, da damit das Prinzip der Kapselung verletzt wird.
 In einigen Fällen ist es jedoch sinnvoller, ein bestimmtes Element als Friend zu deklarieren
 als eine Menge von Set- und Get-Methoden einzubauen, da mit unnötigen Set- und Get-Methoden
 die Kapselung erst recht durchbrochen wird.
