@@ -6319,8 +6319,100 @@ Mit dem Schlï¿½sselwort \CodeStyle{extern} kann das Instantiieren eines Template
 \section{Konzepts (Seit \CppVers{20})}
 \label{sect:Konzepts}
 Mit Konzepten kï¿½nnen Anforderungen an Templateparameter definiert werden, und so sichergestellt werden, dass Templates nur mit dafï¿½r vorgesehenen Typen instanziert werden. Zudem werden die Fehlermeldungen das Compilers bei unpassenden Typen aussagekrï¿½ftiger.
-\OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requrements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingefï¿½hrten Schlï¿½sselwï¿½rter  \CodeStyle{concept} und  \CodeStyle{requires} 
+\OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requirements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingefï¿½hrten Schlï¿½sselwï¿½rter  \CodeStyle{concept} und  \CodeStyle{requires} 
 zum tragen.
+
+Konzepte sind im wesentlichen Templates, welche weder instanziert noch ausfï¿½hrbaren Code ergeben. Sie werden vom Compiler nur mit den angegebenen Parametern (Typen) ausgewertet, und mï¿½ssen \CodeStyle{true} liefern wenn die Parameter das Konzept erfï¿½llen:
+\begin{CCode}
+template<typename T>
+concept Konzeptname = boolscher ausdruck;
+\end{CCode}
+Wobei der boolsche Ausdruck auch eine beliebige verknï¿½pfung von boolschen Ausdrï¿½cken mit \CodeStyle{||} oder \CodeStyle{&&} sein darf,
+der Ausdruck muss einfach zur Compilezeit auswertbar sein und sollte von den Templateparametern abhï¿½ngen.
+
+Beispiel:
+\begin{CCode}
+template<typename T>
+concept TwoByteValue = sizeof(T) == 2;
+\end{CCode}
+Alle Typen welche 2 Bytes im Speicher belegen, erfï¿½llen dieses Konzept. (Auch Strukturen oder Klassen, welche nur 2 Bytes belegen)
+
+Das \CodeStyle{requires} Statement liefert \CodeStyle{true} zurück, wenn sich der enthaltene Ausdruck Compilieren lï¿½sst, ansonsten \CodeStyle{false}. Ein \CodeStyle{requires} Statement darf auch mehrere Ausdrï¿½cke enthalten, diese mï¿½ssen sich alle Compilieren lassen, damit \CodeStyle{true} zurï¿½ckgeliefert wird. Das \CodeStyle{requires} Statement darf fï¿½r die nachfolgenden zu testenden Ausdrï¿½cke auch Variablen definieren, welche nur zum Testen der Compilierbarkeit verwendet werden. (Es werden keine echten Variablen erzeugt).
+
+\begin{CCode}
+template<typename T>
+concept EqualityComparable = requires {
+    Some Code which must be compilable;
+    local variables not allowed
+};
+
+template<typename T>
+concept EqualityComparable = requires (T a, T b){
+    Some Code which must be compilable;
+    Variables a and b may be used
+};
+
+template<typename T>
+concept EqualityComparable = requires {
+    typename T::InnerType; // T must contain a typedef for InnerType
+    typename C<T>; // Template C must be instantiable with T
+};
+
+\end{CCode}
+
+\begin{CCode}
+
+template<typename T>
+concept Addable = requires (T a, T b)
+{
+    a + b; // "the expression a+b is a valid expression that will compile"
+};
+ 
+template<class T, class U = T>
+concept Swappable = requires(T&& t, U&& u)
+{
+    swap(std::forward<T>(t), std::forward<U>(u));
+    swap(std::forward<U>(u), std::forward<T>(t));
+};
+template<typename T>
+concept C = requires
+{
+    typename T::inner; // required nested member name
+    typename S<T>;     // required class template specialization
+    typename Ref<T>;   // required alias template substitution
+};
+
+template<typename T>
+concept C2 = requires(T x)
+{
+    // the expression *x must be valid
+    // AND the type T::inner must be valid
+    // AND the result of *x must be convertible to T::inner
+    {*x} -> std::convertible_to<typename T::inner>;
+ 
+    // the expression x + 1 must be valid
+    // AND std::same_as<decltype((x + 1)), int> must be satisfied
+    // i.e., (x + 1) must be a prvalue of type int
+    {x + 1} -> std::same_as<int>;
+ 
+    // the expression x * 1 must be valid
+    // AND its result must be convertible to T
+    {x * 1} -> std::convertible_to<T>;
+};
+
+template<class T>
+concept Semiregular = DefaultConstructible<T> &&
+    CopyConstructible<T> && CopyAssignable<T> && Destructible<T> &&
+requires(T a, std::size_t n)
+{  
+    requires Same<T*, decltype(&a)>; // nested: "Same<...> evaluates to true"
+    { a.~T() } noexcept; // compound: "a.~T()" is a valid expression that doesn't throw
+    requires Same<T*, decltype(new T)>; // nested: "Same<...> evaluates to true"
+    requires Same<T*, decltype(new T[n])>; // nested
+    { delete new T }; // compound
+    { delete new T[n] }; // compound
+};
+\end{CCode}
 
 Das folgende Konzept verlangt, dass der Typ auf Gleichheit und Ungleichheit getestet werden kann:
 \begin{CCode}
@@ -8858,10 +8950,42 @@ In obigem Beispiel wï¿½rde der Iterator von \CodeStyle{filter} bei jeder Inkreme
 
 Der Iterator von \CodeStyle{Quadriere} wï¿½rde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurï¿½ckgeliefert.
 
-\section{Allokatorent (Seit \CppVers{11})}
+\section{Allokatoren (Seit \CppVers{11})}
 \label{sect:Allokatoren}
 
 Die Allokatoren-Bibliothek bietet verschiedene Klassen fï¿½rs Speichermanagement, welche fï¿½r unterschiedliche Einsï¿½tze optimiert sind. Selbstverstï¿½ndlich kï¿½nnen auch eigene Allokatoren geschrieben weerden, falls die zur Verfï¿½gung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary kï¿½nnen mit Allokatoren parametrisiert werden, falls fï¿½r die entsprechenden Objekte nicht die Standard-Speicherverwaltung zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln kï¿½nnen, falls ein Speicher aufgebraucht ist.
+
+Im Nachfolgenden Beispiel wird der Speicher fï¿½r die Elemente einer Liste aus einem Array von Bytes entnommen.
+Der Speicher wird bei \CodeStyle{monotonic_buffer_resource} nicht zurï¿½ckgegeben, erst wenn \CodeStyle{monotonic_buffer_resource}
+aufhï¿½rt zu existieren steht der gesammte Speicher auf einmal wieder zur Verfï¿½gung. D.h. wenn die Liste Blï¿½cke freigibt, stehen
+diese nicht wieder zur Verfï¿½gung.  \CodeStyle{monotonic_buffer_resource} ist dafï¿½r sehr schnell, weil keine 
+Verwaltung der Blï¿½cke notwendig ist.
+
+\begin{CCode}
+        // Reserve a block of memory
+        std::array<std::byte, 20000> buffer;
+        
+        // A simple memory manager, just gives memory as requested,
+        // never takes memory back 
+        std::pmr::monotonic_buffer_resource MonotonicBufferManager{buffer.data(), buffer.size()};
+        
+        // An alllocator using the buffer as memory resource
+        std::pmr::polymorphic_allocator<int> Allocator{&MonotonicBufferManager};
+        
+        // A list using this allocator to get memory
+        std::pmr::list<int> list{pa};
+        
+        // Fill the list, memory for list will be taken from buffer
+        for (int i{}; i != total_nodes; ++i) {
+            list.push_back(i);
+        }
+    
+\end{CCode}
+
+Verschiedene Buffferresourcen kï¿½nnen beliebig verkettet werden. (Wenn einer Resource der Speicher ausgeht, fordert sie
+bei ihrem Nachfolger Speicher an. Als Ende einer Kette kann die \CodeStyle{null_memory_resource} verwendet werden, diese
+lï¿½st direkt eine Exception aus, wenn von ihr Speicher angefordert wird.
+
 
 \section{Multithreading support (Seit \CppVers{11})}
 \label{sect:Multithreading}
@@ -12069,7 +12193,7 @@ struct std::formatter<MyComplex> {
                 formatString = "(" + value_format + "e^j" + value_format +")";
             } else if (DegreeOutput) {
                 Argument = 180.0/numbers::pi*Argument;
-                formatString = "(" + value_format + "\u2221" + value_format +")";
+                formatString = "(" + value_format + "\u2221" + value_format +"°)";
             } else {
                 formatString = "(" + value_format + "\u2221" + value_format +")";
             }
@@ -12149,9 +12273,9 @@ Complex polar in euler
 1<**********(5.140#####e^j0.923#####)**********>
 
 Complex polar in degree
-<(5.14##?52.91#)*>
-1<**********(5.14##?52.91#)***********>
-1<*********(5.140#####?52.907####)*********>
+<(5.14##?52.91#°)*>
+1<**********(5.14##?52.91#°)***********>
+1<*********(5.140#####?52.907####°)*********>
 \end{ConsoleOutput} 
 
 
