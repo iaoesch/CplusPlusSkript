@@ -9151,6 +9151,10 @@ int main()
     std::cout << "Done\n";
 }
 \end{CCode}
+\emph{Wichtig}, bevor ein Threadobjekt zerstört wird, muss mit \CodeStyle{join()} auf das Ende des dazugehörigen Threads gewartet werden, sonst ist undefiniertes Verhalten ('Absturz') die Folge, deshalb sollten besser \OviIndex{Jthread} verwendet werden. 
+
+\subsection{Jthread (seit \CppVers{20})}
+Die Klasse std::\OviIndex{Jthread} ist eine verbesserte Version von  \CodeStyle{std::thread}. Sie hat im wesentlichen dieselbe Funktionalität wie  \CodeStyle{std::thread}, nur wird im Destruktor automatisch  \CodeStyle{join()} aufgerufen, so dass im Code nicht mehr zwingend  \CodeStyle{join()} aufgerufen werden muss, bevor das Threadobjekt aufhört zu existieren.
 
 \subsection{Thread lokale Variablen}
 Mit dem Schlüsselwort \index{thread\_local} \CodeStyle{thread_local} kann eine Thread-lokale Variable erzeugt werden. Diese verhält sich gleich wie eine \CodeStyle{static} Variable, jedoch hat jeder Thread sein eigenes Exemplar. Für jeden Thread der erzeugt wird, wird auch ein ensprechendes Objekt (Inklusive allfälligem Konstruktoraufruf) erzeugt, und beim Beenden des Threads werden seine \CodeStyle{thread_local} Objekte wieder gelöscht (Inklusive allfälligen Destruktoraufrufen).
