@@ -8986,12 +8986,12 @@ int main()
     std::sort(Quelle.begin(), Quelle.end());
     
     // Sortieren mit range
-    std::range::sort(Quelle);
+    std::ranges::sort(Quelle);
 }
 \end{CCode}
 
 
-Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten um zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator ||()} vereinfacht werden:
+Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten um zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden:
 
 \begin{CCode}
 int main()
@@ -9005,6 +9005,20 @@ int main()
     for (int i : Quelle | std::views::filter(IstGerade) | std::views::transform(Quadriere)) {
         std::cout << i << ' ';
     }
+    
+    struct Demo {
+        int a;
+        float b;
+    };
+    
+    std::vector<Demo> Quelle3 = {{7, 2}, {5, 3}, {4, 1}, {8, 6}};
+    
+    // Nimm die Quelle3, Nimm davon nur die elemente a und Quadriere diese
+    // Gib die Elemente der resultierenden View aus
+    for (int i : Quelle3 | std::views::transform(&Demo::a) | std::views::filter(IstGerade)) {
+        std::cout << i << ' ';
+    }
+
  }
 
 Ausgabe:
@@ -9017,6 +9031,29 @@ Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um auf die Dat
 In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrementation den Iterator auf die  \CodeStyle{Quelle} solange Inkrementieren, bis er wieder auf einen geraden Wert verweist. Bei einem Zugriff auf die Daten wird einfach das Ergebnis des Zugriffs auf den Iterator auf die Quelle zurückgeliefert.
 
 Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurückgeliefert.
+
+Ein Grossteil der Algorithmen wurde für ranges überladen, und zudem um eine (optionale) Projektion erweitert. Mit der Projektion kann eine Transformation auf jedes Element angewendet werden, und das Resultat der Transformation wird vom Algorithmus weiterverwendet. Dabei werden die Elemente nicht verändert.
+
+\begin{CCode}
+int main()
+{
+    struct Demo {
+        int a;
+        float b;
+    };
+    
+    std::vector<Demo> Quelle3 = {{7, 2}, {5, 3}, {4, 1}, {8, 6}};
+    
+    // Sortieren mit range ohne Projektion (Sortiert nach Attribut a)
+    std::ranges::sort(Quelle3, [](auto &e1, auto &e2) {return e1.a < e2.a;});
+
+    // Sortieren mit range und Projektion (Sortiert nach Attribut a)
+    std::ranges::sort(Quelle3, {}, &Ooops::a);
+
+}
+\end{CCode}
+    
+ 
 
 \section{Allokatoren (Seit \CppVers{11})}
 \label{sect:Allokatoren}
