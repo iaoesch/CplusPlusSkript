@@ -6356,24 +6356,47 @@ Das \CodeStyle{requires} Statement liefert \CodeStyle{true} zurück, wenn sich de
 
 \begin{CCode}
 template<typename T>
-concept EqualityComparable = requires {
+concept C1 = requires {
     Some Code which must be compilable;
     local variables not allowed
 };
 
 template<typename T>
-concept EqualityComparable = requires (T a, T b){
+concept C2 = requires (T a, T b){
     Some Code which must be compilable;
     Variables a and b may be used
 };
 
 template<typename T>
-concept EqualityComparable = requires {
+concept C3 = requires {
     typename T::InnerType; // T must contain a typedef for InnerType
     typename C<T>; // Template C must be instantiable with T
 };
 
 \end{CCode}
+Zudem kann auch der Ergebnistyp eines Ausdrucks überprüft werden, der zu überprüfende Ausdruck muss in einen
+Block mit anschliessendem Returntypespezifizierer eingeschlossen werden:
+
+\begin{CCode}
+
+template<typename T>
+concept C4 = requires(T x)
+{
+    { Expression to check } -> R1;
+    // R1 must be a defined Template which will be instantiated (if possible)
+    // with the returntype of the expression like:
+    // T1<decltype (expression to check)>
+    
+};
+\end{CCode}
+
+
+
+
+
+Ein paar konkrete Beispiele:
+
+T muss die Addition definiert haben:
 
 \begin{CCode}
 
@@ -6382,6 +6405,11 @@ concept Addable = requires (T a, T b)
 {
     a + b; // "the expression a+b is a valid expression that will compile"
 };
+\end{CCode}
+
+U und T müssen in beide Richtungen tauschbar sein:
+
+\begin{CCode}
  
 template<class T, class U = T>
 concept Swappable = requires(T&& t, U&& u)
@@ -6389,6 +6417,13 @@ concept Swappable = requires(T&& t, U&& u)
     swap(std::forward<T>(t), std::forward<U>(u));
     swap(std::forward<U>(u), std::forward<T>(t));
 };
+\end{CCode}
+
+T muss einen Datentypen \CodeStyle{inner} definiert haben, sowie
+??????????:
+
+\begin{CCode}
+
 template<typename T>
 concept C = requires
 {
@@ -6396,6 +6431,11 @@ concept C = requires
     typename S<T>;     // required class template specialization
     typename Ref<T>;   // required alias template substitution
 };
+\end{CCode}
+
+U und T müssen in beide Richtungen tauschbar sein:
+
+\begin{CCode}
 
 template<typename T>
 concept C2 = requires(T x)
@@ -6459,14 +6499,14 @@ All diese Templates können nur noch mit Typen instanziert werden, die auf Gleich
 \begin{CCode}
 // Definition eines Konzeptes
 template <typename T>
-concept DigitalOutpout =
+concept DigitalOutput =
   requires(T o) {  // Jedes o das ein Output sein will
     o.On();     // muss eine Methode On()
     o.Off();      // und eine Methode Off() besitzen`
   };
 
   template<typename T>
-  requires DigitalOutpout<T> // << T muss Konzept erfuellen
+  requires DigitalOutput<T> // << T muss Konzept erfuellen
   class Indicator {
     T MyOutput;
   public:
@@ -6514,7 +6554,7 @@ Fehlermeldung mit Konzept:
 \begin{quote}
  error: constraints not satisfied for class template 'Indicator' [with T = Switch]
  Indicator<Switch> I2(S);
-note: because 'Switch' does not satisfy 'DigitalOutpout'
+note: because 'Switch' does not satisfy 'DigitalOutput'
 requires DigitalOutpout<T>
 note: because 'o.On()' would be invalid: no member named 'On' in 'Switch'
 \end{quote}
@@ -8937,6 +8977,19 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 \OviIndex{Ranges} \index{Views} dienen als vereinfachte Schnittstelle zu Algorithmen oder Filter von Datenquellen. Ein Range ist ein Bereich von Objekten, der durch einen Anfang und einem Ende oder einem Anfang und einer Länge definiert ist, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang ( \CodeStyle{begin()}), sowie einen Iterator der das Ende kennzeichnet ( \CodeStyle{end()}). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. Iteratoren eines Ranges enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem Range/View gehörenden Filterungen oder Transformationen aus.  
 
 Die meisten Algorithmen sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden, falls der ganze Container bearbeitet werden soll.
+\begin{CCode}
+int main()
+{
+    std::vector<int> Quelle = {7, 2, 5, 3, 4, 1, 8, 6};
+ 
+    // Sortieren ohne range
+    std::sort(Quelle.begin(), Quelle.end());
+    
+    // Sortieren mit range
+    std::range::sort(Quelle);
+}
+\end{CCode}
+
 
 Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten um zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator ||()} vereinfacht werden:
 
