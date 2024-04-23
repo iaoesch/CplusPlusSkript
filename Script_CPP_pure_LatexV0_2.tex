@@ -11302,12 +11302,12 @@ Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}.
 \item{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen},
 Siehe \autoref{subsubsect:ControlAutoMember}
    \item Geänderte Definiton von POD (plain old data)
-   \item Template Alias
+   \item Template Alias _
    \item Gelockerte Restriktionen bei Unions
    \item Neuer Datentyp \CodeStyle{long long int}
    \item Static Assertions (Siehe \autoref{subsubsect:assertions})
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
-   \item Alignementkontrolle bei Objekten
+   \item Alignementkontrolle bei Objekten _
    \item Einfacher Support für Garbagecollection
    \item Attribute (Siehe \autoref{subsubsect:Attribute})
    \item Unterstützung von Multithreading (Siehe \autoref{sect:Multithreading})
@@ -11349,10 +11349,10 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
 	 \item Alternative Typendeduktion bei Deklarationen
    \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. (Siehe \autoref{subsubsect:constexpr})
-   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden.
-   \item Aggregate Member initialisierung
-   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001)
-   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000
+   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden. _
+   \item Aggregate Member initialisierung _
+   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001) _
+   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000 _
    \item Generische Lambdafunktionen  (Siehe \autoref{subsection:GenerischeLambdafunktionen})
    \item Lambda capture expressions (Siehe \autoref{subsec:LambdaFunctions})
    \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen. (Siehe \autoref{subsubsect:Attribute})
@@ -11375,16 +11375,16 @@ Im Dezember 2017 publiziert.
 
     \item \CodeStyle{std::uncaught_exceptions}, as a replacement of \CodeStyle{std::uncaught_exception}
 
-    \item Nested namespace definition
+    \item Nested namespace definition _
 
     \item Attributes for namespaces and enumerators
 		
 		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}  (Siehe \autoref{subsubsect:Attribute})
 
 
-    \item UTF-8 character literals
+    \item UTF-8 character literals _
 		
-		\item Hexadecimal floating-point literals
+		\item Hexadecimal floating-point literals _
 
     \item Constant evaluation for all non-type template arguments
 
@@ -11416,11 +11416,11 @@ Im Dezember 2017 publiziert.
 
     \item Guaranteed copy elision by compilers in some cases
 
-    \item Some extensions on aligned memory allocation
+    \item Some extensions on aligned memory allocation _
 
     \item Template deduction of constructors, allowing \CodeStyle{pair(5.0, false)} instead of \CodeStyle{pair<double,bool>(5.0, false)} (Siehe \autoref{subsection:AutomatischeTemplateparametererkennung})
 
-    \item Inline variables, which allows the definition of variables in header files
+    \item Inline variables, which allows the definition of variables in header files _
     
     
     \item \CodeStyle{template <auto K>} für Konstanten (Siehe \autoref{subsection:ParametrisierungvonTemplatesmitKonstanten})
@@ -11440,8 +11440,8 @@ Seit Dezember 2020 verabschiedet.
  \begin{itemize}
     \item Feature test macros
     \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
-    \item designated initializers
-    \item init-statements and initializers in range-for
+    \item designated initializers _
+    \item init-statements and initializers in range-for _
     \item \CodeStyle{char8_t}
     \item Attribute \CodeStyle{[[no_unique_address]]} (Siehe \autoref{subsubsect:Attribute})
     \item Attribute \CodeStyle{[[likely]]} (Siehe \autoref{subsubsect:Attribute})
@@ -11451,7 +11451,7 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{consteval}, \CodeStyle{constinit} (Siehe \autoref{subsubsect:consteval} und \autoref{subsubsect:constinit})
     \item further relaxed constexpr (Siehe \autoref{subsubsect:constexpr})
     \item signed integers are 2's complement
-   \item  aggregate initialization using parentheses
+   \item  aggregate initialization using parentheses _
     \item Coroutines (Siehe \autoref{subsec:CoRoutinen})
     \item Modules (Siehe \autoref{subsubsect:Modules})
     \item Constraints and concepts (Siehe \autoref{sect:Konzepts})
@@ -11461,16 +11461,16 @@ Seit Dezember 2020 verabschiedet.
 \end{itemize}
 \begin{itemize}
     \item  Formatting library (Ersatz für printf(), siehe \autoref{subsubsect:formated}))
-    \item Calendar and Time Zone library
+    \item Calendar and Time Zone library _
     \item \CodeStyle{std::source_location}
     \item \CodeStyle{std::span}
     \item \CodeStyle{std::endian}
-    \item array support for s\CodeStyle{td::make_shared}
+    \item array support for s\CodeStyle{td::make_shared} _
    \item  \CodeStyle{std::remove_cvref}
     \item \CodeStyle{std::to_address}
     \item floating point and shared\_ptr atomics
     \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore} (Siehe \autoref{subsect:Synchronisationsmittel})
-    \item \CodeStyle{std::jthread} and thread cancellation classes
+    \item \CodeStyle{std::jthread} and thread cancellation classes _
     \item <version> Header mit Versionsinformation zur benutzten Standardlibrary
     \item \CodeStyle{std::osyncstream}
     \item \CodeStyle{std::u8string} and other \CodeStyle{char8_t} uses
@@ -11482,7 +11482,7 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{std::make_obj_using_allocator} etc
     \item \CodeStyle{std::make_shared_for_overwrite}/\CodeStyle{std::make_unique_for_overwrite} z.B. zum Allozieren grosser Arrays ohne diese zu initialisieren, effizienter falls Arrays später gefüllt werden.
     \item heterogeneous lookup in unordered associative containers
-    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument
+    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument _
     \item \CodeStyle{std::execution::unseq}
     \item \CodeStyle{std::midpoint and std::lerp}
     \item \CodeStyle{std::ssize}
@@ -11535,7 +11535,7 @@ Sprache (Stand 14.2.2023)
 \item auto(x) and auto\{x\} (Siehe \autoref{subsubsect:autocast})
 \item Change scope of lambda trailing-return-type 
 \item \#elifdef and \#elifndef 
-\item Non-literal variables (and labels and gotos) in constexpr functions 
+\item Non-literal variables (and labels and gotos) in constexpr functions (Siehe \autoref{subsubsect:constexpr})
 \item Consistent character literal encoding 
 \item Character sets and encodings 
 \item Extend init-statement to allow alias-declaration 
@@ -11547,15 +11547,15 @@ Sprache (Stand 14.2.2023)
 \item Labels at the end of compound statements 	 								
 \item Delimited escape sequences 		
 \item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$)
-\item Relaxing some constexpr restrictions 	
+\item Relaxing some constexpr restrictions (Siehe \autoref{subsubsect:constexpr})	
 \item Simpler implicit move 	
-\item static operator(), static operator[] Dürfen nun auch (statische) Klassenmethoden sein
+\item static operator(), static operator[] Dürfen nun auch (statische) Klassenmethoden sein _
 \item Requirements for optional extended floating-point types 	
 \item Class template argument deduction from inherited constructors 
 \item Attribute [[assume]] 	(Siehe \autoref{subsubsect:Attribute})
 \item Support for UTF-8 as a portable source file encoding 	
-\item Permitting static constexpr variables in constexpr functions 	
-\item Extending the lifetime of temporaries in range-based for loop initializer 
+\item Permitting static constexpr variables in constexpr functions (Siehe \autoref{subsubsect:constexpr})	
+\item Extending the lifetime of temporaries in range-based for loop initializer _
 \ifshowdetails
 \item DR20: Meaningful exports 
 \item DR20: consteval needs to propagate up 	
@@ -11578,7 +11578,7 @@ Library (Stand 14.2.2022)
 \item std::is\_scoped\_enum 
 \item basic\_string::contains(), basic\_string\_view::contains() 
 \item std::to\_underlying 
-\item Relaxing requirements for time\_point<>::clock 
+\item Relaxing requirements for time\_point<>::clock _
 \item DR: std::visit() for classes derived from std::variant 
 \item DR: Conditionally borrowed ranges 
 \item DR: Repairing input range adaptors and std::counted\_iterator 
@@ -11594,25 +11594,25 @@ Library (Stand 14.2.2022)
 \item Range constructor for std::basic\_string\_view 
 \item Default template arguments for pair's forwarding constructor 
 \item Remove Garbage Collection and Reachability-Based Leak Detection (library support) 
-\item DR: join\_view should join all views of ranges 
-\item DR: view does not require default\_initializable 
-\item DR: Range adaptor objects bind arguments by value 
+\item DR: join\_view should join all views of ranges _
+\item DR: view does not require default\_initializable _
+\item DR: Range adaptor objects bind arguments by value _
 \item DR: constexpr for std::optional and std::variant 
-\item DR: std::format() improvements 
-\item DR: lazy\_split\_view and redesigned split\_view 
-\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform
+\item DR: std::format() improvements _
+\item DR: lazy\_split\_view and redesigned split\_view _
+\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform _
 
 \item Heterogeneous erasure overloads for associative containers 
 \item std::byteswap() 
 \item Printing volatile T* 
 \item basic\_string::resize\_and\_overwrite() 
-\item Monadic operations for std::optional 
+\item Monadic operations for std::optional _
 \item std::move\_only\_function 
 \item Add a conditional noexcept specification to std::exchange 
 \item Require span \& basic\_string\_view to be TriviallyCopyable 
 \item Clarifying the status of the "`C headers"' 
-\item DR: Fix ranges::istream\_view 
-\item DR: Add support for non-const-formattable types to std::format 
+\item DR: Fix ranges::istream\_view _
+\item DR: Add support for non-const-formattable types to std::format _
 \item DR: What is a view 
 \item DR: fixing locale handling in chrono formatters 
 \item DR: Cleaning up integer-class types 
@@ -11622,23 +11622,23 @@ Library (Stand 14.2.2022)
 \item Deprecating std::aligned\_storage and std::aligned\_union 
 \item A type trait to detect reference binding to temporary 
 \item constexpr std::unique\_ptr 
-\item ranges::to 
+\item ranges::to _
 \item Pipe support for user-defined range adaptors 
-\item ranges::iota, ranges::shift\_left, and ranges::shift\_right 
-\item ranges::join\_with\_view 
-\item ranges::chunk\_view and ranges::slide\_view 
-\item ranges::chunk\_by\_view
+\item ranges::iota, ranges::shift\_left, and ranges::shift\_right _
+\item ranges::join\_with\_view _
+\item ranges::chunk\_view and ranges::slide\_view _
+\item ranges::chunk\_by\_view _
 \item  std::mdspan: a non-owning multidimensional array reference 	
 \item <flat\_map>  	
 \item <flat\_set> 	
 \item ranges::find\_last(), ranges::find\_last\_if(), and ranges::find\_last\_if\_not()  	
 \item Freestanding Library: Easy <utility>, <ranges>, and <iterator> 	 	
-\item views::stride  	
+\item views::stride  _	
 \item Compatibility between std::tuple and tuple-like objects  	
 \item Rectifying constant iterators, sentinels, and ranges 	 	
-\item Formatting Ranges  	
+\item Formatting Ranges  	_
 \item Improve default container formatting 	 	
-\item Formatted output library <print>  	
+\item Formatted output library <print>  _	
 \item Formatting std::thread::id and std::stacktrace  	
 \item constexpr for integral overloads of std::to\_chars() and std::from\_chars().  	
 \item ranges::contains() and ranges::contains\_subrange()  	
@@ -11646,13 +11646,13 @@ Library (Stand 14.2.2022)
 \item constexpr std::bitset  	
 \item basic\_string::substr() \&\& 	 	
 \item views::as\_rvalue  	
-\item Standard Library Modules  	
+\item Standard Library Modules  _	
 \item std::forward\_like()  	
-\item Support exclusive mode for std::fstream 	 	
+\item Support exclusive mode for std::fstream 	_ 	
 \item views::repeat  	
 \item Relaxing range adaptors to allow for move-only types  	
 \item std::basic\_string\_view range constructor should be explicit  	
-\item std::generator: synchronous coroutine generator for ranges  	
+\item std::generator: synchronous coroutine generator for ranges  	_
 \item Add a conditional noexcept specification to std::apply  	
 \item Explicit lifetime management (std::start\_lifetime\_as)  	
 \item Clarify handling of encodings in localized formatting of chrono types  	
