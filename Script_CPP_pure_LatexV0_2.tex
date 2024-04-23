@@ -6318,6 +6318,107 @@ int main()
 }
 \end{CCode}
 
+Für jedes Argument eine Funktion aufrufen, und die jeweiligen Rückgabewerte in einem Tuple sammeln
+
+\begin{CCode}
+
+// Function just returns doubled argument
+template<class T>
+T h(T &p)
+{
+    return p + p;
+}
+
+// Packs results of functioncalls into tuple
+template<class... Args>
+auto g(Args... args)
+{
+
+    std::tuple t(h(args)...);  // Expands to t(h(arg1), h(arg2, ... , h(argn))
+    return t;
+}
+
+// Helpertemplate to print tuple
+// using recursive instantiation
+template <class T, int N = std::tuple_size<T>()>
+struct printTuple
+{
+    static void Print(T &t) {
+        printTuple<T, N-1>::Print(t);
+        std::cout << "<" << std::get<N-1>(t) << ">" << std::endl;
+    }
+};
+
+// Spezialization to end recursion
+template <class T>
+struct printTuple<T, 0> {
+    static void Print(T &t)
+    {
+    }
+};
+
+int main()
+{
+    auto t = g(0, 1.23, std::string("hallo"));
+    printTuple<decltype(t)>::Print(t);
+    return 0;
+}
+
+Output:
+<20>
+<2.46>
+<hallohallo>
+
+\end{CCode}
+
+\subsection{Fold Expressions (Seit \CppVers{17})}
+\label{subsect:FoldExpressions}
+Mit \OviIndex{Fold Expressions} können die Argumente eines Parameterpacks miteinander verknüpft werden,
+d.h. mit einem binären Operator verknüpft werden:
+\OviIndex{Fold Expressions} 
+
+\begin{CCode}
+template<typename... Args>
+int sum(Args&&... args)
+{
+    // returns (arg1 + arg2 + arg3 + ... + argn)
+    return (args + ... ); 
+}
+\end{CCode}
+Dies ist mit allen binären Operatoren möglich.
+
+
+Der Kommaoperator kann verwendet werden, um für jedes Argument
+eine Funktion aufzurufen
+\begin{CCode}
+
+template<class T>
+void Print(T &p)
+{
+    std::cout << "<" << p << ">" << std::endl;
+}
+
+template<class... Args>
+void g(Args... args)
+{
+    // Call Print for each Argument in args
+    (Print(args),...);  // Expansion: (Print(arg1), Print(arg2), ... , Print(argn));
+}
+
+int main()
+{
+    g(10, 1.23, "hallo");
+    return 0;
+}
+
+Output:
+<10>
+<1.23>
+<hallo>
+
+\end{CCode}
+
+
 
 \section{Template-Verschachtelung $>>$ (Seit \CppVers{11})}
 \label{subsubsect:TemplateVerschatelung}
@@ -11288,7 +11389,7 @@ Im Dezember 2017 publiziert.
 
     \item Constant evaluation for all non-type template arguments
 
-    \item Folding expressions
+    \item Folding expressions (Siehe \autoref{subsect:FoldExpressions})
 
     \item New insertion functions for \CodeStyle{std::map} and \CodeStyle{std::unordered_map}
 
