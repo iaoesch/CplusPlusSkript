@@ -4430,6 +4430,33 @@ int main (int argc, char *argv[])
   return 0;
 }
 \end{CCode}
+\subsection{übernehmen von Methoden der Basisklasse}
+\label{subsect:MethodImport}
+Mit der \OviIndex{using}-direktive können Methoden der Basisklasse in die abgeleitete Klasse übernommen werden, und dabei mit neuen Zugriffsrechten versehen werden. Auch Konstruktoren können so übernommen werden. Das ist hilfreich, wenn der Konstruktor der abgeleiteten Klasse sowieso nur den Konstruktor der Basisklasse aufrufen würde. Dabei können aber nur  \CodeStyle{public} oder  \CodeStyle{protected} Elemente übernommen werden. 
+\begin{CCode}
+class Parent {
+   protected:
+      int a;
+      typedef int Type;
+      void f();
+      
+   public:
+      Parent(int a);
+      Parent(int a, double b);
+};
+
+class Child : public Parent {
+   public:
+   using Parent::a;  // a is now public
+   using Parent::f;  // f is now public 
+   
+   using Parent::Parent // now all constructor of base can be used directly
+};
+
+Child c(5);  // uses constructor of base class
+
+\end{CCode}
+
 
 \section{Mehrfachvererbung}
 In \Cpp ist auch \OviIndex{Mehrfachvererbung} möglich, das heisst, dass eine Klasse nicht nur von einer Klasse, sondern von mehreren erben kann.
@@ -6422,6 +6449,31 @@ Output:
 \section{Template-Verschachtelung $>>$ (Seit \CppVers{11})}
 \label{subsubsect:TemplateVerschatelung}
 Bei \OviIndex{verschachtelten Templates} wird \CodeStyle{>>} als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden. Vor \CppVers{11} musste ein Leerzeichen zwischen zwei schliessende Templateklammern gesetzt werden (\CodeStyle{> >}), sonst wurde dies als Schiebeoperator interpretiert.
+
+\section{Template-Alias (Seit \CppVers{11})}
+\label{subsubsect:TemplateAlias}
+Mit \OviIndex{Template-Alias} kann einem Template oder einem teilweise parametrisierten Template mit \OviIndex{using} ein neuer Name gegeben werden:
+\begin{CCode}
+
+template <class T1, class T2>
+class Demo {
+  T1 a;
+  T2 b;
+};
+
+// Mixed is now an alias for Demo
+template<class T1, class T2>
+using Mixed = Demo<T1, T2>;
+
+Mixed<int, float> t; // same as Demo<int, float> t;
+
+// Same is now an alias for Demo with same types
+template<class T>
+using Same = Demo<T, T>;
+
+Same<short> t; // same as Demo<short, short> t;
+\end{CCode}
+
  
 \section{extern Templates (Seit \CppVers{11})}
 \label{subsubsect:externTemplates}
@@ -11302,7 +11354,7 @@ Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}.
 \item{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen},
 Siehe \autoref{subsubsect:ControlAutoMember}
    \item Geänderte Definiton von POD (plain old data)
-   \item Template Alias _
+   \item Template Alias (Siehe \autoref{subsubsect:TemplateAlias}
    \item Gelockerte Restriktionen bei Unions
    \item Neuer Datentyp \CodeStyle{long long int}
    \item Static Assertions (Siehe \autoref{subsubsect:assertions})
