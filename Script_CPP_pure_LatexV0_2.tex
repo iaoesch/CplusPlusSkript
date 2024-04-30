@@ -1956,16 +1956,16 @@ int main()
      return 0;
 }
 
+\end{CCode}
 
-/* Ausgabe des Programms:
 
+Ausgabe des Programms:
+
+\begin{ConsoleOutput}
  1:marius:1234.5
  99:3.14
  1.2:2.4:3.6
-
-*/
-
-\end{CCode}
+\end{ConsoleOutput}
 
 Im Prinzip wird hierbei eine lokale, anonyme Kopie des initialisierende Objektes erzeugt, und die gebundenen Variablen sind Aliase für die entsprechenden Member des anonymen Objektes. Structure Binding kann auch über Referenzen erfolgen, dann sind die gebundenen Variablen Aliase für die Elemente im original (quell-) Objekt. Falls ein temporäres Objekt (Z. B. der Rückgabewert einer Funktion) zur Initialisierung verwendet wurde, wird die Lebensdauer des temporären Objektes verlängert, bis die gebundenen Variablen nicht mehr existieren.  
  
@@ -6390,13 +6390,13 @@ int main()
     printTuple<decltype(t)>::Print(t);
     return 0;
 }
-
+\end{CCode}
 Output:
+\begin{ConsoleOutput}
 <20>
 <2.46>
 <hallohallo>
-
-\end{CCode}
+\end{ConsoleOutput}
 
 \subsection{Fold Expressions (Seit \CppVers{17})}
 \label{subsect:FoldExpressions}
@@ -6436,13 +6436,13 @@ int main()
     g(10, 1.23, "hallo");
     return 0;
 }
-
+\end{CCode}
 Output:
+\begin{ConsoleOutput}
 <10>
 <1.23>
 <hallo>
-
-\end{CCode}
+\end{ConsoleOutput}
 
 
 
@@ -6704,18 +6704,18 @@ concept DigitalOutput =
 \end{CCode}
 
 Fehlermeldung ohne Konzept:
-\begin{quote}
+\begin{ConsoleOutput}
 error: no member named 'On' in 'Switch' MyOutput.On();
-\end{quote}
+\end{ConsoleOutput}
 Fehlermeldung mit Konzept:
 
-\begin{quote}
+\begin{ConsoleOutput}
  error: constraints not satisfied for class template 'Indicator' [with T = Switch]
  Indicator<Switch> I2(S);
 note: because 'Switch' does not satisfy 'DigitalOutput'
 requires DigitalOutpout<T>
 note: because 'o.On()' would be invalid: no member named 'On' in 'Switch'
-\end{quote}
+\end{ConsoleOutput}
 
 Mit Konzepts können auch Rückagebtypen, Member, Kategorien von Typen (Numerisch, Ganzzahl, Kopierbar, ...)
 und/oder Anforderungen an Typen (Vergleich möglich, Numerische Operationen unterstützt usw) festgelegt und überprüft werden.
@@ -7670,13 +7670,21 @@ an \CodeIndex{printf()} aus C angelehnt sind sowie an Python angelehnt sind. Ans
 \begin{CCode}
 std::cout << std::format("{}is {} or {}!\n", "Pi", 3.14, 3); 
 \end{CCode} 
-Ausgabe : Pi is 3.14 or 3
+Ausgabe: 
+
+\begin{ConsoleOutput}
+Pi is 3.14 or 3
+\end{ConsoleOutput}
 
 Die Platzhalter können auch von 0 an durchnummeriert werden, die Argumente werden dadurch in der Reihenfolge der Nummerierung eingefügt (Ein Nummer kann auch mehrfach verwendet werden):
 \begin{CCode}
 std::cout << std::format("{1} is {2} or {0}!\n", "Pi", 3.14, 3); 
 \end{CCode} 
-Ausgabe : 3.14 is 3 or Pi
+
+Ausgabe: 
+\begin{ConsoleOutput}
+3.14 is 3 or Pi
+\end{ConsoleOutput} 
 
 Platzhalter können auch Formatierungsanweisungen beinhalten, welche durch ein Doppelpunkt eingeleitet werden, und im Aufbau denjenigen von printf() aus C ähnlich sind und folgende Felder enthalten:
 
@@ -9178,11 +9186,11 @@ int main()
     }
 
  }
-
-Ausgabe:
-
-0 4 16 36 4
 \end{CCode}
+Ausgabe:
+\begin{ConsoleOutput}
+0 4 16 36 4
+\end{ConsoleOutput}
 
 Views speichern selbst keine Daten ab, sondern nutzen Iteratoren, um auf die Daten der Quell-Ranges zuzugreifen. Filteroperationen finden während der Iteration statt, Transformation nur bei Zugriffen auf die vom Iterator referenzierten Daten.
 
@@ -13091,45 +13099,47 @@ main () {
 \end{CCode}
 
 Und die Ausgabe:
-\begin{CCode}
+%\begin{CCode}
+\begin{ConsoleOutput}
 
 P:\HC\D386_O> hc3 i primes.cpp -DLAST=30
 MetaWare High C/C++ Compiler R2.6
 (c) Copyright 1987-94, MetaWare Incorporated
 E "primes.cpp",L16/C63(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<2>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<2>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<3>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<3>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<5>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<5>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<7>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<7>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<11>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<11>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<13>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<13>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<17>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<17>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<19>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<19>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<23>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<23>' ("primes.cpp",L2/C25).
 -- Detected during instantiation of Prime_print<30> at "primes.cpp",L21/C5:
 E "primes.cpp",L11/C25(#416):   prim
-|    Type `enum{}? can?t be converted to txpe `D<29>? ("primes.cpp",L2/C25).
+|    Type 'enum{}' can't be converted to txpe 'D<29>' ("primes.cpp",L2/C25).
 
 P:\HC\D386_O> exit 
 
-\end{CCode}
 
+\end{ConsoleOutput}
+%\end{CCode}
 \section{Glossar}
 {
 \setlength{\extrarowheight}{0.8ex}
