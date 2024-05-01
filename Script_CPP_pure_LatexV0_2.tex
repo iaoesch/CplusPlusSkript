@@ -1629,6 +1629,30 @@ Neue Syntax:
  
  Das Template \CodeStyle{std::initializer_list} kann aber auch bei gewöhnlichen Funktionen benutzt werden, um einer Funktion direkt in geschweiften Klammern eingeschlossene Listen zu übergeben. Container aus der Standardlibrary können ebenfalls direkt mit Initialisiererlisten initialisiert werden.
  
+  \section{Agregat-Initialisierung (Seit \CppVers{11})}
+ \label{subsect:AgregatInitialisierung}
+ \index{Agregat-Initialisierung}
+ Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden:
+ 
+ 
+  Beispiel:
+ \begin{CCode}
+ 	
+ 	class DemoClass {
+ 		public:
+ 		int a;
+		float f;
+		char c;
+ 	};
+ 	
+ 	
+ 	DemoClass TheObject = {1, 3.13f, 'x'}; 
+ 	
+ \end{CCode}
+ 
+
+
+ 
  \section{Klassen}
  Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
  
@@ -1793,7 +1817,17 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
 
  
   \chapter{Literale}
- Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu.   
+ \label{sect:Literale}
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu. 
+Ganzzahlige Literale können in dezimal, in hexadezimal, in binär oder in oktal geschrieben werden, zudem ist das \OviIndex{Gruppierungszeichen} \CodeStyle{'} erlaubt:
+\begin{description}
+\item[dezimal:] Werte werden normal geschrieben, Bsp.: \CodeStyle{int i = 123;}
+\item[hexadezimal:] Werte beginnen mit '0x', Bsp.: \CodeStyle{int i = 0x234;}
+\item[binär:] Werte beginnen mit '0b', Bsp.: \CodeStyle{int i = 0b00101100;}
+\item[oktal:] Werte beginnen mit einer '0', Bsp.: \CodeStyle{int i = 0123;}
+\item[Mit Gruppierungszeichen:] \CodeStyle{int i = 0b0010'1100'1001'0000; int i = 123'000'000; int i = 123'0'00'0000;}
+\end{description}
+Das Gruppierungszeichen dient einzig der besseren Lesbarkeit und wird vom Compiler innerhalb von Zahlen ignorieret.  
  
  \section{Nullpointer (Seit \CppVers{11})}
  \label{subsubsect:nullptr}
@@ -4242,6 +4276,7 @@ f2({5, 1.23f});
 Das \OviIndex{Placement-new} erlaubt die Instanzierung eines Objektes in einem vorgegebenen Speicherplatz, der Speicher wird vom Anwender zur Verfügung gestellt, und nicht vom System. Dafür darf auf ein solchermassen erzeugtes Objekt auf keinen Fall \CodeStyle{delete} aufgerufen werden. Hier ist einer der wenigen Fälle, in welchen der Destruktor explizit aufgerufen werden darf und muss.
 
 Die übergebene Adresse muss die Alignementanforderungen des Objektes erfüllen, ansonsten kann es zu undefiniertem Programmverhalten kommen.
+\label{subsect:Alignementcontroll}
 Mit \OviIndex{alignof()} kann die Alignementanforderung (in Bytes) eines Objektes abgefragt werden, und mit \OviIndex{alignas()} kann ein Objekt mit den Alignementanforderungen eines anderen Objektes erzeugt werden.
 \begin{CCode}
 
@@ -5228,6 +5263,27 @@ von beiden beteiligten Klassen muss virtuell sein.
 \chapter{Namensbereiche (Namespaces)}
 \label{chap:Namespaces}
 \OviIndex{Namespaces} sind als zusätzliche Strukturierungselemente eingeführt worden. Damit lässt sich eine Gruppe von Funktionen, Variablen und Klassen in eine Einheit zusammenfassen. Namensbereiche können auch verschachtelt werden, und ein bereits geschlossener Namensbereich kann jederzeit wieder geöffnet werden, auch in einer anderen Datei.
+Seit \CppVers{17} erlaubt die \OviIndex{nested namespace definition} einen vereinfachten Umgang mit verschachtelten Namensbereichen:
+
+Vor \CppVers{17} einzige Möglichkeit:
+
+\begin{CCode}
+ namespace A { 
+    namespace B { 
+       namespace C { 
+          ... 
+       } 
+    } 
+ }
+\end{CCode}
+
+Seit \CppVers{17} möglich (Auch bei erstmaliger Benutzung (Definition) der Namensbereiche :
+
+\begin{CCode}
+ namespace A::B::C { 
+    ... 
+ }
+\end{CCode}
 
 Wenn man von zwei verschiedenen Herstellern Klassenbibliotheken verwendet, kann es vorkommen, das beide Bibliotheken Klassen mit demselben Namen definieren, welche aber nicht dieselben Funktionen erfüllen. Es könnte z. B. in einer Graphikbibliothek eine Klasse Error und in einer Netzwerkbibliothek ebenfalls eine Klasse Error geben. Ohne Namespaces könnte man das Problem nur durch ändern einer der Bibliotheken umgehen, was aber nur möglich ist, wenn man den Sourcecode zu der Bibliothek besitzt. Andernfalls ist man auf die Mitarbeit des Bibliothekherstellers angewiesen oder muss die Bibliothek in eigene Bibliotheken einpacken. Mit Namespaces lässt sich das Problem elegant umgehen, indem jede Bibliothek ihren eigenen \OviIndex{Namensbereich} erhält:
 
@@ -5593,6 +5649,21 @@ Seit \CppVers{20} kann dazu auch eine Templateartige Syntax verwendet werden:
 \begin{CCode}
 auto L = []<class T>(T x) { return x*x};
 \end{CCode}
+
+\section{Variablentemplates}
+\index{Variablentemplates}
+\label{subsect:Variablentemplates}
+\begin{CCode}
+template<class T>
+constexpr T pi = T(3.1415926535897932385L); // variable template
+\end{CCode}
+
+\begin{CCode}
+template<class T>
+constexpr bool IsGreen = ColorType<T>::Green() == 1; // variable template
+\end{CCode}
+Erlaubt das definieren Parametrisierter Variablen 
+
 
 \section{Klassentemplates}
 \index{Klassentemplates}
@@ -11367,7 +11438,7 @@ Siehe \autoref{subsubsect:ControlAutoMember}
    \item Neuer Datentyp \CodeStyle{long long int}
    \item Static Assertions (Siehe \autoref{subsubsect:assertions})
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
-   \item Alignementkontrolle bei Objekten _
+   \item Alignementkontrolle bei Objekten (Siehe \autoref{subsect:Alignementcontroll})
    \item Einfacher Support für Garbagecollection
    \item Attribute (Siehe \autoref{subsubsect:Attribute})
    \item Unterstützung von Multithreading (Siehe \autoref{sect:Multithreading})
@@ -11409,10 +11480,10 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
 	 \item Alternative Typendeduktion bei Deklarationen
    \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. (Siehe \autoref{subsubsect:constexpr})
-   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden. _
-   \item Aggregate Member initialisierung _
-   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001) _
-   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000 _
+   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden. (Siehe \autoref{subsect:Variablentemplates}
+   \item Aggregate Member initialisierung (Siehe \autoref{subsect:AgregatInitialisierung}
+   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001) (Siehe \autoref{sect:Literale}
+   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000 (Siehe \autoref{sect:Literale}
    \item Generische Lambdafunktionen  (Siehe \autoref{subsection:GenerischeLambdafunktionen})
    \item Lambda capture expressions (Siehe \autoref{subsec:LambdaFunctions})
    \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen. (Siehe \autoref{subsubsect:Attribute})
@@ -11435,7 +11506,7 @@ Im Dezember 2017 publiziert.
 
     \item \CodeStyle{std::uncaught_exceptions}, as a replacement of \CodeStyle{std::uncaught_exception}
 
-    \item Nested namespace definition _
+    \item Nested namespace definition (Siehe \autoref{chap:Namespaces}
 
     \item Attributes for namespaces and enumerators
 		
