@@ -723,6 +723,8 @@ static_assert(LastInterrupt == 107, "Interrupt enum got corrupted");
 
 
 \section{Module}
+\label{sect:Module}
+\subsection{Traditionell}
 Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationsteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
 
 In der Headerdatei sind alle \OviIndex{Deklarationen} von Funktionen, Variablen, Konstanten, Datentypen und Klassen enthalten, die vom Modul zur Verfügung gestellt werden. Ebenfalls in der Headerdatei sind üblicherweise inline-Funktionen und Templates zu finden. 
@@ -736,6 +738,7 @@ Jedes Modul (.cpp) wird vom Compiler selbständig und unabhängig von anderen Modu
 
 Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen werden deshalb meist erst vom Linker erkannt, und mit nicht sehr aufschlussreichen Fehlermeldungen geahndet ('Symbol xyz not found' oder 'Symbol xyz allready defined in Module qwert.cpp').
 
+\subsection{Mit Modulen (\CppVers{20})}
 Mit (\CppVers{20}) steht mit dem Konzept der Module mit den Befehlen import und module eine Alternative zur Verfügung. 
 
 \begin{CCode}
@@ -1320,9 +1323,12 @@ Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Ob
 
 \chapter{Datentypen}
 \section{Einfache Datentypen}
-Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
+Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
 
 Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
+
+Für Fliesskommawerte sind seit \CppVers{23} die Typen \CodeStyle{std::float16_t}, \CodeStyle{std::bfloat16_t}, \CodeStyle{std::float32_t}, \CodeStyle{std::float64_t} und  \CodeStyle{std::float128_t} definiert.  
+(Siehe auch \autoref{sect:Literale})
 
 
 \section{Zeiger und Referenzen}
@@ -1632,7 +1638,7 @@ Neue Syntax:
   \section{Agregat-Initialisierung (Seit \CppVers{11})}
  \label{subsect:AgregatInitialisierung}
  \index{Agregat-Initialisierung}
- Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden:
+ Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich:
  
  
   Beispiel:
@@ -1647,7 +1653,11 @@ Neue Syntax:
  	
  	
  	DemoClass TheObject = {1, 3.13f, 'x'}; 
- 	
+
+    // Seit C++20
+    DemoClass TheObject = {.a = 1, .b = 3.13f, .c = 'x'}; 
+
+    	
  \end{CCode}
  
 
@@ -1816,9 +1826,11 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
 ändert seinen Wert schliesslich nicht.
 
  
-  \chapter{Literale}
+ \chapter{Literale}
  \label{sect:Literale}
  Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu. 
+
+ \section{Integer Literale} 
 Ganzzahlige Literale können in dezimal, in hexadezimal, in binär oder in oktal geschrieben werden, zudem ist das \OviIndex{Gruppierungszeichen} \CodeStyle{'} erlaubt:
 \begin{description}
 \item[dezimal:] Werte werden normal geschrieben, Bsp.: \CodeStyle{int i = 123;}
@@ -1828,7 +1840,38 @@ Ganzzahlige Literale können in dezimal, in hexadezimal, in binär oder in oktal g
 \item[Mit Gruppierungszeichen:] \CodeStyle{int i = 0b0010'1100'1001'0000; int i = 123'000'000; int i = 123'0'00'0000;}
 \end{description}
 Das Gruppierungszeichen dient einzig der besseren Lesbarkeit und wird vom Compiler innerhalb von Zahlen ignorieret.  
- 
+
+ \section{Fliesskomma Literale} 
+\OviIndex{Fliesskommaliterale} können seit \CppVers{17} auch in hexadezimal geschrieben werden, zudem ist ebenfalls das \OviIndex{Gruppierungszeichen} \CodeStyle{'} erlaubt:
+\begin{description}
+\item[dezimal float:] Werte werden mit Suffix f und mit Dezimalpunkt oder Exponent geschrieben, Bsp.: \CodeStyle{3.14f, 314E-2f}
+\item[dezimal double:] Werte werden normal mit Dezimalpunkt oder Exponent geschrieben, Bsp.: \CodeStyle{3.14, 314E-2}
+\item[dezimal long double:] Werte werden mit Suffix L und mit Dezimalpunkt oder Exponent geschrieben, Bsp.: \CodeStyle{3.14L, 314E-2L}
+\item[hexadezimal:] Werte beginnen mit '0x' und müssen zwingend p als Exponentensymbol beinhalten, Bsp.: \CodeStyle{0x234p4, 0x234p-2}
+\item[Mit Gruppierungszeichen:] \CodeStyle{3.141'592'783; 123'45'00.1234'23'4545', 123'45e-2}
+\end{description}
+ Seit \CppVers{23} sind auch weitere Suffixes für zusätzliche Bitbreiten bei Fliesskommakonstanten (Und die entsprechenden Datentypen) möglich): 
+ \begin{CCode}
+    std::float16_t  a = 3.14f16   // 16-Bit float (11 / 5)
+    std::float32_t  b = 3.14f32   // 32-Bit float (24 / 8)
+    std::float64_t  c = 3.14f64   // 64-Bit float (53 / 11)
+    std::float128_t d = 3.14f128  // 16-Bit float (113 / 15)
+    std::bfloat16_t a = 3.14bf16  // 16-Bit float (8 / 8)
+ \end{CCode}
+(M / E) bedeutet M Bits für Mantisse, E Bits für Exponent
+
+
+ \section{Charakter Literale} 
+Seit \CppVers{17} sind \OviIndex{UTF8 Charakterliterale} möglich:
+\begin{CCode}
+
+    char c1 = 'a'; 
+    char8_t C1 = u8'a';  // Nur für single-8-Bit UTF8 Codes erlaubt
+    char16_t uc1 = u'a'; // Nur für single-16-Bit UTF16 Codes erlaubt
+    char32_t Uc1 = U'a';
+    wchar_t wc1 = L'a';
+\end{CCode}
+
  \section{Nullpointer (Seit \CppVers{11})}
  \label{subsubsect:nullptr}
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
@@ -1934,6 +1977,16 @@ Mit dem Schlüselwort \CodeIndex{auto} wird der benötigte Datentyp einer Variable
 	}
 		
 \end{CCode}
+
+\subsection{Inline Variablen (Seit \CppVers{17})}
+\label{subsect:InlineVariablen}
+\index{Inline Variablen}
+Variablen, welche als Inline definiert sind können in mehreren Modulen definiert werden, werden jedoch vom Linker
+zu einer Variable zusammengefasst. (Im Gegensatz zu 'normalen' globalen Variablen, bei welchen der Linker einen Fehler ausgibt, wenn sie in mehreren Modulen definiert sind.) Diese kommen vorallem bei Definitionen in Headerdateien zum Einsatz.
+\begin{CCode}
+	inline int Errorcode;  // Global, but only one instance
+\end{CCode}
+
 
 
 \subsection{Structured Bindings (Seit \CppVers{17})}
@@ -2319,6 +2372,20 @@ Output:
 \begin{ConsoleOutput}
 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144,
 \end{ConsoleOutput} 
+
+\phantomsection
+\label{subsubsect:foroptionalinitialisierer}
+Seit \CppVers{20} kann die automatische for-Schlaufe ebenfalls einen Initialisierungsteil haben:
+
+\begin{CCode}
+	
+	// Ueber alle Elemente des Rueckgabewertes von GetAll iterieren
+	for (auto Values = GetAll(); int &r : Valuesmn) {
+		Summe += r;
+	}
+	
+\end{CCode}
+
 
 
 \section{switch()}
@@ -3233,6 +3300,8 @@ auseinanderzuhalten wird ein zusätzliches (bedeutungsloses) Argument eingeführt:
 }   
 
 Allgemein gilt: wann immer möglich eine Referenz statt ein Objekt übergeben, dies führt zu effizienterem Code. (Noch besser ist, wenn, wann immer möglich, konstante Referenzen benutzt werden)
+
+Seit \CppVers{23} können die Operatoren \CodeStyle{()} und \CodeStyle{[]} auch als statische Klassenmethoden überladen werden, vorher durften sie nur als gewöhnliche Klassenmethoden überladen werden.
 
 Die Operatoren \CodeStyle{new} und \CodeStyle{delete} lassen sich ebenfalls überladen, dadurch lässt sich eine eigene Speicherverwaltung implementieren, dabei kann das globale \CodeStyle{new}/\CodeStyle{delete}, oder der Operator \CodeStyle{new}/\CodeStyle{delete} für eine bestimmte Klasse überladen werden:
 
@@ -5660,9 +5729,13 @@ constexpr T pi = T(3.1415926535897932385L); // variable template
 
 \begin{CCode}
 template<class T>
-constexpr bool IsGreen = ColorType<T>::Green() == 1; // variable template
+constexpr bool HasColor = ColorType<T>::IsMonochrome() == false; // variable template
+
+if (HasColor == true ) {
+   SetUpColoredEnvironment();
+}
 \end{CCode}
-Erlaubt das definieren Parametrisierter Variablen 
+Erlaubt das definieren parametrisierter Variablen 
 
 
 \section{Klassentemplates}
@@ -7392,6 +7465,7 @@ Bei den Berechnungen werden jeweils die Basis-Timer-Ticks der Operanden in den a
 
  
 \subsection{Weitere Elemente von std::chrono }
+\label{subsect:DateCalender}
 In der chrono-Library finden sich weiter Objekte zum Umgang mit Datum, Kalendern, Wochentagen, Zeitzonen sowie der Umwandlung dieser verschiedenen Objekte ineinander sowie zur Ein- und Ausgabe von Zeit- und Datumsobjekten
  
 \subsection{Beispiele zu std::chrono }
@@ -7889,6 +7963,9 @@ auto b3 = std::format("{:.{}f}", pi, 5.0);     // throws: precision is not of in
 auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
 \end{CCode}
 
+
+\phantomsection
+\label{subsubsect:printformated}
 Seit \CppVers{23} kann die Ausgabe mit \OviIndex{std::print} und std::println weiter vereinfacht werden:
 \begin{CCode}
 std::print("{}is {} or {}!\n", "Pi", 3.14, 3); 
@@ -7979,6 +8056,7 @@ Unter \autoref{sec:ComplexFormatter} findet sich ein umfangreicheres Beispiel.
 Die Klasse iostream kombiniert die Möglichkeiten eines istream mit der eines ostreams, Sie dient als Abstraktion für alle konkret möglichen Ein/Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istream und ostream unterstützt.
 
 \subsection{Datei Ein- und Ausgabe in \Cpp}
+\label{subsect:DateiIO}
 
 
 Die Datei Ein- und Ausgabe läuft in  \Cpp über die Klassen ifstreeam, ofstream und fstream (Bidirektional).
@@ -8009,6 +8087,8 @@ Die Art der Datei kann durch weitere Argumente beim Konstruktor näher spezifizer
 Einige dieser Argumente sind vom Standard definiert, andere sind Betriebssystem und Compilerabhängig. Mehrere Modi können mit \CodeStyle{|} (binäres or) kombiniert werden.
 \CodeStyle{ios_base::app} öffnet eine Datei zum Anhängen, der default ist überschreiben.
 \CodeStyle{ios_base::binary} öffnet eine Datei im Binärmodus, der Default ist Textmodus.
+\CodeStyle{ios_base::noreplace} (Seit \CppVers{23}) öffnet eine Datei im exklusivmodus, der Default ist nicht exklusiv.
+
 
 
 Die Unterscheidung zwischen Binär und Textmodus ist vor allem unter Windows und Dos wichtig, hier wird im Textmodus das Zeichen \CodeStyle{0x0A} in die Zeichenkombination \CodeStyle{0x0A 0x0D} umgewandelt, was bei binären Daten fatal sein kann.
@@ -9385,6 +9465,7 @@ int main()
 \emph{Wichtig}, bevor ein Threadobjekt zerstört wird, muss mit \CodeStyle{join()} auf das Ende des dazugehörigen Threads gewartet werden, sonst ist undefiniertes Verhalten ('Absturz') die Folge, deshalb sollten besser \OviIndex{Jthread} verwendet werden. 
 
 \subsection{Jthread (seit \CppVers{20})}
+\label{subsect:jthread}
 Die Klasse std::\OviIndex{Jthread} ist eine verbesserte Version von  \CodeStyle{std::thread}. Sie hat im wesentlichen dieselbe Funktionalität wie  \CodeStyle{std::thread}, nur wird im Destruktor automatisch  \CodeStyle{join()} aufgerufen, so dass im Code nicht mehr zwingend  \CodeStyle{join()} aufgerufen werden muss, bevor das Threadobjekt aufhört zu existieren.
 
 \subsection{Thread lokale Variablen}
@@ -11439,7 +11520,7 @@ Siehe \autoref{subsubsect:ControlAutoMember}
    \item Static Assertions (Siehe \autoref{subsubsect:assertions})
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
    \item Alignementkontrolle bei Objekten (Siehe \autoref{subsect:Alignementcontroll})
-   \item Einfacher Support für Garbagecollection
+   \item Einfacher Support für Garbagecollection (Wieder entfernt seit \CppVers{17}
    \item Attribute (Siehe \autoref{subsubsect:Attribute})
    \item Unterstützung von Multithreading (Siehe \autoref{sect:Multithreading})
 	 \item Operator \CodeStyle{noexcept()} zum prüfen ob ein Ausdruck eine Exception werfen könnte
@@ -11513,9 +11594,9 @@ Im Dezember 2017 publiziert.
 		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}  (Siehe \autoref{subsubsect:Attribute})
 
 
-    \item UTF-8 character literals _
+    \item UTF-8 character literals (Siehe \autoref{sect:Literale}
 		
-		\item Hexadecimal floating-point literals _
+	\item Hexadecimal floating-point literals (Siehe \autoref{sect:Literale}
 
     \item Constant evaluation for all non-type template arguments
 
@@ -11547,11 +11628,11 @@ Im Dezember 2017 publiziert.
 
     \item Guaranteed copy elision by compilers in some cases
 
-    \item Some extensions on aligned memory allocation _
+    \item Some extensions on aligned memory allocation \CodeStyle{new} und \CodeStyle{delete} können ein zusätzliches Argument für erweiterte Alignement-Anforderungen erhalten (Siehe auch \autoref{subsect:Alignementcontroll})
 
     \item Template deduction of constructors, allowing \CodeStyle{pair(5.0, false)} instead of \CodeStyle{pair<double,bool>(5.0, false)} (Siehe \autoref{subsection:AutomatischeTemplateparametererkennung})
 
-    \item Inline variables, which allows the definition of variables in header files _
+    \item Inline variables, which allows the definition of variables in header files (Siehe \autoref{subsect:InlineVariablen}
     
     
     \item \CodeStyle{template <auto K>} für Konstanten (Siehe \autoref{subsection:ParametrisierungvonTemplatesmitKonstanten})
@@ -11571,8 +11652,8 @@ Seit Dezember 2020 verabschiedet.
  \begin{itemize}
     \item Feature test macros
     \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
-    \item designated initializers _
-    \item init-statements and initializers in range-for _
+    \item designated initializers (Siehe \autoref{subsect:AgregatInitialisierung}
+    \item init-statements and initializers in range-for (Siehe \autoref{subsubsect:foroptionalinitialisierer}
     \item \CodeStyle{char8_t}
     \item Attribute \CodeStyle{[[no_unique_address]]} (Siehe \autoref{subsubsect:Attribute})
     \item Attribute \CodeStyle{[[likely]]} (Siehe \autoref{subsubsect:Attribute})
@@ -11582,7 +11663,7 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{consteval}, \CodeStyle{constinit} (Siehe \autoref{subsubsect:consteval} und \autoref{subsubsect:constinit})
     \item further relaxed constexpr (Siehe \autoref{subsubsect:constexpr})
     \item signed integers are 2's complement
-   \item  aggregate initialization using parentheses _
+   \item  aggregate initialization using parentheses (Siehe \autoref{subsect:AgregatInitialisierung}
     \item Coroutines (Siehe \autoref{subsec:CoRoutinen})
     \item Modules (Siehe \autoref{subsubsect:Modules})
     \item Constraints and concepts (Siehe \autoref{sect:Konzepts})
@@ -11592,16 +11673,16 @@ Seit Dezember 2020 verabschiedet.
 \end{itemize}
 \begin{itemize}
     \item  Formatting library (Ersatz für printf(), siehe \autoref{subsubsect:formated}))
-    \item Calendar and Time Zone library _
+    \item Calendar and Time Zone library (Siehe \autoref{subsect:DateCalender}
     \item \CodeStyle{std::source_location}
     \item \CodeStyle{std::span}
     \item \CodeStyle{std::endian}
-    \item array support for s\CodeStyle{td::make_shared} _
+    \item array support for \CodeStyle{std::make_shared} (Siehe \autoref{sec:StdSmartpointer})
    \item  \CodeStyle{std::remove_cvref}
     \item \CodeStyle{std::to_address}
     \item floating point and shared\_ptr atomics
     \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore} (Siehe \autoref{subsect:Synchronisationsmittel})
-    \item \CodeStyle{std::jthread} and thread cancellation classes _
+    \item \CodeStyle{std::jthread} and thread cancellation classes (Siehe \autoref{subsect:jthread})
     \item <version> Header mit Versionsinformation zur benutzten Standardlibrary
     \item \CodeStyle{std::osyncstream}
     \item \CodeStyle{std::u8string} and other \CodeStyle{char8_t} uses
@@ -11613,7 +11694,7 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{std::make_obj_using_allocator} etc
     \item \CodeStyle{std::make_shared_for_overwrite}/\CodeStyle{std::make_unique_for_overwrite} z.B. zum Allozieren grosser Arrays ohne diese zu initialisieren, effizienter falls Arrays später gefüllt werden.
     \item heterogeneous lookup in unordered associative containers
-    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument _
+    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument (Siehe \autoref{sect:Allokatoren})
     \item \CodeStyle{std::execution::unseq}
     \item \CodeStyle{std::midpoint and std::lerp}
     \item \CodeStyle{std::ssize}
@@ -11680,13 +11761,14 @@ Sprache (Stand 14.2.2023)
 \item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$)
 \item Relaxing some constexpr restrictions (Siehe \autoref{subsubsect:constexpr})	
 \item Simpler implicit move 	
-\item static operator(), static operator[] Dürfen nun auch (statische) Klassenmethoden sein _
+\item static operator(), static operator[] [] und () Dürfen nun auch (statische) Klassenmethoden sein (Siehe \autoref{sect:UeberladenOperatoren})
+
 \item Requirements for optional extended floating-point types 	
 \item Class template argument deduction from inherited constructors 
 \item Attribute [[assume]] 	(Siehe \autoref{subsubsect:Attribute})
 \item Support for UTF-8 as a portable source file encoding 	
 \item Permitting static constexpr variables in constexpr functions (Siehe \autoref{subsubsect:constexpr})	
-\item Extending the lifetime of temporaries in range-based for loop initializer _
+\item Extending the lifetime of temporaries in range-based for loop initializer (Siehe \autoref{subsubsect:foroptionalinitialisierer})
 \ifshowdetails
 \item DR20: Meaningful exports 
 \item DR20: consteval needs to propagate up 	
@@ -11709,7 +11791,7 @@ Library (Stand 14.2.2022)
 \item std::is\_scoped\_enum 
 \item basic\_string::contains(), basic\_string\_view::contains() 
 \item std::to\_underlying 
-\item Relaxing requirements for time\_point<>::clock _
+\item Relaxing requirements for time\_point<>::clock (Siehe \autoref{sect:STDChrono})
 \item DR: std::visit() for classes derived from std::variant 
 \item DR: Conditionally borrowed ranges 
 \item DR: Repairing input range adaptors and std::counted\_iterator 
@@ -11725,25 +11807,25 @@ Library (Stand 14.2.2022)
 \item Range constructor for std::basic\_string\_view 
 \item Default template arguments for pair's forwarding constructor 
 \item Remove Garbage Collection and Reachability-Based Leak Detection (library support) 
-\item DR: join\_view should join all views of ranges _
-\item DR: view does not require default\_initializable _
-\item DR: Range adaptor objects bind arguments by value _
+\item DR: join\_view should join all views of ranges (Siehe \autoref{subsect:Ranges})
+\item DR: view does not require default\_initializable (Siehe \autoref{subsect:Ranges})
+\item DR: Range adaptor objects bind arguments by value (Siehe \autoref{subsect:Ranges})
 \item DR: constexpr for std::optional and std::variant 
-\item DR: std::format() improvements _
-\item DR: lazy\_split\_view and redesigned split\_view _
-\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform _
-
+\item DR: std::format() improvements (Siehe \autoref{subsubsect:formated})
+\item DR: lazy\_split\_view and redesigned split\_view (Siehe \autoref{subsect:Ranges})
+\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform (Siehe \autoref{subsect:Ranges})
 \item Heterogeneous erasure overloads for associative containers 
 \item std::byteswap() 
 \item Printing volatile T* 
 \item basic\_string::resize\_and\_overwrite() 
-\item Monadic operations for std::optional _
+\item Monadic operations for std::optional (Siehe \autoref{sect:VariantOptionalAny})
+
 \item std::move\_only\_function 
 \item Add a conditional noexcept specification to std::exchange 
 \item Require span \& basic\_string\_view to be TriviallyCopyable 
 \item Clarifying the status of the "`C headers"' 
-\item DR: Fix ranges::istream\_view _
-\item DR: Add support for non-const-formattable types to std::format _
+\item DR: Fix ranges::istream\_view (Siehe \autoref{subsect:Ranges})
+\item DR: Add support for non-const-formattable types to std::format (Siehe \autoref{subsubsect:formated})
 \item DR: What is a view 
 \item DR: fixing locale handling in chrono formatters 
 \item DR: Cleaning up integer-class types 
@@ -11753,23 +11835,23 @@ Library (Stand 14.2.2022)
 \item Deprecating std::aligned\_storage and std::aligned\_union 
 \item A type trait to detect reference binding to temporary 
 \item constexpr std::unique\_ptr 
-\item ranges::to _
+\item ranges::to (Siehe \autoref{subsect:Ranges})
 \item Pipe support for user-defined range adaptors 
-\item ranges::iota, ranges::shift\_left, and ranges::shift\_right _
-\item ranges::join\_with\_view _
-\item ranges::chunk\_view and ranges::slide\_view _
-\item ranges::chunk\_by\_view _
+\item ranges::iota, ranges::shift\_left, and ranges::shift\_right (Siehe \autoref{subsect:Ranges})
+\item ranges::join\_with\_view (Siehe \autoref{subsect:Ranges})
+\item ranges::chunk\_view and ranges::slide\_view (Siehe \autoref{subsect:Ranges})
+\item ranges::chunk\_by\_view (Siehe \autoref{subsect:Ranges})
 \item  std::mdspan: a non-owning multidimensional array reference 	
 \item <flat\_map>  	
 \item <flat\_set> 	
 \item ranges::find\_last(), ranges::find\_last\_if(), and ranges::find\_last\_if\_not()  	
 \item Freestanding Library: Easy <utility>, <ranges>, and <iterator> 	 	
-\item views::stride  _	
+\item views::stride  (Siehe \autoref{subsect:Ranges})	
 \item Compatibility between std::tuple and tuple-like objects  	
 \item Rectifying constant iterators, sentinels, and ranges 	 	
-\item Formatting Ranges  	_
+\item Formatting Ranges (Siehe \autoref{subsect:Ranges})
 \item Improve default container formatting 	 	
-\item Formatted output library <print>  _	
+\item Formatted output library <print>  (Siehe \autoref{subsubsect:printformated})	
 \item Formatting std::thread::id and std::stacktrace  	
 \item constexpr for integral overloads of std::to\_chars() and std::from\_chars().  	
 \item ranges::contains() and ranges::contains\_subrange()  	
@@ -11777,13 +11859,13 @@ Library (Stand 14.2.2022)
 \item constexpr std::bitset  	
 \item basic\_string::substr() \&\& 	 	
 \item views::as\_rvalue  	
-\item Standard Library Modules  _	
+\item Standard Library Modules (Siehe \autoref{sect:Module})
 \item std::forward\_like()  	
-\item Support exclusive mode for std::fstream 	_ 	
+\item Support exclusive mode for std::fstream (Siehe \autoref{subsect:DateiIO})
 \item views::repeat  	
 \item Relaxing range adaptors to allow for move-only types  	
 \item std::basic\_string\_view range constructor should be explicit  	
-\item std::generator: synchronous coroutine generator for ranges  	_
+\item std::generator: synchronous coroutine generator for ranges (Siehe \autoref{subsect:Ranges})
 \item Add a conditional noexcept specification to std::apply  	
 \item Explicit lifetime management (std::start\_lifetime\_as)  	
 \item Clarify handling of encodings in localized formatting of chrono types  	
