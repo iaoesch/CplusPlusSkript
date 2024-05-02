@@ -4508,7 +4508,7 @@ int main (int argc, char *argv[])
 \NextPagePlease 
 \section{Vererbung}
 \label{sect:Vererbung}
-Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden, die von einer existierenden Klasse erbt. 
+Um eine existierende Klasse zu erweitern, kann eine neue Klasse erstellt werden, die von einer (oder mehreren) existierenden Klasse erbt. 
 
 Bei der \OviIndex{Vererbung} übernimmt die neue Klasse zuerst einmal alle Attribute und Methoden der bereits bestehenden Klasse, und fügt eventuell neue Attribute und Methoden hinzu, oder ändert die geerbten Methoden ab (Überschreibt Sie).
 
@@ -4740,6 +4740,9 @@ Um unter \Cpp \OviIndex{Polymorphismus} zu ermöglichen, müssen die betroffenen M
 \emph{Sobald bei einer Klasse eine Methode virtuell ist, sollte auch der Destruktor als virtuell deklariert werden. Sogar dann, wenn in der Basisklasse eigentlich kein Destruktor nötig wäre!} Wenn man dies unterlässt, handelt man sich meist Probleme ein, weil ansonsten unter Umständen der falsche Destruktor aufgerufen wird. (Spätestens in der Wartungsphase bei Erweiterungen). Es soll ja schliesslich der Destruktor des aktuellen Objektes und nicht derjenige der Basisklasse benutzt werden.
 
 Wenn es unsinnig ist, von der Basisklasse ein Objekt anlegen zu können, weil es keine Entsprechung in der realen Welt hat (Weil es z. B. eine Generalisierung oder eine reine Schnittstellendefinition ist), kann man sie als \OviIndex{abstrakte Klasse} deklarieren. Dazu muss man unter \Cpp mindestens eine Methode als \OviIndex{rein virtuell} deklarieren (mit \CodeStyle{ = 0} in der Deklaration: '\CodeStyle{virtual void f(void) = 0}'). Danach muss die Funktion für die Basisklasse auch nicht implementiert werden. Es ist ja jetzt schliesslich nicht mehr möglich, Objekte der Basisklasse zu erzeugen, entsprechend besteht meistens auch kein Bedarf für diese Funktion. (Ausser sie würde von einer abgeleiteten Klasse direkt aufgerufen.)
+
+Abgeleitete Klassen dürfen auch private (!) virtuelle Methoden der Basisklasse überschreiben.
+
 \NextPagePlease
 \paragraph{MyClass.hpp} (Klassendeklaration)
 \begin{CCode}
@@ -4749,6 +4752,11 @@ class MyClass {
                 MyClass(int new_k);
   virtual      ~MyClass();
   virtual  void Print() const;
+
+  void PublicInterfaceDoIt() {DoIt();} // calls private virtual method
+  
+  private:
+  virtual void DoIt(); // private virtual method
 };
 \end{CCode}
 
@@ -4760,9 +4768,13 @@ class ExtendedClass : public MyClass {  // erben von MyClass
   int Additional;                       // Zusaetzliches Attribut
   public:
              ExtendedClass (int new_k, int new_Addit);
-  virtual   ~ExtendedClass ();     // virtual eigentlich nur noetig wenn von dieser 
-                                   // Klasse weiter abgeleitet wird   
+  virtual   ~ExtendedClass ();     // virtual nicht noetig, kann aber klarheit schaffen 
+  
   virtual void Print() const;            // dito
+  
+  // private:  // private allowed but not required for overwriting
+  virtual void DoIt(); // overwrite private virtual method of base
+  
 };
 \end{CCode}
 
@@ -4829,6 +4841,10 @@ int main (int argc, char *argv[])
   Ptr = &Object2;
   Ptr->Print();    // Achtung, benutzt ExtendedClass::Print() da MyClass::Print()
                    // virtuell ist und Aufruf via Pointer laeuft
+  Ptr->DoIt() // Error, ist private
+  Ptr->PublicInterfaceDoIt(); // Ok, calls DoIt() indirectly, calls ExtendedClass::DoIt()
+                              // Due to polymorphism
+                   
   Ptr = &Object3;
   Ptr->Print();    // Achtung, benutzt MyClass::Print() da MyClass::Print()
                    // virtuell ist und Aufruf via Pointer laeuft
@@ -4973,13 +4989,13 @@ Oft sind der Ort, an dem ein Fehler entsteht, und der Ort, wo er angemessen beha
 
 Um die Fehlerbehandlung zu vereinfachen, wurde das \OviIndex{Exceptionhandling} in \Cpp eingeführt. Wenn irgendwo im Programmlauf ein Problem auftritt, welches an dieser Stelle nicht behandelt werden kann, wirft man mit \CodeStyle{throw()} eine \OviIndex{Ausnahme}. Damit wird die normale Abarbeitung des Programmes abgebrochen und zum nächsten passenden Fehlerbehandlungsteil gesprungen. Dieser kann innerhalb der selben Funktion sein, aber auch in einer der aufrufenden Funktionen. Dabei wird die Abarbeitung der aktuellen Funktion(-en) abgebrochen und in der Aufrufhierarchie (=Verschachtelung von Aufrufen) zurückgekehrt, bis ein passender \OviIndex{Handler} gefunden wird. Falls kein passender Handler existiert, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
 
-Mit \CodeIndex{throw} werden normalerweise Objekte geworfen, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch \CodeStyle{int, char,} ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
+Mit \CodeIndex{throw} werden normalerweise Objekte geworfen, am besten von \CodeStyle{std::exception} abgeletet, es kann aber im Prinzip jeder Datentyp geworfen werden (Also auch \CodeStyle{int, char,} ...). Beim Fangen wird jeweils der Handler aktiv, der den entsprechenden Datentyp auffangen kann.
 Handler für Basisklassen fangen auch Objekte von davon abgeleiteten Klassen. Der Handler \CodeStyle{catch(...)} fängt jede beliebige Exception. Nach jedem \CodeIndex{try}-Block folgt eine Liste von Handlern (\CodeIndex{catch()}). Die Handler werden in der Reihenfolge ihrer Definition durchsucht, der erste passende Handler wird benutzt, und alle weiteren Handler
 dieser Liste ignoriert, auch wenn einer noch besser passen würde. Somit werden alle Handler nach \CodeStyle{catch(...)} ignoriert. 
 
 Funktionen (und Methoden) konnten bis \CppVers{17} resp. \CppVers{20} in der Deklaration angeben, ob und welche Exceptions sie werfen. Dazu wird das Schlüsselwort \CodeStyle{throw()} verwendet. Im \CodeStyle{throw} Statement werden alle Exceptions aufgeführt, welche
 von der Funktion ausgelöst werden können (Erlaubt bis \CppVers{17}). Ein fehlendes \CodeStyle{throw()} Statement bedeutet, dass diese
-Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres \CodeStyle{ throw()} (Erlaubt bis \CppVers{20})bedeutet, dass die
+Funktion ohne Einschränkung alle Exceptions werfen kann, ein leeres \CodeStyle{ throw()} (Erlaubt bis \CppVers{20}) bedeutet, dass die
 Funktion keine Exception werfen kann. Der Compiler versucht bereits zur Compilezeit alle erkennbaren
 Widersprüche zu reklamieren, was jedoch (Im Gegensatz zu Java) nur eingeschränkt möglich ist. Zudem wird die ganze Funktion mit einem entsprechenden \CodeStyle{try}/\CodeStyle{catch} Block umschlossen, um unerlaubte Exceptions zu erkennen. Deshalb wird auch eher davon abgeraten, dieses Feature zu nutzen. Wenn eine Funktion (Oder eine von ihr aufgerufene Funktion) zur Laufzeit versucht, eine nicht deklarierte
 Exception zu werfen, wird das Programm mit einer Laufzeitfehlermeldung abgebrochen.
@@ -4994,7 +5010,7 @@ Seit \CppVers{20} ist \CodeStyle{throw()} nicht mehr zulässig, um anzuzeigen das
 
 Beispiel:
 \begin{CCode}
-class ErrorClass {
+class ErrorClass { // derive from std::exception would be even better
 };
 
 class NegativeSquareRootErrorClass : public ErrorClass{
@@ -5008,7 +5024,7 @@ int ThrowAnything(int x) // Can throw any exception
   ...
 }
 
-//deprecated, use noexcept
+//deprecated since Cpp 20, use noexcept
 int ThrowNothing(int x) trow() // Can throw no exception, must catch all
 {                              // internal generated exception
   ...
@@ -5285,7 +5301,7 @@ dp = reinterpret_cast<D*>(a);     // OK, aber vermutlich sinnlos, wandelt int in
 
 \end{CCode}
 
-\paragraph*{\CodeStyle{static_cast<>()}}Mit dem Castoperator \CodeStyle{static_cast<>()}\index{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie \CodeStyle{int} und \CodeStyle{float}, oder zwischen Zeiger auf verwandte Objekte (Innerhalb der Vererbungshierarchie). Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt sowie in Zeiger nicht verwandter Typen ist nicht möglich. Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt ist nicht möglich, und \CodeStyle{const} kann ebenfalls nicht weggecastet werden. Nullpointer und void pointer können in jeden beliebigen Pointertypen umgewandelt werden. \CodeStyle{static_cast<>()} ist sicherer, und
+\paragraph*{\CodeStyle{static_cast<>()}}Mit dem Castoperator \CodeStyle{static_cast<>()}\index{static\_cast<>()} kann zwischen verwandten Typen gewandelt werden, also z. B. zwischen numerischen Typen wie \CodeStyle{int} und \CodeStyle{float}, oder zwischen Zeiger auf verwandte Objekte (Innerhalb der Vererbungshierarchie). Aber Zeiger in Numerische Werte zu konvertieren und umgekehrt sowie in Zeiger nicht verwandter Typen ist nicht möglich, und \CodeStyle{const} kann ebenfalls nicht weggecastet werden. Nullpointer und void pointer können in jeden beliebigen Pointertypen umgewandelt werden. \CodeStyle{static_cast<>()} ist sicherer, und
 dem \CodeStyle{reinterpret_cast<>()} wann immer möglich vorzuziehen. Objekte mit Umwandlungsoperatoren können zudem in andere Objekte oder Typen umgewandelt werden.
 \begin{CCode}
 class D {...};
@@ -5530,7 +5546,7 @@ Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an
  
 Entsprechend können auch Konstruktoren als \CodeStyle{constexpr} definiert werden, dies erlaubt das Erzeugen konstanter Objekte. \CodeStyle{constexpr}-Funktionen können auch mit Nicht-Konstanten Argumenten aufgerufen werden, in diesem Fall verliert ihr Rückgabewert für diesen Aufruf seine Konstantheit.
 
-Ein etwas kompleexeres Beispiel für \CodeStyle{constexpr}:
+Ein etwas komplexeres Beispiel für \CodeStyle{constexpr}:
 Es soll die nte Fibonaccizahl in einer Konstanten abgespeichert werden, dazu wird eine Klasse verwendet, welche die Fibonaccizahlen der Reihe nach generiert. Beachten: Der Konstruktor und alle anderen verwendeten Methoden müssen zwingend \CodeStyle{constexpr} (oder \CodeStyle{consteval}) sein, sonst ist die Ausführung zur Compilezeit nicht möglich.
 
 \begin{CCode}
@@ -6963,7 +6979,7 @@ String gelesen, oder in einen String geschrieben wird:
 
 \end{CCode}
 \subsection{Allokatoren}
-Strings können wie alle Container können mit \OviIndex{Allokatoren} (Siehe \autoref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
+Strings können wie alle Container mit \OviIndex{Allokatoren} (Siehe \autoref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocator verwendet, welcher einfach new und delete verwendet.  
 
 
 \section{Resourcenverwaltung mit Unique Pointer und Shared Pointer}  \label{sec:StdSmartpointer}
@@ -9462,7 +9478,7 @@ Verwaltung der Blöcke notwendig ist.
 
 Verschiedene Buffferresourcen können beliebig verkettet werden. (Wenn einer Resource der Speicher ausgeht, fordert sie
 bei ihrem Nachfolger Speicher an. Als Ende einer Kette kann die \CodeStyle{null_memory_resource} verwendet werden, diese
-läst direkt eine Exception aus, wenn von ihr Speicher angefordert wird.
+löst direkt eine Exception aus, wenn von ihr Speicher angefordert wird.
 
 
 \section{Multithreading support (Seit \CppVers{11})}
