@@ -2380,7 +2380,7 @@ Seit \CppVers{20} kann die automatische for-Schlaufe ebenfalls einen Initialisie
 \begin{CCode}
 	
 	// Ueber alle Elemente des Rueckgabewertes von GetAll iterieren
-	for (auto Values = GetAll(); int &r : Valuesmn) {
+	for (auto Values = GetAll(); int &r : Values) {
 		Summe += r;
 	}
 	
@@ -4003,14 +4003,28 @@ die Kapselung erst recht durchbrochen wird.
 Achtung, Templates als \CodeStyle{friend} zu deklarieren ist gefährlich, dadurch werden alle aktuellen und zukünftigen, dem Template entsprechenden Funktionen und Methoden Zugriffsberechtigung erhalten.
 
 \section{Vorwärts Deklarationen} 
-\index{Vorwärts Deklarationen}Wenn man Zeiger oder Referenzen auf Objekte definieren/deklarieren will, muss die Klasse nicht vollständig bekannt sein. Solange man nicht auf Attribute oder Methoden der Klasse zugreift, reicht eine einfache Klassendeklaration der Form
+\index{Vorwärts Deklarationen}Wenn man Zeiger oder Referenzen auf Objekte definieren/deklarieren will, oder Methoden deklarieren möchte, welche Objekte als Parameter oder Rückgabewert haben muss die Klasse nicht vollständig bekannt sein. Solange man nicht auf Attribute oder Methoden der Klasse zugreift oder Objekte instanzieret, reicht eine einfache Klassendeklaration der Form \CodeStyle{class SomeClass;}
 \begin{CCode}
 class SomeClass;
 
-void f1(SomeClass &r);
+void f1(SomeClass &r);       // Ok
+void f2(SomeClass &r);       // Ok
+SomeClass f3(SomeClass s);   // Ok
+
+void f1(SomeClass &r)  // Ok
+{
+   f2(r)  // Ok, pass by reference
+   r.x = 2; // Error, needs full class definition
+   f3(r);   // Error, pass by value, needs full class definition
+}
+
+SomeClass f3(SomeClass s) // Error, needs full class definition
+{
+}
+
 \end{CCode}
 
-Sobald man auf Member zugreift, muss die Klasse vollständig bekannt sein.
+Sobald man auf Member zugreift, ein Objekt der Klasse instanziert oder kopiert (Funktionsaufruf) muss die Klasse vollständig bekannt sein.
 
 \section{Inline Methoden}
 \label{sect:InlineMethoden}
@@ -4118,6 +4132,43 @@ Auto a;
 
 a.SetGewicht(g);  // Wird vom Compiler zu SetGewicht(&a, g); uebersetzt,
                   // &a landet im this-Pointer 
+\end{CCode}
+
+Seit \CppVers{23} kann der Thispointer durch einen \OviIndex{Expliziten Objectparameter} ersetzt werden,
+dabei kann das Objekt auch by Value (Also eine Kopie) übergeben werden:
+\begin{CCode}
+class Demo
+{
+    int x;
+
+    // Parameter can have any name, self is just an example
+    void f1(this X &self, int i) // same as void f1(int i) &; 
+    {
+       self.x = i;  // Must use self, this no longer valid
+       x = i; // Error must use self, no implizit this
+    }
+    
+    void f2(this X *self, int i) // same as void f2(int i);
+    {
+       self->x = i;  // Must use self, this no longer valid
+       x = i; // Error must use self, no implizit this
+    }
+    
+    void f3(this X self, int i)  // self contains a copy (Call by Value);
+    {
+       self.x = i; // Ok, but pointless, as self is a local copy of the object
+    }
+};
+
+
+void g() {
+   Demo d;
+   
+   d.f1(2); // Passes reference to d 
+   d.f2(2); // Passes pointer to d 
+   d.f3(2); // Passes copy of d 
+}
+
 \end{CCode}
  
 \section{Zeiger auf Elemente (Memberpointer)}
