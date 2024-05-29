@@ -516,7 +516,7 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item signed
 \item sizeof
 \item static
-\item static\_assert {\tiny (\CppVers{11})} (Siehe \autoref{subsubsect:assertions})
+\item static\_assert {\tiny (\CppVers{11}) (Siehe \autoref{subsubsect:assertions})}
 \item static\_cast
 \item struct
 \item switch
@@ -722,10 +722,11 @@ static_assert(LastInterrupt == 107, "Interrupt enum got corrupted");
 
 
 
-\section{Module}
+\section{Modulares Programmieren}
+Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul beinhaltet logisch oder funktional zusammengehörenden Code, und kann im besten Fall in mehreren Projekten (wieder-) verwendet werden. In \Cpp befindet sich üblicherweise eine Klasse in einem Modul, gelegentlich zusammen mit internen Hilfsklassen.
 \label{sect:Module}
-\subsection{Traditionell}
-Ein C/\Cpp Programm ist normalerweise in mehrere Module (Dateien) aufgeteilt. Ein Modul besteht aus einem \OviIndex{Deklarationsteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
+\subsection{Traditionell, C und C++ bis \CppVers{20}}
+Ein Modul besteht aus einem \OviIndex{Deklarationsteil} (\OviIndex{Schnittstellenbeschreibung}) in einer \OviIndex{Headerdatei}, normalerweise mit der Dateiendung .h oder .hpp, und einem \OviIndex{Implementationsteil} in einer Datei mit der Endung .cpp (Gelegentlich auch .c++ oder .cxx).
 
 In der Headerdatei sind alle \OviIndex{Deklarationen} von Funktionen, Variablen, Konstanten, Datentypen und Klassen enthalten, die vom Modul zur Verfügung gestellt werden. Ebenfalls in der Headerdatei sind üblicherweise inline-Funktionen und Templates zu finden. 
 
@@ -739,7 +740,7 @@ Jedes Modul (.cpp) wird vom Compiler selbständig und unabhängig von anderen Modu
 Fehlende Funktionen oder globale Variablen, oder doppelt definierte Funktionen werden deshalb meist erst vom Linker erkannt, und mit nicht sehr aufschlussreichen Fehlermeldungen geahndet ('Symbol xyz not found' oder 'Symbol xyz allready defined in Module qwert.cpp').
 
 \subsection{Mit Modulen (\CppVers{20})}
-Mit (\CppVers{20}) steht mit dem Konzept der Module mit den Befehlen import und module eine Alternative zur Verfügung. 
+Mit (\CppVers{20}) steht mit dem  Modulkonzept und seinen Befehlen import, export und module eine Alternative ohne Headerdateien zur Verfügung. 
 
 \begin{CCode}
 // helloworld.cpp
@@ -759,7 +760,7 @@ int main() {
 \end{CCode}
  
 
-\subsection{Beispiel eines kleinen \Cpp-Projektes}
+\subsection{Beispiel eines kleinen \Cpp-Projektes (Traditionell, vor \CppVers{20})}
 
 Dieses Projekt besteht aus den beiden Modulen (Dateien) main.cpp und sayhello.cpp. Main.cpp benutzt die Klasse \CodeStyle{SayHello} vom Modul sayhello.cpp und muss deshalb die Headerdatei sayhello.h mit '\#include' einbinden. In dieser Headerdatei sind die Schnittstellen der gleichnamigen Klasse deklariert. Allfällige lokale Funktionen und Variablen des Moduls sayhello.cpp sind als \CodeStyle{static} deklariert.
 
@@ -1139,7 +1140,7 @@ Prio &Operator &Description &Associativity \\
 \hline
 15 &\lstinline$|| $&Logical OR &\\
 \hline
-16 &\lstinline$a?b:c $&Ternary conditional[note 2] &Right-to-left \\
+16 &\lstinline$a?b:c $&Ternary conditional &Right-to-left \\
 &\lstinline$throw $&throw operator &\\
 &\lstinline$co_yield $&yield-expression (\CppVers{20}) &\\
 &\lstinline$= $&Direct assignment (provided by default for \Cpp classes) &\\
@@ -1155,7 +1156,7 @@ Prio &Operator &Description &Associativity \\
 \end{tabular}
 
 \section{Blöcke}
-Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
+Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu einem Block zusammengefasst. Ein Block gilt als eine Anweisung. Variablen, die innerhalb eines Blockes definiert werden, hören auf zu existieren wenn der Block verlassen wird, sie haben nur innerhalb des Blockes ab der Definition Gültigkeit.
 \begin{CCode}
 {
   int a, b, c;
@@ -2602,6 +2603,35 @@ Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben 
 	
 \end{CCode}
 
+
+\section{Automatische Rückgabetyp-Deduktion (Seit \CppVers{14})}
+\label{subsubsect:ReturnTypeDeduction}
+\OviIndex{Return type deduction}
+\index{Automatische Rückgabetyp-Deduktion}
+Der Rückgabetyp von Funktionen kann neu aus dem Return-Statement erschlossen werden:
+\begin{CCode}
+	
+	auto f1(int x, int y) // Rueckgabewert ist int
+	{
+	   return 2;  // 2 ist int
+	}
+
+	auto f2(int x, int y) // Rueckgabewert ist int
+	{
+	   return f1(x, y);  // Rueckgabewert von f1 ist int
+	}
+
+	
+	class Demo {
+	    double d;
+		auto MemberFunktion(int x, int y) // Rueckgabewert ist double
+		{
+		   return d; // d ist double
+		}
+	};
+	
+	
+\end{CCode}
 
 
 \section{constexpr Funktionen (Seit \CppVers{11})}
@@ -7359,7 +7389,7 @@ könnte zu folgendem (internen) Code führen
 \end{CCode}
 
 
-\section{Variant, Optional, Any (Seit \CppVers{17})}
+\section{Variant, Optional, Any (Seit \CppVers{17}), Expected (\CppVers{23}) }
 \label{sect:VariantOptionalAny}
 \subsection{Varianten (std::variant<>)}
 \index{Variant}
@@ -7464,6 +7494,48 @@ Einige Beispiele:
    
    a.reset();
    b = a.has_value(); // b wird false
+   
+   
+
+\end{CCode}
+
+\subsection{Erwarteter Wert oder Fehlerinfo  (std::expected<>)}
+\index{expected<>}
+Ein \OviIndex{erwarteter Wert}\index{expected} wird in \Cpp in Form des Templates \CodeStyle{std::expected<>} unterstützt. Dieses Templates
+bietet eine Möglichkeit, anstelle des erwarteten Wertes eine Fehlerinformation aufzunehmen, ist also eine Art Variante mit nur zwei Möglichkeiten. Expected wird vorallem für Rückgabewerte aus Funktionen verwendet, welche auch Fehlerzustände anstelle des erwarteten Wertes zurückliefern können.
+
+Ein Objekt des Templates \CodeStyle{std::expected<>} kann zu jedem Zeitpunkt entweder \emph{einen Wert vom erwarteten Typ}, oder \emph{eine Wert vom unerwarteten Typ} beinhalten.
+ 
+Mit Umwandlung nach bool (\CodeStyle{operator bool()}oder \CodeStyle{has_value()} kann abgefragt werden, ob das Objekt einen erwarteten Wert beinhaltet,
+
+mit \CodeStyle{value()} \textit{(Wirft Exception wenn kein Wert vorhanden)},  \CodeStyle{value_or(DefaultValue)} \textit{(Liefert DefaultValue wenn kein Wert vorhanden)}, \CodeStyle{operator *()} \textit{(Undefiniertes Verhalten wenn kein Wert vorhanden)} oder \CodeStyle{operator ->()} \textit{(Undefiniertes Verhalten wenn kein Wert vorhanden)} kann der erwartete Wert gelesen werden.
+
+mit \CodeStyle{error()} \textit{(Undefiniertes Verhalten wenn \CodeStyle{has_value()} true ist)}, kann der unerwartete Wert (Fehlerinformation) gelesen werden.
+
+Mit dem Zuweisungsoperator kann einem Expected-Objekt ein neuer Wert zugewiesen werden. 
+
+Einige Beispiele:
+\begin{CCode}
+
+   std::expected<float, string> e("Error"); 
+   if (e) { // Abfrage ob expected einen Wert enthaelt
+   }
+   bool b = e.has_value(); // b wird false
+
+   cout << e.error(); // gibt "Error" aus 
+
+   
+   float i = e.value();  // Wirft exception (Kein Wert in e)
+   i = e.value_or(-1.0);  //ok, i ist nun -1, e wird nicht veraendert
+  
+   e = 123.45;
+   i = e.value();  // ok, i ist nun 123.45
+   i = e.value_or(-1);  // ok, i ist nun 123.45, e wird nicht veraendert
+   i = *e;      // ok, i ist nun 123.45
+  
+   b = e.has_value(); // b wird true
+   
+   cout << e.error(); // Undefiniertes Verhalten
    
    
 
@@ -11590,7 +11662,7 @@ Siehe \autoref{subsubsect:ControlAutoMember}
    \item Static Assertions (Siehe \autoref{subsubsect:assertions})
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
    \item Alignementkontrolle bei Objekten (Siehe \autoref{subsect:Alignementcontroll})
-   \item Einfacher Support für Garbagecollection (Wieder entfernt seit \CppVers{17}
+   \item Einfacher Support für Garbagecollection (Wieder entfernt seit \CppVers{23})
    \item Attribute (Siehe \autoref{subsubsect:Attribute})
    \item Unterstützung von Multithreading (Siehe \autoref{sect:Multithreading})
 	 \item Operator \CodeStyle{noexcept()} zum prüfen ob ein Ausdruck eine Exception werfen könnte
@@ -11628,7 +11700,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 
 \subsection{Neuerungen}
 \begin{itemize}
-	 \item Erweiterte Rückgabetypdeduktion bei Funktionen
+	 \item Erweiterte Rückgabetypdeduktion bei Funktionen (Siehe \autoref{subsubsect:ReturnTypeDeduction})
 	 \item Alternative Typendeduktion bei Deklarationen
    \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. (Siehe \autoref{subsubsect:constexpr})
    \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden. (Siehe \autoref{subsect:Variablentemplates}
