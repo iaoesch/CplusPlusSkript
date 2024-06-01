@@ -1873,6 +1873,40 @@ Seit \CppVers{17} sind \OviIndex{UTF8 Charakterliterale} möglich:
     wchar_t wc1 = L'a';
 \end{CCode}
 
+ 
+ 
+ 
+ \section{Erweiterte Stringliterale (Seit \CppVers{11})}
+ \label{subsubsect:erweiterteStringliterale}
+ Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
+ 
+ 
+ \begin{CCode}
+ 	u8"Ein UTF-8 String"  // hat den Typ const char[]
+ 	u"Ein UTF-16 String"  // hat den Typ const char16_t[]
+ 	U"Ein UTF-32 String"  // hat den Typ const char32_t[]
+ \end{CCode}
+ 
+ Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
+ \begin{CCode}
+ 	u8"Ein spezielles UTF-8 Zeichen: \u2018" 
+ 	u"Ein spezielles UTF-16 Zeichen: \u2018" 
+ 	U"Ein spezielles UTF-32 Zeichen: \U00002018"  
+ \end{CCode}
+ 
+ Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichnet, der eigentliche String wird mit \emph{"'Begrenzung(} und \emph{)Begrenzung"'} eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
+ 
+ Beispiel:
+ \begin{CCode}
+ 	R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
+ 	
+ 	// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
+ 	R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
+ \end{CCode}
+ 
+ R und U können auch kombiniert werden.
+
+
  \section{Nullpointer (Seit \CppVers{11})}
  \label{subsubsect:nullptr}
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
@@ -1910,39 +1944,6 @@ Seit \CppVers{17} sind \OviIndex{UTF8 Charakterliterale} möglich:
  \end{CCode}
  
  
- 
- 
- 
- \section{Erweiterte Stringliterale (Seit \CppVers{11})}
- \label{subsubsect:erweiterteStringliterale}
- Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
- 
- 
- \begin{CCode}
- 	u8"Ein UTF-8 String"  // hat den Typ const char[]
- 	u"Ein UTF-16 String"  // hat den Typ const char16_t[]
- 	U"Ein UTF-32 String"  // hat den Typ const char32_t[]
- \end{CCode}
- 
- Unicode-Zeichen können im String auch direkt mit ihrem Code angegeben werden:
- \begin{CCode}
- 	u8"Ein spezielles UTF-8 Zeichen: \u2018" 
- 	u"Ein spezielles UTF-16 Zeichen: \u2018" 
- 	U"Ein spezielles UTF-32 Zeichen: \U00002018"  
- \end{CCode}
- 
- Zudem können Escape-Freie \OviIndex{Raw-Strings} definiert werden. Diese werden mit dem Prefix R gekennzeichnet, der eigentliche String wird mit \emph{"'Begrenzung(} und \emph{)Begrenzung"'} eingeschlossen, der eingeschlossene Text kann alle Zeichen (Inklusive ()"'\textbackslash) enthalten. \emph{Begrenzung} kann irgend eine Zeichenfolge (Auch eine Leere) mit maximal 16 Zeichen sein.
- 
- Beispiel:
- \begin{CCode}
- 	R"(Ein "Muehsamer" String mit \ "komischen" \ Zeichen)"
- 	
- 	// Folgender String endet erst bei )XYZxyz" und darf deshalb auch )" enthalten
- 	R"XYZxyz(Ein "( "Konfuser" )xyz" String mit )" gemeinen )" Zeichen)XYZxyz" 
- \end{CCode}
- 
- R und U können auch kombiniert werden.
-
 
 
 \chapter{Variablen}
@@ -9236,8 +9237,12 @@ Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperat
 Ähnlich wie die entsprechenden Maps, es werden jedoch nur die Schlüssel abgelegt, entsprechen in etwa Mengen aus der Mengenlehre.
 \subsubsection{Bitset}
 \index{Bitset}
-Speichert eine Folge konstanter Länge von Bits. Für \CodeStyle{Bitset<N>} sind die Bitmanipulationsoperatoren \CodeStyle{&, |, ^, ~, <<, >>, &=, |=, ^=, ~=, <<= und >>} sowie \CodeStyle{[]} für den Zugriff auf einzelne Bits definiert. Zudem könnnen sie mit \CodeStyle{<< und >>} in streams geschrieben und aus Streams gelesen werden. Bitsets können zum Speichern beliebig langer Bitsequenzen verwendet werden.
+Speichert eine Folge konstanter Länge von Bits. Für \CodeStyle{Bitset<N>} sind die Bitmanipulationsoperatoren \CodeStyle{&, |, ^, ~, <<, >>, &=, |=, ^=, <<= und >>=} sowie \CodeStyle{[]} für den Zugriff auf einzelne Bits und die Vergleichsoperatoren \CodeStyle{== und !=} definiert. Zudem könnnen sie mit \CodeStyle{<< und >>} in streams geschrieben und aus Streams gelesen werden. Bitsets können zum Speichern beliebig langer Bitsequenzen verwendet werden.
 Wenn die Länge der Bitsequenz zur Compilezeit nicht bekannt ist, oder zur Laufzeit ändert kann \CodeStyle{Vektor<bool>} verwendet werden.
+
+\CodeStyle{Bitset<N>}s können mit Strings 
+(\CodeStyle{\"0101\"}) und long Werten initialisiert werden, und wieder in diese Typen zurückverwandelt werden, sofern deren Platz ausreicht.
+
 \subsubsection{unordered\_map, unordered\_multimap, unordered\_set, unordered\_multiset}
 \index{unordered\_map}
 \index{unordered\_multimap}
