@@ -8955,7 +8955,11 @@ cout << Arr.size();   // Grösse des Arrays ausgeben
 \subsubsection{Kurzübersicht zu Container vector<> aus der \Cpp - Standardbibliothek}
 
 \label{subsect:Vector}
-Vector kann als dynamisches Array betrachtet werden, d.h. ein Array das mit den Daten wächst und schrumpft. Es erlaubt wahlfreien Zugriff auf seine Elemente, sowie das Einfügen und Entfernen von Objekten. Die Grösse kann zur Laufzeit verändert werden. Indizierter Zugriff sowie Anhängen oder Entfernen am Ende ist effizient möglich.
+Vector kann als dynamisches Array betrachtet werden, d.h. ein Array das mit den Daten wächst und schrumpft. Es erlaubt wahlfreien Zugriff auf seine Elemente, sowie das Einfügen und Entfernen von Objekten. Die Grösse kann zur Laufzeit verändert werden. Indizierter Zugriff sowie Anhängen oder Entfernen am Ende ist effizient möglich.  
+
+%\CodeStyle{\OviIndex{Vektor<bool>}} kann (implementationsabhängig) optimiert werden, indem einzelne Bits zum speichern eines Wertes 
+
+\OviIndex{Vektor<bool>} kann (implementationsabhängig) optimiert sein, indem einzelne Bits zum Speichern eines Wertes verwendet werden. Ein \CodeStyle{Vektor<bool>} mit 13 Elementen könnte diese in 2 Bytes abspeichern.
 
 Als Beispiel erstellen wir ein Array von \CodeStyle{double}'s. Ein \OviIndex{Vektor} kann an seinem Ende wachsen und schrumpfen, es können also Elemente angehängt und entfernt werden. Zudem ist Wahlfreier Zugriff mit \CodeStyle{[]} (Ohne Bereichsüberprüfung) und der Methode \CodeStyle{at()} (Mit Bereichsüberprüfung) möglich. 
 \begin{CCode}
@@ -9230,6 +9234,10 @@ Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperat
 \index{Set}
 \index{Multiset}
 Ähnlich wie die entsprechenden Maps, es werden jedoch nur die Schlüssel abgelegt, entsprechen in etwa Mengen aus der Mengenlehre.
+\subsubsection{Bitset}
+\index{Bitset}
+Speichert eine Folge konstanter Länge von Bits. Für \CodeStyle{Bitset<N>} sind die Bitmanipulationsoperatoren \CodeStyle{&, |, ^, ~, <<, >>, &=, |=, ^=, ~=, <<= und >>} sowie \CodeStyle{[]} für den Zugriff auf einzelne Bits definiert. Zudem könnnen sie mit \CodeStyle{<< und >>} in streams geschrieben und aus Streams gelesen werden. Bitsets können zum Speichern beliebig langer Bitsequenzen verwendet werden.
+Wenn die Länge der Bitsequenz zur Compilezeit nicht bekannt ist, oder zur Laufzeit ändert kann \CodeStyle{Vektor<bool>} verwendet werden.
 \subsubsection{unordered\_map, unordered\_multimap, unordered\_set, unordered\_multiset}
 \index{unordered\_map}
 \index{unordered\_multimap}
