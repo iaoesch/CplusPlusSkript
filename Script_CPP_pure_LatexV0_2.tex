@@ -1324,7 +1324,9 @@ Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Ob
 
 \chapter{Datentypen}
 \section{Einfache Datentypen}
-Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ.
+Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ. 
+
+Seit \CppVers{11} gibt es die typen \CodeStyle{char16_t und char16_t} für UTF-16 resp. UTF-32 codierte Zeichen. Mit \CppVers{20} ist noch der Typ \CodeStyle{char8_t} für  UTF-8 codierte Zeichen dazugekommen. Alle char.. typen haben mindestens soviele Bits wie angegeben.
 
 Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
 
@@ -1861,11 +1863,28 @@ Das Gruppierungszeichen dient einzig der besseren Lesbarkeit und wird vom Compil
  \end{CCode}
 (M / E) bedeutet M Bits für Mantisse, E Bits für Exponent
 
+ \section{Escape Sequenzen} 
+In \Cpp gibt es dieselben Escape-Sequenzen (\textbackslash{}n, \textbackslash{}t, ...) um in Charakter- und Stringliteralen nicht oder
+nur schwer darstellbare Zeichen codieren zu können.
+
+Mit \CppVers{23} wurden optionale Begrenzer für die Sequenzen \textbackslash{}onnn \textbackslash{}xnnn und \textbackslash{}unnn eingeführt. \label{subsubsect:DelimitedEscapeSequences}
+\begin{CCode}
+    " \x07der Berg"; // Problem de gehoert zur Hexzahl, nicht zum Wort 'der' 
+    " \x{07}der Berg"; // Seit C++23, nur 07 ist Teil der Hexzahl.
+    " \0{07}der Berg"; // Seit C++23, nur 07 ist Teil der Oktalzahl.
+    " \u{07}der Berg"; // Seit C++23, nur 07 ist Teil des Unicodes.
+\end{CCode}
+ \label{subsubsect:NamedUnicodeliterals}
+Ebenfalls mit \CppVers{23} wurden benannte Unicodes (\textbackslash{}N\{NAME\}) eingeführt, wobei
+NAME ein gültiger Unicode-Zeichenname gemäss Unicodestandard sein muss (Z. B. \textbackslash N\{OHM SIGN\} für $\Omega$)):   
+\begin{CCode}
+    "R ist 100\N{OHM SIGN}"
+\end{CCode}
+
 
  \section{Charakter Literale} 
 Seit \CppVers{17} sind \OviIndex{UTF8 Charakterliterale} möglich:
 \begin{CCode}
-
     char c1 = 'a'; 
     char8_t C1 = u8'a';  // Nur für single-8-Bit UTF8 Codes erlaubt
     char16_t uc1 = u'a'; // Nur für single-16-Bit UTF16 Codes erlaubt
@@ -1873,7 +1892,15 @@ Seit \CppVers{17} sind \OviIndex{UTF8 Charakterliterale} möglich:
     wchar_t wc1 = L'a';
 \end{CCode}
 
- 
+  \section{String Literale} 
+Auch wenn die C char-Strings in \Cpp durch \CodeStyle{std::string} abgelöst wurden, kommen die
+aus C bekannten \OviIndex{Stringliterale} weiterhin zum Einsatz.
+\begin{CCode}
+    std::string Text = "Hallo";
+    if (Text == "Hallo") {
+    }
+\end{CCode}
+
  
  
  \section{Erweiterte Stringliterale (Seit \CppVers{11})}
@@ -7501,7 +7528,7 @@ Einige Beispiele:
 \end{CCode}
 
 \subsection{Erwarteter Wert oder Fehlerinfo  (std::expected<>)}
-\index{expected<>}
+\index{expected<>} \label{subsubsect:expected}
 Ein \OviIndex{erwarteter Wert}\index{expected} wird in \Cpp in Form des Templates \CodeStyle{std::expected<>} unterstützt. Dieses Templates
 bietet eine Möglichkeit, anstelle des erwarteten Wertes eine Fehlerinformation aufzunehmen, ist also eine Art Variante mit nur zwei Möglichkeiten. Expected wird vorallem für Rückgabewerte aus Funktionen verwendet, welche auch Fehlerzustände anstelle des erwarteten Wertes zurückliefern können.
 
@@ -9235,13 +9262,15 @@ Einträgen, hinzufügen von Einträgen oder löschen von Einträgen. (Der Indexoperat
 \index{Set}
 \index{Multiset}
 Ähnlich wie die entsprechenden Maps, es werden jedoch nur die Schlüssel abgelegt, entsprechen in etwa Mengen aus der Mengenlehre.
-\subsubsection{Bitset}
+\subsubsection{Bitset}\label{sect:Bitset}
 \index{Bitset}
 Speichert eine Folge konstanter Länge von Bits. Für \CodeStyle{Bitset<N>} sind die Bitmanipulationsoperatoren \CodeStyle{&, |, ^, ~, <<, >>, &=, |=, ^=, <<= und >>=} sowie \CodeStyle{[]} für den Zugriff auf einzelne Bits und die Vergleichsoperatoren \CodeStyle{== und !=} definiert. Zudem könnnen sie mit \CodeStyle{<< und >>} in streams geschrieben und aus Streams gelesen werden. Bitsets können zum Speichern beliebig langer Bitsequenzen verwendet werden.
 Wenn die Länge der Bitsequenz zur Compilezeit nicht bekannt ist, oder zur Laufzeit ändert kann \CodeStyle{Vektor<bool>} verwendet werden.
 
 \CodeStyle{Bitset<N>}s können mit Strings 
 (\CodeStyle{\"0101\"}) und long Werten initialisiert werden, und wieder in diese Typen zurückverwandelt werden, sofern deren Platz ausreicht.
+
+Seit \CppVers{23} sind alle Methoden von \CodeStyle{Bitset<>} constexpr, entsprechend können \CodeStyle{Bitset<>}s auch in constexpr-Ausdrücken verwendet werden (Zur Compilezeit benutzt werden).
 
 \subsubsection{unordered\_map, unordered\_multimap, unordered\_set, unordered\_multiset}
 \index{unordered\_map}
@@ -11810,8 +11839,8 @@ Seit Dezember 2020 verabschiedet.
     \item Feature test macros
     \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
     \item designated initializers (Siehe \autoref{subsect:AgregatInitialisierung}
-    \item init-statements and initializers in range-for (Siehe \autoref{subsubsect:foroptionalinitialisierer}
-    \item \CodeStyle{char8_t}
+    \item init-statements and initialisers in range-for (Siehe \autoref{subsubsect:foroptionalinitialisierer}
+    \item \CodeStyle{char8_t} (Siehe \autoref{subsubsect:UTF8CharType})
     \item Attribute \CodeStyle{[[no_unique_address]]} (Siehe \autoref{subsubsect:Attribute})
     \item Attribute \CodeStyle{[[likely]]} (Siehe \autoref{subsubsect:Attribute})
     \item Attribute \CodeStyle{[[unlikely]]} (Siehe \autoref{subsubsect:Attribute})
@@ -11844,7 +11873,7 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{std::osyncstream}
     \item \CodeStyle{std::u8string} and other \CodeStyle{char8_t} uses
     \item \CodeStyle{constexpr} for <algorithm>, <utility>, <complex>
-    \item \CodeStyle{std::string(_view)::starts_with} and\CodeStyle{ ends_with}
+    \item \CodeStyle{std::string(_view)::starts_with} and \CodeStyle{ ends_with}
     \item \CodeStyle{std::assume_aligned}
     \item \CodeStyle{std::bind_front}
     \item \CodeStyle{std::c8rtomb,  std::mbrtoc8}
@@ -11873,7 +11902,7 @@ Neue Schlüsselworte:
     \item  \CodeStyle{co_return}  (Coroutinen, siehe \autoref{subsec:CoRoutinen})
     \item  \CodeStyle{co_yield}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
     \item  \CodeStyle{requires}   (Konzepte, siehe \autoref{sect:Konzepts}) 
-    \item  \CodeStyle{char8_t} 
+    \item  \CodeStyle{char8_t}    (Siehe \autoref{subsubsect:UTF8CharType})
 \end{itemize}
 
 \section{\CppVers{23}}
@@ -11915,8 +11944,8 @@ Sprache (Stand 14.2.2023)
 \item \#warning 	 		
 \item Remove non-encodable wide character literals and multicharacter wide character literals 			
 \item Labels at the end of compound statements 	 								
-\item Delimited escape sequences 		
-\item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$)
+\item Delimited escape sequences like \textbackslash x\{FE2\},  Siehe \autoref{subsubsect:DelimitedEscapeSequences}		
+\item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$),  Siehe \autoref{subsubsect:NamedUnicodeliterals}
 \item Relaxing some constexpr restrictions (Siehe \autoref{subsubsect:constexpr})	
 \item Simpler implicit move 	
 \item static operator(), static operator[] [] und () Dürfen nun auch (statische) Klassenmethoden sein (Siehe \autoref{sect:UeberladenOperatoren})
@@ -11987,7 +12016,7 @@ Library (Stand 14.2.2022)
 \item DR: What is a view 
 \item DR: fixing locale handling in chrono formatters 
 \item DR: Cleaning up integer-class types 
-\item std::expected 
+\item std::expected (Siehe \autoref{subsubsect:expected})
 \item constexpr for <cmath> and <cstdlib> 
 \item std::unreachable() 
 \item Deprecating std::aligned\_storage and std::aligned\_union 
@@ -12014,7 +12043,7 @@ Library (Stand 14.2.2022)
 \item constexpr for integral overloads of std::to\_chars() and std::from\_chars().  	
 \item ranges::contains() and ranges::contains\_subrange()  	
 \item Adding move-only types support for comparison concepts (equality\_comparable, totally\_ordered, three\_way\_comparable)  	
-\item constexpr std::bitset  	
+\item constexpr std::bitset   (Siehe \autoref{sect:Bitset})	
 \item basic\_string::substr() \&\& 	 	
 \item views::as\_rvalue  	
 \item Standard Library Modules (Siehe \autoref{sect:Module})
@@ -12031,7 +12060,7 @@ Library (Stand 14.2.2022)
 \item Deduction guides update for explicit object parameter call operators  	
 \item Deduction guides update for static operator()  	
 \item Standard names and library support for extended floating-point types  	
-\item Monadic operations for std::expected  	
+\item Monadic operations for std::expected  (Siehe \autoref{subsubsect:expected})	
 \item views::enumerate  	
 \item std::is\_implicit\_lifetime  	
 \item std::common\_reference\_t of std::reference\_wrapper should be a reference type  	
@@ -12051,7 +12080,7 @@ Library (Stand 14.2.2022)
 \item DR20: views::lazy\_split and redesigned views::split  	
 \item DR20: Fix ranges::istream\_view  	
 \item DR20: view with ownership  	
-\item R20: Fixing locale handling in chrono formatters 	 	
+\item DR20: Fixing locale handling in chrono formatters 	 	
 \item DR20: Cleaning up integer-class types  	
 \item DR20: std::format() improvements  	
 \item DR20: Add support for non-const-formattable types to std::format 	 	
