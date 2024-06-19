@@ -11920,20 +11920,20 @@ Finalisiert und bereit zur Verabschiedung im Laufe des 2024.
 
 Sprache (Stand 14.2.2023)
 \begin{itemize}
-\item Literal suffix 'z' for (signed) size\_t (z. B. size\_t l = 100z;)
+\item Literal suffix 'z' for (signed) size\_t (z. B. \CodeStyle{size\_t l = 100z;})
 \item Make () more optional for lambdas 
-\item if consteval (Siehe \autoref{subsubsect:constevalif})
+\item \CodeStyle{if consteval} (Siehe \autoref{subsubsect:constevalif})
 \item Removing Garbage Collection Support 
 \item DR: \Cpp Identifier Syntax using Unicode Standard Annex 31 
 \item DR: Allow Duplicate Attributes 
-\item Narrowing contextual conversions in static\_assert and constexpr if 
+\item Narrowing contextual conversions in \CodeStyle{static\_assert} and \CodeStyle{constexpr if} 
 \item Trimming whitespaces before line splicing 
 \item Make declaration order layout mandated 
 \item Removing mixed wide string literal concatenation 
-\item Deducing this 
+\item Deducing \CodeStyle{this} 
 \item auto(x) and auto\{x\} (Siehe \autoref{subsubsect:autocast})
 \item Change scope of lambda trailing-return-type 
-\item \#elifdef and \#elifndef 
+\item \CodeStyle{\#elifdef} and \CodeStyle{\#elifndef}, kurzform für \CodeStyle{ \#else \#ifdef}
 \item Non-literal variables (and labels and gotos) in constexpr functions (Siehe \autoref{subsubsect:constexpr})
 \item Consistent character literal encoding 
 \item Character sets and encodings 
@@ -11941,18 +11941,18 @@ Sprache (Stand 14.2.2023)
 \item Multidimensional subscript operator (Siehe \autoref{subsubsect:MehrdimensionalIndexoperator})
 \item Attributes on lambda expressions 
 \item DR: Missing feature test macros for \CppVers{20} core papers 
-\item \#warning 	 		
+\item \CodeStyle{\#warning}, gibt beim Compilieren eine Warnung aus. 	 		
 \item Remove non-encodable wide character literals and multicharacter wide character literals 			
 \item Labels at the end of compound statements 	 								
 \item Delimited escape sequences like \textbackslash x\{FE2\},  Siehe \autoref{subsubsect:DelimitedEscapeSequences}		
 \item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$),  Siehe \autoref{subsubsect:NamedUnicodeliterals}
 \item Relaxing some constexpr restrictions (Siehe \autoref{subsubsect:constexpr})	
 \item Simpler implicit move 	
-\item static operator(), static operator[] [] und () Dürfen nun auch (statische) Klassenmethoden sein (Siehe \autoref{sect:UeberladenOperatoren})
+\item static operator(), static operator[]: [] und () dürfen nun auch (statische) Klassenmethoden sein (Siehe \autoref{sect:UeberladenOperatoren})
 
 \item Requirements for optional extended floating-point types 	
 \item Class template argument deduction from inherited constructors 
-\item Attribute [[assume]] 	(Siehe \autoref{subsubsect:Attribute})
+\item Attribute  \CodeStyle{[[assume]]} 	(Siehe \autoref{subsubsect:Attribute})
 \item Support for UTF-8 as a portable source file encoding 	
 \item Permitting static constexpr variables in constexpr functions (Siehe \autoref{subsubsect:constexpr})	
 \item Extending the lifetime of temporaries in range-based for loop initializer (Siehe \autoref{subsubsect:foroptionalinitialisierer})
@@ -11973,7 +11973,7 @@ Sprache (Stand 14.2.2023)
 
 Library (Stand 14.2.2022)
 \begin{itemize}
-\item Stacktrace library Liefert aktuelle Funktionafrufsverschachtelung und weitere Informationen
+\item Stacktrace library Liefert aktuelle Funktionsaufrufsverschachtelung und weitere Informationen
 \item <stdatomic.h> 
 \item std::is\_scoped\_enum 
 \item basic\_string::contains(), basic\_string\_view::contains() 
@@ -11994,12 +11994,18 @@ Library (Stand 14.2.2022)
 \item Range constructor for std::basic\_string\_view 
 \item Default template arguments for pair's forwarding constructor 
 \item Remove Garbage Collection and Reachability-Based Leak Detection (library support) 
+
+\ifshowdetails
+
 \item DR: join\_view should join all views of ranges (Siehe \autoref{subsect:Ranges})
 \item DR: view does not require default\_initializable (Siehe \autoref{subsect:Ranges})
 \item DR: Range adaptor objects bind arguments by value (Siehe \autoref{subsect:Ranges})
 \item DR: constexpr for std::optional and std::variant 
 \item DR: std::format() improvements (Siehe \autoref{subsubsect:formated})
 \item DR: lazy\_split\_view and redesigned split\_view (Siehe \autoref{subsect:Ranges})
+
+\fi
+
 \item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform (Siehe \autoref{subsect:Ranges})
 \item Heterogeneous erasure overloads for associative containers 
 \item std::byteswap() 
@@ -12011,11 +12017,17 @@ Library (Stand 14.2.2022)
 \item Add a conditional noexcept specification to std::exchange 
 \item Require span \& basic\_string\_view to be TriviallyCopyable 
 \item Clarifying the status of the "`C headers"' 
+
+\ifshowdetails
+
 \item DR: Fix ranges::istream\_view (Siehe \autoref{subsect:Ranges})
 \item DR: Add support for non-const-formattable types to std::format (Siehe \autoref{subsubsect:formated})
 \item DR: What is a view 
 \item DR: fixing locale handling in chrono formatters 
 \item DR: Cleaning up integer-class types 
+
+\fi
+
 \item std::expected (Siehe \autoref{subsubsect:expected})
 \item constexpr for <cmath> and <cstdlib> 
 \item std::unreachable() 
@@ -12069,7 +12081,10 @@ Library (Stand 14.2.2022)
 \item std::barrier's phase completion guarantees  	
 \item Making Multi-Param Constructors Of views explicit  	
 \item Relaxing Ranges Just A Smidge  	
-\item Stashing Stashing Iterators For Proper Flattening  	
+\item Stashing Stashing Iterators For Proper Flattening  
+
+\ifshowdetails
+	
 \item DR17: std::visit() for classes derived from std::variant 	 	
 \item DR20: Conditionally borrowed ranges  	
 \item DR20: Repairing input range adaptors and std::counted\_iterator  	
@@ -12088,6 +12103,13 @@ Library (Stand 14.2.2022)
 \item DR20: Poison Pills are Too Toxic  	
 \item DR20: std::format fill character allowances  	
 \item DR20: Improving std::format's width estimation 
+
+\else
+
+\item Sowie viele Korrekturen und Präzisierungen 
+
+\fi
+
 \end{itemize}
 
 \section{\CppVers{26}}
