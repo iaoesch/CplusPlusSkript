@@ -1326,7 +1326,7 @@ Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Ob
 \section{Einfache Datentypen}
 Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ. 
 
-Seit \CppVers{11} gibt es die typen \CodeStyle{char16_t und char16_t} für UTF-16 resp. UTF-32 codierte Zeichen. Mit \CppVers{20} ist noch der Typ \CodeStyle{char8_t} für  UTF-8 codierte Zeichen dazugekommen. Alle char.. typen haben mindestens soviele Bits wie angegeben.
+Seit \CppVers{11} gibt es die typen \CodeStyle{char16_t und char16_t} für UTF-16 resp. UTF-32 codierte Zeichen. Mit \CppVers{20} ist noch der Typ \CodeStyle{char8_t} \label{subsubsect:UTF8CharType} für  UTF-8 codierte Zeichen dazugekommen. Alle char.. typen haben mindestens soviele Bits wie angegeben.
 
 Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
 
@@ -6993,6 +6993,35 @@ und/oder Anforderungen an Typen (Vergleich möglich, Numerische Operationen unter
 \chapter{Die Standardbibliothek}
 Die Standarbibliothek ist eine umfangreiche Klassen- und Templatesammlung, ähnlich der Standardlibrary von C.
 Sie stellt unter anderem Elemente aus der vormaligen STL (Datenhaltung und Datenverarbeitung), Strings, Ein- Ausgabe über Streams, Numerische Funktionen, Zufallszahlen, Multithreading und Reguläre Ausdrücke zur Verfügung. Einige dieser Aspekte werden in den nachfolgenden Kapiteln näher vorgestellt.   
+\section{C Standard library}
+\label{sect:c-library}
+Beinahe alle Funktionen der \OviIndex{C-Library} werden auch in \Cpp zur Verfügung gestellt, die meisten von C bekannten Headerfiles
+wie \CodeStyle{stdio.h} oder \CodeStyle{stdlib.h} stehen auch unter \Cpp zur Verfügung. Nur Headerdateien, welche mit Schlüsselworten
+von \Cpp in Konflikt treten (Z.B. \CodeStyle{complex.h} oder \CodeStyle{thread.h}) werden nicht angeboten.
+
+Für die meisten Headerdateien werden unter \Cpp zwei Versionen angeboten: \CodeStyle{xxx.h} oder \CodeStyle{cxxx}. Die Varianten mit
+der Endung .h sollte nur für Code verwendet werden, der auch von einem C-Compiler übersetzt werden soll, die Variante mit dem 
+führenden c für reinen \Cpp Code.
+
+Die Variante mit der Endung .h führt die Symbole garantiert im globalen Namespace ein, die Variante mit dem führenden c führt die 
+Symbole garantiert  im  namespace \CodeStyle{std} ein, wobei die Symbole auch im jeweils anderen namespace eingeführt werden dürfen.
+
+Im globalen Namensbereich importieren:
+\begin{CCode}
+  #include <stdio.h>   // Im globalen Namespace importieren
+   
+  printf("Hallo"); // Funktioniert garantiert
+  std::printf("Hallo"); // kann funktionieren
+\end{CCode}
+
+In Namensbereich std importieren:
+\begin{CCode}
+  #include <cstdio>   // In Namespace std importieren
+   
+  printf("Hallo"); // kann funktionieren
+  std::printf("Hallo"); // Funktioniert garantiert
+\end{CCode}
+
 \section{Strings}
 \label{sect:strings}
 \OviIndex{Strings} werden in \Cpp in Form der Klasse \CodeStyle{string} unterstützt. Diese Klasse
@@ -11907,7 +11936,8 @@ Neue Schlüsselworte:
 
 \section{\CppVers{23}}
 \index{C++ 23}
-Finalisiert und bereit zur Verabschiedung im Laufe des 2024.
+Seit Oktober 2024 verabschiedet.
+
  %\begin{itemize}
     %\item Planned features for \CppVers{23} are library support for coroutines, a modular standard library, executors, and networking. 
      %\item   Literal suffixes for std::size\_t and the corresponding signed type
@@ -11918,7 +11948,7 @@ Finalisiert und bereit zur Verabschiedung im Laufe des 2024.
 %\end{itemize}
 (Quelle: https://en.cppreference.com/w/cpp/23)
 
-Sprache (Stand 14.2.2023)
+Sprache 
 \begin{itemize}
 \item Literal suffix 'z' for (signed) size\_t (z. B. \CodeStyle{size\_t l = 100z;})
 \item Make () more optional for lambdas 
@@ -11971,7 +12001,7 @@ Sprache (Stand 14.2.2023)
 
 \end{itemize}
 
-Library (Stand 14.2.2022)
+Library 
 \begin{itemize}
 \item Stacktrace library Liefert aktuelle Funktionsaufrufsverschachtelung und weitere Informationen
 \item <stdatomic.h> 
@@ -12115,6 +12145,18 @@ Library (Stand 14.2.2022)
 \section{\CppVers{26}}
 \index{C++ 26}
 Bereits in der Planungs- und Diskussionsphase.
+Mögliche Erweiterungen:
+\begin{itemize}
+\item linalg Library (Matrix und Vektor Operationen)
+\item Reflexion (Zugriff auf Information über Code selbst)
+\item Contracts (Randbedingungen für Funktionen)
+\item Verbesserungen und Erweiterungen bei Templates
+\item Unterstützung beim Debugging
+\item Erweiterungen in der Concurency Library
+\item Weitere Libraryfunktionen durch constexpr ergänzt
+\item Pattern Matching, wahrscheinlich eher \CppVers{29} 
+\item Execution (Framework für paralleles Ausfuehren von Aufträgen), wahrscheinlich eher \CppVers{29} 
+\end{itemize}
 
 
 \appendix
@@ -12925,6 +12967,11 @@ Complex polar in degree
 \NextPagePlease 
  
 \section{Zusammenarbeit von C und \Cpp}
+Code, der sowohl von einem C-Compiler, als auch von einem \Cpp Compiler übersetzt
+werden soll, sollte nur die .h Versionen der C-Standardlibrary einbinden. (Also
+ \CodeStyle{\#include <stdio.h>} anstelle von \CodeStyle{\#include <cstdio>}, siehe auch
+(Siehe \autoref{sect:c-library})
+
 In \Cpp können Funktionen überladen werden und Elemente in Namensbereichen abgelegt werden. 
 Um überladene Funktionen zu unterscheiden werden die Funktionsnamen vom \Cpp Compiler um die Argumentlistenbeschreibung sowie den Namensbereichen erweitert,
 dies wird als \OviIndex{Name mangling} bezeichnet.
