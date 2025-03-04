@@ -686,6 +686,35 @@ Attribut&	Beschreibung\\
 \hline
 \end{tabular}
 
+Beispiel für \CodeStyle{[[nodiscard]]}
+ \begin{CCode}
+// Important Data should not be ignored as return value
+
+// Before C++20
+// struct [[nodiscard]] ImportantData { int x ;};
+
+// Since C++20 we can also add (optionally) an explaining message
+struct [[nodiscard("Important Datas should never be ignored")]] ImportantData { int x ;};
+
+ImportantData f() {
+    return {5};
+}
+
+// Returnvalue (for Example Errorcode) should not be ignored
+[[nodiscard]] int g() {
+    return 42;
+}
+
+int main()
+{
+    f();  // Warning, ignoring return value
+    auto a = f(); // Ok, No Warning
+    
+    g();  // Warning, ignoring return value
+    auto b = g(); // Ok, No Warning
+}
+
+ \end{CCode}
 
  
 \section{Static Assertions (Seit \CppVers{11})}
@@ -5850,6 +5879,9 @@ auto L = []<class T>(T x) { return x*x};
 \begin{CCode}
 template<class T>
 constexpr T pi = T(3.1415926535897932385L); // variable template
+
+float A = r*r*pi<float>; // Pi mit float genauigkeit
+
 \end{CCode}
 
 \begin{CCode}
@@ -6004,8 +6036,8 @@ Complex c(x, y);
 \OviIndex{deduction guide} (Herleitungsleitfaden)
 Wenn ein Template mithilfe eines Konstruktors ohne Parametrisierung erzeugt wird, versucht der Compiler die Parameter aus den Argumenten zu erschliessen. Gelegentlich entspricht das Ergenis jedoch nicht den gewünschten Parametern. In diesen Fällen kann dem Compiler mit Deduction Guides eine Vorgabe gemacht werden.
 
-Syntax: Finktionsdeklaration in trailing reeturn type syntax:
-Finktionsdeklaration gefolgt von -> und gewuenschtem Typ
+Syntax: Funktionsdeklaration in trailing return type syntax:
+Funktionsdeklaration gefolgt von -> und gewünschtem Typ
 \begin{CCode}
 f(int x, int y) -> f<double>;
 \end{CCode}
