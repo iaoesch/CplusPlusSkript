@@ -7061,7 +7061,96 @@ bietet einen komfortablen Umgang mit Zeichenketten. Unter anderem wird
 das Erzeugen, Kopieren, Vergleichen und Manipulieren von Zeichenketten
 vereinfacht.
 
-Einige Beispiele:
+Ein String-Objekt kann auf folgende Arten angelegt werden:
+\begin{CCode}
+std::string student1("Hans");
+std::string *student2 = new std::string("Thomas");
+shared_ptr<std::string> student3 = std::make_shared<std::string>("Albert");
+auto magie_student = std::make_shared<std::string>("Houdini"); // Variablentyp automatisch
+                                                               // detektieren
+\end{CCode}
+
+Die wichtigsten Methoden, die auf ein String-Objekt angewendet werden können, sind:
+
+\CodeStyle{int compare(String b)}, vergleicht zwei Strings.  \CodeStyle{a.compare(b)} liefert 
+< 0 falls a vor b kommt, = 0 falls der Inhalt gleich ist > 0 falls a nach b kommt
+
+\CodeStyle{>, <, ==, !=, >=, <=} vergleichen zwei Strings und liefern bool (true oder false), je nach dem ob die Bedingung zutrifft.
+
+\CodeStyle{string to_string(Typ v)}	Wandelt numerischen Wert in String, z.B. \CodeStyle{std::to_string(3.14)} wandelt die Zahl 3.14 in den entsprechenden String um.
+
+\CodeStyle{stoi(s), stol(s), stoll(s), stoul(s), stoull(s), stof(s), stod(s), stold(s)} Wandeln den String s nach (unsigned) int, long, long long, oder float, double oder long double um.  Beispiel: \CodeStyle{int a = std::stoi(s);}
+
+\CodeStyle{string append(Typ b)} hängt eine Zeichenkette oder einen elementaren Datentypen an den bestehenden string an.  Beispiel: \CodeStyle{s.append("hallo");}
+
+\CodeStyle{string insert(int offset, Typ b)} fügt eine Zeichenkette oder einen elementaren Datentypen an der Position offset in den bestehenden String ein. Beispiel: \CodeStyle{s.insert(5, "hallo");}
+
+\CodeStyle{int length()} liefert die Länge des Strings. Beispiel: \CodeStyle{s.length();}
+
+\CodeStyle{const char* c_str() const} Liefert einen const-Zeiger auf einen Null-Terminierten C-String zurück welcher dem String enspricht. Dient als Schnittstelle zu C-Funktionen. Über diesen Zeiger darf nur lesend zugegriffen werden, und er ist nur gültig, solange der Originalstring existiert und nicht verändert wird. Beispiel: \CodeStyle{fopen(s.c_str());}
+
+Ein String kann mit dem Operator '=' kopiert werden (nicht wie bei C!). Der Operator '+' hängt zwei Strings beispielsweise für einen print oder die Zuweisung an einen anderen String zusammen. 
+Bei vielen Verknüpfungs- und Vergleichsoperationen darf der zweite Operand auch ein C-String (char *) sein. Häufig wird ein C-String vom Compiler automatisch in einen std:string umgewandelt, wenn klar ist dass ein solcher erwartet wird.
+
+Beispiel:
+\begin{CCode}
+void main()
+  {
+    // Define some strings
+    std::string student_1 = "Asterix";
+    std::string student_2("Obelix");
+    std::string student_3 = "Idefix";
+    std::cout << (student_1 + " " + student_2 + " " + student_3);
+        
+    // compare strings, length of strings
+    int res1 = student_1.compare(student_2);
+    bool res2 = student_1 == student_2;
+    int len = student_1.length();
+    std::cout << ("compare: " + res1 + "  equals: " + res2 + " len: " + len);
+        
+    // copy and attach strings
+    student_1 = student_2;
+    student_2 = "Zäsar";
+    student_3 += student_2;
+    std::cout << (student_1 + " " + student_2 + " " + student_3);
+  }
+}
+\end{CCode}
+
+führt zu folgender Ausgabe:
+
+\begin{ConsoleOutput}
+Asterix Obelix Idefix
+compare: -14  equals: false len: 7
+Obelix Zäsar IdefixZäsar
+\end{ConsoleOutput}
+
+Beispiel:
+
+\begin{CCode}
+int main()
+    {
+        i
+        std::string buffer; 
+        std::string name("Meier"); 
+        buffer.append("Hans ");
+        buffer.append(name);
+        buffer.insert(3, "+++");
+        std::cout << ("Content buffer: " + buffer);
+        std::cout << ("Length buffer: " + buffer.length());
+    }
+\end{CCode}
+
+Folgender Text wird durch obiges Programm ausgegeben:
+
+\begin{ConsoleOutput}
+Content buffer: Han+++s Meier
+Length buffer: 13
+2.7 
+\end{ConsoleOutput}
+
+Einige weitere Beispiele:
+
 \begin{CCode}
 
    string s1 = "Hallo";
@@ -7075,8 +7164,10 @@ Einige Beispiele:
 Es gibt noch viele weitere Funktionen zum Suchen von Strings innerhalb Strings, Einfügen
 von Strings innerhalb anderer Strings, Zerlegen von Strings in Teilstrings oder
 Ersetzen von Teilstrings in Strings.
+Weitere Methoden finden Sie unter std::string.
 
-Zur Umwandlung zwischen Zahlen und Zeichenketten können die \OviIndex{StringStream} Klassen verwendet
+
+Zur Umwandlung zwischen Zahlen und Zeichenketten können auch die \OviIndex{StringStream} Klassen verwendet
 werden. Stringstreams verhalten sich wie Streams (Dateien) nur dass aus einem
 String gelesen, oder in einen String geschrieben wird:
 
