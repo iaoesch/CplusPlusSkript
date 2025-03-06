@@ -13229,6 +13229,143 @@ void TellCAboutIt(void *Object)
 }
 \end{CCode}
 
+\subsection{Taskklasse für Realtime OS}
+
+\begin{CCode}
+/*
+ * TaskDemo.cpp
+ *
+ *  Created on: 17.03.2015
+ *      Author: osi1
+ */
+
+class Task {
+
+    int TaskId;
+    char *TaskStackStart;
+    volatile bool Terminated;
+
+protected:
+    volatile bool StopRequested;
+
+
+private:
+    static void TaskStartHelper(void *p_arg);
+
+public:
+	         Task(char Stack[], int Priority);
+    virtual ~Task();
+
+    virtual void Run() = 0;
+
+            void Start();
+            void Stop();
+            void WaitTime(int Time);
+            void TerminateImmediately();
+            void TerminateSoft() { StopRequested = true; };
+            bool IsTerminated() {return Terminated;};
+};
+
+/* Constructor, creates a task */
+Task::Task(char Stack[], int Priority)
+: TaskId(Priority), TaskStackStart(Stack), StopRequested(false), Terminated(false)
+{
+	int Error;
+	
+	// Create Task, pass this as parameter for call of TaskStartHelper from os
+	Error = OSTaskCreate(TaskStartHelper, this, Stack, Priority);
+
+	if (Error != OS_ERR_NONE) {
+		throw (TaskExcepton(Error));
+	}
+}
+
+/* We need a non-member method to pass the address of to the OS */
+/* the this-pointer is passed in p_arg (from TaskCreate())     */
+void Task::TaskStartHelper(void *p_arg)
+{
+	try {
+	    /* Start our Task by calling run() */
+		static_cast<Task *>(p_arg)->Run();
+	}
+	catch (...) {
+		// Don't leak exceptions into OS
+	}
+
+	static_cast<Task *>(p_arg)->Terminated = true;
+}
+
+void Task::WaitTime(int Time)
+{
+
+	int Error;
+
+	Error = OSTimeDly(Time);
+
+	if (Error != OS_ERR_NONE) {
+		throw (TaskExcepton(Error));
+	}
+}
+
+void Task::Start()
+{
+	int Error;
+
+	Error = OSTaskResume(TaskId);
+
+	if (Error != OS_ERR_NONE) {
+		throw (TaskExcepton(Error));
+	}
+}
+
+void Task::Stop()
+{
+	int Error;
+
+	Error = OSTaskSuspend(TaskId);
+
+	if (Error != OS_ERR_NONE) {
+		throw (TaskExcepton(Error));
+	}
+}
+
+void Task::TerminateImmediately()
+{
+	int Error;
+
+	StopRequested = true;
+
+	Error = OSTaskDel(TaskId);
+
+	if (Error != OS_ERR_NONE) {
+		throw (TaskExcepton(Error));
+	}
+}
+
+// User can now derive from our Task to create his tasks
+
+class UserTask : public Task {
+
+	public:
+	            UserTask(char Stack[], int Priority) : Task(Stack, Priority);
+
+ 	    virtual void Run();
+
+};
+
+
+void UserTask::Run()
+{
+
+	while (StopRequested != true) {
+
+		// Do some important work
+
+		WaitTime(10);
+	}
+}
+\end{CCode}
+
 \section{Von Interrupt in Objekte wechseln}
 Interrupts werden durch die Hardware ausgelöst, und die Hardware weiss normalerweise nichts von Objekten, deshalb können Interrupts auch nicht direkt Methoden von Objekten aufrufen. Es ist aber möglich, Klassenmethoden (Statische Methoden) aufzurufen, da diese auch ohne Objekte verwendet werden können.
 
