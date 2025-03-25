@@ -1,0 +1,83 @@
+%% Creator: Inkscape 1.0.2 (e86c8708, 2021-01-15), www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'CoroutineProcessExample.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \newcommand*\fsize{\dimexpr\f@size pt\relax}%
+  \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{595.27559055bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,1.41428571)%
+    \lineheight{1}%
+    \setlength\tabcolsep{0pt}%
+    \put(0,1.41428571){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}UART1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{CoroutineProcessExample.pdf}}%
+    \put(0.00595718,1.3500265){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}UART1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{CoroutineProcessExample.pdf}}%
+    \put(0.00689456,1.26297431){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}UART2\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{CoroutineProcessExample.pdf}}%
+    \put(0.30757751,1.3841666){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}RX1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{CoroutineProcessExample.pdf}}%
+    \put(0.30598662,1.29461895){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}RX2\end{tabular}}}}%
+    \put(0.34354764,1.2162041){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}DataIn\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{CoroutineProcessExample.pdf}}%
+    \put(0.59670982,1.16879087){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}DataOut2\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{CoroutineProcessExample.pdf}}%
+    \put(0.60243672,1.27330701){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}DataOut1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{CoroutineProcessExample.pdf}}%
+    \put(0.5963818,1.35328052){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Dispatch\end{tabular}}}}%
+    \put(0.4738106,1.22127659){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Dispatch\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{CoroutineProcessExample.pdf}}%
+    \put(0.84940161,1.40537105){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Tx1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{CoroutineProcessExample.pdf}}%
+    \put(0.8472998,1.29019311){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}Tx2\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{CoroutineProcessExample.pdf}}%
+    \put(0.8341659,1.37627247){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}UART1\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{CoroutineProcessExample.pdf}}%
+    \put(0.83663927,1.25231253){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}UART2\end{tabular}}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{CoroutineProcessExample.pdf}}%
+  \end{picture}%
+\endgroup%

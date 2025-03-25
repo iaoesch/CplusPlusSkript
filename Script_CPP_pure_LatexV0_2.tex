@@ -12837,6 +12837,600 @@ int main(int argc, char*argv[])
 }
 \end{CCode}
 
+\section{Einfaches Beispiel für Kooperatives Multitasking mit Coroutienen}
+\label{sec:UARTCoroutineExample}
+
+Beispiel für Kooperatives Mutlitasking. Zwei Koroutinen lesen aus einer Schnittstelle Daten und parsen die empfangenen
+Telegramme und legen sie in einer Empfangsqueue ab, zwei weitere Koroutinen lesen Daten aus Sendequeues, packen diese in Telegramme ein und versenden sie. Dazwischen ist eine weitere Koroutine, welche die Daten aus der Empfangsqueue liest und an die entsprechenden Sendequeues weiterleitet.
+
+Alle Koroutinen unterbrechen ihre Arbeit wenn sie auf Daten warten müssen.
+
+ %%\input{CoroutineProcessExample.pdf_tex}
+ 
+ \includegraphics[width=0.8\textwidth]{CoroutineProcessExamplePure.pdf}
+
+\begin{CCode}
+#include <cassert>
+#if 1
+/*****************************************************************************/
+/*  Module     : Coroutine Example 1a                           Version 1.0  */
+/*****************************************************************************/
+/*                                                                           */
+/*  Function   : This is a simple Example for Coroutines                     */
+/*               Just fife Coroutines who handle two (simulated)             */
+/*               communicationsports independent                             */
+/*               A kind of cooperatriver multitasking is realized            */
+/*               by using co_await whenever there is something               */
+/*               to wait for so other coroutines may be resumed              */
+/*                                                                           */
+/*                                                                           */
+/*  Author     : I. Oesch                                                    */
+/*                                                                           */
+/*  History    : 12.03.2025  IO Created                                      */
+/*                                                                           */
+/*  File       : CoroutineExample1a.cpp                                      */
+/*                                                                           */
+/*****************************************************************************/
+/* MagicSoft                                                                 */
+/*****************************************************************************/
+
+
+
+
+/* imports */
+#include <iostream>
+#include <coroutine>
+#include <iostream>
+
+/* Class constant declaration  */
+
+/** Allow/Disallow debugging output */
+constexpr bool DebugOutput = false;
+
+typedef std::deque<std::string> CommandQueueType;
+
+// Simple simulated communication peripherie
+class Peripherie {
+    bool TxReady = true;
+    int  TxValue = 0;
+    bool RxReady = false;
+    int  RxValue = 0;
+public:
+    bool ReadyToRead() {return RxReady;}
+    bool ReadyToWrite() {return TxReady;}
+    int  ReadValue() {RxReady = false; return RxValue;}
+    void WriteValue(int Value) {TxReady = false; TxValue = Value;}
+
+    // Simulation interface
+    int  GetSentValue() {TxReady = true; return TxValue;}
+    void SetReceivedValue(int Value) {RxReady = true; RxValue = Value;}
+};
+
+// Simple wrapper to use Queue as readable source
+class QueueReader {
+    CommandQueueType &Queue;
+
+public:
+    QueueReader(CommandQueueType &Queue_) : Queue(Queue_) {}
+    bool ReadyToRead() const {return ! Queue.empty();}
+    auto  ReadValue() const {auto tmp = Queue.back(); Queue.pop_back(); return tmp;}
+};
+
+
+// Interface requirements for awaiters
+template <typename T>
+concept Readable =
+    requires(T t) {      // A Datasource must have at least:
+        {t.ReadyToRead()} -> std::same_as<bool>; // A Method to check for availlable Datas
+        t.ReadValue();     // and a method returning the requested datas
+    };
+
+template <typename T, typename V>
+concept Writeable =
+    requires(T t, V v) {      // A Datasink must have at least:
+        {t.ReadyToWrite()} -> std::same_as<bool>; // A Method to check for ready to write Datas
+        t.WriteValue(v);     // and a method to write the datas
+    };
+
+
+/** Baseclass for all awaiters used in this example, an
+ *  Awaiter is something a coroutine can wait for
+ *  CanContinue() must return true if coroutine
+ *  may continue, e.g. the event the Coroutine was waiting for
+ *  has occured
+ *  It contains also the Register/unregister functionality
+ *  to register the awaiter in the Promise object of the
+ *  awaiting coroutine
+ */
+template<typename PromiseType>
+struct BaseAwaiter {
+
+    // The promise (coroutine) we are currently attache to
+    PromiseType *p_;
+
+    // Attach ourself to th promise of th coroutine which is awaiting on us
+    void RegisterAwaiter(PromiseType &p) {
+        p_ = &p;
+        p_->RegisterAwaiter(this);
+    }
+
+    // Detach us from the promise
+    void UnregisterAwaiter() {if (p_) { p_->UnregisterAwaiter(this); p_ = nullptr;}}
+
+    // Constructor
+    BaseAwaiter() : p_(nullptr) {}
+
+    // Clean up, detach ourself from coroutine if still attached
+    virtual ~BaseAwaiter() {UnregisterAwaiter();}
+
+    // Must be overriden by all derived awaiters
+    // returns true if no wait is required
+    bool virtual CanContinue() {return true;}
+};
+
+/** The awaiter object awaiting for read of data */
+template<typename PromiseType, typename SourceType>
+    requires Readable<SourceType>
+struct WaitAndRead : public BaseAwaiter<PromiseType>{
+
+    /// Things the coroutine is awaiting for
+    SourceType &Source;
+
+    /// Check if the coroutine is ready for resheduling
+    virtual bool CanContinue() override {return ready();}
+
+    /** Helperfunction to determine if the coroutine may continue by checking all
+   *  things we are waiting for, returns true if anything is ready
+   */
+    bool ready() {
+
+        return Source.ReadyToRead();
+    }
+
+    /** Standard awaiterinterface, indication that coroutine just may
+   *  continue without blocking, if true is returned coroutine will
+   *  continue without resheduling on await, we can call ready() here,
+   *  but this may result in only this coroutine running and never give up
+   *  the processor for other routines. In this case it must be guaranteed the
+   *  ready() will return false from time to time to allow other coroutines to run
+   *
+   */
+    bool await_ready() { return ready(); }
+
+    /** Standard awaiterinterface, will be called when coroutine
+   *  has suspended, code here is responsible that coroutine will
+   *  be resumed sometime in the future.
+   *  here we register ourselfes in the promise object
+   *  of the waiting coroutine, so the sheduler knows what
+   *  the coroutine is waiting for
+   */
+    void await_suspend(std::coroutine_handle<PromiseType> h) {
+        if constexpr (DebugOutput)  std::cout << "Suspended\n";
+        BaseAwaiter<PromiseType>::RegisterAwaiter(h.promise());
+    }
+
+    /** Standard awaiterinterface, will be called when coroutine
+   *  resumes, the return value of this method is the result
+   *  of the co_await or co_yield expression.
+   *  Here we just return the value read from the source
+   *
+   */
+    auto await_resume() {
+        if constexpr (DebugOutput) std::cout << "Resumed\n";
+        BaseAwaiter<PromiseType>::UnregisterAwaiter();
+
+        return Source.ReadValue();
+    }
+
+    /** Constructor, giving object we are awaiting for */
+    WaitAndRead(SourceType &TheSource) : Source(TheSource) {}
+};
+
+/** The awaiter object awaiting for read of data */
+template<typename PromiseType, typename DataDestination, typename ValueType>
+    requires Writeable<DataDestination, ValueType>
+struct WaitAndWrite : public BaseAwaiter<PromiseType>{
+
+    /// Things the coroutine is awaiting for
+    DataDestination &Destination;
+
+    /// Value we want to write
+    ValueType Value;
+
+    /// Check if the coroutine is ready for rescheduling
+    virtual bool CanContinue() override {return ready();}
+
+    /** Helperfunction to determine if the coroutine may continue by checking all
+   *  things we are waiting for, returns true if anything is ready
+   */
+    bool ready() {
+
+        return Destination.ReadyToWrite();
+    }
+
+    /** Standard awaiterinterface, indication that coroutine just may
+   *  continue without blocking, if true is returned coroutine will
+   *  continue without resheduling on await, we can call ready() here,
+   *  but this may result in only this coroutine running and never give up
+   *  the processor for other routines. In this case it must be guaranteed the
+   *  ready() will return false from time to time to allow other coroutines to run
+   *
+   */
+    bool await_ready() { return ready(); }
+
+    /** Standard awaiterinterface, will be called when coroutine
+   *  has suspended, code here is responsible that coroutine will
+   *  be resumed sometime in the future.
+   *  here we register ourselfes in the promise object
+   *  of the waiting coroutine, so the sheduler knows what
+   *  the coroutine is waiting for
+   */
+    void await_suspend(std::coroutine_handle<PromiseType> h) {
+        if constexpr (DebugOutput)  std::cout << "Suspended\n";
+        BaseAwaiter<PromiseType>::RegisterAwaiter(h.promise());
+    }
+
+    /** Standard awaiterinterface, will be called when coroutine
+   *  resumes, the return value of this method is the result
+   *  of the co_await or co_yield expression.
+   *  Here we just return the value read from the source
+   *
+   */
+    auto await_resume() {
+        if constexpr (DebugOutput) std::cout << "Resumed\n";
+        BaseAwaiter<PromiseType>::UnregisterAwaiter();
+
+        return Destination.WriteValue(Value);
+    }
+
+    /** Constructor, giving object we are awaiting for */
+    WaitAndWrite(DataDestination &TheDestination, ValueType NewValue) : Destination(TheDestination), Value(NewValue) {}
+};
+
+
+
+
+
+/** The return info object, required for communication, management and control
+ *  of the coroutine, Must contain an embedded promise type (Required by standard)
+ */
+struct ReturnInfoType{ // Must contain an embedded promise type
+
+    /** The promise_type for all our coroutines, used to control, manage
+    and configure the coroutines */
+    struct promise_type {
+
+        /** Standard promise interface, will be called when coroutine
+      *  is started, must return the returnobject, which will
+      *  be passed to the creator (Caller) of the coroutine
+      *  Here the returnobject is created and initialized with
+      *  the coroutine handle, and additionally stored locally in h_
+      */
+        ReturnInfoType get_return_object() { return {.h_ = std::coroutine_handle<promise_type>::from_promise(*this)}; }
+
+        /** Standard promise interface, will be called when coroutine
+     *  is started, coroutine will co_await for the result of this
+     *  call, if suspend_never is returned coroutine will continue
+     *  to the first co_await, co_yield or co_return in its code,
+     *  if suspend_allways is returned, coroutine will be suspended
+     *  after creation.
+     */
+        std::suspend_never initial_suspend() { return {}; }
+
+        /** Standard promise interface, will be called when coroutine
+     *  has reached its end, coroutine will co_await for the result of this
+     *  call, if suspend_never is returned coroutine will finish
+     *  and destroy its reources, it is undefined behaviour to access any
+     *  resources of the coroutine (E.g. Its promise object)
+     *  if suspend_allways is returned, coroutine will be suspended
+     *  and coroutine musst manually be destroyed by calling destroy()
+     *  on its handle.
+     *  It is in both cases undefined behaviour to call resume()
+     *  on the Handle of this coroutine as the routine has finished
+     */
+        std::suspend_never final_suspend() noexcept { return {}; }
+
+        /** Standard promise interface for coroutines co_returning void
+     *  or ending without co_return.
+     *  Will be called when coroutine reaches its end or a parameterless
+     *  co_return
+     */
+        void return_void() {}
+
+        /** Standard promise interface for coroutines ending withn an uncaught exception
+     */
+        void unhandled_exception() {}
+
+        /// Coroutine is waiting on this object
+        BaseAwaiter<promise_type> *Awaiter = nullptr;
+
+        /// Management to register/unregister awaiters
+        void RegisterAwaiter(BaseAwaiter<promise_type> *NewAwaiter) {assert(Awaiter==nullptr); Awaiter = NewAwaiter; if constexpr (DebugOutput) std::cout << "Registering Awaiter " << Awaiter << std::endl;}
+        void UnregisterAwaiter(BaseAwaiter<promise_type> *AwaiterToRemove) {assert(Awaiter==AwaiterToRemove); Awaiter = nullptr; if constexpr (DebugOutput) std::cout << "Unregistering Awaiter " << AwaiterToRemove << std::endl;}
+
+        /// Check if coroutine can continue (No awaiter, or awaiter is ready)
+        bool IsReadyToResume() {
+            if (Awaiter == nullptr) {
+                if constexpr (DebugOutput) std::cout  << "No Awaiter, just go on\n";
+                return true;
+            } else {
+                if constexpr (DebugOutput) std::cout  << "Checking Awaiter " << Awaiter << "\n";
+                if (Awaiter->CanContinue()){
+                    if constexpr (DebugOutput) std::cout  << "Awaiter ready\n";
+                    return true;
+
+                } else {
+                    if constexpr (DebugOutput) std::cout  << "Awaiter not ready\n";
+                    return false;
+
+                }
+            }
+        }
+    };
+    /// Returns the handle for the coroutine of this returnobject
+    operator std::coroutine_handle<promise_type>() const { return h_; }
+
+    /// Here the handle is stored when constructing the returnobject
+    std::coroutine_handle<promise_type> h_;
+
+    /// Just resumes the coroutine, ignoring if it is waiting for something
+    void ResumeAllways() {h_();}
+
+    /// Resume the coroutine if awaiter is ready
+    void ResumeIfReady() {if (h_.promise().IsReadyToResume()) {h_();}}
+
+    /// Check if coroutine has finished (Illegel to call if coroutine
+    /// did not suspend on final_suspend)
+    bool IsDone() {return h_.done();}
+
+    /// Destroy coroutine (Illegel to call if coroutine
+    /// did not suspend on final_suspend)
+    void Destroy() {h_.destroy();}
+
+};
+
+// Deduction guides to simplyfy construction of awaiters, using
+// ReturnInfoType::promise_type as default parameter
+template <typename T>
+WaitAndRead(T) -> WaitAndRead<ReturnInfoType::promise_type, T>;
+
+template <typename T1, typename T2>
+WaitAndWrite(T1, T2) -> WaitAndWrite<ReturnInfoType::promise_type, T1, T2>;
+
+
+// A simple Coroutine, just reading telegramms from a (simulated)
+// communicationport and placing them into a queue
+// waits with co_await for transmitter/receiver to be ready
+// Recogniced Telegramformat is '<' Data '>'
+ReturnInfoType ReceiverCoRoutine(Peripherie &ComPort, CommandQueueType &ReceiverQueue) {
+
+    //never ends
+    while(1) {
+        std::string NewCommand;
+        int ByteReceived;
+
+        // Read a Byte from Port, wait until Byte is availlable
+        ByteReceived = co_await WaitAndRead(ComPort);
+
+        if (ByteReceived == '<') {
+
+            do {
+                if (ByteReceived == '<') {
+                    NewCommand.clear();
+                } else {
+                    NewCommand.push_back(ByteReceived);
+                }
+                // Read a Byte from Port, wait until Byte is availlable
+                ByteReceived = co_await WaitAndRead(ComPort);
+
+            } while (ByteReceived != '>');
+
+            // Place received Command in Queue
+            ReceiverQueue.push_front(NewCommand);
+        }
+    }
+}
+
+// A simple Coroutine, just reading telegramms from a queue
+// and writing them to a (simulated) communicationport
+// waits with co_await for queue and transmitter/receiver to be ready
+// Used Telegramformat is '<' Data '>'
+ReturnInfoType TransmitterCoRoutine(Peripherie &ComPort, CommandQueueType &TransmitterQueue) {
+
+    //never ends
+    while(1) {
+
+        if (TransmitterQueue.empty()) {
+            // Queue is empty, suspend and try later
+            co_await std::suspend_always();
+        } else {
+
+            // Write a Byte to Port, wait until port is ready
+            co_await WaitAndWrite(ComPort, '<');
+
+            for (auto &ValueToSend : TransmitterQueue.back()) {
+
+                // Write a Byte to Port, wait until port is ready
+                co_await WaitAndWrite(ComPort, ValueToSend);
+
+            }
+
+            // Write a Byte to Port, wait until port is ready
+            co_await WaitAndWrite(ComPort, '>');
+
+            TransmitterQueue.pop_back();
+        }
+    }
+}
+
+// A simple Coroutine, just reading telegramms from a queue
+// and writing them to a (simulated) communicationport
+// waits with co_await for queue and transmitter/receiver to be ready
+// Used Telegramformat is '<' Data '>'
+ReturnInfoType TransmitterCoRoutineV2(Peripherie &ComPort, CommandQueueType &TransmitterQueue) {
+
+    QueueReader Source(TransmitterQueue);
+    //never ends
+    while(1) {
+        std::string CommandToSend;
+
+        CommandToSend = co_await WaitAndRead(Source);
+
+
+        // Write a Byte to Port, wait until port is ready
+        co_await WaitAndWrite(ComPort, '<');
+
+        for (auto &ValueToSend : CommandToSend) {
+
+            // Write a Byte to Port, wait until port is ready
+            co_await WaitAndWrite(ComPort, ValueToSend);
+
+        }
+
+        // Write a Byte to Port, wait until port is ready
+        co_await WaitAndWrite(ComPort, '>');
+    }
+}
+
+// A simple Coroutine, just processing and dispatching
+// received telegramms from a queue
+// and writing them to according transmitter queue
+// waits with co_await for queue to be ready
+ReturnInfoType DispatcherCoRoutine(CommandQueueType &CommandQueue, CommandQueueType &TransmitterQueue1, CommandQueueType &TransmitterQueue2)
+{
+
+    //never ends
+    while(1) {
+        std::string CommandToSend;
+
+        if (CommandQueue.empty()) {
+            // Queue is empty, suspend and try later
+            // Could also be done by an awaiter...
+            co_await std::suspend_always();
+        } else {
+
+            if (CommandQueue.back().starts_with('1')) {
+                TransmitterQueue1.push_front(CommandQueue.back());
+                CommandQueue.pop_back();
+            } else if (CommandQueue.back().starts_with('2')) {
+                TransmitterQueue2.push_front(CommandQueue.back());
+                CommandQueue.pop_back();
+            } else if (CommandQueue.back().starts_with('*')) {
+                TransmitterQueue1.push_front(CommandQueue.back());
+                TransmitterQueue2.push_front(CommandQueue.back());
+                CommandQueue.pop_back();
+            } else {
+                std::cout << "Dispatcher: Unknown Destination: <" << CommandQueue.back() << ">" << std::endl;
+                CommandQueue.pop_back();
+            }
+        }
+    }
+}
+
+// Simulate ramdom receiving and sending of Values, just for demonstration
+class PortSimulator {
+
+    std::string TelegrammsToSend[5] = {"<1 Hallo>", "<2 Test>", "<* all>", "<Nobody>", "<error"};
+   // std::string Offsets[4] = {"", "      ", "            ", "                "};
+    std::string Offset;
+    std::string Offset2;
+    Peripherie &Port;
+    std::string PortName;
+    std::string *TelegramToSend;
+    int IndexIntoTelegrammToSend;
+
+public:
+
+    PortSimulator(Peripherie &Port_, std::string PortName_, int OffsetLength, int OffsetLength2) : Port(Port_), PortName(PortName_)
+    {
+        TelegramToSend = nullptr;
+        Offset.assign(OffsetLength, ' ');
+        Offset2.assign(OffsetLength2, ' ');
+    }
+
+
+    void ProcessSimulatedPort()
+    {
+        if (rand() % 4 == 0) {
+            ProcessWrite();
+        }
+        if (rand() % 4 == 0) {
+            ProcessRead();
+        }
+    }
+
+private:
+    void ProcessWrite()
+    {
+        if (!Port.ReadyToWrite()) {
+            std::cout  << PortName << " value:" << Offset << "<" << char(Port.GetSentValue()) << ">    " << Offset2 << "beeing transmitted\n";
+        }
+    }
+
+    void ProcessRead()
+    {
+        if (!Port.ReadyToRead()) {
+            if (TelegramToSend == nullptr) {
+                TelegramToSend = TelegrammsToSend + (rand()%5);
+                IndexIntoTelegrammToSend = 0;
+            }
+            if (IndexIntoTelegrammToSend < TelegramToSend->size()) {
+
+                int Value = TelegramToSend->at(IndexIntoTelegrammToSend);
+                IndexIntoTelegrammToSend++;
+                if (IndexIntoTelegrammToSend >= TelegramToSend->size()) {
+                    TelegramToSend = nullptr;
+                }
+                std::cout  << PortName << " value: " << Offset << "    <" << char(Value) << ">" << Offset2 << "beeing received\n";
+                Port.SetReceivedValue(Value);
+            } else {
+                TelegramToSend = nullptr;
+            }
+        }
+    }
+};
+
+int main() {
+
+    // Creating two simulated comports
+    Peripherie Port1;
+    Peripherie Port2;
+
+    // Simulators are just for demonstration
+    PortSimulator Simulator1(Port1, "P1", 1, 9);
+    PortSimulator Simulator2(Port2, "P2", 9, 1);
+
+    CommandQueueType ReceivedCommands;
+    CommandQueueType CommandsToTransmit1;
+    CommandQueueType CommandsToTransmit2;
+
+    ReturnInfoType Coroutines[5];
+    // Start a data processing coroutine for each comport
+    Coroutines[0] = ReceiverCoRoutine(Port1, ReceivedCommands);
+    Coroutines[1] = ReceiverCoRoutine(Port2, ReceivedCommands);
+    Coroutines[2] = TransmitterCoRoutineV2(Port1, CommandsToTransmit1);
+    Coroutines[3] = TransmitterCoRoutine(Port2, CommandsToTransmit2);
+    Coroutines[4] = DispatcherCoRoutine(ReceivedCommands, CommandsToTransmit1, CommandsToTransmit2);
+
+    // Continuously resume coroutines (done should allways be false,
+    // as no coroutine returns)
+    while (1) {
+        std::cout  << "Tick\n";
+        
+        // Just simulate some input and output
+        Simulator1.ProcessSimulatedPort(); 
+        Simulator2.ProcessSimulatedPort();
+
+        // Simple Scheduler, simply runs all coroutines not waiting for something
+        for (auto &cr: Coroutines) {
+            cr.ResumeIfReady();
+        }
+    }
+}
+#endif
+\end{CCode}
+
+
 \section{selbstdfinierte Formatter}
 \label{sec:ComplexFormatter}
 
