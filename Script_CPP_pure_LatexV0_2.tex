@@ -14404,7 +14404,539 @@ P:\HC\D386_O> exit
 
 
 \end{ConsoleOutput}
-%\end{CCode}
+
+\section{Typsicheres Bitfeld für Hardwarezugriff}
+
+Nachfolgend der Code für ein Bitfeld mit typsicherem Zugriff, kann beliebig ausgebaut werden.
+
+Idee: Ein Bitfeld, welches auf eine Benutzerdefinierte Adresse gelegt werden kann, der Zugriff
+auf die einzelnen Bitfelder erfolgt durch den Typ der gelesenen oder geschriebenen Bitfelder.
+(Dies setzt voraus, das jedes Bitfeld seinen eigenen Typ hat), Zudem soll das ganze maximal 
+effizient sein.
+
+Noch nicht integriert ist volatile, das muss auf jeden Fall sein um korrekten HW-Zugriff zu 
+erhalten (Der Basistyp müsste volatile sein)
+  
+
+\begin{CCode}
+
+// Idea: Have a bitfield, whose member are accessed by type of bitfield, e. g.
+//
+// Bitfield = x;   // Writes to field with same Type as x
+// Bitfield == x;   // compares to field with same Type as x
+// x = Bitfield;   // Reads from field with same Type as x
+//
+
+
+
+
+#include <iostream>
+
+using namespace std;
+
+// Define some basetypes for bitfields
+enum class Wordlength : char {W8, W16, W32};
+enum class Ready  : char{RDY, NRDY};
+
+// Define access modes for bitfields
+enum class AccessType {ReadOnly, WriteOnly, ReadAndWrite};
+
+// A class just to hold the description of a bitfield
+template <int TheOffset, int TheWidth, class E, AccessType TheAccess = AccessType::ReadAndWrite>
+class BitfieldDescriptor  {
+public:
+    typedef E Type;                                   // The type of the contained data
+    static constexpr AccessType Access = TheAccess;   // Readonly, Writeonly or free Access
+    static constexpr int Offset = TheOffset;          // Start of bitfield
+    static constexpr int Width = TheWidth;            // length of bitfield
+};
+
+// Just a helperclass to catch duplicate bitfield definitions
+// (The containing class will derive from this class for all
+//  contained bitfields und therefore generate a compile
+//  error as we cannot derive twice from the same baseclass)
+template<int offset, int width>
+class BitFieldProtector {
+
+};
+
+
+// Another helperclass template to catch overlapping bitfields
+// Template needs basetype of bitfield, and a Parameterpack
+// of Bitfielddescriptors, which must have a (constexpr) member
+// Offset and a (constexpr) member Width defining the bitfield
+// If we have overlapping bitfields, the member MultipleUse
+// will be non-zero
+
+// General case, we have more than one bitfield descriptor
+// Mybits -> all bits set which are used by FIRST type
+// OtherBits -> all bits set which are used by other Types in List
+//              we Just instantiate recoursively orself, passing
+//              just LIST, so we have one Type less, and using
+//              that templates BitsUsedMember
+// BitsUsed -> all bits set used by FIRST and LIST
+// MultipleUsed -> all bits set used by more than one bitfield
+template<class T, class First, class ...LIST>
+struct BitFieldChecker2 {
+    typedef First Head;
+    static constexpr T MyBits = (((1 << Head::Width) - 1) << Head::Offset);
+    static constexpr T OtherBits = BitFieldChecker2<T, LIST...>::BitsUsed;
+    static constexpr T BitsUsed = OtherBits | MyBits;
+    static constexpr T MultipleUse = BitFieldChecker2<T, LIST...>::MultipleUse | (MyBits & OtherBits);
+};
+
+// Recursion end case, we have just one bitfield descriptor
+// We simple determine Bits used by this bitfield
+template<class T, class Head>
+struct BitFieldChecker2<T, Head> {
+    static constexpr T BitsUsed = (((1 << Head::Width) - 1) << Head::Offset);
+    static constexpr T MultipleUse = 0;
+};
+
+
+// Tests
+struct BT04 {static constexpr int Offset = 0; static constexpr int Width = 4;};
+struct BT45 {static constexpr int Offset = 4; static constexpr int Width = 5;};
+struct BT93 {static constexpr int Offset = 9; static constexpr int Width = 3;};
+struct BT24 {static constexpr int Offset = 2; static constexpr int Width = 4;};
+
+constexpr int BitUsed1 = BitFieldChecker2<int, BT04, BT45, BT93>::BitsUsed;
+constexpr int MultipleUsed1 = BitFieldChecker2<int, BT04, BT45, BT93>::MultipleUse;    // Ok, is 0
+
+constexpr int BitUsed2 = BitFieldChecker2<int, BT04, BT45, BT93>::BitsUsed;
+constexpr int MultipleUsed2 = BitFieldChecker2<int, BT04, BT45, BT24, BT93>::MultipleUse; // Not ok, is 0x3c
+
+// Simple wrapper for Bitfield check
+template<class T, class ...LIST>
+struct BitFieldProtector2 {
+    static_assert (BitFieldChecker2<T, LIST...>::MultipleUse == 0);
+    static constexpr T BitsUsed = BitFieldChecker2<T, LIST...>::BitsUsed;
+    static constexpr T MultipleUse = BitFieldChecker2<T, LIST...>::MultipleUse;
+};
+
+
+// A Simple Helperclass to define Bitfield access.
+// Manages read/write access and knows position of bitfield
+// All coded in Type, so memory is only required for reference
+// to underlying bitfield containing variable.
+// Defines operator = (T) for write access and
+// operator T() for read access.
+// if Raedonly or Writeonly, only one of those is defined
+template<int offset, int width, class T, class E,  AccessType TheAccess>
+class BitFieldProxy {
+
+};
+
+// Spezialization for read and write case, define all access operations
+template<int offset, int width, class T, class E>
+class BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite> {
+
+    // Make sure bitfield fits in underlying datatype
+    static_assert(offset+width < sizeof(T)*8);
+
+    // The reference to our bits holding variable
+    T &Register;  //
+
+protected:
+    // Efective read an write the bits of the bitfield
+    E get() const {return static_cast<E>((Register >> offset) & ((1 << width)-1));}
+    void set(T Val) const {Register = (Register & ~(((1 << width)-1) << offset)) | ((Val & ((1 << width)-1)) << offset);}
+
+
+public:
+    typedef T BaseType;
+    // Constructor, we need to know where our bits can be found
+    constexpr BitFieldProxy(T &Reg) : Register(Reg) {}
+
+    // We wont allow any copies of the proxy
+    BitFieldProxy(const BitFieldProxy &) = delete;
+    BitFieldProxy(BitFieldProxy &&) = delete;
+    BitFieldProxy &operator = (BitFieldProxy &&) = delete;
+    BitFieldProxy &operator = (BitFieldProxy) = delete;
+
+    // Allow write access for values of type E
+    //  const E operator = (const E &Bits) {set(static_cast<T>(Bits)); return Bits;}
+    void operator = (const E &Bits) const {set(static_cast<T>(Bits)); }
+
+    // Allow read access, called when used as E in expression
+    operator E () const {return get();}
+};
+
+// Spezialization for read only case, define all access operations
+// using implementations of read/write case by inheriting from
+// read write variant
+template<int offset, int width, class T, class E>
+class BitFieldProxy<offset, width, T, E, AccessType::ReadOnly> : public BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite>  {
+
+    // Writing not allowed
+    void set(T Val) = delete;
+
+public:
+    // Constructor, pass reference to underlying variable to base class
+    constexpr BitFieldProxy(T &Reg) :BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite> (Reg) {}
+
+    // Proxy connot be copied
+    BitFieldProxy(const BitFieldProxy &) = delete;
+    BitFieldProxy(BitFieldProxy &&) = delete;
+    //BitFieldProxy &operator = (BitFieldProxy &&) = delete;
+    BitFieldProxy &operator = (BitFieldProxy) = delete;
+
+    // Write not allowed
+    const E & operator = (E Bits) const = delete;
+
+    // Read allowed (Operator E() cannot be inherited)
+    operator E () const {return BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite>::get();}
+};
+
+// Spezialization for write only case, define all access operations
+// using implementations of read/write case by inheriting from
+// read write variant
+template<int offset, int width, class T, class E>
+class BitFieldProxy<offset, width, T, E, AccessType::WriteOnly> : public BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite>  {
+
+    // Reading not allowed
+    E get() const = delete;
+
+public:
+    // Constructor, pass reference to underlying variable to base class
+    constexpr BitFieldProxy(T &Reg) :BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite> (Reg) {}
+
+    // Proxy connot be copied
+    BitFieldProxy(const BitFieldProxy &) = delete;
+    BitFieldProxy(BitFieldProxy &&) = delete;
+    //BitFieldProxy &operator = (BitFieldProxy &&) = delete;
+    BitFieldProxy &operator = (BitFieldProxy) = delete;
+
+    // Write allowed (Operator =(E) cannot be inherited)
+    void operator = (const E &Bits) const {BitFieldProxy<offset, width, T, E, AccessType::ReadAndWrite>::set(static_cast<T>(Bits)); }
+
+    // Read not allowed
+    operator E () const = delete;
+};
+
+// Manages one bitfield, just keeps informations
+// about a bitfield and returns a proxy to it
+template<class T, class P>
+class TheBitfieldManager {
+
+public:
+    const P &GetProxy(T &r) const {return P(r);}
+    P GetProxy(T &r) {return P(r);}
+};
+
+
+// IsSameType: true if two types are same, false otherwise
+
+template <class T1, class T2>
+struct IsSameType {
+    static constexpr bool Result = false;
+};
+
+template <class T>
+struct IsSameType <T, T>{
+    static constexpr bool Result = true;
+};
+
+
+// Test
+constexpr bool r1 = IsSameType<int, int>::Result;  // true
+constexpr bool r2 = IsSameType<int, char>::Result; // false
+
+
+// Select between two types
+template <bool Selector, class T1, class T2>
+struct SelectType {
+};
+
+template <class T1, class T2>
+struct SelectType<true, T1, T2> {
+    typedef T1 Type;
+};
+
+template <class T1, class T2>
+struct SelectType<false, T1, T2> {
+    typedef T2 Type;
+};
+
+// Test
+typedef SelectType<true, int , long>::Type tt1;  // tt1 is int
+typedef SelectType<false, int , long>::Type tt2; // tt2 is long
+
+
+// find type in list of types who contains a typedef named Type who matches given typ
+// (Serch for A type in List)
+
+// Generel case if more than one element is left in list
+// Returns first Element if type matches, otherwise
+// instantiates recursively itself with rest of list
+// and 'returns' that result
+template <class K, class First, class ...List>
+struct FindElementInList {
+    typedef typename SelectType<IsSameType<K, typename First::Type>::Result,
+                                First,
+                                typename FindElementInList<K, List...>::Result
+                                >::Type Result;
+};
+
+// Special case if only one element is left in list
+// 'Returns' Element if type matches, void otherwise
+template <class K, class First>
+struct FindElementInList<K, First> {
+    typedef typename SelectType<IsSameType<K, typename First::Type>::Result,
+                                First,
+                                void
+                                >::Type Result;
+};
+
+// Test
+void MetaProgramTest()
+{
+   struct TT1 {typedef int Type; float a;};
+   struct TT2 {typedef TT1 Type; int x;};
+   struct TT3 {typedef std::string Type; int x; int y;};
+
+   typedef FindElementInList<int, TT1, TT2, TT3>::Result tx1;
+   tx1 test1;
+   test1.a = 3.14;  // tx is of type TT1
+
+   typedef FindElementInList<TT1, TT1, TT2, TT3>::Result tx2;
+   tx2 test2;
+   test2.x = 3;  // tx is of type TT2
+
+   typedef FindElementInList<std::string, TT1, TT2, TT3>::Result tx3;
+   tx3 test3;
+   test3.y = 3;  // tx is of type TT3;
+
+   typedef FindElementInList<float, TT1, TT2, TT3>::Result tx4;
+   // tx4 test4;  tx4 is void, no type has typedef Type of float
+}
+
+// Class TheRegister2 containing Bitfields
+// T1 -> Basetype of bitfield
+// Fields -> Descriptors of each bitfield
+//
+// For each bitfielddescriptor the class derives from
+// a manager for this bitfield (Who manages the proxy for it),
+// and a protector for it, which generates a compile error
+// if two bitfields are the same (hvae same offset and width
+
+template<class T1, class ...Fields>
+class TheRegister2 : public TheBitfieldManager<T1, BitFieldProxy<Fields::Offset, Fields::Width, T1, typename Fields::Type, Fields::Access>>... , BitFieldProtector<Fields::Offset, Fields::Width>...{
+
+    // Here are the bits stored, the only memory using member
+    T1 TheDataRegister;
+
+    // Checks if any bitfields are overlapping
+    typedef BitFieldProtector2<T1, Fields...> ErrorCheck;
+
+public:
+    static constexpr T1 BitsUsed = ErrorCheck::BitsUsed;
+    static constexpr T1 MultipleUse = ErrorCheck::MultipleUse;
+
+    // Constructor, not defined as not clear what to do for single
+    // bitfields -> must be done implementation dependent
+    // Probably additional field with initialvalue in Descriptor
+    //TheRegister2() : TheBitfield<BitField<Fields::Offset, Fields::Width, T1, typename Fields::Type, Fields::Access>>(TheDataRegister)... {}
+
+    // Just some accessormethods for testing
+    void SetBits(T1 Bits) {TheDataRegister = Bits;}
+    T1   GetBits() {return TheDataRegister;}
+
+    // Allows acces to individual bitfield, bitfield must
+    // be selected by T, which must be basetype of coresponding
+    // bitfield, selects the correct baseclass bitfieldmanager
+    // by its descriptortype and returns its proxy
+    // Example: Register1.Val<BitfieldDescriptorType>()
+    template<class T>
+    BitFieldProxy<T::Offset, T::Width, T1, typename T::Type, T::Access> Val() {return TheBitfieldManager<T1, BitFieldProxy<T::Offset, T::Width, T1, typename T::Type, T::Access>>::GetProxy(TheDataRegister);}
+
+    // Easier interface, uses much template magic to work.
+    // template FindElementInList converts a bitfield base type
+    // back into its bitfield descriptor
+    // Allows typedepend write access to matching bitfield
+    // Works only if each bitfield has a distinct base datatype
+    // Example Register = Value; // Value must have Type of destination bitfield
+    //
+    template<class T>
+    auto &operator = (T v) {Val<typename FindElementInList<T, Fields...>::Result>() = v; return *this;}
+
+    // Allows typedepend read access to matching bitfield
+    // Uses the same template magic as above
+    // Works only if each bitfield has a distinct base datatype
+    // Example Value = Register; // Value must have Type of source bitfield
+    //
+    template<class T>
+    operator T () {return Val<typename FindElementInList<T, Fields...>::Result>();}
+};
+
+// Helpertemplate for easier creating of Bitfield descriptors
+template <int Offset, int Width, class E, AccessType Acess = AccessType::ReadAndWrite>
+class MakeBitfield2  {
+public:
+    typedef BitfieldDescriptor<Offset, Width, E, Acess> type;
+};
+
+void Test2()
+{
+    // Define some bitfield descriptors
+    //// Three definitions for WL to show/test differences between R, W and RW Access
+    typedef MakeBitfield2<10,2,Wordlength, AccessType::ReadAndWrite>::type WL;
+    //typedef MakeBitfield2<10,2,Wordlength, AccessType::WritOnly>::type WL;
+    // typedef MakeBitfield2<10,2,Wordlength, AccessType::ReadOnly>::type WL;
+    typedef MakeBitfield2<12,2,Ready>::type rdy;
+    typedef MakeBitfield2<8,2,Ready>::type rdy2;
+    typedef MakeBitfield2<2,4,int>::type Data;
+
+    // Define a Bitfieldtype made of bitfields described by bitfieldescriptors
+    // Total size of bitfield is uint16_t
+    typedef TheRegister2<uint16_t, WL, rdy, rdy2, Data> TheRegisterType;
+
+    // Just for testing
+    constexpr int i = sizeof(WL); // 1 Byte, empty classes must have a size
+    constexpr int y = sizeof(TheRegisterType); //2 Bytes, as expected from register type uint16_t
+
+    // Just to place the bitfield a userdefined location
+    // In real implementation use pointer to real HW Adress
+    // (Or parametrize Template with HW Address)
+    alignas(TheRegisterType) uint8_t Buffer[sizeof(TheRegisterType)];
+
+    // Place our bitfield at user location (buffer)
+    TheRegisterType *p = new(Buffer) TheRegisterType;
+
+    // Just for testing, create multiple registers
+    class RegisterBlock {
+        TheRegister2<uint16_t, WL, rdy, rdy2, Data> Reg1;
+        TheRegister2<uint16_t, rdy, WL, Data> Reg2;
+        TheRegister2<uint16_t, WL, rdy, Data> Reg3;
+    };
+
+    constexpr int s = sizeof (RegisterBlock); // Size is 6 bytes, as expected by 3 uint16_t registers
+
+    // Just for Testing, get access to underlying bits
+    uint16_t *bp = reinterpret_cast<uint16_t *>(Buffer);
+
+    // Clear the register
+    *bp = 0;
+
+    // Define reference to get rid of dereferences while using bitfield
+    auto &reg = *p;
+
+    // Just for Testing overlaping bitfields
+    std::cout << "BitsUsed: " << std::hex << TheRegisterType::BitsUsed << std::endl;
+    std::cout << "BitsMultipleUsed: " << std::hex << TheRegisterType::MultipleUse << std::endl;
+
+    // Testing  write access, fails if WL is read only
+    p->Val<WL>() = Wordlength::W32;
+    std::cout << std::hex << *bp << std::endl;
+
+    // Testing write access, fails if WL is read only
+    p->Val<WL>() = Wordlength::W16;
+    std::cout << std::hex << *bp << std::endl;
+
+    // Testing write access
+    p->Val<Data>() = 31;
+    std::cout << std::hex << *bp << std::endl;
+
+    // Testing simplified access, fails if WL is read only
+    // does not work if two or more bitfields have the same basetype
+    // is type is used to select bitfield
+    *p = Wordlength::W8;
+    std::cout << std::hex << *bp << std::endl;
+
+    // Testing simplified access, using reference
+    // does not work if two or more bitfields have the same basetype
+    // is type is used to select bitfield
+    reg = Ready::NRDY;
+    std::cout << std::hex << *bp << std::endl;
+
+    // Set baseregister to defined Value for testing
+    *bp = 0xAAAA;
+
+    // Testing read acess, fails if WL is write only
+    Wordlength x = p->Val<WL>();
+    std::cout << std::hex << int(x) << std::endl;
+
+    // Set baseregister to defined Value for testing
+    *bp = 0x5555;
+
+    // Testing simplified read access, fails if WL is write only
+    // does not work if two or more bitfields have the same basetype
+    // is type is used to select bitfield
+    Wordlength w = *p;
+    std::cout << std::hex << int(w) << std::endl;
+
+    // Set baseregister to defined Value for testing
+    *bp = 0xFFFF;
+
+    // Testing simplified access, using reference, fails if WL is write only
+    // does not work if two or more bitfields have the same basetype
+    // is type is used to select bitfield
+    w = reg;
+    std::cout << std::hex << int(w) << std::endl;
+}
+
+
+
+int main()
+{
+
+    cout << "Testing Bitfields..." << endl;
+    Test2();
+    cout << "...done" << endl;
+    return 0;
+}
+
+
+//
+// The whole thing gets compiled to very effizient code:
+//
+// TheRegisterType gr;
+// void f() {
+//     gr = Wordlength::W32;
+// }
+//
+// f():
+//    ldr     r2, .L4        // Read BitfieldregisterAdress
+//    ldrh    r3, [r2]       // Read Bitfieldregister
+//    bic     r3, r3, #3072  // Clear bitfield bits (bic -> r3 = r3 and ~ #3072 (bit clear))
+//    orr     r3, r3, #2048  // Set BitfieldBits
+//    strh    r3, [r2]       // Write modified Bitfieldregister @ movhi
+//    bx      lr
+//
+//void f2()
+//{
+//    *((TheRegisterType *)0x1234) = Wordlength::W32;
+//}
+//f2():
+//    mov     r2, #4608      // 0x1234 = 4660 = 4608 + 52
+//    ldrh    r3, [r2, #52]
+//    bic     r3, r3, #3072
+//    orr     r3, r3, #2048
+//    strh    r3, [r2, #52]   @ movhi
+//    bx      lr
+//
+//
+//
+//void f3()
+//{
+//    *((TheRegisterType *)0x12345678) = Wordlength::W32;
+//}
+//
+// f3():
+//     ldr     r2, .L4            // Read BitfieldregisterAdress
+//     ldrh    r3, [r2, #120]     // Read Bitfieldregister
+//     bic     r3, r3, #3072      // Clear bitfield bits
+//     orr     r3, r3, #2048      // Set BitfieldBits
+//     strh    r3, [r2, #120]  @ movhi
+//     bx      lr
+//     .L4:
+//     .word   305419776
+
+
+\end{CCode}
+
+
+
 \section{Glossar}
 {
 \setlength{\extrarowheight}{0.8ex}
