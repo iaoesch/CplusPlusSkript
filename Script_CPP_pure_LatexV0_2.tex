@@ -4391,7 +4391,6 @@ Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten seh
 
 \end{CCode}
 
-
 Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt, und gelöscht wenn das übergeordnete Objekt gelöscht wird (Jeweils durch Aufruf des entsprechenden Konstruktors oder Destruktors.) Soll für das untergeordnete Objekt ein Konstruktor mit Parametern aufgerufen werden, so muss dieser in der Initialisiererliste des übergeordneten Objektes aufgeführt werden.
 Beispiel:
 
@@ -4441,10 +4440,124 @@ class StudentClass {
 
 \subsection{Vereinheitlichte Initialisierung (Seit \CppVers{11})}
 \label{subsubsect:VereinheitlichteInitialisierung}
-Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
-passende Konstruktor aufgerufen (falls vorhanden). Auch für POD gelten dieselben Regeln.
 
-Beispiel:
+Es gibt in \Cpp von alters her verschiedene Möglichkeiten, Variablen zu initialisieren. Vor \CppVers{11} waren nicht für jeden Datentyp jede Variante möglich:
+\begin{CCode}
+int i = 5;                    // Initialisierung von Skalaren
+struct Complex z = {4, 5};    // Initialisierung von Strukturen
+int arr[2] = {4, 5};          // Initialisierung von Arrays
+A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
+\end{CCode}
+
+Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht, insbesondere können Skalare mit
+der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren) mit einer Liste in geschweiften Klammern initialisiert werden. (Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Mit leeren Klammern \{\} wird eine Defaultinitialisierung durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
+
+Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
+
+Wenn ein passender std::initializer\_list<int> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
+
+\begin{CCode}
+class A {. // Is an Aggregate
+public:
+    int i = 5; // Member initializer since c++14 allowed in aggregates
+    float f;
+};
+
+class B : public A { // Is an Aggregate
+   public:
+    int *ip;
+};
+
+class C : public A { // Is not an Aggregate
+    int *ip;  // private
+};
+
+class D : public A { // Is not an Aggregate
+public:
+    D(int x_) : x (x_) {}  // User defined constructor
+    D(int x_, double d_) : x (x_) {}  // User defined constructor
+    int x;
+};
+
+class E {
+public:
+    E(std::initializer_list<int> l);
+};
+
+
+static int arr2[5] = {4,5,6,7,8};
+static int arr3[5](4,5,6,7,8);  // Since C++20
+static int arr4[5]{4,5,6,7,8};
+static int arr5[5]{};     // Default initialized
+static int arr6[5] = {};  // Default initialized
+
+static int i1 = 42;
+static int i2 = {42};
+static int i3(42);
+static int i4{42};
+static int i5{};     // Default initialized
+static int i6 = {};  // Default initialized
+
+//static A a1 = 42; // Needs constructor
+static A a2 = {42, 3.14f};
+static A a3(42, 3.14f); // Since C++20
+static A a4{42, 3.14f};
+static A a5{};      // Default initialized
+static A a6 = {};   // Default initialized
+
+//static B b1 = 42; // Needs constructor
+static B b2 = {{42, 3.14f}, &i2};
+static B b2a = {42, 3.14f, &i2};
+static B b3({42, 3.14f}, &i2);  // Since C++20
+static B b4{42, 3.14f, &i2};
+static B b5{};      // Default initialized
+static B b6 = {};   // Default initialized
+
+static A arrA2[3] = {{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
+static A arrA3[3]({4, 3.14f},{5, 5.14f}, {6, 6.14f});  // Since C++20
+static A arrA4[3]{{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
+static A arrA5[3]{};    // Default initialized
+static A arrA6[3] = {}; // Default initialized
+
+//static C b1 = 42; // Needs constructor
+// static C c2 = {{42, 3.14f}, &i2}; // Error, private member
+// static C c2a = {42, 3.14f, &i2};  // Error, private member
+// static C c3({42, 3.14f}, &i2);    // Error, private member
+// static C c4{42, 3.14f, &i2};      // Error, private member
+static C c5{};      // Default initialized
+static C c6 = {};   // Default initialized
+
+static D d1 = 42; // Ok, calls constructor
+//static D d2 = {{42, 3.14f}, &i2}; // Error, no matching constructor
+//static D d2a = {42, 3.14f, &i2};  // Error, no matching constructor
+//static D d3({42, 3.14f}, &i2);    // Error, no matching constructor
+//static D d4{42, 3.14f, &i2};      // Error, no matching constructor
+//static D d5{};                    // Error, no matching constructor
+//static D d6 = {};                 // Error, no matching constructor
+
+// Calls constructor D(int) for each object in array
+static D arrD2[3] = {4, 5, 6};
+static D arrD3[3](3,4,5);  // Since C++20
+static D arrD4[3]{3,4,5};
+
+// Calls constructor D(int, double) for each object in array
+static D arrDD2[3] = {{4, 3.14}, {5, 4.25}, {6, 5.36}};
+static D arrDD3[3]({4, 3.14}, {5, 4.25}, {6, 5.36});  // Since C++20
+static D arrDD4[3]{{4, 3.14}, {5, 4.25}, {6, 5.36}};
+
+// Calls constructor E(std::initializer_list<int> l)
+// static E e1 = 42;           // Error, no matching constructor
+static E e2 = {42, 43, 47};    // Ok matches to list of any length  
+static E e2a = {42};           // Ok matches to list of any length
+static E e3({42, 43, 47, 49}); // Ok matches to list of any length
+static E e4{42, 5};            // Ok matches to list of any length
+static E e5{};                 // Ok matches to list of any length
+static E e6 = {};              // Ok matches to list of any length
+
+\end{CCode}
+
+Die gleichen Regeln gelten auch für die Initialisierung von Returnwerten oder Funktionsargumente:
+
 \begin{CCode}
 
 class DemoClass {
@@ -4458,15 +4571,6 @@ class DemoClass {
 		
 };
 	
-int i = 2;   // i mit 2 initialisieren
-int k(6);    // k mit 6 initialisieren
-int p{7};    // p mit 7 initialisieren
-int q{};     // q mit 0 initialisieren
-  
-DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
-DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
-	
-// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
 	
 DemoClass f() {
    return {2, 2.7f};
@@ -4673,6 +4777,31 @@ int main (int argc, char *argv[])
   return 0;
 }
 \end{CCode}
+\subsection{Sichtbarmachung von protected Member der Basisklasse}
+\label{subsect:AttributeImport}
+Mit der \OviIndex{using}-direktive können protected Methoden und Attribute der Basisklasse in die abgeleitete Klasse übernommen werden, und dabei mit neuen Zugriffsrechten versehen werden. 
+\begin{CCode}
+class Parent {
+   protected:
+      int a;
+      typedef int Type;
+      void f();
+
+};
+
+class Child : public Parent {
+   public:
+   using Parent::a;  // a is now public
+   using Parent::f;  // f is now public 
+   
+};
+
+c.a = 7;  // Access protected member of baseclass via  derived class 
+c.f();    // Access protected member of baseclass via  derived class 
+
+\end{CCode}
+
+
 \subsection{übernehmen von Methoden der Basisklasse}
 \label{subsect:MethodImport}
 Mit der \OviIndex{using}-direktive können Methoden der Basisklasse in die abgeleitete Klasse übernommen werden, und dabei mit neuen Zugriffsrechten versehen werden. Auch Konstruktoren können so übernommen werden. Das ist hilfreich, wenn der Konstruktor der abgeleiteten Klasse sowieso nur den Konstruktor der Basisklasse aufrufen würde. Dabei können aber nur  \CodeStyle{public} oder  \CodeStyle{protected} Elemente übernommen werden. 
@@ -4697,6 +4826,27 @@ class Child : public Parent {
 };
 
 Child c(5);  // uses constructor of base class
+
+\end{CCode}
+
+\section{Verbieten der Vererbung}
+Mit dem schlüsselwort \OviIndex{final} kann des Ableiten von einer Klasse verboten werden:
+
+\begin{CCode}
+
+class UnInheritableClass final {  // Keine Vererbung moeglich
+  
+  int Data;                       // Zusaetzliches Attribut
+
+  public:
+    UnInheritableClass (int new_Data);   
+    ~UnInheritableClass ();
+};
+
+UnInheritableClass u(23); // Ok, normal class to use
+
+class forbidden : public  UnInheritableClass { // Error, cannot inherit from UnInheritableClass
+};
 
 \end{CCode}
 
@@ -14408,14 +14558,17 @@ P:\HC\D386_O> exit
 \section{Typsicheres Bitfeld für Hardwarezugriff}
 
 Nachfolgend der Code für ein Bitfeld mit typsicherem Zugriff, kann beliebig ausgebaut werden.
+Zudem werden verschiedene Templatetechniken (Vergleich zweier Typen, Auswahl zwischen zwei Typen,
+Suchen nach einem Typen mit spezifischen Eigenschaften in einer Liste (Parameterpack), rekursives bearbeiten eines Parameterpacks) zur Metaprogrammierung vorgestellt und eingesetzt,
+inklusive Tests.
+
+
 
 Idee: Ein Bitfeld, welches auf eine Benutzerdefinierte Adresse gelegt werden kann, der Zugriff
 auf die einzelnen Bitfelder erfolgt durch den Typ der gelesenen oder geschriebenen Bitfelder.
 (Dies setzt voraus, das jedes Bitfeld seinen eigenen Typ hat), Zudem soll das ganze maximal 
 effizient sein.
 
-Noch nicht integriert ist volatile, das muss auf jeden Fall sein um korrekten HW-Zugriff zu 
-erhalten (Der Basistyp müsste volatile sein)
   
 
 \begin{CCode}
@@ -14482,6 +14635,12 @@ class BitFieldProtector {
 // will be non-zero
 
 // General case, we have more than one bitfield descriptor
+// Input parameters:
+// T: Basetype of bitfield, cannot be volatile due to constexpr
+// First: First Element in list of types, 
+// List: Parameterpack containing the rest of the list of types
+//
+// Output parameters:
 // Mybits -> all bits set which are used by FIRST type
 // OtherBits -> all bits set which are used by other Types in List
 //              we Just instantiate recoursively orself, passing
@@ -14489,6 +14648,7 @@ class BitFieldProtector {
 //              that templates BitsUsedMember
 // BitsUsed -> all bits set used by FIRST and LIST
 // MultipleUsed -> all bits set used by more than one bitfield
+//
 template<class T, class First, class ...LIST>
 struct BitFieldChecker2 {
     typedef First Head;
@@ -14539,7 +14699,9 @@ struct BitFieldProtector2 {
 // to underlying bitfield containing variable.
 // Defines operator = (T) for write access and
 // operator T() for read access.
-// if Raedonly or Writeonly, only one of those is defined
+// if Readonly or Writeonly, only one of those operators is defined
+
+// General definition
 template<int offset, int width, class T, class E,  AccessType TheAccess>
 class BitFieldProxy {
 
@@ -14563,6 +14725,7 @@ protected:
 
 public:
     typedef T BaseType;
+    
     // Constructor, we need to know where our bits can be found
     constexpr BitFieldProxy(T &Reg) : Register(Reg) {}
 
@@ -14642,7 +14805,8 @@ public:
     P GetProxy(T &r) {return P(r);}
 };
 
-
+// Some helper templates to find descriptor for given basetype in List of Descriptors
+ 
 // IsSameType: true if two types are same, false otherwise
 
 template <class T1, class T2>
@@ -14736,7 +14900,7 @@ void MetaProgramTest()
 // For each bitfielddescriptor the class derives from
 // a manager for this bitfield (Who manages the proxy for it),
 // and a protector for it, which generates a compile error
-// if two bitfields are the same (hvae same offset and width
+// if two bitfields are the same (have same offset and width) since C++ does not allow two identical baseclasses
 
 template<class T1, class ...Fields>
 class TheRegister2 : public TheBitfieldManager<T1, BitFieldProxy<Fields::Offset, Fields::Width, T1, typename Fields::Type, Fields::Access>>... , BitFieldProtector<Fields::Offset, Fields::Width>...{
@@ -14760,8 +14924,8 @@ public:
     void SetBits(T1 Bits) {TheDataRegister = Bits;}
     T1   GetBits() {return TheDataRegister;}
 
-    // Allows acces to individual bitfield, bitfield must
-    // be selected by T, which must be basetype of coresponding
+    // Allows access to individual bitfield, bitfield must
+    // be selected by T, which must be descritpor of coresponding
     // bitfield, selects the correct baseclass bitfieldmanager
     // by its descriptortype and returns its proxy
     // Example: Register1.Val<BitfieldDescriptorType>()
@@ -14797,10 +14961,12 @@ public:
 void Test2()
 {
     // Define some bitfield descriptors
+    
     //// Three definitions for WL to show/test differences between R, W and RW Access
     typedef MakeBitfield2<10,2,Wordlength, AccessType::ReadAndWrite>::type WL;
-    //typedef MakeBitfield2<10,2,Wordlength, AccessType::WritOnly>::type WL;
+    //typedef MakeBitfield2<10,2,Wordlength, AccessType::WritOnly>::type WL;    
     // typedef MakeBitfield2<10,2,Wordlength, AccessType::ReadOnly>::type WL;
+    
     typedef MakeBitfield2<12,2,Ready>::type rdy;
     typedef MakeBitfield2<8,2,Ready>::type rdy2;
     typedef MakeBitfield2<2,4,int>::type Data;
@@ -14891,6 +15057,10 @@ void Test2()
     // is type is used to select bitfield
     w = reg;
     std::cout << std::hex << int(w) << std::endl;
+    
+    if (reg == Ready::NRDY) {
+        std::cout << "Not ready" << std::endl;
+    }
 }
 
 
