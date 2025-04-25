@@ -1650,6 +1650,8 @@ Neue Syntax:
  \label{subsubsect:Initialisiererlisten}
  \index{Initialisiererlisten}
  Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
+ (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+
  
  
  Beispiel:
@@ -1670,7 +1672,7 @@ Neue Syntax:
   \section{Agregat-Initialisierung (Seit \CppVers{11})}
  \label{subsect:AgregatInitialisierung}
  \index{Agregat-Initialisierung}
- Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich:
+ Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich. (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
  
  
   Beispiel:
@@ -2007,7 +2009,9 @@ aus C bekannten \OviIndex{Stringliterale} weiterhin zum Einsatz.
 Eine Variablendefinition muss immer die Form
 Datentyp Variablenname; 
 aufweisen. Es ist möglich (und guter Stil), eine Variable bei der Definition gleich zu initialisieren:
-Datentyp Variablenname = Wert; 
+
+\CodeStyle{Datentyp Variablenname = Wert;} (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+
 Für Variablennamen dürfen Klein- und Grossbuchstaben sowie der Unterstrich '\_' und die Ziffern 0-9 verwendet werden. Sonderzeichen und Umlaute sind nicht erlaubt. Namen dürfen nicht mit Ziffern beginnen.
 
 \begin{CCode}
@@ -4403,7 +4407,7 @@ class StudentClass {
 };
 \end{CCode}
 
-Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch die übergeordneten Klasse erledigt werden (Meist im Konstruktor), und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde.
+Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch die übergeordneten Klasse erledigt werden (Meist im Konstruktor), und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde. Auch hier kann dies durch den Einsatz von Smartpointern automatisiert werden.
 Beispiel:
 \begin{CCode}
 
@@ -4449,12 +4453,16 @@ int arr[2] = {4, 5};          // Initialisierung von Arrays
 A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
 \end{CCode}
 
-Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht, insbesondere können Skalare mit
-der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren) mit einer Liste in geschweiften Klammern initialisiert werden. (Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Mit leeren Klammern \{\} wird eine Defaultinitialisierung durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
+Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht (Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
+der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \autoref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
+
+ 
+Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
 
 Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
 
 Wenn ein passender std::initializer\_list<int> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
+(Siehe auch Kapitel \autoref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
 
 \begin{CCode}
 class A {. // Is an Aggregate
