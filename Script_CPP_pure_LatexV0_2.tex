@@ -3663,15 +3663,15 @@ int main(int argc, char *argv[]) {
 
 Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
+\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig einen sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Als Defaultkonstruktor wird ein Konstruktor ohne Argumente bezeichenet. Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
 \begin{CCode}
 class MyClass {
-  int k, j;                            // POD's, wuerden durch den Compilererzeugten Defaultkonstruktor
-                                       // nicht initialisiert
+  int k, j;                      // POD's, wuerden durch den Compilererzeugten 
+                                 // Defaultkonstruktor nicht initialisiert
   public: 
-                MyClass();             // Argumentloser Konstruktor
-                MyClass(int new_k);    // Ueberladen fuer int
-                MyClass(float new_k);  // Ueberladen fuer float
+          MyClass();             // Argumentloser Konstruktor (Defaultkonstruktor)
+          MyClass(int new_k);    // Ueberladen fuer int
+          MyClass(float new_k);  // Ueberladen fuer float
    ...
 };
 \end{CCode}
@@ -3699,8 +3699,8 @@ Mit \CodeStyle{explizit} definierte Konstruktoren müssen explizit aufgerufen wer
 class YourClass {
   int k, j;
   public:
-                YourClass(void);         // Argumentloser Konstruktor
-                YourClass(int new_k);    //  Ueberladen fuer int
+         YourClass(void);         // Argumentloser Konstruktor (Defaultkonstruktor)
+         YourClass(int new_k);    //  Ueberladen fuer int
    ...
 };
 
@@ -3720,8 +3720,8 @@ void f1(YourClass y)
 class MyClass {
   int k, j;
   public:
-                MyClass(void);                  // Argumentloser Konstruktor
-                explicit MyClass(int new_k);    // explizit Ueberladen fuer int
+     MyClass(void);               // Argumentloser Konstruktor (Defaultkonstruktor)
+     explicit MyClass(int new_k); // explizit Ueberladen fuer int
    ...
 };
 
@@ -3750,7 +3750,7 @@ void f2(MyClass m)
 \subsection{Copy-Construktor}
 Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
 
-Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Konstruktor der Basisklasse(n)
+Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Kopierkonstruktor der Basisklasse(n)
 in der Initialisiererliste aufgeführt werden, sonst wird der Defaultkonstruktor benutzt, was üblicherweise nicht zum gewünschten Resultat führt.
 
 \begin{CCode}
@@ -3965,7 +3965,7 @@ Ohne die beiden letzten \CodeStyle{delete} könnte \CodeStyle{f()} auch mit \Code
 \section{Default Vergleiche (\CppVers{20})}
 \label{subsubsect:DefaultVergleiche}
 \index{Default Vergleiche}
-Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei op einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
+Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei \emph{op} einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
 
 \begin{CCode}
 class Demo {
@@ -4453,7 +4453,7 @@ int arr[2] = {4, 5};          // Initialisierung von Arrays
 A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
 \end{CCode}
 
-Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht (Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
+Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht \index{Vereinheitlichte Initialisierung} \index{Initialisierung, vereinheitlicht}(Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
 der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \autoref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
 
  
