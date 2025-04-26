@@ -3629,7 +3629,7 @@ Noch besser ist aber die Regel der 0: Code so zu schreiben dass keine der 5 Meth
 
 \subsection{Konstruktoren}
 \label{subsect:Konstruktoren}
-Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
+Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird.  Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. 
 Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
 
 \begin{CCode}
@@ -3663,7 +3663,15 @@ int main(int argc, char *argv[]) {
 
 Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig einen sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Als Defaultkonstruktor wird ein Konstruktor ohne Argumente bezeichenet. Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
+Konstruktoren kann man daran erkennen, dass sie denselben Namen wie die Klasse aufweisen. Es gibt 3 Konstruktoren mit besonderer Bedeutung welche in den nachfolgenden Kapiteln genauer beschrieben werden:
+
+\begin{itemize}
+\item Den Defaultkonstruktor,  er wird immer aufgerufen, wenn Objekte ohne Initialisierungswerte erzeugt werden müssen. 
+\item Der Kopierkonstruktor, er wird immer aufgerufen, wenn Objekte kopiert werden müssen
+\item Move-Konstruktor, er wird immer aufgerufen, wenn 'sterbende' Objekte kopiert werden müssen
+\end{itemize}
+
+Es kann für eine Klasse beliebig viele Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
 \begin{CCode}
 class MyClass {
   int k, j;                      // POD's, wuerden durch den Compilererzeugten 
@@ -3746,8 +3754,33 @@ void f2(MyClass m)
 
 
 \end{CCode}  
+\subsubsection{Default-Construktor}
+Als Defaultkonstruktor wird der argumentlose Konstruktor bezeichnet. Er wird immer dann aufgerufen (Falls vorhanden), wenn ein Objekt ohne Initialisierungsparameter erzeugt wird. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig einen \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Sobald der Programmierer irgend einen Konstruktor selbst definiert, wird vom Compiler kein Defaultkostruktor erzeugt.
+ 
+\begin{CCode}
+class MyClass {
 
-\subsection{Copy-Construktor}
+  public: 
+          MyClass();             // Argumentloser Konstruktor (Defaultkonstruktor)
+   ...
+};
+
+MyClass m;                    // Defaultkonstruktor kommt zum Einsatz
+MyClass *mp = new MyClass();  // Defaultkonstruktor kommt zum Einsatz
+f(MyClass());                 // Defaultkonstruktor kommt zum Einsatz
+
+class Other {
+   MyClass m;                 // Defaultkonstruktor kommt zum Einsatz
+                              // Da Konstruktor von other m nicht 
+                              // initialisiert
+}
+
+\end{CCode}
+
+
+
+
+\subsubsection{Copy-Construktor}
 Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
 
 Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Kopierkonstruktor der Basisklasse(n)
@@ -3793,7 +3826,7 @@ MyClass f2()
 
 \end{CCode}
 
-\subsection{\CppVers{11} Move-Construktor}
+\subsubsection{\CppVers{11} Move-Construktor}
 Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
