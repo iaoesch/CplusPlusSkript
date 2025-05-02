@@ -1650,8 +1650,6 @@ Neue Syntax:
  \label{subsubsect:Initialisiererlisten}
  \index{Initialisiererlisten}
  Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
- (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
-
  
  
  Beispiel:
@@ -1672,7 +1670,7 @@ Neue Syntax:
   \section{Agregat-Initialisierung (Seit \CppVers{11})}
  \label{subsect:AgregatInitialisierung}
  \index{Agregat-Initialisierung}
- Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich. (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+ Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich:
  
  
   Beispiel:
@@ -2009,9 +2007,7 @@ aus C bekannten \OviIndex{Stringliterale} weiterhin zum Einsatz.
 Eine Variablendefinition muss immer die Form
 Datentyp Variablenname; 
 aufweisen. Es ist möglich (und guter Stil), eine Variable bei der Definition gleich zu initialisieren:
-
-\CodeStyle{Datentyp Variablenname = Wert;} (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
-
+Datentyp Variablenname = Wert; 
 Für Variablennamen dürfen Klein- und Grossbuchstaben sowie der Unterstrich '\_' und die Ziffern 0-9 verwendet werden. Sonderzeichen und Umlaute sind nicht erlaubt. Namen dürfen nicht mit Ziffern beginnen.
 
 \begin{CCode}
@@ -2710,8 +2706,6 @@ Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 \end{CCode}
 
 Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren. Seit \CppVers{14} können auch initialisierte Variablen im Captureblock stehen (\CodeStyle{[x = a + 5 *b]}  a und b werden von der definierenden Funktion gelesen, x ist eine lokale Variable des Lambdablocks)
-
-Seit \CppVers{17} kann mit \CodeStyle{*this} im Captureblock das durch this referenzierte Objekt by Value captured werden (d.h. es wird eine Kopie des Objektes an das Lamda übergeben). 
 
 \emph{Parameters} ist die Parameterliste der Funktion (Wie bei gewöhnlichen Funktionen). Hier kann der Aufrufer Argumente an die Funktion übergeben. Bei einer parameterlosen Funktion darf das (leere) Klammerpaar auch weggelassen werden.
 
@@ -3631,7 +3625,7 @@ Noch besser ist aber die Regel der 0: Code so zu schreiben dass keine der 5 Meth
 
 \subsection{Konstruktoren}
 \label{subsect:Konstruktoren}
-Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird.  Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. 
+Unter \Cpp ist es nicht nötig, nach dem Erzeugen eines Objektes noch explizit eine Initialisierungsfunktion aufzurufen. Dafür sind die \OviIndex{Konstruktoren} vorgesehen, welche vom Compiler automatisch beim Erzeugen eines Objektes aufgerufen werden.
 Vorheriges Beispiel sieht unter Einsatz von Konstruktoren wie folgt aus:
 
 \begin{CCode}
@@ -3665,23 +3659,15 @@ int main(int argc, char *argv[]) {
 
 Unter \Cpp ist es somit praktisch nicht mehr möglich, uninitialisierte Objekte im System zu haben, da jedes Objekt beim Erzeugen über einen Konstruktor initialisiert wird (Vorausgesetzt die Konstruktoren erfüllen ihren Zweck.).
 
-Konstruktoren kann man daran erkennen, dass sie denselben Namen wie die Klasse aufweisen. Es gibt 3 Konstruktoren mit besonderer Bedeutung welche in den nachfolgenden Kapiteln genauer beschrieben werden:
-
-\begin{itemize}
-\item Den Defaultkonstruktor,  er wird immer aufgerufen, wenn Objekte ohne Initialisierungswerte erzeugt werden müssen. 
-\item Der Kopierkonstruktor, er wird immer aufgerufen, wenn Objekte kopiert werden müssen
-\item Move-Konstruktor, er wird immer aufgerufen, wenn 'sterbende' Objekte kopiert werden müssen
-\end{itemize}
-
-Es kann für eine Klasse beliebig viele Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
+\OviIndex{Konstruktoren} sind Methoden, die vom Compiler automatisch aufgerufen werden, wann immer ein neues Objekt erzeugt wird. Die Aufgabe dieser Methoden ist, dafür zu sorgen dass das Objekt korrekt initialisiert wird. Den Konstruktor kann man daran erkennen, dass er denselben Namen wie die Klasse aufweist. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig den sogenannten \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Es kann für eine Klasse mehrere Konstruktoren geben, sie müssen sich einfach in der Anzahl oder dem Typ der Argumente unterscheiden (Überladen).
 \begin{CCode}
 class MyClass {
-  int k, j;                      // POD's, wuerden durch den Compilererzeugten 
-                                 // Defaultkonstruktor nicht initialisiert
+  int k, j;                            // POD's, wuerden durch den Compilererzeugten Defaultkonstruktor
+                                       // nicht initialisiert
   public: 
-          MyClass();             // Argumentloser Konstruktor (Defaultkonstruktor)
-          MyClass(int new_k);    // Ueberladen fuer int
-          MyClass(float new_k);  // Ueberladen fuer float
+                MyClass();             // Argumentloser Konstruktor
+                MyClass(int new_k);    // Ueberladen fuer int
+                MyClass(float new_k);  // Ueberladen fuer float
    ...
 };
 \end{CCode}
@@ -3709,8 +3695,8 @@ Mit \CodeStyle{explizit} definierte Konstruktoren müssen explizit aufgerufen wer
 class YourClass {
   int k, j;
   public:
-         YourClass(void);         // Argumentloser Konstruktor (Defaultkonstruktor)
-         YourClass(int new_k);    //  Ueberladen fuer int
+                YourClass(void);         // Argumentloser Konstruktor
+                YourClass(int new_k);    //  Ueberladen fuer int
    ...
 };
 
@@ -3730,8 +3716,8 @@ void f1(YourClass y)
 class MyClass {
   int k, j;
   public:
-     MyClass(void);               // Argumentloser Konstruktor (Defaultkonstruktor)
-     explicit MyClass(int new_k); // explizit Ueberladen fuer int
+                MyClass(void);                  // Argumentloser Konstruktor
+                explicit MyClass(int new_k);    // explizit Ueberladen fuer int
    ...
 };
 
@@ -3756,36 +3742,11 @@ void f2(MyClass m)
 
 
 \end{CCode}  
-\subsubsection{Default-Construktor}
-Als Defaultkonstruktor wird der argumentlose Konstruktor bezeichnet. Er wird immer dann aufgerufen (Falls vorhanden), wenn ein Objekt ohne Initialisierungsparameter erzeugt wird. Wenn vom Programmierer kein Konstruktor deklariert wird, erzeugt der Compiler selbstständig einen \OviIndex{Defaultkonstruktor}, der einfach die Defaultkonstruktoren aller Attribute und Basisklassen aufruft. (Achtung, \OviIndex{POD} haben \emph{keinen} Defaultkonstruktor, werden also \emph{nicht} initialisiert!). Sobald der Programmierer irgend einen Konstruktor selbst definiert, wird vom Compiler kein Defaultkostruktor erzeugt.
- 
-\begin{CCode}
-class MyClass {
 
-  public: 
-          MyClass();             // Argumentloser Konstruktor (Defaultkonstruktor)
-   ...
-};
-
-MyClass m;                    // Defaultkonstruktor kommt zum Einsatz
-MyClass *mp = new MyClass();  // Defaultkonstruktor kommt zum Einsatz
-f(MyClass());                 // Defaultkonstruktor kommt zum Einsatz
-
-class Other {
-   MyClass m;                 // Defaultkonstruktor kommt zum Einsatz
-                              // Da Konstruktor von other m nicht 
-                              // initialisiert
-}
-
-\end{CCode}
-
-
-
-
-\subsubsection{Copy-Construktor}
+\subsection{Copy-Construktor}
 Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
 
-Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Kopierkonstruktor der Basisklasse(n)
+Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Konstruktor der Basisklasse(n)
 in der Initialisiererliste aufgeführt werden, sonst wird der Defaultkonstruktor benutzt, was üblicherweise nicht zum gewünschten Resultat führt.
 
 \begin{CCode}
@@ -3828,7 +3789,7 @@ MyClass f2()
 
 \end{CCode}
 
-\subsubsection{\CppVers{11} Move-Construktor}
+\subsection{\CppVers{11} Move-Construktor}
 Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
@@ -4000,7 +3961,7 @@ Ohne die beiden letzten \CodeStyle{delete} könnte \CodeStyle{f()} auch mit \Code
 \section{Default Vergleiche (\CppVers{20})}
 \label{subsubsect:DefaultVergleiche}
 \index{Default Vergleiche}
-Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei \emph{op} einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
+Mit der Deklaration \CodeStyle{operator op (Class, Class) = default;} erzeugt der Compiler automatisch die geforderte Vergleichsfunktion, wobei op einer der relationalen Operatoren \CodeStyle{<=>, ==, !=, >, <, >=, <=} sein muss. Dabei kann der Operator nach Bedarf als Member-, oder als Nicht-Memberfunktion definiert werden.
 
 \begin{CCode}
 class Demo {
@@ -4407,7 +4368,7 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 \end{CCode}
 
 Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit \CodeStyle{new} erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
-Globale Objekte werden vor Aufruf von \CodeStyle{main()} erzeugt, auch deren Konstruktor wird vor dem Start von \CodeStyle{main()} aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von \CodeStyle{main()} resp. des Programms. 
+Globale Objekte werden vor Aufruf von\CodeStyle{ main()} erzeugt, auch deren Konstruktor wird vor dem Start von \CodeStyle{main()} aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von \CodeStyle{main()} resp. des Programms. 
 
 Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit \CodeStyle{delete} wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 \begin{CCode}
@@ -4430,6 +4391,7 @@ Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten seh
 
 \end{CCode}
 
+
 Objekte können selbst Objekte enthalten, hier gilt dasselbe wie oben. Wenn die Objekte wie gewöhnliche Membervariablen definiert sind, werden diese ebenfalls automatisch erzeugt wenn das übergeordnete Objekt erzeugt, und gelöscht wenn das übergeordnete Objekt gelöscht wird (Jeweils durch Aufruf des entsprechenden Konstruktors oder Destruktors.) Soll für das untergeordnete Objekt ein Konstruktor mit Parametern aufgerufen werden, so muss dieser in der Initialisiererliste des übergeordneten Objektes aufgeführt werden.
 Beispiel:
 
@@ -4442,7 +4404,7 @@ class StudentClass {
 };
 \end{CCode}
 
-Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch die übergeordneten Klasse erledigt werden (Meist im Konstruktor), und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde. Auch hier kann dies durch den Einsatz von Smartpointern automatisiert werden.
+Soll das eingebettete Objekt selbst aber dynamisch erzeugt werden, muss dies durch die übergeordneten Klasse erledigt werden (Meist im Konstruktor), und das Löschen des Unterobjektes muss im Destruktor der übergeordneten Klasse erfolgen. Dies unabhängig davon ob die übergeordnete Klasse selbst dynamisch oder statisch erzeugt wurde.
 Beispiel:
 \begin{CCode}
 
@@ -4479,128 +4441,10 @@ class StudentClass {
 
 \subsection{Vereinheitlichte Initialisierung (Seit \CppVers{11})}
 \label{subsubsect:VereinheitlichteInitialisierung}
+Ein Objekt einer Klasse kann neu auch wie eine Struktur mittels geschweiften Klammern initialisiert werden. Sofern kein Initialisiererlisten-Konstruktor existiert, wird der
+passende Konstruktor aufgerufen (falls vorhanden). Auch für POD gelten dieselben Regeln.
 
-Es gibt in \Cpp von alters her verschiedene Möglichkeiten, Variablen zu initialisieren. Vor \CppVers{11} waren nicht für jeden Datentyp jede Variante möglich:
-\begin{CCode}
-int i = 5;                    // Initialisierung von Skalaren
-struct Complex z = {4, 5};    // Initialisierung von Strukturen
-int arr[2] = {4, 5};          // Initialisierung von Arrays
-A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
-\end{CCode}
-
-Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht \index{Vereinheitlichte Initialisierung} \index{Initialisierung, vereinheitlicht}(Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
-der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \autoref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
-
- 
-Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
-
-Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
-
-Wenn ein passender std::initializer\_list<int> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
-(Siehe auch Kapitel \autoref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
-
-\begin{CCode}
-class A {. // Is an Aggregate
-public:
-    int i = 5; // Member initializer since c++14 allowed in aggregates
-    float f;
-};
-
-class B : public A { // Is an Aggregate
-   public:
-    int *ip;
-};
-
-class C : public A { // Is not an Aggregate
-    int *ip;  // private
-};
-
-class D : public A { // Is not an Aggregate
-public:
-    D(int x_) : x (x_) {}  // User defined constructor
-    D(int x_, double d_) : x (x_) {}  // User defined constructor
-    int x;
-};
-
-class E {
-public:
-    E(std::initializer_list<int> l);
-};
-
-
-static int arr2[5] = {4,5,6,7,8};
-static int arr3[5](4,5,6,7,8);  // Since C++20
-static int arr4[5]{4,5,6,7,8};
-static int arr5[5]{};     // Default initialized
-static int arr6[5] = {};  // Default initialized
-
-static int i1 = 42;
-static int i2 = {42};
-static int i3(42);
-static int i4{42};
-static int i5{};     // Default initialized
-static int i6 = {};  // Default initialized
-
-//static A a1 = 42; // Needs constructor
-static A a2 = {42, 3.14f};
-static A a3(42, 3.14f); // Since C++20
-static A a4{42, 3.14f};
-static A a5{};      // Default initialized
-static A a6 = {};   // Default initialized
-
-//static B b1 = 42; // Needs constructor
-static B b2 = {{42, 3.14f}, &i2};
-static B b2a = {42, 3.14f, &i2};
-static B b3({42, 3.14f}, &i2);  // Since C++20
-static B b4{42, 3.14f, &i2};
-static B b5{};      // Default initialized
-static B b6 = {};   // Default initialized
-
-static A arrA2[3] = {{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
-static A arrA3[3]({4, 3.14f},{5, 5.14f}, {6, 6.14f});  // Since C++20
-static A arrA4[3]{{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
-static A arrA5[3]{};    // Default initialized
-static A arrA6[3] = {}; // Default initialized
-
-//static C b1 = 42; // Needs constructor
-// static C c2 = {{42, 3.14f}, &i2}; // Error, private member
-// static C c2a = {42, 3.14f, &i2};  // Error, private member
-// static C c3({42, 3.14f}, &i2);    // Error, private member
-// static C c4{42, 3.14f, &i2};      // Error, private member
-static C c5{};      // Default initialized
-static C c6 = {};   // Default initialized
-
-static D d1 = 42; // Ok, calls constructor
-//static D d2 = {{42, 3.14f}, &i2}; // Error, no matching constructor
-//static D d2a = {42, 3.14f, &i2};  // Error, no matching constructor
-//static D d3({42, 3.14f}, &i2);    // Error, no matching constructor
-//static D d4{42, 3.14f, &i2};      // Error, no matching constructor
-//static D d5{};                    // Error, no matching constructor
-//static D d6 = {};                 // Error, no matching constructor
-
-// Calls constructor D(int) for each object in array
-static D arrD2[3] = {4, 5, 6};
-static D arrD3[3](3,4,5);  // Since C++20
-static D arrD4[3]{3,4,5};
-
-// Calls constructor D(int, double) for each object in array
-static D arrDD2[3] = {{4, 3.14}, {5, 4.25}, {6, 5.36}};
-static D arrDD3[3]({4, 3.14}, {5, 4.25}, {6, 5.36});  // Since C++20
-static D arrDD4[3]{{4, 3.14}, {5, 4.25}, {6, 5.36}};
-
-// Calls constructor E(std::initializer_list<int> l)
-// static E e1 = 42;           // Error, no matching constructor
-static E e2 = {42, 43, 47};    // Ok matches to list of any length  
-static E e2a = {42};           // Ok matches to list of any length
-static E e3({42, 43, 47, 49}); // Ok matches to list of any length
-static E e4{42, 5};            // Ok matches to list of any length
-static E e5{};                 // Ok matches to list of any length
-static E e6 = {};              // Ok matches to list of any length
-
-\end{CCode}
-
-Die gleichen Regeln gelten auch für die Initialisierung von Returnwerten oder Funktionsargumente:
-
+Beispiel:
 \begin{CCode}
 
 class DemoClass {
@@ -4614,6 +4458,15 @@ class DemoClass {
 		
 };
 	
+int i = 2;   // i mit 2 initialisieren
+int k(6);    // k mit 6 initialisieren
+int p{7};    // p mit 7 initialisieren
+int q{};     // q mit 0 initialisieren
+  
+DemoClass TheObject = {10, 3.14f}; // Ruft Konstruktor auf
+DemoClass TheObject{10, 3.14f};    // Dito, aber ohne =
+	
+// Ebenfalls erlaubt in Return-Statements und bei Funktionsaufrufen
 	
 DemoClass f() {
    return {2, 2.7f};
@@ -4820,31 +4673,6 @@ int main (int argc, char *argv[])
   return 0;
 }
 \end{CCode}
-\subsection{Sichtbarmachung von protected Member der Basisklasse}
-\label{subsect:AttributeImport}
-Mit der \OviIndex{using}-direktive können protected Methoden und Attribute der Basisklasse in die abgeleitete Klasse übernommen werden, und dabei mit neuen Zugriffsrechten versehen werden. 
-\begin{CCode}
-class Parent {
-   protected:
-      int a;
-      typedef int Type;
-      void f();
-
-};
-
-class Child : public Parent {
-   public:
-   using Parent::a;  // a is now public
-   using Parent::f;  // f is now public 
-   
-};
-
-c.a = 7;  // Access protected member of baseclass via  derived class 
-c.f();    // Access protected member of baseclass via  derived class 
-
-\end{CCode}
-
-
 \subsection{übernehmen von Methoden der Basisklasse}
 \label{subsect:MethodImport}
 Mit der \OviIndex{using}-direktive können Methoden der Basisklasse in die abgeleitete Klasse übernommen werden, und dabei mit neuen Zugriffsrechten versehen werden. Auch Konstruktoren können so übernommen werden. Das ist hilfreich, wenn der Konstruktor der abgeleiteten Klasse sowieso nur den Konstruktor der Basisklasse aufrufen würde. Dabei können aber nur  \CodeStyle{public} oder  \CodeStyle{protected} Elemente übernommen werden. 
@@ -4872,29 +4700,8 @@ Child c(5);  // uses constructor of base class
 
 \end{CCode}
 
-\subsection{Verbieten der Vererbung}
-Mit dem Bezeichner \OviIndex{final} (der Bezeichner final ist kein Schlüsselwort und hat nur an dieser Stelle eine besondere Bedeutung) kann des Ableiten von einer Klasse verboten werden:
 
-\begin{CCode}
-
-class UnInheritableClass final {  // Keine Vererbung moeglich
-  
-  int Data;                       // Zusaetzliches Attribut
-
-  public:
-    UnInheritableClass (int new_Data);   
-    ~UnInheritableClass ();
-};
-
-UnInheritableClass u(23); // Ok, normal class to use
-
-class forbidden : public  UnInheritableClass { // Error, cannot inherit from UnInheritableClass
-};
-
-\end{CCode}
-
-
-\subsection{Mehrfachvererbung}
+\section{Mehrfachvererbung}
 In \Cpp ist auch \OviIndex{Mehrfachvererbung} möglich, das heisst, dass eine Klasse nicht nur von einer Klasse, sondern von mehreren erben kann.
 \begin{CCode}
 #include "MyClass.hpp"
@@ -14601,17 +14408,14 @@ P:\HC\D386_O> exit
 \section{Typsicheres Bitfeld für Hardwarezugriff}
 
 Nachfolgend der Code für ein Bitfeld mit typsicherem Zugriff, kann beliebig ausgebaut werden.
-Zudem werden verschiedene Templatetechniken (Vergleich zweier Typen, Auswahl zwischen zwei Typen,
-Suchen nach einem Typen mit spezifischen Eigenschaften in einer Liste (Parameterpack), rekursives bearbeiten eines Parameterpacks) zur Metaprogrammierung vorgestellt und eingesetzt,
-inklusive Tests.
-
-
 
 Idee: Ein Bitfeld, welches auf eine Benutzerdefinierte Adresse gelegt werden kann, der Zugriff
 auf die einzelnen Bitfelder erfolgt durch den Typ der gelesenen oder geschriebenen Bitfelder.
 (Dies setzt voraus, das jedes Bitfeld seinen eigenen Typ hat), Zudem soll das ganze maximal 
 effizient sein.
 
+Noch nicht integriert ist volatile, das muss auf jeden Fall sein um korrekten HW-Zugriff zu 
+erhalten (Der Basistyp müsste volatile sein)
   
 
 \begin{CCode}
@@ -14647,19 +14451,6 @@ public:
     static constexpr int Width = TheWidth;            // length of bitfield
 };
 
-// A helper template to remove volatile from type
-template<class T>
-struct RemoveVolatile {
-    typedef T type;
-};
-
-template<class T>
-struct RemoveVolatile<volatile T> {
-    typedef T type;
-};
-
-
-
 // Just a helperclass to catch duplicate bitfield definitions
 // (The containing class will derive from this class for all
 //  contained bitfields und therefore generate a compile
@@ -14678,12 +14469,6 @@ class BitFieldProtector {
 // will be non-zero
 
 // General case, we have more than one bitfield descriptor
-// Input parameters:
-// T: Basetype of bitfield, cannot be volatile due to constexpr
-// First: First Element in list of types, 
-// List: Parameterpack containing the rest of the list of types
-//
-// Output parameters:
 // Mybits -> all bits set which are used by FIRST type
 // OtherBits -> all bits set which are used by other Types in List
 //              we Just instantiate recoursively orself, passing
@@ -14691,7 +14476,6 @@ class BitFieldProtector {
 //              that templates BitsUsedMember
 // BitsUsed -> all bits set used by FIRST and LIST
 // MultipleUsed -> all bits set used by more than one bitfield
-//
 template<class T, class First, class ...LIST>
 struct BitFieldChecker2 {
     typedef First Head;
@@ -14723,16 +14507,11 @@ constexpr int BitUsed2 = BitFieldChecker2<int, BT04, BT45, BT93>::BitsUsed;
 constexpr int MultipleUsed2 = BitFieldChecker2<int, BT04, BT45, BT24, BT93>::MultipleUse; // Not ok, is 0x3c
 
 // Simple wrapper for Bitfield check
-// removes volatile from base type, as constexpr cannot be volatile
 template<class T, class ...LIST>
 struct BitFieldProtector2 {
-
-    // Remove volatile from type T as volatile and constexpr are not compatible
-    typedef typename RemoveVolatile<T>::type Basetype;
-
-    static_assert (BitFieldChecker2<Basetype, LIST...>::MultipleUse == 0);
-    static constexpr Basetype BitsUsed = BitFieldChecker2<Basetype, LIST...>::BitsUsed;
-    static constexpr Basetype MultipleUse = BitFieldChecker2<Basetype, LIST...>::MultipleUse;
+    static_assert (BitFieldChecker2<T, LIST...>::MultipleUse == 0);
+    static constexpr T BitsUsed = BitFieldChecker2<T, LIST...>::BitsUsed;
+    static constexpr T MultipleUse = BitFieldChecker2<T, LIST...>::MultipleUse;
 };
 
 
@@ -14742,9 +14521,7 @@ struct BitFieldProtector2 {
 // to underlying bitfield containing variable.
 // Defines operator = (T) for write access and
 // operator T() for read access.
-// if Readonly or Writeonly, only one of those operators is defined
-
-// General definition
+// if Raedonly or Writeonly, only one of those is defined
 template<int offset, int width, class T, class E,  AccessType TheAccess>
 class BitFieldProxy {
 
@@ -14768,7 +14545,6 @@ protected:
 
 public:
     typedef T BaseType;
-    
     // Constructor, we need to know where our bits can be found
     constexpr BitFieldProxy(T &Reg) : Register(Reg) {}
 
@@ -14848,8 +14624,7 @@ public:
     P GetProxy(T &r) {return P(r);}
 };
 
-// Some helper templates to find descriptor for given basetype in List of Descriptors
- 
+
 // IsSameType: true if two types are same, false otherwise
 
 template <class T1, class T2>
@@ -14943,7 +14718,7 @@ void MetaProgramTest()
 // For each bitfielddescriptor the class derives from
 // a manager for this bitfield (Who manages the proxy for it),
 // and a protector for it, which generates a compile error
-// if two bitfields are the same (have same offset and width) since C++ does not allow two identical baseclasses
+// if two bitfields are the same (hvae same offset and width
 
 template<class T1, class ...Fields>
 class TheRegister2 : public TheBitfieldManager<T1, BitFieldProxy<Fields::Offset, Fields::Width, T1, typename Fields::Type, Fields::Access>>... , BitFieldProtector<Fields::Offset, Fields::Width>...{
@@ -14967,8 +14742,8 @@ public:
     void SetBits(T1 Bits) {TheDataRegister = Bits;}
     T1   GetBits() {return TheDataRegister;}
 
-    // Allows access to individual bitfield, bitfield must
-    // be selected by T, which must be descritpor of coresponding
+    // Allows acces to individual bitfield, bitfield must
+    // be selected by T, which must be basetype of coresponding
     // bitfield, selects the correct baseclass bitfieldmanager
     // by its descriptortype and returns its proxy
     // Example: Register1.Val<BitfieldDescriptorType>()
@@ -15004,19 +14779,17 @@ public:
 void Test2()
 {
     // Define some bitfield descriptors
-    
     //// Three definitions for WL to show/test differences between R, W and RW Access
     typedef MakeBitfield2<10,2,Wordlength, AccessType::ReadAndWrite>::type WL;
-    //typedef MakeBitfield2<10,2,Wordlength, AccessType::WritOnly>::type WL;    
+    //typedef MakeBitfield2<10,2,Wordlength, AccessType::WritOnly>::type WL;
     // typedef MakeBitfield2<10,2,Wordlength, AccessType::ReadOnly>::type WL;
-    
     typedef MakeBitfield2<12,2,Ready>::type rdy;
     typedef MakeBitfield2<8,2,Ready>::type rdy2;
     typedef MakeBitfield2<2,4,int>::type Data;
 
     // Define a Bitfieldtype made of bitfields described by bitfieldescriptors
     // Total size of bitfield is uint16_t
-    typedef TheRegister2<volatile uint16_t, WL, rdy, rdy2, Data> TheRegisterType;
+    typedef TheRegister2<uint16_t, WL, rdy, rdy2, Data> TheRegisterType;
 
     // Just for testing
     constexpr int i = sizeof(WL); // 1 Byte, empty classes must have a size
@@ -15100,10 +14873,6 @@ void Test2()
     // is type is used to select bitfield
     w = reg;
     std::cout << std::hex << int(w) << std::endl;
-    
-    if (reg == Ready::NRDY) {
-        std::cout << "Not ready" << std::endl;
-    }
 }
 
 
