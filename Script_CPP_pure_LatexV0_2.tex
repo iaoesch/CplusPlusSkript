@@ -3495,7 +3495,41 @@ Für Stringliterale gibt es 4 verschiedene Operatorfunktionen, je nach Literaltyp
 
 Stringvalues zeigt auf die Zeichenfolge des Literals, StringLaenge gibt die Anzahl der Zeichen im Literal an.
 
+\subsection{Benutzerdefinierte Literale als Templates}
+\label{BenutzerdefinierteLiteraleAsTemplates}
+Benutzerdefinierte Literale können auch über Templates \index{Benutzerdefinierte Literale als Templates} \index{Templates, Benutzerdefinierte Literale als} definiert werden, dabei gibt es aber genaue Formvorschriften:
+Das Template muss genau ein Parameterpack vom Typ char besitzen, und die Operatorfunktion muss eine leere Parameterliste besitzen.
 
+Beispiel: 
+\begin{CCode}
+template<char... p>
+int operator ""_SumOfDigits() {return (... + (p - '0'));} ;
+
+int main()
+{
+    int x = 314_SumOfDigits;
+    cout << "Summ of digits is: " << x << endl;
+    return 0;
+}
+
+// Output is: Summ of digits is: 8
+// since 3+1+4 = 8
+\end{CCode}
+
+im Template Parameterpack p sind die einzelne Zeichencodes des Literals abgespeichert und können im Template
+mit den üblichen Templatemechanismen ausgewertet werden (Siehe auch \autoref{subsubsect:TemplateVarArg}).
+
+
+Seit Seit \CppVers{20} kann auch ein konstanter Klassenparameter benutzt werden, welcher im Konstruktor einen \CodeStyle{char *} akzeptiert.
+Dem Konstruktoer wird das Literal als  \CodeStyle{char *} übergeben.
+
+Beispiel: 
+\begin{CCode}
+struct A { constexpr A(const char*); };
+ 
+template<A a>
+A operator ""_a();
+\end{CCode}
 
 
 \chapter{Klassen}
@@ -6892,6 +6926,8 @@ Output:
 <2.46>
 <hallohallo>
 \end{ConsoleOutput}
+
+Ein weiters Beispiel für den Sonderfall benutzerdefinierter Literale mit templates siehe \autoref{BenutzerdefinierteLiteraleAsTemplates}
 
 \subsection{Fold Expressions (Seit \CppVers{17})}
 \label{subsect:FoldExpressions}
