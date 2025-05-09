@@ -4055,7 +4055,7 @@ Analog wird der Operator \CodeStyle{!=} auf den Operator \CodeStyle{==} zurückge
 \label{subsect:SpaceshipOperator}
 Der \OviIndex{Drei Wege Vergleich}, auch '\OviIndex{Spaceship-Operator}' genannt (\CodeIndex{<=>}) liefert einen Wert < 0 zurück, wenn der erste Operand kleiner als der zweite ist, einen Wert = 0 wenn beide gleich sind und einen Wert > 0 wenn der erste grösser als der zweite ist. Aus dem Drei-Wege-Vergleich lassen sich somit alle anderen Vergleichsoperationen ableiten.
 
-Für eine Klasse kann der Default-Drei-Wege-Vergleich angefordert werden. Dieser wird vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
+Für eine Klasse kann der Default-Drei-Wege-Vergleich mit \CodeStyle{friend operator <=> (Class1, Class2) = default;} oder \CodeStyle{operator <=> (Class2) = default;} angefordert werden. Damit wird dieser vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
 
 Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert:
 
@@ -4083,16 +4083,31 @@ Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folge
 \end{labeling}
 \end{labeling}
 
-Der Defaultvergleich wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
+Der Defaultvergleich wird vom Compiler nur auf Anforderung erzeugt und nur, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
 definiert haben.  Der Defaultvergleich greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
         
 Wenn der Defaultvergleich für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{<=>}) passend überladen werden. 
 
 Sobald für eine Klasse der Operator (\CodeStyle{<=>}) vorhanden ist, werden auch die Operatoren \CodeStyle{< <= >=} und \CodeStyle{>} vom Compiler automatisch erzeugt, wenn sie nicht durch den Benutzer bereits durch überladen definiert wurden.
 
-\subsection{Default == (\CppVers{20})}
+\subsection{Umschreiben von relationalen Operatoren (\CppVers{20})}
+\index{rewritten comparisations operators}
+\index{umgeschriebene Vergleichsoperatoren}
+Wenn vom Compiler für einen relationalen Ausdruck kein passender Operator gefunden wird oder direkt aus \CodeStyle{<=>} abgeleitet werden kann, versucht er durch Umschreiben des Ausdrucks einen passenden Operator zu finden. Dabei werden einerseits die Argumente vertauscht, und andererseits die Gegenteiligen Operatoren zusammen mit einer Negation verwendet. 
+So werden 
 
-Der vom Compiler auf Anfrage automatisch generierte \OviIndex{Default Gleichheitsoperator} (\CodeIndex{==})  vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{==}.  Beim ersten Vergleich der \CodeStyle{false} zurückliefert wird abgebrochen und \CodeStyle{false} als Resultat zurückgeliefert. Wenn alle Vergleiche  \CodeStyle{true} liefern wird ebenfalls \CodeStyle{true} zurückgeliefert.
+aus \CodeStyle{a != b} die Kandidaten \CodeStyle{!(a == b)}, \CodeStyle{b != a} und \CodeStyle{!(b == a)} generiert,
+
+aus \CodeStyle{a == b} der Kandidat \CodeStyle{b == a} generiert \emph{(== wird nicht auf != zurückgeführt).}
+
+aus \CodeStyle{a <=> b} der Kandidat \CodeStyle{0 <=> (b <=> a)} generiert
+
+aus \CodeStyle{a < b} der Kandidat \CodeStyle{b > a} generiert \emph{(>, >= und <= werden analog behandelt)}
+
+Dabei werden implizite Typumwandlungen durchgeführt und falls notwendig auf von \CodeStyle{<=>} abgeleitete Operatoren zurückgegriffen.
+
+\subsection{Default == (\CppVers{20})}
+Der vom Compiler auf Anfrage mit \CodeStyle{friend operator == (Class1, Class2) = default;} oder \CodeStyle{operator == (Class2) = default;} automatisch generierte \OviIndex{Default Gleichheitsoperator} (\CodeIndex{==})  vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{==}.  Beim ersten Vergleich der \CodeStyle{false} zurückliefert wird abgebrochen und \CodeStyle{false} als Resultat zurückgeliefert. Wenn alle Vergleiche  \CodeStyle{true} liefern wird ebenfalls \CodeStyle{true} zurückgeliefert.
 
 Der Default Gleichheitsoperator wird vom Compiler nur erzeugt, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits den \CodeStyle{==} Operator definiert haben. Der Default Gleichheitsoperator greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
 
@@ -12219,7 +12234,7 @@ Im Dezember 2017 publiziert.
 Seit Dezember 2020 verabschiedet.
  \begin{itemize}
     \item Feature test macros
-    \item 3-way comparison \CodeStyle{operator <=>} and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
+    \item 3-way comparison \CodeStyle{operator <=>} (Siehe \autoref{subsect:SpaceshipOperator}), rewritting of relational operators and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
     \item designated initializers (Siehe \autoref{subsect:AgregatInitialisierung}
     \item init-statements and initialisers in range-for (Siehe \autoref{subsubsect:foroptionalinitialisierer}
     \item \CodeStyle{char8_t} (Siehe \autoref{subsubsect:UTF8CharType})
