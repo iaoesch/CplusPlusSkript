@@ -80,6 +80,7 @@
 \usepackage{longtable}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{cleveref}
 \usepackage{fancyvrb}
 
 %\usepackage{html,makeidx}
@@ -176,6 +177,10 @@
 \newcommand{\OviIndexModified}[2]{\textit{#1}\index{#2}}
 
 \newcommand{\NextPagePlease}{\pagebreak[4]}
+
+\newcommand{\myref}[1]{\cref{#1}}
+\crefname{section}{Kap.}{Kap.}
+\crefname{chapter}{Kap.}{Kap.}
 
 \newcommand{\MyTitle}{Einführung in \Cpp}
 
@@ -310,6 +315,8 @@ tab=\rightarrowfill}
 \end{tabular}
 }
 
+\addtokomafont{labelinglabel}{\rmfamily\bfseries}
+
 % Level von Inhaltsverzeichnis
 \setcounter{tocdepth}{1}
 
@@ -417,7 +424,7 @@ int main(int argc, char *argv[])
 
 In C und \Cpp werden alle Statements (Befehle) mit einem Semikolon ';' abgeschlossen.
 Variablen welche ausserhalb von Funktionen definiert werden, und Funktionen selbst sind grundsätzlich global, das heisst sie können von anderen Modulen benutzt oder aufgerufen werden. Um den Gültigkeitsbereich einer Funktion oder einer globalen Variable auf
-ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in \Cpp (Anonyme) Namespaces (Siehe \autoref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \autoref{subsec:LambdaFunctions}) 
+ein Modul zu beschränken, muss diese als \CodeStyle{static} deklariert werden, dann kann nur noch innerhalb des entsprechenden Moduls auf sie zugegriffen werden, wobei in \Cpp (Anonyme) Namespaces (Siehe \myref{Chapter:AnonymeNamensbereiche}) eine gute Alternative sind. Definitionen von Funktionen innerhalb von Funktionen (lokale Funktionen) sind nicht möglich. Ausnahme von dieser Regel sind die in \CppVers{11} eingeführten Lambdafunktionen (Beispiel: \lstinline[basicstyle={\normalsize \ttfamily}]![&y](int a){y += a;}!) (Siehe \myref{subsec:LambdaFunctions}) 
 
 \section{Kommentare}
 \Cpp kennt zwei Arten von Kommentaren: Den Zeilenkommentar und den Blockkommentar. Ein Zeilenkommentar beginnt mit der Zeichenfolge \CodeStyle{//}, der Rest der Zeile gilt dann als Kommentar. Ein Kommentarblock wird mit \CodeStyle{/*} eingeleitet und endet mit \CodeStyle{*/}. Ein Blockkommentar kann sich über mehrere Zeilen erstrecken. Blockkommentare können nicht verschachtelt werden.
@@ -516,7 +523,7 @@ Zudem sind alle Schlüsselworte von \Cpp gemäss folgender Tabelle reserviert
 \item signed
 \item sizeof
 \item static
-\item static\_assert {\tiny (\CppVers{11}) (Siehe \autoref{subsubsect:assertions})}
+\item static\_assert {\tiny (\CppVers{11}) (Siehe \myref{subsubsect:assertions})}
 \item static\_cast
 \item struct
 \item switch
@@ -629,7 +636,7 @@ Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternative
 
 \section{Attribute (Seit \CppVers{11})}
 \label{subsubsect:Attribute}
-\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \autoref{sect:AttributeKlassen}).\
+\emph{Achtung, diesen Begriff nicht mit den Attributen aus der OOP verwechseln. (Attribute OOP siehe \myref{sect:AttributeKlassen}).\
 } 
 Seit \CppVers{11} gibt es die Möglichkeit, mittels Attributen Compilerhersteller spezifische Erweiterungen einzuführen. \OviIndex{Attribute} können fast an beliebiger Stelle angebracht werden um etwas Compilerspezifisches zum Ausdruck zu bringen. Die Grundform eines Attributes lautet: 
 \CodeStyle{[[ Irgendetwas Compilerhersteller spezifisches]]}
@@ -1007,7 +1014,7 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$>>$&	Bitweises Rechtsschieben&\lstinline$a = b >> c; // = b / 2$$^c$\\
 \hline
-\lstinline$<=>$  (\CppVers{20})& 3-Wege-Vergleich (Spaceship Operator), liefert -1 wenn erster kleiner als zweiter, 0 wenn beide gleich und 1 sonst&\lstinline$a = b <=> c; $\\
+\lstinline$<=>$  {\scriptsize (\CppVers{20}, siehe \myref{subsect:SpaceshipOperator})}& 3-Wege-Vergleich (Spaceship Operator), liefert -1 wenn erster kleiner als zweiter, 0 wenn beide gleich und 1 sonst&\lstinline$a = b <=> c; $\\
 \hline
 \lstinline$>  <  >=  <=  == !=$	&Relationale Operatoren != ist Ungleich	&\lstinline$if (a != b)$\\
 \hline
@@ -1084,7 +1091,7 @@ Operator&	Beschreibung&	Beispiel\\
 \hline
 \lstinline$noexcept$&Prüft ob Ausdruck eine Ausnahme werfen könnte (Zur Compile Zeit)(Exceptionshandling)&\lstinline$if (noexcept f());$\\
 \hline
-\lstinline$alignof$&Liefert Alignementbedarf einbes Types&\lstinline$x = alignof(int); y = alignof(Point);$\\
+\lstinline$alignof$&Liefert Alignementbedarf eines Typen&\lstinline$x = alignof(int); y = alignof(Point);$\\
 \hline
 \lstinline$,$&Kommaoperator&\lstinline$a = (b,c);$\\
 \hline
@@ -1198,9 +1205,9 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder Vector aus der Standardbibliothek nutzen (Siehe \autoref{section:StandardSTL}). Dynamische Arrays lassen sich so einfach mit \CodeStyle{std::vector} realisieren, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. Die Verwaltung des Speichers wird so vollständig durch die Bibliothek übernommen.
+Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder Vector aus der Standardbibliothek nutzen (Siehe \myref{section:StandardSTL}). Dynamische Arrays lassen sich so einfach mit \CodeStyle{std::vector} realisieren, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. Die Verwaltung des Speichers wird so vollständig durch die Bibliothek übernommen.
 
-Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
 Für Fälle, in denen der dynamische Speicher direkt verwaltet werden soll kann auf \CodeStyle{new} und \CodeStyle{delete} zurückgegriffen werden.
 Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von SmartPointern aus der Standard-Library umgangen werden. \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
@@ -1334,7 +1341,7 @@ int main(int argc, char *argv[])
 } 
 \end{CCode}
 
-\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren. (Siehe \autoref{sect:DateiEinAusgabe}) sowie seit \CppVers{20} mit \CodeStyle{std::format}.
+\OviIndex{Streams} bieten vielfältige Formatiermöglichkeiten für die Ausgabe, wie Anzahl Nachkommastellen, Feldbreite, Zahlenbasis (Dezimal, Oktal, Hexadezimal), mit oder ohne führende Nullen und vieles mehr. Informationen dazu findet man in einschlägiger Literatur unter den Stichworten Stream, Formatierung und Manipulatoren. (Siehe \myref{sect:DateiEinAusgabe}) sowie seit \CppVers{20} mit \CodeStyle{std::format}.
 
 \section{Hauptprogramm}
 Jedes lauffähige \Cpp Programm muss eine Funktion \CodeStyle{main()} enthalten, diese wird beim Starten des Programms automatisch aufgerufen. Die Argumente \CodeStyle{argc} und \CodeStyle{argv} enthalten dabei die Komandozeilenparameter, die dem Program beim Aufruf übergeben wurden. Diese können je nach Bedarf von Programmierer ausgewertet oder ignoriert werden. Der Rückgabewert des Hauptprogrammes wird vom Betriebssystem als Fehlercode interpretiert, wobei 0 für 'Kein Fehler' steht. 
@@ -1357,10 +1364,10 @@ Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, fl
 
 Seit \CppVers{11} gibt es die typen \CodeStyle{char16_t und char16_t} für UTF-16 resp. UTF-32 codierte Zeichen. Mit \CppVers{20} ist noch der Typ \CodeStyle{char8_t} \label{subsubsect:UTF8CharType} für  UTF-8 codierte Zeichen dazugekommen. Alle char.. typen haben mindestens soviele Bits wie angegeben.
 
-Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \autoref{sect:strings}).
+Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \myref{sect:strings}).
 
 Für Fliesskommawerte sind seit \CppVers{23} die Typen \CodeStyle{std::float16_t}, \CodeStyle{std::bfloat16_t}, \CodeStyle{std::float32_t}, \CodeStyle{std::float64_t} und  \CodeStyle{std::float128_t} definiert.  
-(Siehe auch \autoref{sect:Literale})
+(Siehe auch \myref{sect:Literale})
 
 
 \section{Zeiger und Referenzen}
@@ -1368,7 +1375,7 @@ Für Fliesskommawerte sind seit \CppVers{23} die Typen \CodeStyle{std::float16_t}
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
-Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \autoref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \myref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
 \subsection{Einsatz von Zeigern}
 Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt geben kann (null-pointer).
@@ -1379,7 +1386,7 @@ Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes
 
 Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das entsprechende Objekt gelöscht.
 
-Siehe \autoref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
+Siehe \myref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
 
 \subsection{Beispiele zum Einsatz von Zeigern, Smartpointern und Referenzen}
 
@@ -1650,7 +1657,7 @@ Neue Syntax:
  \label{subsubsect:Initialisiererlisten}
  \index{Initialisiererlisten}
  Neu können Objekte analog Arrays und Strukturen mit Listen initialisiert werden. Dazu muss jedoch ein entsprechender Konstruktor definiert werden, der als Argument ein Template vom Typ \CodeStyle{std::initializer_list} entgegennimmt.
- (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+ (Siehe auch Kapitel \myref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
 
  
  
@@ -1672,7 +1679,7 @@ Neue Syntax:
   \section{Agregat-Initialisierung (Seit \CppVers{11})}
  \label{subsect:AgregatInitialisierung}
  \index{Agregat-Initialisierung}
- Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich. (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+ Alle Aggregate (Strukturen und Klassen ohne Konstruktor, ohne private oder Protected nicht-statische Attribute und ohne virtuelle, protected oder private Vererbung) können wie in C mit in geschweiften Klammern eingeschlossenen Werten initialisiert werden, seit \CppVers{20} ist auch \OviIndex{direkte initialisierung} (\OviIndex{Designated initializers}) möglich. (Siehe auch Kapitel \myref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
  
  
   Beispiel:
@@ -1698,11 +1705,11 @@ Neue Syntax:
 
  
  \section{Klassen}
- Klassen werden in einem eigenen Kapitel (Siehe \autoref{sect:Klassen}) behandelt
+ Klassen werden in einem eigenen Kapitel (Siehe \myref{sect:Klassen}) behandelt
  
  \section{Weitere Datentypen}
  Weiter gibt es Arrays, \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den Template-mechanismus realisiert werden
- (Siehe  \autoref{chapter:Templates} und  \autoref{section:StandardSTL} . 
+ (Siehe  \myref{chapter:Templates} und  \myref{section:StandardSTL} . 
  
  \section{Konstantheit (const)}
 Variablen und Objekte, die nur gelesen werden dürfen, kann man als \CodeIndex{const}\index{Konstantheit} definieren, danach erlaubt der Compiler keine schreibenden Zugriffe auf solche Objekte mehr.
@@ -1784,7 +1791,7 @@ Auf konstante Objekte dürfen nur konstante Methoden angewendet werden, also Meth
 \end{CCode}
 
 Seit \CppVers{11} können mit dem Schlüsselwort \CodeIndex{constexpr} Ausdrücke und Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Konstant deklariert werden. Damit werden solche Ausdrücke und Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Ausdruck/Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \myref{subsubsect:constexpr}.
 Mit \CppVers{20} kommen noch  \CodeStyle{consteval} (Funktion wird nur zur Compilezeit ausgeführt und muss konstantes Ergebnis liefern) und \CodeStyle{constinit} (dient zur Initialisierung von statischen Variablen zur Compilezeit, wobei die Variablen auch nichtkonstant sein dürfen, einfach der Initialisierungswert wird zur Compilezeit bestimmt.) dazu.
 
 
@@ -1862,7 +1869,7 @@ Linkzeiger bei Listenelementen. Das 'Umhängen' eines Listenelementes
  
  \chapter{Literale}
  \label{sect:Literale}
- Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \autoref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}) dazu. 
+ Zu den bereits von C bekannten Literalen kommen die bool-Literale \CodeStyle{true} und \CodeStyle{false}, binäre Literale (\CodeStyle{0b101010}, seit \CppVers{14}), der Nullzeiger-Typ \CodeStyle{nullptr} (Siehe \myref{subsubsect:nullptr}) und benutzerdefinierte Literale (Siehe \myref{subsubsect:BenutzerdefinierteLiterale}) dazu. 
 
  \section{Integer Literale} 
 Ganzzahlige Literale können in dezimal, in hexadezimal, in binär oder in oktal geschrieben werden, zudem ist das \OviIndex{Gruppierungszeichen} \CodeStyle{'} erlaubt:
@@ -2010,7 +2017,7 @@ Eine Variablendefinition muss immer die Form
 Datentyp Variablenname; 
 aufweisen. Es ist möglich (und guter Stil), eine Variable bei der Definition gleich zu initialisieren:
 
-\CodeStyle{Datentyp Variablenname = Wert;} (Siehe auch Kapitel \autoref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+\CodeStyle{Datentyp Variablenname = Wert;} (Siehe auch Kapitel \myref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
 
 Für Variablennamen dürfen Klein- und Grossbuchstaben sowie der Unterstrich '\_' und die Ziffern 0-9 verwendet werden. Sonderzeichen und Umlaute sind nicht erlaubt. Namen dürfen nicht mit Ziffern beginnen.
 
@@ -2186,7 +2193,7 @@ s[13] = 'f';
 s[99] = 'z'; // Letztes Element (!)
 \end{CCode}
 
-In \Cpp sollten jedoch Container wie z. B. \CodeStyle{std::Vector} (Siehe \autoref{subsect:Vector} oder \CodeStyle{std::array} (seit \CppVers{11}) verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und fast überall eingesetzt werden können wo auch Arrays erwartet werden. Im Gegensatz zu Arrays ist \CodeStyle{std::Vector} aber dynamisch (Seine Grösse kann zur Laufzeit verändert werden), und sowohl \CodeStyle{std::Vector} als auch \CodeStyle{std::array} bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
+In \Cpp sollten jedoch Container wie z. B. \CodeStyle{std::Vector} (Siehe \myref{subsect:Vector} oder \CodeStyle{std::array} (seit \CppVers{11}) verwendet werden, welche grundsätzlich die selbe Funktionalität wie Arrays anbieten und fast überall eingesetzt werden können wo auch Arrays erwartet werden. Im Gegensatz zu Arrays ist \CodeStyle{std::Vector} aber dynamisch (Seine Grösse kann zur Laufzeit verändert werden), und sowohl \CodeStyle{std::Vector} als auch \CodeStyle{std::array} bieten auf Wunsch sicheren Zugriff (Zugriff ausserhalb der Arraygrenzen werden erkannt).
 
 \begin{CCode}
 #include<vector>
@@ -2373,7 +2380,7 @@ Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererl
 	
 \end{CCode}
 
-Dies funktioniert für Arrays und alle Objekte, welche die Methoden \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \autoref{subsect:Iteratoren}) zurückliefern müssen.
+Dies funktioniert für Arrays und alle Objekte, welche die Methoden \CodeStyle{begin()} und \CodeStyle{ end()} definiert haben, wobei \CodeStyle{begin()} und \CodeStyle{end()}  Iteratoren (Siehe \myref{subsect:Iteratoren}) zurückliefern müssen.
 
 \begin{CCode}
 class Fibonacci {
@@ -2598,7 +2605,7 @@ inline int Square(int i)     // Inline Methoden können auch in der
 
 
 \section{Überladen von Funktionen}
-Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden. Dabei wird auch zwischen const Argumenten und nicht-const Argumenten (Bei Referenzen und Pointern) sowie RValue- und LValue-Referenzen (Siehe \autoref{subsec:RValueRefs}) unterschieden.
+Unter \Cpp können Funktionen überladen \index{Überladen von Funktionen} werden. Das heisst, es kann mehrere Funktionen mit demselben Namen geben, solange sie sich durch die Anzahl oder der Art der Argumente unterscheiden. Dabei wird auch zwischen const Argumenten und nicht-const Argumenten (Bei Referenzen und Pointern) sowie RValue- und LValue-Referenzen (Siehe \myref{subsec:RValueRefs}) unterschieden.
 Bei gleichzeitigem Überladen und verwenden von Defaultargumenten muss sichergestellt sein, dass
 der Aufruf eindeutig ist, sonst ergibt sich ein Compilerfehler.
 
@@ -2697,7 +2704,7 @@ Der Rückgabetyp von Funktionen kann neu aus dem Return-Statement erschlossen wer
 
 \section{constexpr Funktionen (Seit \CppVers{11})}
 Seit \CppVers{11} können mit dem Schlüsselwort \CodeIndex{constexpr} Rückgabewerte von Funktionen als
-Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \autoref{subsubsect:constexpr}.
+Konstant deklariert werden. Damit werden Aufrufe solcher Funktionen auch an Stellen akzeptiert, an denen nur Konstanten zulässig sind, und der Funktionsaufruf wird bereits zur Compilezeit ausgewertet. \CodeStyle{constexpr}-Funktionen durften bis \CppVers{14} nebst der \CodeStyle{return}-Anweisung keine weiteren Anweisungen mehr enthalten, seit \CppVers{14} sind fast alle Anweisungen erlaubt. Details siehe \myref{subsubsect:constexpr}.
 Seit \CppVers{20} gibt es auch \CodeStyle{consteval} Funktionen, welche immer zur Compilezeit ausgewertet und durch Konstranten erstetzt werden, entsprechend müssen sie auch zur Compilezeit auswertbar sein.
 
 \section{Anonyme Funktionen (Lambda Funktionen) (Seit \CppVers{11})}
@@ -2762,7 +2769,7 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 \end{CCode}
 Lambdafunktionen ohne Capture-Block können auch passenden Funktionszeigern zugewiesen werden, Lambdafunktionen mit Capture-Block sind nicht kompatibel mit Funktionszeigern, da ein Objekt zur Aufnahme der Capture-Variablen erzeugt werden muss.
 
-Auch generische Lambdafunktionen sind seit \CppVers{14} möglich (Siehe \autoref{subsection:GenerischeLambdafunktionen})
+Auch generische Lambdafunktionen sind seit \CppVers{14} möglich (Siehe \myref{subsection:GenerischeLambdafunktionen})
 
 
 
@@ -3243,7 +3250,7 @@ int main() {
 
 \end{CCode}
 
-Ein weiteres Beispiel für Coroutinen findet sich im Anhang \autoref{sec:UARTCoroutineExample}
+Ein weiteres Beispiel für Coroutinen findet sich im Anhang \myref{sec:UARTCoroutineExample}
 
 %\begin{CCode}
 %template<typename PromiseType>
@@ -3329,7 +3336,7 @@ Ein weiteres Beispiel für Coroutinen findet sich im Anhang \autoref{sec:UARTCoro
 \label{sect:UeberladenOperatoren}
 \index{Überladen von Operatoren}\OviIndex{Operatoren} ( \CodeStyle{+ - * /} etc.) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Entsprechend können die meisten dieser Operatoren für eigene Typen (Also Klassen, resp. Objekte) überladen werden.
 \section{Vollständig überladbare Operatoren}
-Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () [] new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \autoref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
+Die \OviIndex{Operatoren} ( Binäre: \CodeStyle{+ - * / \% \& | ^ >> << = < > >= <= == !=  += -= *= /= \%= &= |= ^= >>= <<=} unäre: \CodeStyle{& * ++ -- ~ !  ->* () [] new new[] delete delete[]}) gelten in \Cpp als normale Funktionen mit dem Namen \CodeStyle{operator x}, wobei für x jeweils der gewünschte Operator eingesetzt wird. Diese Operatoren können für eigene Typen (Also Klassen, resp. Objekte) überladen werden. Die Operatoren \CodeStyle{co_await} und  \CodeStyle{<=>}  (Siehe \myref{subsect:SpaceshipOperator} von \CppVers{20} lassen sich ebenfalls überladen.
 Der Funktionsaufrufoperator \CodeStyle{operator()(Argumente...)} läesst sich dabei pro Klasse mit unterschiedlicher Argumentenliste mehrfach überladen. Der Indexoperator [] lässt sich ab \CppVers{23} auch für mehrdimensionale Zugriffe überladen: \CodeStyle{operator[](int x, double d)} würde \CodeStyle{objekt[6, 3.14]} erlauben.
 
 
@@ -3467,7 +3474,7 @@ Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 \section{Benutzerdefinierte Literale (Seit \CppVers{11})}
 \index{Benutzerdefinierte Literale}
 \label{subsubsect:BenutzerdefinierteLiterale}
-Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, wie Zeitdauern in \CodeStyle{std::chrono}, siehe \autoref{subsect:STDChrono:Duration}).
+Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, wie Zeitdauern in \CodeStyle{std::chrono}, siehe \myref{subsect:STDChrono:Duration}).
 
 
 Numerische Literale können dabei als Strings, als \CodeStyle{unsigned long long} oder als \CodeStyle{long double} Werte verarbeitet werden. Dazu wird eine neue Operatorfunktion eingeführt, welche entsprechend überladen werden muss:
@@ -3517,7 +3524,7 @@ int main()
 \end{CCode}
 
 im Template Parameterpack p sind die einzelne Zeichencodes des Literals abgespeichert und können im Template
-mit den üblichen Templatemechanismen ausgewertet werden (Siehe auch \autoref{subsubsect:TemplateVarArg}).
+mit den üblichen Templatemechanismen ausgewertet werden (Siehe auch \myref{subsubsect:TemplateVarArg}).
 
 
 Seit Seit \CppVers{20} kann auch ein konstanter Klassenparameter benutzt werden, welcher im Konstruktor einen \CodeStyle{char *} akzeptiert.
@@ -3606,20 +3613,20 @@ Eine Klasse kann folgende Elemente beinhalten:
 
   \begin{labeling}{Basisklasse(n)}
     \item[Datentypen] Typedefs, Enums, (eingebettete) Klassen und Strukturen
-    \item[Attribute] Eigenschaften (Membervariablen) der Klasse oder Objekte (Siehe  \autoref{sect:AttributeKlassen})
-    \item[Methoden] Funktionen (Memberfunktionen) der Klasse oder Objekte(Siehe  \autoref{sect:MethodenKlassen}), das können auch überladene Operatoren sein (Siehe  \autoref{sect:UeberladenOperatoren}).
-    \item[Friends] Freunde der Klasse, das können Funktionen, Methoden oder ganze Klassen sein (Siehe  \autoref{sect:Friends}).
-    \item[Basisklasse(n)] Klasse, von welcher geerbt wird (Siehe  \autoref{sect:Vererbung}).
+    \item[Attribute] Eigenschaften (Membervariablen) der Klasse oder Objekte (Siehe  \myref{sect:AttributeKlassen})
+    \item[Methoden] Funktionen (Memberfunktionen) der Klasse oder Objekte(Siehe  \myref{sect:MethodenKlassen}), das können auch überladene Operatoren sein (Siehe  \myref{sect:UeberladenOperatoren}).
+    \item[Friends] Freunde der Klasse, das können Funktionen, Methoden oder ganze Klassen sein (Siehe  \myref{sect:Friends}).
+    \item[Basisklasse(n)] Klasse, von welcher geerbt wird (Siehe  \myref{sect:Vererbung}).
   \end{labeling}
 
 \section{Attribute}
 \label{sect:AttributeKlassen}
-In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte}) \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenvariablen (siehe \autoref{sect:StatischeMember}) definiert werden. Mit \CodeStyle{mutable} (Siehe \autoref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
+In den \OviIndexModified{Attributen}{Attribute} werden die Daten von Klassen und Klasseninstanzen (Objekten) abgelegt. Atttribute werden als Variablen in Klassen angelegt und können mit den Zugriffsechten (Siehe  \myref{sect:Zugrifsrechte}) \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenvariablen (siehe \myref{sect:StatischeMember}) definiert werden. Mit \CodeStyle{mutable} (Siehe \myref{subsubsect:Mutable}) können Attribute von der Konstantheit ausgeschlossen werden.
 Als Attribute sind grundsätzlich alle Datentypen (inklusive Benutzerdefinierte wie Klassen) von \Cpp zulässig.
 
 \section{Methoden}
 \label{sect:MethodenKlassen}
-\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \autoref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\autoref{subsect:Konstruktoren}), Destruktoren (\autoref{subsect:Destruktor}) und Zuweisungsoperatoren (\autoref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \autoref{sect:Zugrifsrechte} \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenmethoden (siehe \autoref{sect:StatischeMember}\
+\OviIndex{Methoden} werden in Form von Funktionsdeklarationen oder Definitionen innerhalb der Klasse angelegt. Der dazugehörige Code kann innerhalb der Klasse (Inline, siehe \myref{sect:InlineMethoden}) als Inlinemethode, oder ausserhalb der Klasse definiert werden. Einige Methoden (Wie Konstruktoren (\myref{subsect:Konstruktoren}), Destruktoren (\myref{subsect:Destruktor}) und Zuweisungsoperatoren (\myref{subsect:Zuweisungsoperator})) können automatisch vom Compiler erzeugt werden. Methoden können mit den Zugriffsechten (Siehe  \myref{sect:Zugrifsrechte} \CodeStyle{public}, \CodeStyle{protected} und \CodeStyle{private} und als Member oder Klassenmethoden (siehe \myref{sect:StatischeMember}\
 definiert werden.
 
 \section{Konstruktoren / Destruktoren / Zuweisungsoperator}
@@ -3650,7 +3657,7 @@ Move-Zuweisungsoperator&Kein Move-Zuweisungsoperator, kein Zuweisungsoperator, k
 
 Für POD (Standard-Typen aus C wie int, float, Pointer, ...) macht der Defaultkonstruktor nichts, und Kopier, Move-Kopierkonstruktor, Zuweisung und Movezuweisung kopieren einfach den Wert.
 
-Seit \CppVers{11} kann mit dem Schlüsselworte \CodeStyle{delete} das automatische Erzeugen der entsprechenden Mehthode unterdrückt, und mit \CodeStyle{default} das automatische Erzeugen der entsprechenden Methode erzwungen werden (Siehe \autoref{subsubsect:ControlAutoMember}).
+Seit \CppVers{11} kann mit dem Schlüsselworte \CodeStyle{delete} das automatische Erzeugen der entsprechenden Mehthode unterdrückt, und mit \CodeStyle{default} das automatische Erzeugen der entsprechenden Methode erzwungen werden (Siehe \myref{subsubsect:ControlAutoMember}).
 
 \subsection{Rule of 3, 5, 0}
 \label{subsect:Ruleof350}
@@ -3863,7 +3870,7 @@ MyClass f2()
 \end{CCode}
 
 \subsubsection{\CppVers{11} Move-Construktor}
-Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
                 MyClass(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
@@ -3917,7 +3924,7 @@ a = b;      // Aufruf des Zuweisungsoperators
 \end{CCode}
 
 \subsection{\CppVers{11} Move-Zuweisungsoperator}
-Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapitel \autoref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\autoref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
 \begin{CCode}
    ...
                 MyClass & MyClass::operator=(MyClass &&Source);  // Move-Movezuweisungsoperator (&& und kein const)
@@ -3928,7 +3935,7 @@ Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapit
 \subsection{Destruktor}
 \label{subsect:Destruktor}
 
-Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann automatisch vom Compiler aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben und interne Buchhaltungen zu aktualisieren, falls vorhanden. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, Basisklassen mit virtuellen Funktionen sollten immer auch einen virtuellen Destruktor definieren, auch wenn er nichts zu tun hat). (Siehe \autoref{subsec:VirtualFunctions})
+Der \OviIndex{Destruktor} ist das genaue Gegenteil des Konstruktors, er wird immer dann automatisch vom Compiler aufgerufen, wenn ein Objekt aufhört zu existieren. Seine Aufgabe ist es, vor dem Ableben eines Objektes noch \OviIndex{aufzuräumen}, also zur Lebenszeit des Objektes allozierte Resourcen wieder freizugeben und interne Buchhaltungen zu aktualisieren, falls vorhanden. Wenn zum Beispiel im Konstruktor eine Datei geöffnet wurde, ist es Pflicht des Destruktors, diese Datei wieder zu schliessen. Den Destruktor erkennt man daran, dass er denselben Namen wie die Klasse trägt, allerdings mit einer vorangestellten Tilde ('\verb$~$'). Es gibt für jede Klasse nur einen Destruktor. (Destruktoren von Basisklassen werden automatisch nach Abarbeitung des Destruktors der abgeleiteten Klasse aufgerufen). In vielen Fällen hat der Destruktor nichts zu tun, in diesen Fällen kann er einfach weggelassen werden. (Achtung, Basisklassen mit virtuellen Funktionen sollten immer auch einen virtuellen Destruktor definieren, auch wenn er nichts zu tun hat). (Siehe \myref{subsec:VirtualFunctions})
 \begin{CCode}
 class MyClass {
   int k, j;
@@ -4057,7 +4064,7 @@ Der \OviIndex{Drei Wege Vergleich}, auch '\OviIndex{Spaceship-Operator}' genannt
 
 Für eine Klasse kann der Default-Drei-Wege-Vergleich mit \CodeStyle{friend operator <=> (Class1, Class2) = default;} oder \CodeStyle{operator <=> (Class2) = default;} angefordert werden. Damit wird dieser vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
 
-Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert:
+Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert (definiert in <compare>, welches mit \CodeStyle{#include <compare>} eingebunden werden muss um \CodeStyle{<=>} nutzen zu können):
 
 \begin{labeling}{std::strong\_ordering:}
 \item[std::strong\_ordering:] 'Gleiche' Operanden sind ununterscheidbar und austauschbar.
@@ -4083,12 +4090,16 @@ Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folge
 \end{labeling}
 \end{labeling}
 
+Werte dieser Klassen können automatisch in die jeweils weniger restriktiven Typen umgewandelt werden, also strong\_ordering zu weak\_ordering und weak\_ordering zu partial\_ordering.
+
 Der Defaultvergleich wird vom Compiler nur auf Anforderung erzeugt und nur, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
 definiert haben.  Der Defaultvergleich greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
         
 Wenn der Defaultvergleich für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{<=>}) passend überladen werden. 
 
 Sobald für eine Klasse der Operator (\CodeStyle{<=>}) vorhanden ist, werden auch die Operatoren \CodeStyle{< <= >=} und \CodeStyle{>} vom Compiler automatisch erzeugt, wenn sie nicht durch den Benutzer bereits durch überladen definiert wurden.
+
+Der Operator (\CodeStyle{<=>}) sollte jedoch nur zur Definition relationaler Operatoren verwendet werden, im 'normalen' Code sollten aus Lesbarkeitsgründen immer die davon abgeleiteten Operatoren \CodeStyle{ >, <, >=} und \CodeStyle{<=} verwendet werden.
 
 \subsection{Umschreiben von relationalen Operatoren (\CppVers{20})}
 \index{rewritten comparisations operators}
@@ -4102,7 +4113,7 @@ aus \CodeStyle{a == b} der Kandidat \CodeStyle{b == a} generiert \emph{(== wird 
 
 aus \CodeStyle{a <=> b} der Kandidat \CodeStyle{0 <=> (b <=> a)} generiert
 
-aus \CodeStyle{a < b} der Kandidat \CodeStyle{b > a} generiert \emph{(>, >= und <= werden analog behandelt)}
+aus \CodeStyle{a < b} die Kandidaten \CodeStyle{b > a},  \CodeStyle{(a <=> b) < 0} und \CodeStyle{(b <=> a) > 0} generiert \emph{(>, >= und <= werden analog behandelt)}
 
 Dabei werden implizite Typumwandlungen durchgeführt und falls notwendig auf von \CodeStyle{<=>} abgeleitete Operatoren zurückgegriffen.
 
@@ -4458,7 +4469,7 @@ Ein Objekt der Klasse Student wird entsprechend wie folgt erzeugt:
 Automatisch erzeugte Variablen und Objekte (Also nicht dynamisch mit \CodeStyle{new} erzeugt) werden auch automatisch gelöscht (und ihr Destruktor aufgerufen) wenn sie nicht mehr gültig sind, also der Programmlauf ihren Gültigkeitsbereich verlässt. (Lokale Variablen sind nur innerhalb des Blockes gültig, in dem sie definiert (erzeugt) wurden).
 Globale Objekte werden vor Aufruf von \CodeStyle{main()} erzeugt, auch deren Konstruktor wird vor dem Start von \CodeStyle{main()} aufgerufen. Destruktoraufruf und Zerstörung globaler Objekte erfolgt nach Beendigung von \CodeStyle{main()} resp. des Programms. 
 
-Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit \CodeStyle{delete} wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Werden Variablen oder Objekte \OviIndex{dynamisch erzeugt} (Was bei Objekten sehr oft der Fall ist), müssen sie vom Programmierer selbst bei Nichtgebrauch mit \CodeStyle{delete} wieder gelöscht werden (Im Gegensatz zu Java). Werden die Objekte nicht gelöscht, verbleiben sie im Speicher und belegen so Resourcen. Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standardlibrary umgangen werden (Siehe Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 \begin{CCode}
 
   #include <memory>  // definiton von unique_ptr
@@ -4538,7 +4549,7 @@ A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
 \end{CCode}
 
 Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht \index{Vereinheitlichte Initialisierung} \index{Initialisierung, vereinheitlicht}(Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
-der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \autoref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
+der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \myref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
 
  
 Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
@@ -4546,7 +4557,7 @@ Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführ
 Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
 
 Wenn ein passender std::initializer\_list<int> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
-(Siehe auch Kapitel \autoref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
+(Siehe auch Kapitel \myref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
 
 \begin{CCode}
 class A {. // Is an Aggregate
@@ -4965,7 +4976,7 @@ class ExtendedClass : public MyClass, public AnotherClass{  // Mehrfachvererbung
 Mehrfachvererbung sollte soweit wie möglich vermieden werden, da sie oft Probleme verursacht. Speziell wenn von beiden Seiten Attribute geerbt werden (Wenn z.B. zwei
 Attribute den selben Namen besitzen ist ohne Scoperesolution nie klar, welches gemeint ist). Wenn nur eine Basisklasse Attribute aufweist, und alle anderen Basisklassen nur virtuelle Methoden besitzen entspricht dies im Prinzip den \OviIndex{Interfaces} in Java und kann in dieser Form zur Implementation von \OviIndex{Schnittstellen} eingesetzt werden. 
 
-In Bild \autoref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu sehen.
+In Bild \myref{fig:Mehrfachvererbung} ist eine problematische Mehrfachvererbung zu sehen.
 
 
 
@@ -5451,7 +5462,7 @@ catch (DivideByZerroErrorClass &e) {
 
 Sämtliche Objekte, deren Gültigkeitsbereich während der Suche nach dem passenden Handler verlassen wird, werden vom Compiler automatisch gelöscht, genau so wie wenn der Bereich auf normalem Wege verlassen worden wäre. Dadurch ist gewährleistet, dass für automatisch (statisch) erzeugte Objekte keine Resourcenlecks entstehen. Für dynamisch erzeugte Objekte (\CodeStyle{new}) ist der Benutzer hingegen selbst zuständig (Durch entsprechende \CodeStyle{catch throw} Anweisungen).
 
-Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \autoref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Dieses Problem kann durch den Einsatz von Smart/Unique/Shared Pointern aus der Standard-Library umgangen werden (Siehe Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
 Falls in einer Funktion Resourcen alloziert wurden (Z.B. mit \CodeStyle{new}), muss der Programmierer selbst für deren Freigabe im Fehlerfall sorgen (Oder Smart/Unique/Shared Pointer nutzen). Er muss unter Umständen alle Exceptions auffangen, und in der Handlerroutine die in dieser Funktion allozierten Ressourcen wieder freigeben. Wenn die Exception in diesem Handler nicht behandelt werden kann, wird sie mit \CodeStyle{throw()} einfach erneut geworfen:
 
@@ -6942,7 +6953,7 @@ Output:
 <hallohallo>
 \end{ConsoleOutput}
 
-Ein weiters Beispiel für den Sonderfall benutzerdefinierter Literale mit templates siehe \autoref{BenutzerdefinierteLiteraleAsTemplates}
+Ein weiters Beispiel für den Sonderfall benutzerdefinierter Literale mit templates siehe \myref{BenutzerdefinierteLiteraleAsTemplates}
 
 \subsection{Fold Expressions (Seit \CppVers{17})}
 \label{subsect:FoldExpressions}
@@ -7434,7 +7445,7 @@ String gelesen, oder in einen String geschrieben wird:
 
 \end{CCode}
 \subsection{Allokatoren}
-Strings können wie alle Container mit \OviIndex{Allokatoren} (Siehe \autoref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocator verwendet, welcher einfach new und delete verwendet.  
+Strings können wie alle Container mit \OviIndex{Allokatoren} (Siehe \myref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocator verwendet, welcher einfach new und delete verwendet.  
 
 
 \section{Resourcenverwaltung mit Unique Pointer und Shared Pointer}  \label{sec:StdSmartpointer}
@@ -8614,7 +8625,7 @@ Hot  Cold  <unknown>
 ***Cold***
 \end{ConsoleOutput} 
 
-Unter \autoref{sec:ComplexFormatter} findet sich ein umfangreicheres Beispiel.
+Unter \myref{sec:ComplexFormatter} findet sich ein umfangreicheres Beispiel.
 
 \subsection{Kombinierte Ein- und Ausgabe in \Cpp}
 Die Klasse iostream kombiniert die Möglichkeiten eines istream mit der eines ostreams, Sie dient als Abstraktion für alle konkret möglichen Ein/Ausgabeströme. In ihr werden alle wesentlichen Funktionen zum sequenziellen Schreib oder Lesezugriff definiert. Man kann einzelne Bytes, Zeichen, Werte, Texte oder Blöcke von Byte lesen oder schreiben. es werden alle Methoden von istream und ostream unterstützt.
@@ -9248,13 +9259,13 @@ void main()
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
 \label{section:StandardSTL}
 Die \OviIndex{STL} (\OviIndex{Standard Template Library}) war eine der ersten Anwendungen, die umfassend von Templates gebrauch machte, und zudem die Erweiterung und Verbesserung der Templatesyntax zur Folge hatte. Mittlerweile ist die STL in die \OviIndex{\Cpp - Standardbibliothek}
-integriert worden. In diesem Kapitel wird vorallem auf die aus der STL übernommenen Komponenten der \Cpp - Standardbibliothek eingegangen. Mit \CppVers{20} sind Ranges und Views (Siehe \autoref{subsect:Ranges}) dazugekommen.
+integriert worden. In diesem Kapitel wird vorallem auf die aus der STL übernommenen Komponenten der \Cpp - Standardbibliothek eingegangen. Mit \CppVers{20} sind Ranges und Views (Siehe \myref{subsect:Ranges}) dazugekommen.
 
 Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implementation, sie stellt universelle Templates für \OviIndex{Container}, \OviIndex{Iteratoren} und \OviIndex{Algorithmen} zur Verfügung.
 
 \OviIndex{Container} sind eine Art universelle Behälter für Daten. Dazu gehören Listen, Vektoren und Mengen. Bei den Containern ist nicht vorgeschrieben wie sie implementiert sind, sondern nur welche Eigenschaften sie besitzen müssen. Ein Vektor muss z.B. effizienten wahlfreien (direkten) Zugriff auf seine Elemente erlauben, eine Liste hingegen muss effizientes Einfügen und Entfernen von Objekten ermöglichen. Eine Map wiederum ordnet zwei Elemente einander zu. Dabei dient eines als Schlüssel und das andere als Wert. Mit einem Schlüssel kann man jederzeit den dazugehörigen Wert aus der Map holen. Eine Map ist somit ein assoziativer Container und kann als kleine Datenbank betrachtet werden.
 
-\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende (genauer: Hinter das Ende) einer Sequenz). Für den einfacheren Umgang mit Sequenzen gibt es seit \CppVers{20} Ranges und Views (Siehe \autoref{subsect:Ranges}). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
+\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende (genauer: Hinter das Ende) einer Sequenz). Für den einfacheren Umgang mit Sequenzen gibt es seit \CppVers{20} Ranges und Views (Siehe \myref{subsect:Ranges}). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
 
 
 \OviIndex{Algorithmen} wiederum können auf Sequenzen und Container angewendet werden. Es gibt unter anderem folgende Algorithmen: Suchen, Sortieren, Doppelte oder mehrfache Einträge entfernen, Zufällig Mischen, Suchen und entfernen, Eine Operation auf alle Elemente anwenden, Alle Elemente zählen die eine Bedingung erfüllen, ...
@@ -9355,13 +9366,13 @@ Bei \OviIndex{ungeordneten assoziativen Containern} sind die Elemente über Schlü
 Mit den \OviIndex{Container Adapter} \index{Adapter} können Container mit einer spezifischen Schnittstelle versehen werden. Der  Container muss dabei jeweils adapterspezifische Bedingungen erfüllen (Eine Map z. B. kann nie ein Stack sein). Dazu gehören unter anderem stack, queue und Priority\_queue.
 
 \subsubsection{Allokatoren}
-Alle Container können mit \OviIndex{Allokatoren} (Siehe auch \autoref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
+Alle Container können mit \OviIndex{Allokatoren} (Siehe auch \myref{sect:Allokatoren}) parametrisiert werden. Mit einem Allokator kann eine Benutzeerdefinierte Speicherverwaltung definiert werden, welche vom Container für seine Speicherreservierungen verwendet wird. Wenn nichts anderes angegeben wird, wird der Defaultallocaator verwendet, welcher einfach new und delete verwendet.  
 
 
 
 Nachfolgend eine kleine Auswahl vorhandener Container. 
 \subsubsection{Kurzübersicht zu Container array<> aus der \Cpp - Standardbibliothek}
-\OviIndex{std::Array} \index{Array} funktioniert im Prinzip gleich wie ein Vektor (siehe \autoref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
+\OviIndex{std::Array} \index{Array} funktioniert im Prinzip gleich wie ein Vektor (siehe \myref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
 Die Grösseninformation ist Teil des Typs und geht nicht verloren. Indizierter Zugriff ist möglich.
 \begin{CCode}
 #include <array>
@@ -9688,10 +9699,10 @@ Lässt den darunterliegenden Container als priorisierte Queue nutzen, d.h. Elemen
 
 
 \subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
- (Seit \CppVers{17} gibt es für die meisten Algorithmen mit execution policies überladene Varianten, welche für parallele Ausführung auf mehreren Prozessorkernen und/oder vektorisierte Ausführung optimiert sind. Siehe \autoref{subsect:ExecutionPolicies})
+ (Seit \CppVers{17} gibt es für die meisten Algorithmen mit execution policies überladene Varianten, welche für parallele Ausführung auf mehreren Prozessorkernen und/oder vektorisierte Ausführung optimiert sind. Siehe \myref{subsect:ExecutionPolicies})
  
 \subsubsection{for\_each()}
-Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer, eine Lambdafunktion (Siehe \autoref{subsec:LambdaFunctions}) oder ein Objekt mit überladenem \CodeStyle{()} operator.
+Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer, eine Lambdafunktion (Siehe \myref{subsec:LambdaFunctions}) oder ein Objekt mit überladenem \CodeStyle{()} operator.
 Die Funktion oder der \CodeStyle{operator()} wird für jedes Element in der Sequenz aufgerufen, und das betroffene Element als Parameter der Funktion oder dem Operator übergeben. Soll eine Memberfunktion aufgerufen werden, muss eine Hilfsfunktion oder ein Hilfsobjekt erzeugt werden, oder das Template \CodeStyle{mem_fn()}\index{mem\_fn()} aus der Standardlibrary benutzt werden (Vor \CppVers{11} \CodeStyle{mem_fun()}\index{mem\_fun()}).
 \begin{CCode}
 
@@ -10805,7 +10816,7 @@ x.operator=(t2);
 Nebst den beiden Temporaries \CodeStyle{t1} und \CodeStyle{t2} werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
 
 Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
-Mit den in \CppVers{11} eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \autoref{subsec:RValueRefs}).
+Mit den in \CppVers{11} eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \myref{subsec:RValueRefs}).
 
 \section{Interrupt und Multithreading}
 
@@ -11902,32 +11913,32 @@ Im Jahr 1985 Erste von Bjarne Stroustrup, dem Erfinder von C++ veröffentlichte V
 \item {RValue Referenzen und Move Konstruktor / Move Zuweisung},
 %\subsubsection{RValue Referenzen und Move Konstruktor / Move Zuweisung}
 %\label{subsec:RValueRefs}
-Siehe \autoref{subsec:RValueRefs}
+Siehe \myref{subsec:RValueRefs}
 
 
 \item{constexpr},
 %\label{subsubsect:constexpr}
-Siehe \autoref{subsubsect:constexpr}
+Siehe \myref{subsubsect:constexpr}
 \item{extern Templates},
 %\label{subsubsect:externTemplates}
-Siehe \autoref{subsubsect:externTemplates}
+Siehe \myref{subsubsect:externTemplates}
 
 \item{Initialisiererlisten},
 %\label{subsubsect:Initialisiererlisten}
-Siehe \autoref{subsubsect:Initialisiererlisten}
+Siehe \myref{subsubsect:Initialisiererlisten}
 %\index{Initialisiererlisten}
 
 \item{Vereinheitlichte Initialisierung},
 %\label{subsubsect:VereinheitlichteInitialisierung}
-Siehe \autoref{subsubsect:VereinheitlichteInitialisierung}
+Siehe \myref{subsubsect:VereinheitlichteInitialisierung}
 
 \item{Automatische Typerkennung},
 %\label{subsubsect:AutomatischeTyperkennung}
-Siehe \autoref{subsubsect:AutomatischeTyperkennung}
+Siehe \myref{subsubsect:AutomatischeTyperkennung}
 
 \item{Automatische For-Schlaufe},
 %\label{subsec:AutomaticForLoop}
-\autoref{subsec:AutomaticForLoop}
+\myref{subsec:AutomaticForLoop}
 
 %Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
 %
@@ -11946,7 +11957,7 @@ Siehe \autoref{subsubsect:AutomatischeTyperkennung}
 
 \item{Anonyme Funktionen (Lambda Funktionen)},
 %\label{subsec:LambdaFunctions}
-Siehe \autoref{subsec:LambdaFunctions}
+Siehe \myref{subsec:LambdaFunctions}
 %\OviIndex{Lambda Funktionen} sind Funktionen, welche direkt anstelle eines Funktionspointers definiert und übergeben werden. Hilfreich bei Vergleichsfunktionen und ähnlichem.
 %
 %Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
@@ -11995,7 +12006,7 @@ Siehe \autoref{subsec:LambdaFunctions}
 
 \item{Alternative Funktionsdefinition},
 %\label{subsubsect:Alternative Funktionsdefinition}
-Siehe \autoref{subsubsect:Alternative Funktionsdefinition}
+Siehe \myref{subsubsect:Alternative Funktionsdefinition}
 
 %Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
 %
@@ -12025,19 +12036,19 @@ Siehe \autoref{subsubsect:Alternative Funktionsdefinition}
 
 \item{Vereinfachte Objektkonstruktion},
 %\label{subsubsect:VereinfachteObjektkonstruktion}
-Siehe \autoref{subsubsect:VereinfachteObjektkonstruktion}
+Siehe \myref{subsubsect:VereinfachteObjektkonstruktion}
 
 \item{Kontrolliertes Überschreiben von Funktionen},
 %\label{subsubsect:KontrolliertesUeberschreiben}
-Siehe \autoref{subsubsect:KontrolliertesUeberschreiben}
+Siehe \myref{subsubsect:KontrolliertesUeberschreiben}
 
 \item{Nullpointer},
 %\label{subsubsect:nullptr}
-Siehe \autoref{subsubsect:nullptr}
+Siehe \myref{subsubsect:nullptr}
 
 \item{Typsicherere Enummerationen},
 %\label{subsubsect:TypsichererEnum}
-Siehe \autoref{subsubsect:TypsichererEnum}
+Siehe \myref{subsubsect:TypsichererEnum}
 %Neu gibt es einen \index{typsicherer Enum}\index{typsicherer Aufzählungstyp}typsicheren Aufzählungstypen. Dieser kann nicht mehr mit andern Datentypen wie int, aber auch nicht mit anderen Aufzählungstypen gemischt werden. Dafür kann der unterliegende Datentyp (Speicherbedarf fuer einen Enum-Wert) angegeben werden .
 %
 %Zudem sind die einzelnen Enumwerte im Namensbereich des jeweiligen Enums, es können also
@@ -12068,42 +12079,42 @@ Siehe \autoref{subsubsect:TypsichererEnum}
 %
 \item{Template-Verschachtelung $>>$},
 %\label{subsubsect:TemplateVerschatelung}
-Siehe \autoref{subsubsect:TemplateVerschatelung}
+Siehe \myref{subsubsect:TemplateVerschatelung}
 %Bei \OviIndex{verschachtelten Templates} wird $>>$ als schliessendes Klammerpaar zweier verschachtelter Templates angesehen (Solange dies Sinn ergibt), und nicht mehr als Schiebeoperator. Sollte das nicht erwünscht sein, müssen Klammern gesetzt werden.
 
 \item{Explizite Umwandlungsoperatoren},
 %\label{subsubsect:ExpliziteUmwandlungsoperatoren}
-Siehe \autoref{subsubsect:ExpliziteUmwandlungsoperatoren}
+Siehe \myref{subsubsect:ExpliziteUmwandlungsoperatoren}
 %Neu können neben Konstruktoren auch Umwandlungsoperatoren mit dem Schlüsselwort 'explizit' versehen werden. Damit werden diese vom Compiler nicht mehr automatisch aufgerufen, sondern müssen explizit vom Programmierer aufgerufen werden. (Die Umwandlung nach bool in Bedingungen bei Kontrollstrukturen und für Argumente fuer Logische Operatoren gilt als expliziter Einsatz)
 
 \item{Template mit variabler Argumentenanzahl},
 %\label{subsubsect:TemplateVarArg}
-Siehe \autoref{subsubsect:TemplateVarArg}
+Siehe \myref{subsubsect:TemplateVarArg}
 
 
 \item{Erweiterte Stringliterale},
 %\label{subsubsect:erweiterteStringliterale}
 Neu können auch \OviIndex{UTF-Codierte Stringliterale} definiert werden, dazu werden die Prefixes u8, u und U verwendet.
-(Siehe \autoref{subsubsect:erweiterteStringliterale})
+(Siehe \myref{subsubsect:erweiterteStringliterale})
 
 
 \item{Benutzerdefinierte Literale},
 %\index{Benutzerdefinierte Literale}
 %\label{subsubsect:BenutzerdefinierteLiterale}
-Siehe \autoref{subsubsect:BenutzerdefinierteLiterale}.
+Siehe \myref{subsubsect:BenutzerdefinierteLiterale}.
 
 \item{Explizites Erlauben oder verbieten automatisch erzeugter Memberfunktionen},
-Siehe \autoref{subsubsect:ControlAutoMember}
+Siehe \myref{subsubsect:ControlAutoMember}
    \item Geänderte Definiton von POD (plain old data)
-   \item Template Alias (Siehe \autoref{subsubsect:TemplateAlias}
+   \item Template Alias (Siehe \myref{subsubsect:TemplateAlias}
    \item Gelockerte Restriktionen bei Unions
    \item Neuer Datentyp \CodeStyle{long long int}
-   \item Static Assertions (Siehe \autoref{subsubsect:assertions})
+   \item Static Assertions (Siehe \myref{subsubsect:assertions})
    \item \CodeStyle{sizeof} auch bei Klassenmembern ohne ein effektives Objekt möglich
-   \item Alignementkontrolle bei Objekten (Siehe \autoref{subsect:Alignementcontroll})
+   \item Alignementkontrolle bei Objekten (Siehe \myref{subsect:Alignementcontroll})
    \item Einfacher Support für Garbagecollection (Wieder entfernt seit \CppVers{23})
-   \item Attribute (Siehe \autoref{subsubsect:Attribute})
-   \item Unterstützung von Multithreading (Siehe \autoref{sect:Multithreading})
+   \item Attribute (Siehe \myref{subsubsect:Attribute})
+   \item Unterstützung von Multithreading (Siehe \myref{sect:Multithreading})
 	 \item Operator \CodeStyle{noexcept()} zum prüfen ob ein Ausdruck eine Exception werfen könnte
    \item Standardlibrary um Tupletypen erweitert
    \item Standardlibrary um Hashtabellen erweitert
@@ -12139,16 +12150,16 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 
 \subsection{Neuerungen}
 \begin{itemize}
-	 \item Erweiterte Rückgabetypdeduktion bei Funktionen (Siehe \autoref{subsubsect:ReturnTypeDeduction})
+	 \item Erweiterte Rückgabetypdeduktion bei Funktionen (Siehe \myref{subsubsect:ReturnTypeDeduction})
 	 \item Alternative Typendeduktion bei Deklarationen
-   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. (Siehe \autoref{subsubsect:constexpr})
-   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden. (Siehe \autoref{subsect:Variablentemplates}
-   \item Aggregate Member initialisierung (Siehe \autoref{subsect:AgregatInitialisierung}
-   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001) (Siehe \autoref{sect:Literale}
-   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000 (Siehe \autoref{sect:Literale}
-   \item Generische Lambdafunktionen  (Siehe \autoref{subsection:GenerischeLambdafunktionen})
-   \item Lambda capture expressions (Siehe \autoref{subsec:LambdaFunctions})
-   \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen. (Siehe \autoref{subsubsect:Attribute})
+   \item Gelockerte Einschränkungen für Constexpressions, neu darf alles ausser \CodeStyle{try, goto, asm, label} und \CodeStyle{static} oder uninitialisierte Variablen benutzt werden. (Siehe \myref{subsubsect:constexpr})
+   \item Neben Klassen und Funktionen können neu auch Variablen als Templates definiert werden. (Siehe \myref{subsect:Variablentemplates}
+   \item Aggregate Member initialisierung (Siehe \myref{subsect:AgregatInitialisierung}
+   \item Binärliterale mit dem Prefix 0b  (z.B. i = 0b1001001) (Siehe \myref{sect:Literale}
+   \item Zifferngruppierung mit \textquotesingle{}: Value = 1\textquotesingle 000\textquotesingle 000\textquotesingle 000 (Siehe \myref{sect:Literale}
+   \item Generische Lambdafunktionen  (Siehe \myref{subsection:GenerischeLambdafunktionen})
+   \item Lambda capture expressions (Siehe \myref{subsec:LambdaFunctions})
+   \item Attribute\CodeStyle{ [[deprecated]]} zum Markieren von obsoleten Schnittstellenelementen. (Siehe \myref{subsubsect:Attribute})
    \item Kleinere Erweiterungen der Standardlibrary
 	
 \end{itemize}
@@ -12157,7 +12168,7 @@ Im Dezember 2014 wurde ein leicht überarbeiteter \Cpp Standard verabschiedet. Di
 \index{C++ 17}
 Im Dezember 2017 publiziert.
 \begin{itemize}                                                                    
-    \item Addition of a default text message for \CodeStyle{static_assert} (Siehe \autoref{subsubsect:assertions})
+    \item Addition of a default text message for \CodeStyle{static_assert} (Siehe \myref{subsubsect:assertions})
 
     \item Addition of \CodeStyle{std::string_view}, a non-owning reference to a character sequence or string-slice, which is read-only
 
@@ -12169,20 +12180,20 @@ Im Dezember 2017 publiziert.
 
     \item \CodeStyle{std::uncaught_exceptions}, as a replacement of \CodeStyle{std::uncaught_exception}
 
-    \item Nested namespace definition (Siehe \autoref{chap:Namespaces}
+    \item Nested namespace definition (Siehe \myref{chap:Namespaces}
 
     \item Attributes for namespaces and enumerators
 		
-		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}  (Siehe \autoref{subsubsect:Attribute})
+		\item New standard attributes \CodeStyle{[[fallthrough]]}, \CodeStyle{[[maybe\_unused]]} and \CodeStyle{[[nodiscard]]}  (Siehe \myref{subsubsect:Attribute})
 
 
-    \item UTF-8 character literals (Siehe \autoref{sect:Literale}
+    \item UTF-8 character literals (Siehe \myref{sect:Literale}
 		
-	\item Hexadecimal floating-point literals (Siehe \autoref{sect:Literale}
+	\item Hexadecimal floating-point literals (Siehe \myref{sect:Literale}
 
     \item Constant evaluation for all non-type template arguments
 
-    \item Folding expressions (Siehe \autoref{subsect:FoldExpressions})
+    \item Folding expressions (Siehe \myref{subsect:FoldExpressions})
 
     \item New insertion functions for \CodeStyle{std::map} and \CodeStyle{std::unordered_map}
 
@@ -12192,32 +12203,32 @@ Im Dezember 2017 publiziert.
 
     \item Removal of some deprecated types and functions like \CodeStyle{std::auto_ptr}, \CodeStyle{std::random_shuffle} or old function adaptors
 
-    \item A file system library based on \CodeStyle{boost::filesystem} (Siehe \autoref{subsect:Filesystemlibrary})
+    \item A file system library based on \CodeStyle{boost::filesystem} (Siehe \myref{subsect:Filesystemlibrary})
 
-    \item Parallel versions of STL algorithms (Siehe \autoref{subsect:ExecutionPolicies})
+    \item Parallel versions of STL algorithms (Siehe \myref{subsect:ExecutionPolicies})
 
     \item Additional mathematical special functions
 
-    \item Most of Library Fundamentals TS I (e.g. \CodeStyle{std::optional}, \CodeStyle{std::any}, siehe \autoref{sect:VariantOptionalAny})
+    \item Most of Library Fundamentals TS I (e.g. \CodeStyle{std::optional}, \CodeStyle{std::any}, siehe \myref{sect:VariantOptionalAny})
 
-    \item \CodeStyle{std::variant}, a type-safe union container (Siehe \autoref{sect:VariantOptionalAny})
+    \item \CodeStyle{std::variant}, a type-safe union container (Siehe \myref{sect:VariantOptionalAny})
 
-    \item A compile-time static if with the form \CodeStyle{if constexpr(expression)}  (Siehe \autoref{subsubsect:constexprif})
+    \item A compile-time static if with the form \CodeStyle{if constexpr(expression)}  (Siehe \myref{subsubsect:constexprif})
 
-    \item Structured bindings, allowing \CodeStyle{auto [a, b] = getTwoReturnValues();} (Siehe \autoref{subsubsect:StructuredBindings})
+    \item Structured bindings, allowing \CodeStyle{auto [a, b] = getTwoReturnValues();} (Siehe \myref{subsubsect:StructuredBindings})
 
-    \item Initializers in \CodeStyle{if} and \CodeStyle{switch} statements (\CodeStyle{if (init; condition)} and \CodeStyle{switch (init; condition)})  (Siehe \autoref{subsubsect:ifoptionalinitialisierer} und \autoref{subsubsect:switchoptionalinitialisierer})
+    \item Initializers in \CodeStyle{if} and \CodeStyle{switch} statements (\CodeStyle{if (init; condition)} and \CodeStyle{switch (init; condition)})  (Siehe \myref{subsubsect:ifoptionalinitialisierer} und \myref{subsubsect:switchoptionalinitialisierer})
 
     \item Guaranteed copy elision by compilers in some cases
 
-    \item Some extensions on aligned memory allocation \CodeStyle{new} und \CodeStyle{delete} können ein zusätzliches Argument für erweiterte Alignement-Anforderungen erhalten (Siehe auch \autoref{subsect:Alignementcontroll})
+    \item Some extensions on aligned memory allocation \CodeStyle{new} und \CodeStyle{delete} können ein zusätzliches Argument für erweiterte Alignement-Anforderungen erhalten (Siehe auch \myref{subsect:Alignementcontroll})
 
-    \item Template deduction of constructors, allowing \CodeStyle{pair(5.0, false)} instead of \CodeStyle{pair<double,bool>(5.0, false)} (Siehe \autoref{subsection:AutomatischeTemplateparametererkennung})
+    \item Template deduction of constructors, allowing \CodeStyle{pair(5.0, false)} instead of \CodeStyle{pair<double,bool>(5.0, false)} (Siehe \myref{subsection:AutomatischeTemplateparametererkennung})
 
-    \item Inline variables, which allows the definition of variables in header files (Siehe \autoref{subsect:InlineVariablen}
+    \item Inline variables, which allows the definition of variables in header files (Siehe \myref{subsect:InlineVariablen}
     
     
-    \item \CodeStyle{template <auto K>} für Konstanten (Siehe \autoref{subsection:ParametrisierungvonTemplatesmitKonstanten})
+    \item \CodeStyle{template <auto K>} für Konstanten (Siehe \myref{subsection:ParametrisierungvonTemplatesmitKonstanten})
     \item A weaker version of fixed order-of-evaluation for expressions 
     \item Forward progress guarantees (FPG) (also, FPGs for parallel algorithms)
     
@@ -12234,38 +12245,38 @@ Im Dezember 2017 publiziert.
 Seit Dezember 2020 verabschiedet.
  \begin{itemize}
     \item Feature test macros
-    \item 3-way comparison \CodeStyle{operator <=>} (Siehe \autoref{subsect:SpaceshipOperator}), rewritting of relational operators and \CodeStyle{operator==() = default} (Siehe \autoref{subsubsect:DefaultVergleiche})
-    \item designated initializers (Siehe \autoref{subsect:AgregatInitialisierung}
-    \item init-statements and initialisers in range-for (Siehe \autoref{subsubsect:foroptionalinitialisierer}
-    \item \CodeStyle{char8_t} (Siehe \autoref{subsubsect:UTF8CharType})
-    \item Attribute \CodeStyle{[[no_unique_address]]} (Siehe \autoref{subsubsect:Attribute})
-    \item Attribute \CodeStyle{[[likely]]} (Siehe \autoref{subsubsect:Attribute})
-    \item Attribute \CodeStyle{[[unlikely]]} (Siehe \autoref{subsubsect:Attribute})
+    \item 3-way comparison \CodeStyle{operator <=>} (Siehe \myref{subsect:SpaceshipOperator}), rewritting of relational operators and \CodeStyle{operator==() = default} (Siehe \myref{subsubsect:DefaultVergleiche})
+    \item designated initializers (Siehe \myref{subsect:AgregatInitialisierung}
+    \item init-statements and initialisers in range-for (Siehe \myref{subsubsect:foroptionalinitialisierer}
+    \item \CodeStyle{char8_t} (Siehe \myref{subsubsect:UTF8CharType})
+    \item Attribute \CodeStyle{[[no_unique_address]]} (Siehe \myref{subsubsect:Attribute})
+    \item Attribute \CodeStyle{[[likely]]} (Siehe \myref{subsubsect:Attribute})
+    \item Attribute \CodeStyle{[[unlikely]]} (Siehe \myref{subsubsect:Attribute})
     \item pack-expansions in lambda captures
    \item  removed the requirement to use typename to disambiguate types in many contexts
-    \item \CodeStyle{consteval}, \CodeStyle{constinit} (Siehe \autoref{subsubsect:consteval} und \autoref{subsubsect:constinit})
-    \item further relaxed constexpr (Siehe \autoref{subsubsect:constexpr})
+    \item \CodeStyle{consteval}, \CodeStyle{constinit} (Siehe \myref{subsubsect:consteval} und \myref{subsubsect:constinit})
+    \item further relaxed constexpr (Siehe \myref{subsubsect:constexpr})
     \item signed integers are 2's complement
-   \item  aggregate initialization using parentheses (Siehe \autoref{subsect:AgregatInitialisierung}
-    \item Coroutines (Siehe \autoref{subsec:CoRoutinen})
-    \item Modules (Siehe \autoref{subsubsect:Modules})
-    \item Constraints and concepts (Siehe \autoref{sect:Konzepts})
-    \item abbreviated function templates (Siehe \autoref{subsect:VereinfachteFunktionstemplateDefinition})
+   \item  aggregate initialization using parentheses (Siehe \myref{subsect:AgregatInitialisierung}
+    \item Coroutines (Siehe \myref{subsec:CoRoutinen})
+    \item Modules (Siehe \myref{subsubsect:Modules})
+    \item Constraints and concepts (Siehe \myref{sect:Konzepts})
+    \item abbreviated function templates (Siehe \myref{subsect:VereinfachteFunktionstemplateDefinition})
 
     \item DR: array new can deduce array size 
 \end{itemize}
 \begin{itemize}
-    \item  Formatting library (Ersatz für printf(), siehe \autoref{subsubsect:formated}))
-    \item Calendar and Time Zone library (Siehe \autoref{subsect:DateCalender}
+    \item  Formatting library (Ersatz für printf(), siehe \myref{subsubsect:formated}))
+    \item Calendar and Time Zone library (Siehe \myref{subsect:DateCalender}
     \item \CodeStyle{std::source_location}
     \item \CodeStyle{std::span}
     \item \CodeStyle{std::endian}
-    \item array support for \CodeStyle{std::make_shared} (Siehe \autoref{sec:StdSmartpointer})
+    \item array support for \CodeStyle{std::make_shared} (Siehe \myref{sec:StdSmartpointer})
    \item  \CodeStyle{std::remove_cvref}
     \item \CodeStyle{std::to_address}
     \item floating point and shared\_ptr atomics
-    \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore} (Siehe \autoref{subsect:Synchronisationsmittel})
-    \item \CodeStyle{std::jthread} and thread cancellation classes (Siehe \autoref{subsect:jthread})
+    \item \CodeStyle{std::barrier}, \CodeStyle{std::latch}, and \CodeStyle{std::counting_semaphore} (Siehe \myref{subsect:Synchronisationsmittel})
+    \item \CodeStyle{std::jthread} and thread cancellation classes (Siehe \myref{subsect:jthread})
     \item <version> Header mit Versionsinformation zur benutzten Standardlibrary
     \item \CodeStyle{std::osyncstream}
     \item \CodeStyle{std::u8string} and other \CodeStyle{char8_t} uses
@@ -12277,12 +12288,12 @@ Seit Dezember 2020 verabschiedet.
     \item \CodeStyle{std::make_obj_using_allocator} etc
     \item \CodeStyle{std::make_shared_for_overwrite}/\CodeStyle{std::make_unique_for_overwrite} z.B. zum Allozieren grosser Arrays ohne diese zu initialisieren, effizienter falls Arrays später gefüllt werden.
     \item heterogeneous lookup in unordered associative containers
-    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument (Siehe \autoref{sect:Allokatoren})
+    \item \CodeStyle{std::polymoprhic_allocator} with additional member functions and \CodeStyle{std::byte} as its default template argument (Siehe \myref{sect:Allokatoren})
     \item \CodeStyle{std::execution::unseq}
     \item \CodeStyle{std::midpoint and std::lerp}
     \item \CodeStyle{std::ssize}
     \item \CodeStyle{std::is_bounded_array}
-    \item Ranges (Siehe \autoref{subsect:Ranges})
+    \item Ranges (Siehe \myref{subsect:Ranges})
 
     \item uniform container erasure (\CodeStyle{std::erase}/\CodeStyle{std::erase_if})
     \item Mathematical constants 
@@ -12292,14 +12303,14 @@ Seit Dezember 2020 verabschiedet.
 
 Neue Schlüsselworte:
 \begin{itemize}
-    \item  \CodeStyle{concept}    (Konzepte, siehe \autoref{sect:Konzepts})
-    \item  \CodeStyle{constinit}  (Siehe \autoref{subsubsect:constinit})
-    \item  \CodeStyle{consteval}  (Siehe \autoref{subsubsect:consteval})
-    \item  \CodeStyle{co_await}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
-    \item  \CodeStyle{co_return}  (Coroutinen, siehe \autoref{subsec:CoRoutinen})
-    \item  \CodeStyle{co_yield}   (Coroutinen, siehe \autoref{subsec:CoRoutinen})
-    \item  \CodeStyle{requires}   (Konzepte, siehe \autoref{sect:Konzepts}) 
-    \item  \CodeStyle{char8_t}    (Siehe \autoref{subsubsect:UTF8CharType})
+    \item  \CodeStyle{concept}    (Konzepte, siehe \myref{sect:Konzepts})
+    \item  \CodeStyle{constinit}  (Siehe \myref{subsubsect:constinit})
+    \item  \CodeStyle{consteval}  (Siehe \myref{subsubsect:consteval})
+    \item  \CodeStyle{co_await}   (Coroutinen, siehe \myref{subsec:CoRoutinen})
+    \item  \CodeStyle{co_return}  (Coroutinen, siehe \myref{subsec:CoRoutinen})
+    \item  \CodeStyle{co_yield}   (Coroutinen, siehe \myref{subsec:CoRoutinen})
+    \item  \CodeStyle{requires}   (Konzepte, siehe \myref{sect:Konzepts}) 
+    \item  \CodeStyle{char8_t}    (Siehe \myref{subsubsect:UTF8CharType})
 \end{itemize}
 
 \section{\CppVers{23}}
@@ -12320,7 +12331,7 @@ Sprache
 \begin{itemize}
 \item Literal suffix 'z' for (signed) size\_t (z. B. \CodeStyle{size\_t l = 100z;})
 \item Make () more optional for lambdas 
-\item \CodeStyle{if consteval} (Siehe \autoref{subsubsect:constevalif})
+\item \CodeStyle{if consteval} (Siehe \myref{subsubsect:constevalif})
 \item Removing Garbage Collection Support 
 \item DR: \Cpp Identifier Syntax using Unicode Standard Annex 31 
 \item DR: Allow Duplicate Attributes 
@@ -12329,31 +12340,31 @@ Sprache
 \item Make declaration order layout mandated 
 \item Removing mixed wide string literal concatenation 
 \item Deducing \CodeStyle{this} 
-\item auto(x) and auto\{x\} (Siehe \autoref{subsubsect:autocast})
+\item auto(x) and auto\{x\} (Siehe \myref{subsubsect:autocast})
 \item Change scope of lambda trailing-return-type 
 \item \CodeStyle{\#elifdef} and \CodeStyle{\#elifndef}, kurzform für \CodeStyle{ \#else \#ifdef}
-\item Non-literal variables (and labels and gotos) in constexpr functions (Siehe \autoref{subsubsect:constexpr})
+\item Non-literal variables (and labels and gotos) in constexpr functions (Siehe \myref{subsubsect:constexpr})
 \item Consistent character literal encoding 
 \item Character sets and encodings 
 \item Extend init-statement to allow alias-declaration 
-\item Multidimensional subscript operator (Siehe \autoref{subsubsect:MehrdimensionalIndexoperator})
+\item Multidimensional subscript operator (Siehe \myref{subsubsect:MehrdimensionalIndexoperator})
 \item Attributes on lambda expressions 
 \item DR: Missing feature test macros for \CppVers{20} core papers 
 \item \CodeStyle{\#warning}, gibt beim Compilieren eine Warnung aus. 	 		
 \item Remove non-encodable wide character literals and multicharacter wide character literals 			
 \item Labels at the end of compound statements 	 								
-\item Delimited escape sequences like \textbackslash x\{FE2\},  Siehe \autoref{subsubsect:DelimitedEscapeSequences}		
-\item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$),  Siehe \autoref{subsubsect:NamedUnicodeliterals}
-\item Relaxing some constexpr restrictions (Siehe \autoref{subsubsect:constexpr})	
+\item Delimited escape sequences like \textbackslash x\{FE2\},  Siehe \myref{subsubsect:DelimitedEscapeSequences}		
+\item Named universal character escapes (z. B. \textbackslash N\{OHM SIGN\} für $\Omega$),  Siehe \myref{subsubsect:NamedUnicodeliterals}
+\item Relaxing some constexpr restrictions (Siehe \myref{subsubsect:constexpr})	
 \item Simpler implicit move 	
-\item static operator(), static operator[]: [] und () dürfen nun auch (statische) Klassenmethoden sein (Siehe \autoref{sect:UeberladenOperatoren})
+\item static operator(), static operator[]: [] und () dürfen nun auch (statische) Klassenmethoden sein (Siehe \myref{sect:UeberladenOperatoren})
 
 \item Requirements for optional extended floating-point types 	
 \item Class template argument deduction from inherited constructors 
-\item Attribute  \CodeStyle{[[assume]]} 	(Siehe \autoref{subsubsect:Attribute})
+\item Attribute  \CodeStyle{[[assume]]} 	(Siehe \myref{subsubsect:Attribute})
 \item Support for UTF-8 as a portable source file encoding 	
-\item Permitting static constexpr variables in constexpr functions (Siehe \autoref{subsubsect:constexpr})	
-\item Extending the lifetime of temporaries in range-based for loop initializer (Siehe \autoref{subsubsect:foroptionalinitialisierer})
+\item Permitting static constexpr variables in constexpr functions (Siehe \myref{subsubsect:constexpr})	
+\item Extending the lifetime of temporaries in range-based for loop initializer (Siehe \myref{subsubsect:foroptionalinitialisierer})
 \ifshowdetails
 \item DR20: Meaningful exports 
 \item DR20: consteval needs to propagate up 	
@@ -12376,7 +12387,7 @@ Library
 \item std::is\_scoped\_enum 
 \item basic\_string::contains(), basic\_string\_view::contains() 
 \item std::to\_underlying 
-\item Relaxing requirements for time\_point<>::clock (Siehe \autoref{sect:STDChrono})
+\item Relaxing requirements for time\_point<>::clock (Siehe \myref{sect:STDChrono})
 \item DR: std::visit() for classes derived from std::variant 
 \item DR: Conditionally borrowed ranges 
 \item DR: Repairing input range adaptors and std::counted\_iterator 
@@ -12395,21 +12406,21 @@ Library
 
 \ifshowdetails
 
-\item DR: join\_view should join all views of ranges (Siehe \autoref{subsect:Ranges})
-\item DR: view does not require default\_initializable (Siehe \autoref{subsect:Ranges})
-\item DR: Range adaptor objects bind arguments by value (Siehe \autoref{subsect:Ranges})
+\item DR: join\_view should join all views of ranges (Siehe \myref{subsect:Ranges})
+\item DR: view does not require default\_initializable (Siehe \myref{subsect:Ranges})
+\item DR: Range adaptor objects bind arguments by value (Siehe \myref{subsect:Ranges})
 \item DR: constexpr for std::optional and std::variant 
-\item DR: std::format() improvements (Siehe \autoref{subsubsect:formated})
-\item DR: lazy\_split\_view and redesigned split\_view (Siehe \autoref{subsect:Ranges})
+\item DR: std::format() improvements (Siehe \myref{subsubsect:formated})
+\item DR: lazy\_split\_view and redesigned split\_view (Siehe \myref{subsect:Ranges})
 
 \fi
 
-\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform (Siehe \autoref{subsect:Ranges})
+\item zip: views::zip, views::zip\_transform, views::adjacent, and views::adjacent\_transform (Siehe \myref{subsect:Ranges})
 \item Heterogeneous erasure overloads for associative containers 
 \item std::byteswap() 
 \item Printing volatile T* 
 \item basic\_string::resize\_and\_overwrite() 
-\item Monadic operations for std::optional (Siehe \autoref{sect:VariantOptionalAny})
+\item Monadic operations for std::optional (Siehe \myref{sect:VariantOptionalAny})
 
 \item std::move\_only\_function 
 \item Add a conditional noexcept specification to std::exchange 
@@ -12418,51 +12429,51 @@ Library
 
 \ifshowdetails
 
-\item DR: Fix ranges::istream\_view (Siehe \autoref{subsect:Ranges})
-\item DR: Add support for non-const-formattable types to std::format (Siehe \autoref{subsubsect:formated})
+\item DR: Fix ranges::istream\_view (Siehe \myref{subsect:Ranges})
+\item DR: Add support for non-const-formattable types to std::format (Siehe \myref{subsubsect:formated})
 \item DR: What is a view 
 \item DR: fixing locale handling in chrono formatters 
 \item DR: Cleaning up integer-class types 
 
 \fi
 
-\item std::expected (Siehe \autoref{subsubsect:expected})
+\item std::expected (Siehe \myref{subsubsect:expected})
 \item constexpr for <cmath> and <cstdlib> 
 \item std::unreachable() 
 \item Deprecating std::aligned\_storage and std::aligned\_union 
 \item A type trait to detect reference binding to temporary 
 \item constexpr std::unique\_ptr 
-\item ranges::to (Siehe \autoref{subsect:Ranges})
+\item ranges::to (Siehe \myref{subsect:Ranges})
 \item Pipe support for user-defined range adaptors 
-\item ranges::iota, ranges::shift\_left, and ranges::shift\_right (Siehe \autoref{subsect:Ranges})
-\item ranges::join\_with\_view (Siehe \autoref{subsect:Ranges})
-\item ranges::chunk\_view and ranges::slide\_view (Siehe \autoref{subsect:Ranges})
-\item ranges::chunk\_by\_view (Siehe \autoref{subsect:Ranges})
+\item ranges::iota, ranges::shift\_left, and ranges::shift\_right (Siehe \myref{subsect:Ranges})
+\item ranges::join\_with\_view (Siehe \myref{subsect:Ranges})
+\item ranges::chunk\_view and ranges::slide\_view (Siehe \myref{subsect:Ranges})
+\item ranges::chunk\_by\_view (Siehe \myref{subsect:Ranges})
 \item  std::mdspan: a non-owning multidimensional array reference 	
 \item <flat\_map>  	
 \item <flat\_set> 	
 \item ranges::find\_last(), ranges::find\_last\_if(), and ranges::find\_last\_if\_not()  	
 \item Freestanding Library: Easy <utility>, <ranges>, and <iterator> 	 	
-\item views::stride  (Siehe \autoref{subsect:Ranges})	
+\item views::stride  (Siehe \myref{subsect:Ranges})	
 \item Compatibility between std::tuple and tuple-like objects  	
 \item Rectifying constant iterators, sentinels, and ranges 	 	
-\item Formatting Ranges (Siehe \autoref{subsect:Ranges})
+\item Formatting Ranges (Siehe \myref{subsect:Ranges})
 \item Improve default container formatting 	 	
-\item Formatted output library <print>  (Siehe \autoref{subsubsect:printformated})	
+\item Formatted output library <print>  (Siehe \myref{subsubsect:printformated})	
 \item Formatting std::thread::id and std::stacktrace  	
 \item constexpr for integral overloads of std::to\_chars() and std::from\_chars().  	
 \item ranges::contains() and ranges::contains\_subrange()  	
 \item Adding move-only types support for comparison concepts (equality\_comparable, totally\_ordered, three\_way\_comparable)  	
-\item constexpr std::bitset   (Siehe \autoref{sect:Bitset})	
+\item constexpr std::bitset   (Siehe \myref{sect:Bitset})	
 \item basic\_string::substr() \&\& 	 	
 \item views::as\_rvalue  	
-\item Standard Library Modules (Siehe \autoref{sect:Module})
+\item Standard Library Modules (Siehe \myref{sect:Module})
 \item std::forward\_like()  	
-\item Support exclusive mode for std::fstream (Siehe \autoref{subsect:DateiIO})
+\item Support exclusive mode for std::fstream (Siehe \myref{subsect:DateiIO})
 \item views::repeat  	
 \item Relaxing range adaptors to allow for move-only types  	
 \item std::basic\_string\_view range constructor should be explicit  	
-\item std::generator: synchronous coroutine generator for ranges (Siehe \autoref{subsect:Ranges})
+\item std::generator: synchronous coroutine generator for ranges (Siehe \myref{subsect:Ranges})
 \item Add a conditional noexcept specification to std::apply  	
 \item Explicit lifetime management (std::start\_lifetime\_as)  	
 \item Clarify handling of encodings in localized formatting of chrono types  	
@@ -12470,7 +12481,7 @@ Library
 \item Deduction guides update for explicit object parameter call operators  	
 \item Deduction guides update for static operator()  	
 \item Standard names and library support for extended floating-point types  	
-\item Monadic operations for std::expected  (Siehe \autoref{subsubsect:expected})	
+\item Monadic operations for std::expected  (Siehe \myref{subsubsect:expected})	
 \item views::enumerate  	
 \item std::is\_implicit\_lifetime  	
 \item std::common\_reference\_t of std::reference\_wrapper should be a reference type  	
@@ -13932,7 +13943,7 @@ Complex polar in degree
 Code, der sowohl von einem C-Compiler, als auch von einem \Cpp Compiler übersetzt
 werden soll, sollte nur die .h Versionen der C-Standardlibrary einbinden. (Also
  \CodeStyle{\#include <stdio.h>} anstelle von \CodeStyle{\#include <cstdio>}, siehe auch
-(Siehe \autoref{sect:c-library})
+(Siehe \myref{sect:c-library})
 
 In \Cpp können Funktionen überladen werden und Elemente in Namensbereichen abgelegt werden. 
 Um überladene Funktionen zu unterscheiden werden die Funktionsnamen vom \Cpp Compiler um die Argumentlistenbeschreibung sowie den Namensbereichen erweitert,
@@ -15429,7 +15440,7 @@ Sobald eine Funktion virtuell ist, sollte auch der Destruktor virtuell sein.
 
 Wenn eine Klasse einen Destruktor benötigt, sind im allgemeinen auch der
 Copykonstruktor und der Zuweisungsoperator selbst zu schreiben, oder allenfalls
-als privat zu deklarieren. Siehe auch 'Rule of 3, 5, 0', \autoref{subsect:Ruleof350}
+als privat zu deklarieren. Siehe auch 'Rule of 3, 5, 0', \myref{subsect:Ruleof350}
 
 Für jede Klasse je eine eigene Deklarations- (Header-) und Implementationsdatei. (Ausnahme
 Hilfsklassen)
