@@ -4054,15 +4054,17 @@ class Demo {
 };
 \end{CCode}
 
-Dabei ist zu Beachten, dass die Operatoren \CodeStyle{ >, <, >=} und \CodeStyle{<=} auf den Operator \CodeStyle{<=>} zurückgeführt werden, dieser also vorhanden sein muss, entweder explizit definiert, oder via default Deklaration
+Dabei ist zu Beachten, dass die Operatoren \CodeStyle{ >, <, >=} und \CodeStyle{<=} auf den Operator \CodeStyle{<=>} zurückgeführt werden, dieser also vorhanden sein muss, entweder explizit definiert, oder via default Deklaration.
 
 Analog wird der Operator \CodeStyle{!=} auf den Operator \CodeStyle{==} zurückgeführt.
+Bei leeren Klassen nehmen die Default-Vergleiche immer Gleichheit an. 
 
 \subsection{Drei Wege Vergleich (\CppVers{20})}
 \label{subsect:SpaceshipOperator}
 Der \OviIndex{Drei Wege Vergleich}, auch '\OviIndex{Spaceship-Operator}' genannt (\CodeIndex{<=>}) liefert einen Wert < 0 zurück, wenn der erste Operand kleiner als der zweite ist, einen Wert = 0 wenn beide gleich sind und einen Wert > 0 wenn der erste grösser als der zweite ist. Aus dem Drei-Wege-Vergleich lassen sich somit alle anderen Vergleichsoperationen ableiten.
 
-Für eine Klasse kann der Default-Drei-Wege-Vergleich mit \CodeStyle{friend operator <=> (Class1, Class2) = default;} oder \CodeStyle{operator <=> (Class2) = default;} angefordert werden. Damit wird dieser vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert.
+Für eine Klasse kann der Default-Drei-Wege-Vergleich mit \CodeStyle{friend operator <=> (Class1, Class2) = default;} oder \CodeStyle{operator <=> (Class2) = default;} angefordert werden. Damit wird dieser vom Compiler automatisch generiert und vergleicht der Reihe nach alle Basisklassen und alle Member der betroffenen Objekte mit dem jeweiligen  \CodeStyle{<=>}.  Beim ersten Vergleich der einen Wert != 0 zurückliefert wird abgebrochen und der erhaltene Wert als Resultat zurückgeliefert. Wenn alle Vergleiche einen Wert == 0 liefern wird dieser Wert zurückgeliefert. 
+%(Wenn bei einem Member oder einer Basisklasse der Operator \CodeStyle{<=>} fehlt, wird auf die operatoren \CodeStyle{==} und \CodeStyle{<} zurueckgegriffen.)
 
 Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folgenden Klassen zurückgeliefert (definiert in <compare>, welches mit \CodeStyle{#include <compare>} eingebunden werden muss um \CodeStyle{<=>} nutzen zu können):
 
@@ -4090,13 +4092,34 @@ Dabei werden nicht numerische Werte, sondern Konstanten aus einer der drei folge
 \end{labeling}
 \end{labeling}
 
-Werte dieser Klassen können automatisch in die jeweils weniger restriktiven Typen umgewandelt werden, also strong\_ordering zu weak\_ordering und weak\_ordering zu partial\_ordering.
+Werte dieser Klassen können mit 0 verglichen werden und können bei Bedarf automatisch in die jeweils weniger restriktiven Typen umgewandelt werden, also strong\_ordering zu weak\_ordering und weak\_ordering zu partial\_ordering.
 
 Der Defaultvergleich wird vom Compiler nur auf Anforderung erzeugt und nur, wenn alle Basisklassen und alle nicht statischen Member der Klasse ihrerseits entweder den (\CodeStyle{<=>})  Operator, oder die beiden Operatoren (\CodeStyle{<}) und (\CodeStyle{==}) 
 definiert haben.  Der Defaultvergleich greift auf diese Operatoren zurück, um die einzelnen Member zu vergleichen.
         
-Wenn der Defaultvergleich für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{<=>}) passend überladen werden. 
+Wenn der Defaultvergleich für die Klasse nicht angemessen ist, kann der Operator (\CodeStyle{<=>}) passend überladen werden, er sollte dabei einen Wert einer der vordefinierten ...ordering-Typen zurückliefern (oder mit auto den Compiler den passenden Typen auswählen lassen):
+\begin{CCode}
+class A {
+    int x;
+    int y;
 
+public:
+
+    // decltype notwendig, falls implementation nicht vor Verwendung ist
+    // also wenn implementation nicht in headerdatei.
+    // Am einfachsten die implementation gleich inline in der Klasse
+    friend auto operator <=> (A a1, A a2) // -> decltype(1 <=> 2);
+};
+
+auto operator <=> (A a1, A a2) // -> decltype(1 <=> 2)
+{
+    auto r = a1.x <=> a2.x;
+    if (r != 0) {
+        return r;
+    }
+    return r = a1.y <=> a2.y;
+}
+\end{CCode}
 Sobald für eine Klasse der Operator (\CodeStyle{<=>}) vorhanden ist, werden auch die Operatoren \CodeStyle{< <= >=} und \CodeStyle{>} vom Compiler automatisch erzeugt, wenn sie nicht durch den Benutzer bereits durch überladen definiert wurden.
 
 Der Operator (\CodeStyle{<=>}) sollte jedoch nur zur Definition relationaler Operatoren verwendet werden, im 'normalen' Code sollten aus Lesbarkeitsgründen immer die davon abgeleiteten Operatoren \CodeStyle{ >, <, >=} und \CodeStyle{<=} verwendet werden.
