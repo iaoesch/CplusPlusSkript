@@ -7065,7 +7065,7 @@ Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates 
 
 \section{Konzepts (Seit \CppVers{20})}
 \label{sect:Konzepts}
-Mit Konzepten können Anforderungen an Templateparameter definiert werden, und so sichergestellt werden, dass Templates nur mit dafür vorgesehenen Typen instanziert werden. Zudem werden die Fehlermeldungen das Compilers bei unpassenden Typen aussagekräftiger.
+Mit Konzepten können Anforderungen an Templateparameter definiert werden, und so sichergestellt werden, dass Templates nur mit dafür vorgesehenen Typen oder Konstanten instanziert werden. Zudem werden die Fehlermeldungen das Compilers bei unpassenden Typen aussagekräftiger.
 \OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requirements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingeführten Schlüsselwörter  \CodeStyle{concept} und  \CodeStyle{requires} 
 zum tragen.
 
@@ -7276,22 +7276,22 @@ concept DigitalOutput =
      Switch S;
 
      Indicator I(P);
-     Indicator<Switch> I2(S);  // Problem, switch passt nicht
+     Indicator<Switch> I2(S);  // (1) Problem, switch passt nicht
 
      I.SetState(false);
-     I2.SetState(false);
+     I2.SetState(false); // (2)
   }
 \end{CCode}
 
-Fehlermeldung ohne Konzept:
+Ohne Konzept wird folgende Fehlermeldung für die Zeile markiert mit (2) (Aufruf von SetState()) ausgegeben, dies kann je nach Code weit von der falschen Instanzierung (1) entfernt sein.:
 \begin{ConsoleOutput}
 error: no member named 'On' in 'Switch' MyOutput.On();
 \end{ConsoleOutput}
-Fehlermeldung mit Konzept:
+Mit Konzept wird folgende Fehlermeldung für die Zeile (1) ausgegeben, also dort wo der Fehler eingeführt wird:
 
 \begin{ConsoleOutput}
- error: constraints not satisfied for class template 'Indicator' [with T = Switch]
- Indicator<Switch> I2(S);
+ error: constraints not satisfied for class template 'Indicator' 
+ [with T = Switch] Indicator<Switch> I2(S);
 note: because 'Switch' does not satisfy 'DigitalOutput'
 requires DigitalOutpout<T>
 note: because 'o.On()' would be invalid: no member named 'On' in 'Switch'
@@ -7299,6 +7299,29 @@ note: because 'o.On()' would be invalid: no member named 'On' in 'Switch'
 
 Mit Konzepts können auch Rückagebtypen, Member, Kategorien von Typen (Numerisch, Ganzzahl, Kopierbar, ...)
 und/oder Anforderungen an Typen (Vergleich möglich, Numerische Operationen unterstützt usw) festgelegt und überprüft werden.
+
+Es können auch Non-Type Parameter überprüft werden:
+
+\begin{CCode}
+// Constraint to force Parameter to be power of two
+// and not 0
+// Note n & (n-1) gets 0 for all power of 2...
+
+template<int a>
+concept IsPowerOfTwo = (a != 0) && (!(a & (a-1)));
+
+template<int Size>
+    requires IsPowerOfTwo<Size>
+class FFT {
+    int FFTBuffer[Size];
+};
+
+
+FFT<256> TheFFT; // Ok, 256 is power of two
+FFT<117> TheFFT2; // Compile error, 117 is not power of two
+
+\end{CCode}
+
 
 
 \chapter{Die Standardbibliothek}
