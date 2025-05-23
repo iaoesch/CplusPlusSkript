@@ -1377,6 +1377,35 @@ Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
 
 Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \myref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
+\subsection{Lebensdauerverlängerung temporärer Objekte durch Referenzen}
+Wenn ein temporäres Objekt an eine Referenz gebunden wird, verlängert sich die Lebensdauer des temporären Objektes \index{Lebensdauerverlängerung temporärer Objekte durch Referenzen} \index{temporäre Objekte, Lebensdauerverlängerung durch Referenzen}, bis die Referenz ihr Lebensende erreicht. Somit können Rückgabewerte einer Methode (Die selbst aber keine Referenz sein dürfen)  an eine Referenz gebunden werden. Wenn die Referenz an eine weitere Referenz übergeben wird, wird die Lebensdauer des temporären Objektes nicht erneut verlängert.
+
+\begin{CCode}
+
+	
+	std::string f() {return "Hans";}
+
+	std::string &g(std::string &r) {return r;} 
+	
+	int g() 
+	{
+	   string &r = f();  // Temporärer Rueckgabewert von f lebt bis ende von g()
+	   
+	   string s = f();   // Temporärer Rueckgabewert von f wird an s zugewiesen 
+	                     // und stirbt
+	   
+	   string &e = h(f()); // Temporärer Rueckgabewert lebt bis Ende von h(), 
+	                       // e bindet an sterbendes Objekt, keine wietere 
+	                       // Lebensdauerverlängerung
+	                       
+	   std::cout << r;     // Ok, temporäres Objekt lebt noch
+	   std::cout << e;     // Crash, temporäres Objekt ist tot 
+	   
+    } // An r gebundenes temporäres Objekt stirbt hier
+
+\end{CCode}
+
+
 \subsection{Einsatz von Zeigern}
 Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt geben kann (null-pointer).
 
@@ -9937,7 +9966,9 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 \subsection{Ranges / Views (Bereiche) (Seit \CppVers{20})}
 \label{subsect:Ranges}
 
-\OviIndex{Ranges} \index{Views} dienen als vereinfachte Schnittstelle zu Algorithmen oder als Filter von Datenquellen. Ein Range ist ein Bereich von Objekten, der durch einen Anfang und einem Ende oder einem Anfang und einer Länge definiert ist, wobei die Lange auch unbekannt sein kann. Jeder Range liefert einen Iterator auf seinen Anfang ( \CodeStyle{begin()}), sowie einen Iterator der das Ende kennzeichnet ( \CodeStyle{end()}). Wie gewohnt kann mit dem Anfangsiterator bis zum End-Iterator durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. Iteratoren eines Ranges enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem Range/View gehörenden Filterungen oder Transformationen aus.  
+\OviIndex{Ranges} \index{Views} dienen als vereinfachte Schnittstelle zu Algorithmen oder als Filter von Datenquellen. Ein Range ist ein Bereich von Objekten, dessen Anfang durch einen Iterator und dessen Ende durch einen \OviIndex{Sentinel} (Wächter) definiert ist. Der Sentinel muss nicht vom selben Typ wie der Anfangsiterator sein (darf aber), er muss nur durch dem \CodeStyle{operator ==()} mit einem Iterator vom Typ des Anfangsiterators vergleichbar sein, und der \CodeStyle{operator ==()} muss \CodeStyle{true} liefern, wenn der Iterator das Ende des Datenbereichs erreicht hat. Jeder Iterator ist somit auch ein Sentinel. Sentinels erlauben eine flexiblere Definition des Ende eines Bereichs, so kann das Ende wie bisher durch Erreichen eines End-Iterators, aber auch durch Zählen, Erkennen eines bestimmten Wertes in den Daten oder gar nie erreicht werden.
+
+Alle Container sind Ranges, und alle Ranges liefern  einen Iterator auf ihren Anfang ( \CodeStyle{begin()}), sowie einen Sentinel (Wächter) der das Ende kennzeichnet ( \CodeStyle{end()}). Wie gewohnt kann mit dem Anfangsiterator bis zum Sentinel durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. 
 
 Die meisten Algorithmen sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden, falls der ganze Container bearbeitet werden soll.
 \begin{CCode}
@@ -9954,7 +9985,13 @@ int main()
 \end{CCode}
 
 
-Ranges (In diesem Falle als \OviIndex{View} bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren. Views können   kaskadiert \index{Kaskadieren von Views} werden (\OviIndex{Pipelines}. Sie können die Daten der Quelle umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten. Views speichern üblicherweise keine Daten, sondern greifen bei jedem Zugriff wieder auf die Daten des untergeordneten Ranges zurück und Berechenen ihre Werte allenfalls neu, komplexere Views können aus Effizienzgründen Caching einsetzen. Um so zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden:
+
+Ranges (In diesem Falle als \OviIndex{View} bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren. Iteratoren einer View enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem View gehörenden Filterungen oder Transformationen durch. 
+ 
+Views können  kaskadiert \index{Kaskadieren von Views} (Hinterienander geschaltet) werden (\OviIndex{Pipelines}), dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden. Views können die Daten der Quelle umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten. Views speichern üblicherweise keine Daten, sondern greifen bei jedem Zugriff wieder auf die Daten des untergeordneten Ranges zurück und berecheen ihre Werte allenfalls neu, komplexere Views können aus Effizienzgründen Caching einsetzen..
+Mit einer View kann so zum Beispiel ein Vector von Personen-Objekten nur das Attribut Alter oder ein aus anderen Attributen berechneter Wert geliefert werden. (Wird als Projektion bezeichnet). 
+
+Eine View kann mit Anfangsiterator und Sentinel, mit Anfangsiterator und Länge, mit einem Range oder einem Standard-C-Array initialisiert werden. Eine View kann in einen undefinierten Zustand gelangen, wenn der darunter liegende Range verändert wird, desshalb sollten Views nur kurz vor ihrer Verwendung erzeugt werden, und sichergestellt sein das der darunterliegende Range wärend der Lebensdauer der View nicht verändert wird. 
 
 \begin{CCode}
 int main()
@@ -9995,7 +10032,18 @@ In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrement
 
 Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurückgeliefert.
 
-Ein Grossteil der Algorithmen wurde für ranges überladen, und zudem um eine (optionale) Projektion erweitert. Mit der Projektion kann eine Transformation auf jedes Element angewendet werden, und das Resultat der Transformation wird vom Algorithmus weiterverwendet. Dabei werden die Elemente nicht verändert.
+Einfache Views aus der Standarbibliothek sind 
+\begin{description}
+%\item[\CodeStyle{std::ranges::subrange<>}] 
+%	Liefert eine Teilansicht auf einem Range, definiert durch Anfangsiterator und Sentinel.
+\item[std::ranges::subrange<>] 
+	Liefert eine Teilansicht auf einen Range, definiert durch Anfangsiterator und Sentinel.
+\item[std::ranges::counted<>] 
+	Liefert eine Teilansicht auf einen Range, definiert durch Anfangsiterator und einen Zähler.
+\item[std::ranges::take<>] 
+	Liefert eine Teilansicht auf einen Range, definiert durch einen Range und einem Zähler. Liefert die ersten n Elemente aus Range, ist counted() vorzuziehen.
+\end{description}
+Ein Grossteil der Algorithmen wurde für ranges überladen, und zudem um eine (optionale) \OviIndex{Projektion} erweitert. Mit der Projektion kann eine Transformation auf jedes Element angewendet werden, und das Resultat der Transformation wird vom Algorithmus weiterverwendet. Dabei werden die Elemente nicht verändert. Einige Algorithmen funktionieren (noch) nicht mit Ranges, insbesondere numerische und parallele Algorithmen. Zudem kann es Probleme geben wenn temporäre Ranges an Algorithmen übergeben werden, welche Iteratoren auf diesen temporären Range zurückliefern (z. B. \CodeStyle{find()}). 
 
 \begin{CCode}
 int main()
