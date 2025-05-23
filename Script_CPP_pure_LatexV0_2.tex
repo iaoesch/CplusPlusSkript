@@ -7067,15 +7067,21 @@ Mit dem Schlüsselwort \CodeStyle{extern} kann das Instantiieren eines Templates 
 \label{sect:Konzepts}
 Mit Konzepten können Anforderungen an Templateparameter definiert werden, und so sichergestellt werden, dass Templates nur mit dafür vorgesehenen Typen oder Konstanten instanziert werden. Zudem werden die Fehlermeldungen das Compilers bei unpassenden Typen aussagekräftiger.
 \OviIndex{Konzepte} \index{concepts} setzen sich aus  \OviIndex{Anforderungen} \index{requirements} und/oder weiteren Konzepten zusammen.  Dabei kommen die neu eingeführten Schlüsselwörter  \CodeStyle{concept} und  \CodeStyle{requires} 
-zum tragen.
+zum tragen.  
+
+Mit \CodeStyle{concept} wird ein spezielles Template definiert, welches im wesentlchen abhängig von seinen Parametern \CodeStyle{true} oder \CodeStyle{false} zurückliefert.
+
+Das Schlüsselwort \CodeStyle{requires} hat zwei Bedeutungen. Einerseits kann damit bei einem Template angegeben werden, welche Bedingungen die Parameter zur Instanzierung des Templates erfüllen müssen. Andereseits können damit Anforderungen definiert werden. Das kann dazu führen, dass  \CodeStyle{requires} gelegentlich zweimal hintereinander geschrieben werden muss.  
 
 Konzepte sind im wesentlichen Templates, welche weder instanziert noch ausführbaren Code ergeben. Sie werden vom Compiler nur mit den angegebenen Parametern (Typen) ausgewertet, und müssen \CodeStyle{true} liefern wenn die Parameter das Konzept erfüllen:
 \begin{CCode}
 template<typename T>
 concept Konzeptname = boolscher ausdruck;
 \end{CCode}
-Wobei der boolsche Ausdruck auch eine beliebige verknüpfung von boolschen Ausdrücken mit \CodeStyle{||} oder \CodeStyle{&&} sein darf,
+Wobei der boolsche Ausdruck auch eine beliebige Verknüpfung von boolschen Ausdrücken mit \CodeStyle{||} oder \CodeStyle{&&} sein darf,
 der Ausdruck muss einfach zur Compilezeit auswertbar sein und sollte von den Templateparametern abhängen.
+
+Konzepte können grundsaätzlich überall dort eingesetzt werden, wo zur Kompilierzeit konstante boolsche Ausdrücke erwartet werden, Z.B. beim constexpr if.
 
 Beispiel:
 \begin{CCode}
@@ -7107,7 +7113,9 @@ concept C3 = requires {
 
 \end{CCode}
 Zudem kann auch der Ergebnistyp eines Ausdrucks überprüft werden, der zu überprüfende Ausdruck muss in einen
-Block mit anschliessendem Returntypespezifizierer eingeschlossen werden:
+Block mit anschliessendem Returntypespezifizierer eingeschlossen werden (Wobei der Returntypespezifizierer ein
+beliebiges Konzept sein muss, dessen (impliziter) erster Parameter der Ergebnistyp des Ausdrucks ist, weitere
+Parameter können dem Konzept wie gewohnt übergeben werden):
 
 \begin{CCode}
 
@@ -7118,6 +7126,9 @@ concept C4 = requires(T x)
     // R1 must be a defined Concept which will be instantiated (if possible)
     // with the returntype of the expression like:
     // R1<decltype (expression to check)> and must be fullfilled
+    
+    { Expression to check } -> R2<T, 5>; 
+    // wird zu R2<decltype (expression to check), T, 5> and must be fullfilled
     
 };
 \end{CCode}
@@ -7233,7 +7244,7 @@ void f(const EqualityComparable auto &x) { /* code */ }
 All diese Templates können nur noch mit Typen instanziert werden, die auf Gleichheit getestet werden können.
 
 
-// Ein etwas umfangreicheres Beispiel
+Ein etwas umfangreicheres Beispiel:
 \begin{CCode}
 // Definition eines Konzeptes
 template <typename T>
@@ -7298,14 +7309,14 @@ note: because 'o.On()' would be invalid: no member named 'On' in 'Switch'
 \end{ConsoleOutput}
 
 Mit Konzepts können auch Rückagebtypen, Member, Kategorien von Typen (Numerisch, Ganzzahl, Kopierbar, ...)
-und/oder Anforderungen an Typen (Vergleich möglich, Numerische Operationen unterstützt usw) festgelegt und überprüft werden.
+und/oder Anforderungen an Typen (Vergleich möglich, Numerische Operationen unterstützt usw) festgelegt und überprüft werden. In der Standardbibliothek sind bereits viele Konzepte definirt, welche selbstgeschriebenen bevorzugt werden sollten.
 
 Es können auch Non-Type Parameter überprüft werden:
 
 \begin{CCode}
 // Constraint to force Parameter to be power of two
 // and not 0
-// Note n & (n-1) gets 0 for all power of 2...
+// Note: n & (n-1) gets 0 only for powers of 2...
 
 template<int a>
 concept IsPowerOfTwo = (a != 0) && (!(a & (a-1)));
@@ -9943,7 +9954,7 @@ int main()
 \end{CCode}
 
 
-Ranges (In diesem Falle als View bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren und kaskadiert werden, oder die Daten umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten. Um so zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden:
+Ranges (In diesem Falle als \OviIndex{View} bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren. Views können   kaskadiert \index{Kaskadieren von Views} werden (\OviIndex{Pipelines}. Sie können die Daten der Quelle umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten. Views speichern üblicherweise keine Daten, sondern greifen bei jedem Zugriff wieder auf die Daten des untergeordneten Ranges zurück und Berechenen ihre Werte allenfalls neu, komplexere Views können aus Effizienzgründen Caching einsetzen. Um so zum Beispiel einen Vector von Personen-Objekten nach dem Attribut Alter oder nach einem aus anderen Attributen berechneten Wert zu sortieren. (Wird als Projektion bezeichnet). Dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden:
 
 \begin{CCode}
 int main()
