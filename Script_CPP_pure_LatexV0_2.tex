@@ -318,7 +318,7 @@ tab=\rightarrowfill}
 \addtokomafont{labelinglabel}{\rmfamily\bfseries}
 
 % Level von Inhaltsverzeichnis
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 
 %\renewcaptionname{german}{\sectionautorefname}{Kap.}
 
@@ -393,6 +393,13 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 %Inhaltsverzeichnis einfuegen
 \tableofcontents
+
+
+% Level von Inhaltsverzeichnis
+%\setcounter{tocdepth}{2}
+%Inhaltsverzeichnis einfuegen
+%\tableofcontents
+
 
 \chapter{Zu diesem Skript}
 Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
@@ -1373,7 +1380,7 @@ Für Fliesskommawerte sind seit \CppVers{23} die Typen \CodeStyle{std::float16_t}
 \section{Zeiger und Referenzen}
 \OviIndex{Zeiger} und \OviIndex{Referenzen} sind fast dasselbe, sie verweisen jeweils auf ein Objekt ihres Typs. Der Unterschied besteht darin, das Zeiger im Laufe ihres Lebens auf verschiedene Objekte zeigen können, oder auch auf nichts, während Referenzen bei der Erzeugung mit einem Objekt initialisiert werden müssen und anschliessend während ihrer ganzen Lebensdauer immer auf dieses Objekt verweisen. Einem Zeiger hingegen muss vor erstmaligem Gebrauch die Adresse eines passenden Objektes zugewiesen werden. Die \OviIndex{Adresse} eines Objektes erhält man mit dem Adressoperator \CodeStyle{&}. Um auf das Objekt zuzugreifen, auf das ein Zeiger verweist, muss man den Zeiger mit \CodeStyle{*} \OviIndex{dereferenzieren}. Eine Referenz hingegen braucht nicht dereferenziert zu werden, es wird automatisch auf das Objekt zugegriffen, auf welches die Referenz zeigt. Referenzen gelten selber nicht als Objekte (Variablen), deshalb sind weder Pointer auf Referenzen, noch Arrays von Referenzen erlaubt.
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
-Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt.
+Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt. Das zurückgeben einer Referenz auf eine lokale Variable einer Methode führt wie bei Pointern zu undefiniertem Verhalten.
 
 Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \myref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
@@ -9263,7 +9270,7 @@ void Aufgabe3()
 }
 \end{CCode}
 
-Ein Programm in \Cpp\Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
+Ein Programm in \Cpp, welches in einer gegebenen Verzeichnisstruktur mit Unterverzeichnissen alle Textdateien (.txt) findet, und anschliessend über alle Dateien alle Worte findet, und am Schluss für jedes Wort ausgibt, in welchen Dateien es auftritt
 
 \begin{CCode}
 /*****************************************************************************/
@@ -10161,6 +10168,103 @@ int main()
 \subsection{Jthread (seit \CppVers{20})}
 \label{subsect:jthread}
 Die Klasse std::\OviIndex{Jthread} ist eine verbesserte Version von  \CodeStyle{std::thread}. Sie hat im wesentlichen dieselbe Funktionalität wie  \CodeStyle{std::thread}, nur wird im Destruktor automatisch  \CodeStyle{join()} aufgerufen, so dass im Code nicht mehr zwingend  \CodeStyle{join()} aufgerufen werden muss, bevor das Threadobjekt aufhört zu existieren.
+
+Zudem kann einem \CodeStyle{jthread} ein \CodeIndex{Stop-Token} (\CodeStyle{std::stop_token}) übergeben werden, mit welchem dem Thread signalisiert werden kann dass er sich beenden soll. Falls ein Stop-Token übergeben wurde, wird dieses automatisch vom Destruktor von \CodeStyle{jthread} aufgerufen, bevor dieser \CodeStyle{join()} aufruft. Wenn die Thread-Funktion ein Stoptoken als ersten Parameter entgegennimmt, erzeugt \CodeStyle{jthread} ein Stop-Token und übergibt dieses der Thread Funktion. Wurde dem Konstruktor von \CodeStyle{jthread} ein Stoptoken übergeben, wird dieses benutzt und von \CodeStyle{jThread} kein eigenes erzeugt
+
+Ein Thread muss das Stop-Token regelmässig mit \CodeStyle{stop_requested()} abfragen und sich beenden, wenn ein Stop angefordert wird. Alternativ kann der Thread eine Callback-Funktion beim Stop-Token registrieren, welche aufgerufen wird wenn ein Stop angefordert wurde. Zudem kann einem allfälligen \CodeStyle{wait()} auf eine Conditon-Variable das Stop-token übergeben werden, dann wird \CodeStyle{wait()} beendet wenn eine Stopcondition auftritt. 
+
+\begin{CCode}
+
+// Threadfunction accepting a Stop token
+// Stop token must be first Argument
+void f(std::stop_token stop_token, int additional_argument)
+{
+    while (!stop_token.stop_requested())
+    {
+       // Do some work
+    }
+}
+
+int main()
+{
+    // Create a thread starting f() and passing 5 as Argument
+    // Thread creates a stop-token and calls
+    // f(StopToken, 42)
+    std::jthread thread(f, 42); 
+
+    // The destructor of jthread calls request_stop() and join().
+}
+
+int Demo(std::stop_token stop_token)
+{
+    // Create a thread starting f() and passing 5 as Argument
+    // Thread uses given stop-token and calls
+    // f(StopToken, 42)
+    std::jthread thread(stop_token, f, 42); 
+
+    // Ask Thread to stop
+    stop_token.request_stop();
+    
+    // The destructor of jthread calls request_stop() and join().
+}
+
+// Threadfunction accepting a Stop token
+// Stop token must be first Argument
+void f(std::stop_token stop_token, int additional_argument)
+{
+    while (!stop_token.stop_requested())
+    {
+       // Do some work
+       
+    }
+}
+\end{CCode}
+
+
+Mit einem Stop-token kann auch ein \CodeStyle{wait()} auf eine Condition Variable unterbrochen werden,
+dazu muss das Stopp-Token dem \CodeStyle{wait()} als zusätzliches Argument übergeben werden. Der Rückgabewert
+von \CodeStyle{wait} signalisiert, ob \CodeStyle{wait()} normal beendet, oder durch ein Stop-Request abgebrochen
+wurde. Aktuell (\CppVers{20}) werden Stop-Token nur von \CodeStyle{std::condition_variable_any} \index{condition\_variable\_any::wait() abbruch durch Stop-Token} \index{Stop-Token, abbruch condition\_variable\_any::wait()}unterstützt.
+\begin{CCode}
+
+// Mutex protecting some resource
+std::mutex ResourceProtector;
+
+// Condition variable to signal resource is availlable
+std::condition_variable_any ResourceReady;
+
+// Query Resource for Readyness
+bool CheckIfResourceIsReady()
+{
+   // Returns true if resource is Ready
+}
+
+// Thread as above
+void f(std::stop_token stop_token, int additional_argument)
+{
+    while (!stop_token.stop_requested())
+    {
+       // Do some work
+       
+       // lock our Resource using mutex 
+       std::unique_lock lock(ResourceProtector);
+        
+       //  Wait for Signal for Resource ready (or Stop request)
+       //  (Unlocks Mutex while waiting)
+       if (ResourceReady.wait(lock, stop_token, CheckIfResourceIsReady)) {
+            
+            // Resource is availlable, do whatever needs to be done
+        } else {
+        
+            // stop was requested, end thread
+            return;
+        }
+    }
+}
+
+\end{CCode}
+
+
 
 \subsection{Thread lokale Variablen}
 Mit dem Schlüsselwort \index{thread\_local} \CodeStyle{thread_local} kann eine Thread-lokale Variable erzeugt werden. Diese verhält sich gleich wie eine \CodeStyle{static} Variable, jedoch hat jeder Thread sein eigenes Exemplar. Für jeden Thread der erzeugt wird, wird auch ein ensprechendes Objekt (Inklusive allfälligem Konstruktoraufruf) erzeugt, und beim Beenden des Threads werden seine \CodeStyle{thread_local} Objekte wieder gelöscht (Inklusive allfälligen Destruktoraufrufen).
