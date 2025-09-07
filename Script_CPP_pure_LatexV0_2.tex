@@ -6014,7 +6014,7 @@ Mit \CodeIndex{consteval} können Funktionen definiert werden, welche nur zur Com
  
  \section{std::is\_constant\_evaluated (Seit \CppVers{20})}
  \label{subsubsect:isconstevaluated}
-\CodeIndex{std::is\_constant\_evaluated} liefert  \CodeStyle{true} zurück, wenn die aktuelle Funktion zur Compilezeit ausgeführt wird. Zusammen mit \CodeStyle{if constexpr} (Siehe auch \myref{subsubsect:constexprif}) kann so unterschiedlicher Code compiliert werden, je nach dem ob die Funktion zur Compilezeit oder zur Laufzeit ausgeführt wird. Kann nützlich sein, wenn eine nicht-constexpr Funktion verwendet wird. Diese kann so im constexpr Fall durch eine (Allenfalls einfachere) constexpr Variante ersetzt werden.  
+\CodeIndex{std::is\_constant\_evaluated} liefert  \CodeStyle{true} zurück, wenn die aktuelle Funktion zur Compilezeit ausgeführt wird. Zusammen mit \CodeStyle{if constexpr} (Siehe auch \myref{subsubsect:constexprif}) kann so unterschiedlicher Code compiliert werden, je nach dem ob die Funktion zur Compilezeit oder zur Laufzeit ausgeführt wird. Kann nützlich sein, wenn inj einer constexpr Methode eine nicht-constexpr Funktion aufgerufen wird. Diese kann so im constexpr Fall durch eine (Allenfalls einfachere) constexpr Variante ersetzt werden.  
 
 \begin{CCode}
 
@@ -6022,6 +6022,7 @@ Mit \CodeIndex{consteval} können Funktionen definiert werden, welche nur zur Com
     constexpr Sine(float x) 
     {
         if constexpr (std::is_constant_evaluated()) {
+           // Just for example, needs better implementation
            return x - x*x*x/(3*2*1) + x*x*x*x*x/(5*4*3*2*1);
         } else {
            return sin(x);
