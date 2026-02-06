@@ -1642,7 +1642,7 @@ Beispiel:
 \end{CCode}
 
 
-Mit \CodeIndex{std::move()} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
+Mit \CodeIndex{std::move()} \index{move(), std::} können gewöhnliche Referenzen in R-Value-Referenzen umgewandelt werden. Damit kann man explizit Objekte beim Aufrufen von Methoden zum 'Ausschlachten' freigeben.  
 \begin{CCode}
 	
 	Demo q(xyz);
@@ -2011,7 +2011,7 @@ aus C bekannten \OviIndex{Stringliterale} weiterhin zum Einsatz.
  \section{Nullpointer (Seit \CppVers{11})}
  \label{subsubsect:nullptr}
  Neu gibt es ein Schlüsselwort für den Nullpointer: \CodeIndex{nullptr}
- Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t}\index{std::nullptr\_t}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
+ Damit kann zwischen dem Integerwert 0 und dem Nullzeiger unterschieden werden. Dieser Unterschied ist speziell bei überladenen Funktionen wichtig. \CodeStyle{nullptr} besitzt sogar einen eigenen Datentypen (\CodeStyle{std::nullptr_t} \index{std::nullptr\_t}, \index{nullptr\_t, std::}), somit können Funktionen für \CodeStyle{nullptr} überladen werden. Dies ist hilfreich falls eine Methode für unterschiedliche Pointertypen überladen wurde. In diesem Fall würde der Aufruf mit \CodeStyle{nullptr} nicht eindeutig sein und einen Compilerfehler verursachen. Durch eine weitere Überladung mit \CodeStyle{std::nullptr_t} kann dies umgangen werden.
  
  
  \begin{CCode}
@@ -2246,7 +2246,7 @@ Val = MyVector[21];           //Liefert den Wert des 22. Elementes
 Val = MyVector.at(21);        //Liefert den Wert des 22. Elementes (Exception falls ausserhalb Vektorgrenzen)
 MyVector[21] = 66.4;          //ueberschreibt den Wert des 22.ten Elementes
 
-// Array mit 20 Elementen, nurn erste 3 initialisiert
+// Array mit 20 Elementen, nur erste 3 initialisiert
 std::array<int, 20> MyArray = {1, 2, 3};
 Val = MyArray[10];           //Liefert den Wert des 11. Elementes
 Val = MyArray.at(10);        //Liefert den Wert des 11. Elementes (Exception falls ausserhalb Arraygrenzen)
@@ -2277,7 +2277,7 @@ if (c > 0) {
 
 \phantomsection
 \label{subsubsect:ifoptionalinitialisierer}
-Seit \CppVers{17} können \CodeStyle{if} (und \CodeStyle{switch}) einen optionalen initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
+Seit \CppVers{17} können \CodeStyle{if} (und \CodeStyle{switch}) einen optionalen Initialisierer haben, der Gültigkeitsbereich ist dabei auf das if-Statement und die dazugehörigen Blöcke beschränkt:
 \begin{CCode}
 if (int a = 7; b > c) {
    c = a;
@@ -2293,7 +2293,7 @@ if (SomeClass SomeObject = GetTheObject(); SomeObject.IsValid() == true) {
 \end{CCode}
 \phantomsection
 \label{subsubsect:constexprif}
-Mit \CppVers{17} wurde das \CodeIndex{constexpr if} eingeführt, welches bedingte Compilierung ermöglicht. Der Ausdruck des \CodeStyle{constexpr if} muss zur Compilezeit ausgewertet werden können, wenn der Ausdruck \CodeStyle{false} liefert, wird der Code im if-Zweig ignoriert, andernfalls normal compiliert.
+Mit \CppVers{17} wurde das \CodeIndex{constexpr if} \index{if, constexpr} eingeführt, welches bedingte Compilierung ermöglicht. Der Ausdruck des \CodeStyle{constexpr if} muss zur Compilezeit ausgewertet werden können, wenn der Ausdruck \CodeStyle{false} liefert, wird der Code im if-Zweig ignoriert, andernfalls normal compiliert.
 Im Gegensatz zum Präprozessor \#if muss jedoch der Code im  \CodeStyle{constexpr if} syntaktisch korrekt sein, auch wenn er verworfen wird. 
 
 \begin{CCode}
@@ -2308,7 +2308,7 @@ if constexpr (Debug) {
 
 \phantomsection
 \label{subsubsect:constevalif}
-Mit \CppVers{23} wurde das \CodeIndex{consteval if} eingeführt, welches bedingte Compilierung ermöglicht. Das \CodeStyle{consteval if} hat keinen \emph{Bedingungsteil} und wird zur Compilezeit ausgewertet. Wenn das \CodeStyle{consteval if} im Kontext eines konstanten Ausdrucks ausgewertet wird, wird der Block nach den \CodeStyle{if}, ansonsten der Block nach dem \CodeStyle{else} verwendet. Der jeweils andere Block wird ignoriert. Der else-Zweig kann weggelassen werden, es müssen aber zwingend nach dem if und nach dem else Blöcke folgen, Einzelstatements ohne geschweifte Klammeren sind nicht zulässig.
+Mit \CppVers{23} wurde das \CodeIndex{consteval if} \index{if, consteval} eingeführt, welches bedingte Compilierung ermöglicht. Das \CodeStyle{consteval if} hat keinen \emph{Bedingungsteil} und wird zur Compilezeit ausgewertet. Wenn das \CodeStyle{consteval if} im Kontext eines konstanten Ausdrucks ausgewertet wird, wird der Block nach den \CodeStyle{if}, ansonsten der Block nach dem \CodeStyle{else} verwendet. Der jeweils andere Block wird ignoriert. Der else-Zweig kann weggelassen werden, es müssen aber zwingend nach dem if und nach dem else Blöcke folgen, Einzelstatements ohne geschweifte Klammeren sind nicht zulässig.
 Im Gegensatz zum Präprozessor \#if muss jedoch der Code im  \CodeStyle{constexpr if} syntaktisch korrekt sein, auch wenn er verworfen wird. 
 
 \begin{CCode}
@@ -6014,7 +6014,7 @@ Mit \CodeIndex{consteval} können Funktionen definiert werden, welche nur zur Com
  
  \section{std::is\_constant\_evaluated (Seit \CppVers{20})}
  \label{subsubsect:isconstevaluated}
-\CodeIndex{std::is\_constant\_evaluated} liefert  \CodeStyle{true} zurück, wenn die aktuelle Funktion zur Compilezeit ausgeführt wird. Zusammen mit \CodeStyle{if constexpr} (Siehe auch \myref{subsubsect:constexprif}) kann so unterschiedlicher Code compiliert werden, je nach dem ob die Funktion zur Compilezeit oder zur Laufzeit ausgeführt wird. Kann nützlich sein, wenn in einer constexpr Methode eine nicht-constexpr Funktion aufgerufen wird. Diese kann so im constexpr Fall durch eine (Allenfalls einfachere) constexpr Variante ersetzt werden.  
+\CodeIndex{std::is\_constant\_evaluated} \index{is\_constant\_evaluated} liefert  \CodeStyle{true} zurück, wenn die aktuelle Funktion zur Compilezeit ausgeführt wird. Zusammen mit \CodeStyle{if constexpr} (Siehe auch \myref{subsubsect:constexprif}) kann so unterschiedlicher Code compiliert werden, je nach dem ob die Funktion zur Compilezeit oder zur Laufzeit ausgeführt wird. Kann nützlich sein, wenn in einer constexpr Methode eine nicht-constexpr Funktion aufgerufen wird. Diese kann so im constexpr Fall durch eine (Allenfalls einfachere) constexpr Variante ersetzt werden.  
 
 \begin{CCode}
 
@@ -7569,7 +7569,7 @@ Strings können wie alle Container mit \OviIndex{Allokatoren} (Siehe \myref{sect:
 
 \section{Resourcenverwaltung mit Unique Pointer und Shared Pointer}  \label{sec:StdSmartpointer}
 Korrektes Resourcenmanagement ist in \Cpp essenziell, erfordert jedoch vom Programmierer sorgfältiges und diszipliniertes Arbeiten und klare Schnittstellendefinitionen. Besonders im Zusammenhang mit der Weitergabe von Pointer an andere Objekte/Methoden ist nicht immer klar, wer jetzt für das Freigeben der Resource zuständig ist.
-Nachfolgend wird der Einsatz von \OviIndex{Smart Pointern} wie \OviIndex{std::unique\_ptr} und \OviIndex{std::shared\_ptr} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden.
+Nachfolgend wird der Einsatz von \OviIndex{Smart Pointern} wie \OviIndex{std::unique\_ptr} \index{unique\_ptr, std::}  und \OviIndex{std::shared\_ptr} \index{shared\_ptr, std::} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden.
 
 \subsection{Problemfälle in der Resourcenverwaltung}
 Hier ein paar Beispiele für Problemfälle:
@@ -7601,7 +7601,7 @@ Um diese Probleme zu umgehen werden anstelle von Pointern intelligente, pointerä
 
 
 \subsection{Lösung mit Unique Pointer}
-Der \OviIndex{std::unique\_ptr} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu nicht mehr Speicherplatzbedarf und zusätzlicher Laufzeitaufwand entsteht nur beim Erzeugen, Löschen und Übergeben von Objekten. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Das Objekt kann jedoch von einem Pointer zum nächsten weitergereicht werden. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
+Der \OviIndex{std::unique\_ptr} \index{unique\_ptr, std::} verhält sich fast gleich wie ein normaler Pointer und hat im Vergleich dazu nicht mehr Speicherplatzbedarf und zusätzlicher Laufzeitaufwand entsteht nur beim Erzeugen, Löschen und Übergeben von Objekten. Grundsätzlich darf immer nur ein \OviIndex{std::unique\_ptr} auf ein bestimmtes Objekt zeigen, und wenn dieser Pointer aufhört zu existieren wird auch das von ihm referenzierte Objekt gelöscht. Das Objekt kann jedoch von einem Pointer zum nächsten weitergereicht werden. Um das zu erreichen sind nur Move-Zuweisung und Move-Konstruktion erlaubt, normale Zuweisung und Kopien sind verboten. Damit kann es keine Zeigerduplikate mehr geben.
 
 
 Unser Einstiegsbeispiel mit Unique Pointer:
@@ -7663,9 +7663,9 @@ int main(int argc, char*argv[])
 }
 \end{CCode}
 
-Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren oder mittels \CodeStyle{std::move()} explizit zum ausschlachten freigegeben worden sind (In diesem Fall wird die Quelle zu einem nullptr). Somit ist es nicht möglich, ungewollt ungültige oder doppelte UniquePointer zu haben.
+Achtung, UniquePointer werden nie kopiert, sondern die Resource wird immer von der Quelle zum Ziel weitergereicht, und als Quelle sind nur Temporaries erlaubt, also UniquePointer-Objekte, welche nach der Operation nicht mehr existieren oder mittels \CodeStyle{std::move()} explizit zum ausschlachten freigegeben worden sind (In diesem Fall wird die Quelle zu einem nullptr). Somit ist es nicht möglich, ungewollt ungültige oder doppelte UniquePointer auf dasselbe Objekt zu haben.
 
-Seit \CppVers{14} können Objekte direkt mit \CodeStyle{make_unique()}\index{make\_unique} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_unique()} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
+Seit \CppVers{14} können Objekte direkt mit \CodeStyle{make_unique()}\index{make\_unique, std::} erzeugt werden, damit kann auf ein explizites new verzichtet werden (new ist nun in \CodeStyle{make_unique()} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer.
 \begin{CCode}
 
 
@@ -7692,10 +7692,10 @@ f(t1, t2);
 \end{CCode}
 
 \subsection{Lösung mit Shared Pointer}
-Der \OviIndex{shared\_ptr} verhält sich ähnlich wie der unique\_ptr Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede Resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resource verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wannimmer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
+Der \OviIndex{shared\_ptr}  \index{shared\_ptr, std::} \index{std::shared\_ptr} verhält sich ähnlich wie der unique\_ptr Pointer, aber er erlaubt, dass auch mehrere Pointer auf die selbe Resource verweisen. Dabei wird für jede Resource ein Zähler angelegt, der zählt, wieviele Pointer auf diese Resource zeigen, und sobald der letzte Pointer auf diese Resource verschwindet, wird auch die Resource freigegeben. Dabei werden einfach in jedem Konstruktor, Zuweisungsoperator und Destruktor die entsprechenden Zähler aktualisiert, und wann immer ein Zähler 0 erreicht, wird die entsprechende Resource freigegeben.
 Der \CodeStyle{std::shared\_ptr} ist somit am universellsten einsetzbar, benötigt aber auch am meisten Resourcen.
 
-Um zyklische Referenzen zu durchbrechen gibt es noch den \OviIndex{std::weak\_ptr}, welcher den Referenzcounter nicht erhöht, aber bei Bedarf in einen echten \CodeStyle{std::shared\_ptr} umgewandelt werden kann, falls das Objekt zu diesem Zeitpunkt noch existiert.
+Um zyklische Referenzen zu durchbrechen gibt es noch den \OviIndex{std::weak\_ptr} \index{weak\_ptr, std::}, welcher den Referenzcounter nicht erhöht, aber bei Bedarf in einen echten \CodeStyle{std::shared\_ptr} umgewandelt werden kann, falls das Objekt zu diesem Zeitpunkt noch existiert.
 
 
 Unser Einstiegsbeispiel mit Sharedpointer:
@@ -8660,7 +8660,7 @@ auto s8 = std::format("[{:?}]", "e\u0301\u0323"); // s8 has value: ["?"]
 
 \phantomsection
 \label{subsubsect:printformated}
-Seit \CppVers{23} kann die Ausgabe mit \OviIndex{std::print} und std::println weiter vereinfacht werden:
+Seit \CppVers{23} kann die Ausgabe mit \OviIndex{std::print} und \OviIndex{std::println} \index{print, std::} \index{std::println, std::} weiter vereinfacht werden:
 \begin{CCode}
 std::print("{}is {} or {}!\n", "Pi", 3.14, 3); 
 \end{CCode} 
@@ -8673,14 +8673,14 @@ Pi is 3.14 or 3
 \subsection{Definieren von Formatierungen für eigene Datentypen}
 
 Um eigene Datentype mit \CodeStyle{std::format} ausgeben zu können, muss
-das Template \CodeStyle{std::formatter} \index{formatter} \index{Benutzerdefinierte Formatierungen} für den eigenen Datentypen
+das Template \CodeStyle{std::formatter} \index{std::formatter} \index{formatter, std::} \index{Benutzerdefinierte Formatierungen} für den eigenen Datentypen
 spezialisiert werden. Dazu müssen die Methoden \CodeStyle{parse} als
 constexpr (Muss zur Compilezeit ausführbar sein) 
 und \CodeStyle{format} als const realisiert werden. 
 
 \CodeStyle{parse} muss bei Bedarf
 den Inhalt von \{ \} parsen, und allenfalls daraus gewonnene Informationen
-lokal für die spaetere Ausgabe speichen. 
+lokal für die spätere Ausgabe speichern. 
 
 \CodeStyle{format} muss das erhaltene Argument im gewünschten Format ausgeben,
 und dabei allenfalls auf die von \CodeStyle{parse} gespeicherten Formatinformationen 
@@ -9491,7 +9491,7 @@ Alle Container können mit \OviIndex{Allokatoren} (Siehe auch \myref{sect:Allokat
 
 Nachfolgend eine kleine Auswahl vorhandener Container. 
 \subsubsection{Kurzübersicht zu Container array<> aus der \Cpp - Standardbibliothek}
-\OviIndex{std::Array} \index{Array} funktioniert im Prinzip gleich wie ein Vektor (siehe \myref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
+\OviIndex{std::array} \index{array, std::} funktioniert im Prinzip gleich wie ein Vektor (siehe \myref{subsect:Vector}) und besitzt im wesentlichen dieselbe Schnittstelle, es hat einfach eine fixe Grösse, und die grössenverändernden Methoden sind nicht verfügbar.
 Die Grösseninformation ist Teil des Typs und geht nicht verloren. Indizierter Zugriff ist möglich.
 \begin{CCode}
 #include <array>
@@ -13021,7 +13021,9 @@ Datei Testerb.cpp
  
 \section{Beispiel Implementation von Smart Pointer zur Resourcenverwaltung}  \label{sec:Smartpointer}
 Korrektes Resourcenmanagement ist in \Cpp essenziell, erfordert jedoch vom Programmierer sorgfältiges und diszipliniertes Arbeiten und klare Schnittstellendefinitionen. Besonders im Zusammenhang mit der Weitergabe von Pointer an andere Objekte/Methoden ist nicht immer klar, wer jetzt für das Freigeben der Resource zuständig ist.
-Nachfolgend wird der Einsatz und die prinzipielle Funktion von \OviIndex{Smart Pointern} wie \OviIndex{Unique Pointer} und \OviIndex{Shared Pointer} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden. Achtung, der vorgestellte Code ist vereinfacht und soll nur das Prinzip darstellen, er ist nicht für den Einsatz in produktivem Code geeignet. Dazu sollen die entsprechenden Templates aus der Standardlibrary verwendet werden.
+Nachfolgend wird der Einsatz und die prinzipielle Funktion von \OviIndex{Smart Pointern} wie \OviIndex{Unique Pointer} \index{Smart Pointern} und \OviIndex{Shared Pointer} erklärt, mit diesen Objekten kann die Resourcenverwaltung automatisiert werden. 
+
+Achtung, der vorgestellte Code ist vereinfacht und soll nur das Prinzip darstellen, er ist nicht für den Einsatz in produktivem Code geeignet. Dazu sollen die entsprechenden Templates wie  \index{shared\_ptr, std::} \OviIndex{std::shared\_ptr} und \index{unique\_ptr, std::} \OviIndex{std::unique\_ptr} aus der Standardlibrary verwendet werden.
 
 \subsection{Problemfälle in der Resourcenverwaltung}
 Hier ein paar Beispiele für Problemfälle:
