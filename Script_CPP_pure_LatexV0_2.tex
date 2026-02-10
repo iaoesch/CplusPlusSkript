@@ -665,7 +665,7 @@ int main()
 }
  \end{CCode}
  
-Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken oder forcieren, sowie dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern. Nachfolgen die bis Standard \CppVers{20} definierten Attribute:
+Im \Cpp Standard sind einige Attribute bereits vordefiniert. Sie können Warnungen unterdrücken oder forcieren, sowie dem Compiler zusätzliche Informationen zum Optimieren des Codes liefern. Nachfolgend die bis Standard \CppVers{20} definierten Attribute:
 
 \begin {tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}%p{0.29\textwidth}|}
 
@@ -1216,6 +1216,9 @@ Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder
 
 Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
+\subsection{'Manuelle' Speicherverwaltung mit new und delete}
+\label{subsubsect:newdelete}
+
 Für Fälle, in denen der dynamische Speicher direkt verwaltet werden soll kann auf \CodeStyle{new} und \CodeStyle{delete} zurückgegriffen werden.
 Mit \CodeStyle{new} kann dynamisch Speicher reserviert werden, und mit \CodeStyle{delete} wieder freigegeben werden. Zur Freigabe von Feldern (Arrays) muss \CodeStyle{delete[]} verwendet werden, sonst werden die Destruktoraufrufe der Arrayelemente nicht korrekt ausgeführt. Jeder mit \CodeStyle{new} allozierte Speicherblock muss mit \CodeStyle{delete} wieder freigegeben werden, sonst entstehen Speicherlecks. Dieses Problem kann und soll durch den Einsatz von SmartPointern aus der Standard-Library umgangen werden. \CodeStyle{Delete} darf auf NULL-Pointer angewendet werden, diese werden ignoriert.
  
@@ -1305,7 +1308,7 @@ delete aptr;
 // Ein neues A-Objekt dynamisch erzeugen (Liefert NULL-Pointer wenn nicht genug Speicher)
 aptr = new(std::nothrow) A;
  
-if (aptr == 0) {
+if (aptr == nullptr) {
    // Error Handling
 }
 
@@ -1385,7 +1388,7 @@ Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt. Das zu
 Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \myref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
 \subsection{Lebensdauerverlängerung temporärer Objekte durch Referenzen}
-Wenn ein temporäres Objekt an eine Referenz gebunden wird, verlängert sich die Lebensdauer des temporären Objektes \index{Lebensdauerverlängerung temporärer Objekte durch Referenzen} \index{temporäre Objekte, Lebensdauerverlängerung durch Referenzen}, bis die Referenz ihr Lebensende erreicht. Somit können Rückgabewerte einer Methode (Die selbst aber keine Referenz sein dürfen)  an eine Referenz gebunden werden. Wenn die Referenz an eine weitere Referenz übergeben wird, wird die Lebensdauer des temporären Objektes nicht erneut verlängert.
+Wenn ein temporäres Objekt an eine Referenz gebunden wird, verlängert sich die Lebensdauer des temporären Objektes, \index{Lebensdauerverlängerung temporärer Objekte durch Referenzen} \index{temporäre Objekte, Lebensdauerverlängerung durch Referenzen} bis die Referenz ihr Lebensende erreicht. Somit können Rückgabewerte einer Methode (Die selbst aber keine Referenz sein dürfen)  an eine Referenz gebunden werden. Wenn die Referenz an eine weitere Referenz übergeben wird, wird die Lebensdauer des temporären Objektes nicht erneut verlängert.
 
 \begin{CCode}
 
@@ -1414,7 +1417,7 @@ Wenn ein temporäres Objekt an eine Referenz gebunden wird, verlängert sich die L
 
 
 \subsection{Einsatz von Zeigern}
-Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt geben kann (null-pointer).
+Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt geben kann (null-pointer), alternativ sollte in diesem Fall in Erwägung gezogen werden auf  \CodeStyle{std::optional<>} (Siehe \myref{sect:VariantOptionalAny}) zurückzugreifen.
 
 In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
@@ -1744,7 +1747,7 @@ Neue Syntax:
  Klassen werden in einem eigenen Kapitel (Siehe \myref{sect:Klassen}) behandelt
  
  \section{Weitere Datentypen}
- Weiter gibt es Arrays, \CodeStyle{struct} und \CodeStyle{enums} wie in C, welche sich wie Strukturen oder wie Klassen verhalten können. Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den Template-mechanismus realisiert werden
+ Weiter gibt es Arrays, \CodeStyle{struct} und \CodeStyle{enums} wie in C, wobei sich Strukturn auch wie Klassen verhalten können. ( \CodeStyle{struct} ist in C++ äquivalent zu \CodeStyle{class}, nur dass per default alles  \CodeStyle{public} ist). Strukturen ohne Erweiterungen von \Cpp  sind kompatibel mit C. Sobald Erweiterungen (wie Zugriffsspezifizierer, Methoden, Vererbung, Namespaces, static Member, ...) von \Cpp genutzt werden, können und sollten sie nicht mehr mit C-Code gemischt werden. Weiter gibt es generische Datentypen, welche durch den Template-mechanismus realisiert werden
  (Siehe  \myref{chapter:Templates} und  \myref{section:StandardSTL} . 
  
  \section{Konstantheit (const)}
@@ -12766,6 +12769,7 @@ Mögliche Erweiterungen:
 \item Contracts (Randbedingungen für Funktionen)
 \item Verbesserungen und Erweiterungen bei Templates
 \item Unterstützung beim Debugging
+\item \#embed analog zu C23, einbinden von Binärdateien (Z.B. Bilder oder Audiodaten)
 \item Erweiterungen in der Concurency Library
 \item Weitere Libraryfunktionen durch constexpr ergänzt
 \item Pattern Matching, wahrscheinlich eher \CppVers{29} 
