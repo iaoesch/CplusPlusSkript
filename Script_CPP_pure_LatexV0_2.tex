@@ -1251,32 +1251,6 @@ Memory = new int;       // Platz fuer einen einzelnen int reservieren und
 delete Memory;          // und Speicher wieder freigeben
 
 
-// Beispiel fuer den Einsatz von unique_ptr
-
-#include <memory>  // definiton von unique_ptr
-
-void ConsumeElement(std::unique_ptr<int> e) {
-   // do something with e
-}  // e wird ungueltig, Objekt auf welches e zeigt wird geloescht
-
-{
-   std::unique_ptr<int> p( new int(42) );   // neues Objekt an Smartpointer
-                                            // uebergeben
-                                            
-   std::unique_ptr<int> q = std::make_unique<int>(42); // Wie oben, aber exceptionsafe
-  
-  
-   std::unique_ptr<int> r = std::move(q); // Objekt von q an r weiterreichen, q ist
-                                          // jetzt ungueltig (nullptr)
-
-   *r = *p   // Wie bei normalen Pointer Zugriff auf referenziertes Objekt
-  
-   ConsumeElement(std::move(p)) // Objekt an Funktion uebergeben, p ist jetzt ungueltig
-          
-                                          
-}  // Blockende, p, q und r werden ungueltig, alloziertes Objekt von r wird 
-   // automatisch freigegeben
-
 \end{CCode}
 
 Der aktuelle \Cpp Standard schreibt 3 Varianten für \CodeStyle{new} vor, wobei der Programmierer durch Überladen weitere Varianten hinzufügen, oder bestehende ersetzen kann. die Standardvarianten sind:
@@ -1284,7 +1258,7 @@ Der aktuelle \Cpp Standard schreibt 3 Varianten für \CodeStyle{new} vor, wobei d
 \begin{enumerate}
 	\item das einfache \CodeStyle{new}, dieses erzeugt ein Objekt oder wirft eine \CodeStyle{std::bad_alloc Exception} wenn der Speicher nicht reserviert werden konnte.
 	\item das \CodeStyle{new(std::nothrow)}, dieses erzeugt ein Objekt oder liefert NULL wenn der Speicher nicht reserviert werden konnte. (Nothrow-new sollte nur in Ausnahmefällen verwendet werden, das Exception werfende \CodeStyle{new} führt zu besserem Code, da unbehandelte Exceptions einfacher zu entdecken sind als unbehandelte NULL-Pointer).
-	\item das placement \CodeStyle{new}, dieses erzeugt ein Objekt in einem vorgegebenen Speicherbereich. Achtung, mit placement \CodeStyle{new} allozierte Speicherblöcke dürfen nicht mit \CodeStyle{delete} freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
+	\item das placement \CodeStyle{new}, dieses erzeugt ein Objekt in einem durch den Aufrufer vorgegebenen Speicherbereich. Achtung, mit placement \CodeStyle{new} allozierte Speicherblöcke dürfen nicht mit \CodeStyle{delete} freigegeben werden, bei Bedarf muss der Destruktor manuell aufgerufen werden. 
 \end{enumerate}
  
 Beispiele:
@@ -1328,6 +1302,72 @@ aptr = new(Memory) A;  // Memory kann beliebige Adresse sein, an welcher
 aptr->~A(); 
 
 \end{CCode}
+
+\subsection{Automatische Speicherverwaltung mit unique- und shared-Pointer}
+\label{subsubsect:uniqueshared}
+
+Mit \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} kann auf einfache Art dynamischer
+Speicher genutzt werden, ohne dass man sich um dessen Freigabe kümmern muss. Siehe auch \myref{sec:StdSmartpointer} und \myref{sec:Smartpointer}. 
+
+
+Beispiel zu Einsatz von \CodeStyle{std::unique\_ptr} Pointer:
+
+\begin{CCode}
+
+#include <memory>  // definiton von unique_ptr und shared_ptr
+
+void ConsumeElement(std::unique_ptr<int> e) {
+   // do something with e
+}  // e wird ungueltig, Objekt auf welches e zeigt wird geloescht
+
+{
+   std::unique_ptr<int> p( new int(42) );   // neues Objekt an Smartpointer
+                                            // uebergeben
+                                            
+   std::unique_ptr<int> q = std::make_unique<int>(42); // Wie oben, aber exceptionsafe
+  
+  
+   std::unique_ptr<int> r = std::move(q); // Objekt von q an r weiterreichen, q ist
+                                          // jetzt ungueltig (nullptr)
+
+   *r = *p   // Wie bei normalen Pointer Zugriff auf referenziertes Objekt
+  
+   ConsumeElement(std::move(p)) // Objekt an Funktion uebergeben, p ist jetzt ungueltig
+          
+                                          
+}  // Blockende, p, q und r werden ungueltig, alloziertes Objekt von r wird 
+   // automatisch freigegeben
+
+\end{CCode}
+
+Beispiel zu Einsatz von \CodeStyle{std::shared\_ptr} Pointer:
+\begin{CCode}
+
+#include <memory>  // definiton von unique_ptr und shared_ptr
+
+void UseElement(std::shared_ptr<int> e) {
+   // do something with e
+}  // e wird ungueltig, Referenzcounter von Objekt auf welches e zeigt 
+      wird dekrementiert. Objekt wird geloescht wenn Referenzcounter 0 wird 
+
+{
+                                            
+   std::shared_ptr<int> p = std::make_shared<int>(42); // Neues shared Objekt erzeugen
+  
+  
+   std::shared_ptr<int> r = p; // r und p zeigen auf dasselbe Objekt, Referenzcounter steht auf 2
+
+   *r = *p   // Wie bei normalen Pointer Zugriff auf referenziertes Objekt
+  
+   UseElement(p) // Objekt an Funktion uebergeben, jetzt zeigen 3 Zeiger auf Objekt
+   // Nach aufruf von Funktion zeigen wieder 2 Zeiger auf Objekt
+   
+   p = nullptr; // p zeigt nicht mehr auf Objekt, jetzt nur noch 1 Zeiger auf Objekt       
+                                          
+}  // Blockende, r wird ungueltig, kein Zeiger zeigt auf Objekt, von r referenziertes Objekt wird 
+   // automatisch freigegeben
+\end{CCode}
+
 
 \section{Ein- und Ausgabe}
 Bildschirmausgaben laufen über (das Objekt) \CodeIndex{cout}, Eingaben von der Tastatur können über (das Objekt) \CodeIndex{cin} gelesen werden. Um \CodeStyle{cin} oder \CodeStyle{cout} benutzen zu können muss das entsprechende Headerfile mittels \CodeStyle{#include <iostream>} eingebunden werden. (Mit \#include werden dem Code Funktionen aus Bibliotheken zur Verfügung gestellt)
@@ -1425,9 +1465,9 @@ Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes
 
 Bei shared Pointern können beliebig viele Zeiger auf ein bestimmtes Objekt zeigen, dabei wird Buch geführt, wieviele Zeiger auf ein bestimmtes Objekt verweisen. Erst wenn der letzte auf ein bestimmtes Objekt verweisende Pointer stirbt, wird auch das entsprechende Objekt gelöscht.
 
-Siehe \myref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
+Siehe \myref{sec:StdSmartpointer} und \myref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Pointer.
 
-\subsection{Beispiele zum Einsatz von Zeigern, Smartpointern und Referenzen}
+\subsection{Beispiele zum Einsatz von Zeigern und Referenzen}
 
 \begin{CCode}
 	int j, k, l;    // Drei Integer Variablen definieren
@@ -1460,107 +1500,6 @@ Siehe \myref{sec:Smartpointer} zu detaillierteren Informationen über Smart-Point
 	DoSomething(j, k); // j wird von DoSomething veraendert
 \end{CCode}
 
-Beispiel zu Einsatz von unique Pointer:
-\begin{CCode}
-	
-	#include <memory>  // definiton von unique_ptr
-	
-	std::unique_ptr<A> f(int i) 
-	{
-		return std::make_unique<A>(i);   // UniquePointer erzeugt Objekt und übernimmt Verwaltung
-	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
-	
-	void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
-	{
-		// Do something;   
-	} // UniquePointer stirbt, referenziertes Objekt wird freigegeben
-	
-	int TestUnique(int argc, char*argv[])
-	{
-		std::unique_ptr<A> spwrong; // Verboten, Zeiger ohne Inhalt erzeugen
-		
-		f(13);                // Rueckgabewert ignoriert, zurueckgegebener UniquePointer 
-		// wird gelöscht, ohne seinen Inhalt weitergegeben zu 
-		// haben -> Destruktor von UniquePointer loescht
-		// Objekt auf welches der UniquePointer zeigt.  
-		
-		spwrong = f(13);       // Zuweisung verboten
-		
-		std::unique_ptr<A> sp1(f(13))  // Inhalt von zurueckgegebenem UniquePointer wird an
-		// sp1 uebergeben bevor der zurueckgegebene UniquePointer 
-		// gelöscht wird -> Destruktor von UniquePointer loescht
-		// nichts 
-		
-		sp1->DoSomething();    // UniquePointer koennen dank Ueberladung von operator ->
-		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-		
-		try {
-			std::unique_ptr<A> p = std::make_unique<A>(12);
-			g(p);              // Kopie Verboten
-			
-			g(std::make_unique<A>(12));  // Kopie von temporary erlaubt 
-			// (Movekonstruktor)
-			
-			g(std::move(p));         // Ok, mit move wird p in rvaluereferenz gecastet                        
-			// p verliert Besitz von Objekt und wird zu nullptr
-			
-			std::unique_ptr<A> WrongCopy = sp1;  // Kopie Verboten
-			
-			std::unique_ptr<A> Copy = std::make_unique<A>(*sp1);  // Duplikat von Resource erzeugen und 
-			// zuweisen
-			
-			// Kein delete Copy;  Delete nicht noetig, Resource wird durch Destruktor
-			//                    freigegeben wann auch immer Copy/sp1/p ungueltig wird  
-		} catch(...) {  
-		}                    
-	}
-\end{CCode}
-Beispiel zu Einsatz von shared Pointer:
-\begin{CCode}
-	#include <memory>  // definiton von shared_ptr
-	std::shared_ptr<A> f(int i) 
-	{
-		return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
-	}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
-	
-	void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
-	{
-		// Do something;   
-	} // Sharedpointer stirbt, counter von referenziertem Objekt wird dekrementiert,
-	// und Objekt freigegeben falls counter 0 wird.
-	
-	int Test(int argc, char*argv[])
-	{
-		std::shared_ptr<A> sp1;
-		
-		f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
-		// wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
-		// -> Destruktor von Sharedpointer loescht
-		// Objekt auf welches der Sharedpointer zeigt falls counter
-		// 0 wird.  
-		
-		sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
-		// uebergeben bevor der zurueckgegebene Sharedpointer 
-		// gelöscht wird -> Destruktor von Sharedpointer
-		// dekrementiert counter, aber loescht nichts 
-		
-		sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
-		Print(*sp1);           // und operator * wie normale Pointer dereferenziert werden
-		
-		try {
-			std::shared_ptr<A> p = std::make_shared<A>(12);
-			g(p);              // Inhalt von p wird in Sharedpointer von g kopiert,
-			// counter wird inkrementiert, p ist weiterhin gueltig
-			std::shared_ptr<A> Copy = sp1;   // Inhalt von sp1 wird in Smartpointer Copy
-			// kopiert, counter wird inkrementiert, sp1 ist weiterhin 
-			// gueltig
-			// Kein delete Copy, sp1 oder p;  Delete nicht noetig, Resource wird durch Destruktor
-			//                    freigegeben wann auch immer der letzte Pointer darauf
-			// ungueltig wird  
-		} catch(...) {  
-		}                    
-	}
-\end{CCode}
 
 \subsection{RValue Referenzen (Seit \CppVers{11})}
 \label{subsec:RValueRefs}
@@ -7609,13 +7548,15 @@ Der \OviIndex{std::unique\_ptr} \index{unique\_ptr, std::} verhält sich fast gle
 
 Unser Einstiegsbeispiel mit Unique Pointer:
 \begin{CCode}
+#include <memory>  // definiton von unique_ptr
 
 std::unique_ptr<A> f(int i) 
 {
    //return std::unique_ptr<A>(new A(i));   // veraltet (vor C++14)
   
-   return std::make_unique<A>(i); // UniquePointer übernimmt Verwaltung
-}
+   return std::make_unique<A>(i);       // UniquePointer erzeugt Objekt und übernimmt Verwaltung
+}                                       // In Klammern ist die Parameterliste des Konstruktors von A 
+
 
 void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
 {
@@ -7624,14 +7565,22 @@ void g(std::unique_ptr<A> q) // UniquePointer übernimmt Verwaltung
 
 int main(int argc, char*argv[])
 {
-   std::unique_ptr<A> sp; // Zeiger ohne Inhalt erzeugen (nullptr)
+   std::unique_ptr<A> up; // Zeiger ohne Inhalt erzeugen (nullptr)
  
    f(13);                // Rueckgabewert ignoriert, zurueckgegebener unique_ptr 
                          // wird gelöscht, ohne seinen Inhalt weitergegeben zu 
                          // haben -> Destruktor von unique_ptr loescht
                          // Objekt auf welches der unique_ptr zeigt.  
                         
-   sp = std::make_unique<A>(27)  // sp zeigt auf neues Objekt
+   up = std::make_unique<A>(13)  // up zeigt auf neues Objekt
+   
+   up = nullptr;                 // up zeigt auf null, altes Objekt(27)
+                                 // wird freigegeben
+
+   up = std::make_unique<A>(27)  // up zeigt auf neues Objekt
+   
+   std::unique_ptr<A> sp = std::move(up); // Objekt von up an sp weiterreichen, up ist
+                                          // jetzt ungueltig (nullptr)
 
    sp = std::make_unique<A>(42);  // sp zeigt neu auf Objekt(42), altes Objekt(27)
                                   // wird freigegeben
@@ -7660,7 +7609,7 @@ int main(int argc, char*argv[])
                                             // zuweisen
 
       // Kein delete noetig, Resourcen werden durch Destruktor
-      // freigegeben wann auch immer Copy/sp1/p ungueltig werden  
+      // freigegeben wann auch immer Copy/up,sp1/p ungueltig werden  
    } catch(...) {  
    }                    
 }
@@ -7700,14 +7649,16 @@ Der \CodeStyle{std::shared\_ptr} ist somit am universellsten einsetzbar, benötig
 
 Um zyklische Referenzen zu durchbrechen gibt es noch den \OviIndex{std::weak\_ptr} \index{weak\_ptr, std::}, welcher den Referenzcounter nicht erhöht, aber bei Bedarf in einen echten \CodeStyle{std::shared\_ptr} umgewandelt werden kann, falls das Objekt zu diesem Zeitpunkt noch existiert.
 
-
+	
 Unser Einstiegsbeispiel mit Sharedpointer:
 \begin{CCode}
+	#include <memory>  // definiton von shared_ptr
 
 std::shared_ptr<A> f(int i) 
 {
    return std::make_shared<A>(i);   // Sharedpointer übernimmt Verwaltung
-}
+}                                   // In Klammern ist die Parameterliste des Konstruktors von A 
+
 
 void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
 {
@@ -7717,7 +7668,7 @@ void g(std::shared_ptr<A> q) // Sharedpointer übernimmt Verwaltung
 
 int main(int argc, char*argv[])
 {
-   std::shared_ptr<A> sp1;
+   std::shared_ptr<A> sp1; // Uninitialsierter Zeiger zeigt auf nullptr
 
    f(13);                // Rueckgabewert ignoriert, zurueckgegebener Sharedpointer 
                          // wird gelöscht, ohne seinen Inhalt weitergegeben zu haben 
@@ -7727,7 +7678,8 @@ int main(int argc, char*argv[])
 
   sp1 = f(13);           // Inhalt von zurueckgegebenem Sharedpointer wird an sp1
                          // uebergeben bevor der zurueckgegebene Sharedpointer 
-                         // gelöscht wird -> Destruktor von Sharedpointer
+                         // gelöscht wird -> Zuweisungsoperator von sp1 inkrementiert 
+                         // counter, Destruktor von Sharedpointer
                          // dekrementiert counter, aber loescht nichts 
     
   sp1->DoSomething();    // Sharedpointer koennen dank Ueberladung von operator ->
@@ -7747,7 +7699,8 @@ int main(int argc, char*argv[])
    }                    
 }
 \end{CCode}
-Objekte können auch direkt mit \CodeStyle{make_shared}\index{make\_shared} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_shared} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer und effizienter.
+
+Objekte können auch direkt mit \CodeStyle{make_shared}\index{make\_shared} erzeugt werden, damit kann auf ein explizites new verzichtet werden (ist nun in \CodeStyle{make_shared} versteckt), und erleichtert so das Resourcenmanagement, zudem ist diese Variante sicherer und effizienter (Für Referenzzähler und Objekt wird üblicherweise ein gemeinsamer Speicherblock alloziert).
 \begin{CCode}
 
 
