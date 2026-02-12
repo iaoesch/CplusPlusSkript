@@ -1320,6 +1320,7 @@ void ConsumeElement(std::unique_ptr<int> e) {
    // do something with e
 }  // e wird ungueltig, Objekt auf welches e zeigt wird geloescht
 
+void example()
 {
    std::unique_ptr<int> p( new int(42) );   // neues Objekt an Smartpointer
                                             // uebergeben
@@ -1350,12 +1351,11 @@ void UseElement(std::shared_ptr<int> e) {
 }  // e wird ungueltig, Referenzcounter von Objekt auf welches e zeigt 
       wird dekrementiert. Objekt wird geloescht wenn Referenzcounter 0 wird 
 
+void example()
 {
-                                            
-   std::shared_ptr<int> p = std::make_shared<int>(42); // Neues shared Objekt erzeugen
+     std::shared_ptr<int> p = std::make_shared<int>(42); // Neues shared Objekt erzeugen
   
-  
-   std::shared_ptr<int> r = p; // r und p zeigen auf dasselbe Objekt, Referenzcounter steht auf 2
+     std::shared_ptr<int> r = p; // r und p zeigen auf dasselbe Objekt, Referenzcounter steht auf 2
 
    *r = *p   // Wie bei normalen Pointer Zugriff auf referenziertes Objekt
   
