@@ -239,7 +239,8 @@ basicstyle={\footnotesize \ttfamily},
 %backgroundcolor=\color{Mygray},
 %frame=single,
 % Allow linebreaks at underscores
-%literate={\_}{}{0\discretionary{\_}{}{\_}}%
+%literate={\_}{}{0\discretionary{\_}{}{\_}}
+%literate={\_}{{\discretionary{\_}{}{\_}}}{1}
 tab=\rightarrowfill}
 
   
@@ -1373,7 +1374,7 @@ void example()
 
 \subsection{Benutzerdefinierte Speicherverwaltung}
 
-Die Standardimplementierung der globalen Operatoren new und delete können vom Anwender selbst neu definiert werden. 
+Die Standardimplementierungen der globalen Operatoren new und delete können vom Anwender selbst neu definiert werden. 
 Einerseits kann so eine eigene Speicherverwaltung realisiert werden, andererseits können so auch
 Speicherlecks gefunden werden. (Die Operatoren new und delete können zudem für jede Klasse separat überladen werden.)
 
@@ -1399,7 +1400,7 @@ void operator delete[]( void* ptr, std::size_t sz, std::align_val_t al ) noexcep
 \end{CCode}
 
 Als Spezialitäten gibt es noch die Placement-Delete Operatoren. Diese werden nur aufgerufen,
-wenn bei einem Placement-New die Initialisierung fehlschlägt (Z.B. der Konstruktor eine Exeption wirft.
+wenn bei einem Placement-New die Initialisierung fehlschlägt (Z.B. der Konstruktor eine Exeption wirft).
 
 \begin{CCode}
 void operator delete  ( void* ptr, const std::nothrow_t& tag ) noexcept;
@@ -1408,65 +1409,79 @@ void operator delete  ( void* ptr, std::align_val_t al, const std::nothrow_t& ta
 void operator delete[]( void* ptr, std::align_val_t al, const std::nothrow_t& tag ) noexcept;
 \end{CCode}
 
-Üblicherweise rufen alle Nicht-Alignement-Varianten von new direkt oder indirekt die Variante \CodeStyle{new(std::size_t count)},
-und alle Alignement-Varianten von new
+Üblicherweise müssen nur die vier Varianten
+\CodeStyle{new(std::size_t)}, \\
+\CodeStyle{new(std::size_t, std::align_val_t)},
+\CodeStyle{delete(void*)} und 
+\CodeStyle{delete(void*, std::align_val_t)} implementiert werden, alle anderen Varienten rufen
+defaultmässig eine passende dieser Varianten auf. Die Alignementvarianten werden nur aufgerufen, wenn ein
+vom Compiler nicht unterstütztes Alignement gefordert wird (Übergrosses Alignement). D.h. es muss dafür 
+gesorgt werden, dass die zurückgelieferte Adresse ein vielfaches von Alignement ist, allenfalls muss
+ein (size + Alignement) grosser Block alloziert werden, und die zurückgelieferte Adresse um den benötigten Offset
+korrigiert werden. 
 
+Je nach Implementation müssen aber auch andere Varianten (z.B. die Arrayvarianten []) noch neu definiert werden, am Besten
+jeweils kurz ausprobieren.
+
+Nachfolgend ein kurzes Beispiel, welches die allozierten und freigegebenen Speicherblöcke zählt. Dabei beachten, dass auch
+vor und nach Aufruf von \CodeStyle{main()} durch globale Objekte Speicher alloziert oder freigegeben werden kann.  
 \begin{CCode}
 
-// no inline, required by [replacement.functions]/3
+// At the end of programm AllocatedBlocks should equal Released
+// otherwise we have a memory leak
+static uint32_t AllocatedBlocks = 0;
+static uint32_t ReleasedBlocks = 0;
+
 void* operator new(std::size_t sz)
 {
-    std::printf("1) new(size_t), size = %zu\n", sz);
-    if (sz == 0)
-        ++sz; // avoid std::malloc(0) which may return nullptr on success
+    // Zero-Size objects also need an unique address...
+    if (sz == 0) {
+        ++sz; 
+    }
  
-    if (void *ptr = std::malloc(sz))
+    // Real allocation of memory
+    if (void *ptr = std::malloc(sz)) {
+        AllocatedBlocks++;
         return ptr;
+    }
  
-    throw std::bad_alloc{}; // required by [new.delete.single]/3
+    throw std::bad_alloc{};
 }
  
-// no inline, required by [replacement.functions]/3
-void* operator new[](std::size_t sz)
+void* operator new( std::size_t count, std::align_val_t al )
 {
-    std::printf("2) new[](size_t), size = %zu\n", sz);
-    if (sz == 0)
-        ++sz; // avoid std::malloc(0) which may return nullptr on success
- 
-    if (void *ptr = std::malloc(sz))
-        return ptr;
- 
-    throw std::bad_alloc{}; // required by [new.delete.single]/3
+    // We do not support overaligned memory, needs some additional work
+    // e.g. return (std::malloc(sz + size_t(al)) / al + 1) * al
+    // and store somewhere original pointer to be used by free...
+    // probably in due to the alignement the unused part of the block 
+    throw std::bad_alloc{};
 }
-
-void* operator new  ( std::size_t count, std::align_val_t al );
 	
-void* operator new[]( std::size_t count, std::align_val_t al );
-	
-
  
 void operator delete(void* ptr) noexcept
 {
-    std::puts("3) delete(void*)");
-    std::free(ptr);
+    if (ptr != nullptr) {
+        ReleasedBlocks++;
+        std::free(ptr);
+    } else {
+       // Probably we want to catch delete nullptr here
+       // (Is legal, but might be a problem)
+    }
 }
  
-void operator delete(void* ptr, std::size_t size) noexcept
+void operator delete  ( void* ptr, std::align_val_t al ) noexcept
 {
-    std::printf("4) delete(void*, size_t), size = %zu\n", size);
-    std::free(ptr);
+    // We do not support overaligned memory, needs some additional work
+    // The aligned new must store the original pointer for us
+    // std::free(getOriginalPointerFromAligned(ptr));
+    throw std::bad_alloc{};
 }
- 
-void operator delete[](void* ptr) noexcept
+
+void CheckMemory() 
 {
-    std::puts("5) delete[](void* ptr)");
-    std::free(ptr);
-}
- 
-void operator delete[](void* ptr, std::size_t size) noexcept
-{
-    std::printf("6) delete[](void*, size_t), size = %zu\n", size);
-    std::free(ptr);
+   if (ReleasedBlocks != AllocatedBlocks) {
+      std::cout << (AllocatedBlocks - ReleasedBlocks) << " Blocks not released";
+   }
 }
 \end{CCode}
 
