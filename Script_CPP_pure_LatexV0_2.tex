@@ -6551,6 +6551,47 @@ SpeziellKonfigurierbareKlasse<int, ArrayKlasse, float> MyClass;
 
 \end{CCode}
 
+\subsection{Verhinderung von Zweideutigkeit bei Typen mit typename}
+\index{typename}
+Falls in einem Template ein Typedef eines Parameters benutzt wird,
+ist nicht immer klar ob es sich um einen Typen, einen Enum oder ein 
+Klassenattribut handelt. In diesem Fall muss das Schlüsselwort \CodeStyle{typename}
+verwendet werden um Klarheit zu schaffen.
+
+\begin{CCode}
+
+struct Demo {
+   typedef int TheType;
+};
+
+struct ContraDemo {
+   static int TheType;
+};
+
+template<class T>
+class Container {
+
+   // Pointer to TheType, or Multiplication?
+   // Both possible, as we do not know what T really is here...
+   // (Could Work as multiplication if T were ContraDemo)
+   T::TheType *Pointer;
+   ...
+   // All is clear, TheType must be a type...
+   // (Results in Error T were ContraDemo)
+   typename T::TheType *Pointer;
+   ...
+   ...
+};
+\end{CCode}
+
+Da bei Spezialisierungen immer das am besten passende Template ausgewählt
+wird, ist es durchaus erlaubt, dass bei einigen Kandidaten Fehler auftreten
+würden, diese werden einfach als unpassend ignoriert. Deshalb muss im
+obigen Beispiel immer Klarheit geschaffen werden (Und wird vom Compiler
+oft auch eingefordert). 
+   
+
+
 
 \subsection{Spezialisierung von Templates}
 Wenn bei einem Template für einen bestimmten Datentypen,
@@ -6563,10 +6604,43 @@ Die Spezialisierungen von Templates dürfen im Code erst
 nach der Deklaration/Definition des generellen Templates
 erfolgen. 
 
+Spezialisierungen dürfen mehr oder weniger Parameter haben
+als das original Template, müssen sich aber in der
+Parameterliste zwingend vom Original unterscheiden.
+(Andere Arten oder andere Anzahl von Parametern).
+In der Spezialiasierung muss das Originaltemplate
+mit gleich vielen Parametern wie in der Originaldefinition,
+aber mit mindestens einem spezialisierteren Parameter
+definiert werden.
+
 \subsection{Komplette Spezialisierung von Templates}
 Bei der \OviIndex{kompletten Spezialisierung} wird das Template 
-für einen ganz bestimmten Datentypen spezialisiert,
-zum Bespiel für den Fall das Komplex mit \CodeStyle{int}
+für ganz bestimmte Datentypen spezialisiert.
+
+\begin{CCode}
+template<class A, int N, class B>   // Basistemplate
+Demo {
+   // Some clever Code
+};
+
+template<>   // a specialization, <> is required
+Demo<int, 42, float> {
+   // Some clever Code
+};
+
+template<>   // an other specialization, <> is required
+Demo<int, 17, float> {
+   // Some clever Code
+};
+
+template<>   // an other specialization, <> is required
+Demo<long, 0, long> {
+   // Some clever Code
+};
+\end{CCode}
+
+
+Zum Bespiel für den Fall das Komplex mit \CodeStyle{int}
 erzeugt wird, und wir besonders schnelle Algorithmen
 für diesen Fall kennen und auch anwenden wollen:
 
@@ -6611,8 +6685,60 @@ Benutzung des Templates
 \subsection{Partielle Spezialisierung von Templates}
 
 Bei der \OviIndex{partiellen Spezialisierung} wird das Template 
-für eine Gruppe von Datentypen spezialisiert,
-zum Beispiel für den Fall das Komplex mit Zeigern
+für eine Gruppe von Datentypen spezialisiert.
+\begin{CCode}
+template<class A, int N, class B>   // Basistemplate
+Demo {
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<class A, int N, class B>   
+Demo<A *, N, B> { // More specialized, A is pointer
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<class A, class B>   
+Demo<A, 42, B> { // More specialized, N is 42
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<class T, int N>   
+Demo<T, N, T> { // More specialized, A and B are same type
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<int N>   
+Demo<int, N, int> { // More specialized, A and B are int
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<class B, int N, class R, class S>   
+Demo<std::tuple<A,C>, N, B> { // More specialized, A is tuple of R, S
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<class B, int N, class R, class S>   
+Demo<std::tuple<A,C>, N, B> { // More specialized, A is tuple of R, S
+   // Some clever Code
+};
+
+// a partial specialization, we have some parameters
+template<class A, int N, class R, class S>   
+Demo<A, N, R S::*> { // More specialized, B is a memberpointer into S
+   // Some clever Code
+};
+
+\end{CCode}
+
+
+
+Zum Beispiel für den Fall das Komplex mit Zeigern
 erzeugt wird, und wir angemessenen Code für
 diesen Fall erzeugen wollen:
 (Achtung, soll nur als einfaches Beispiel dienen, hat keine
