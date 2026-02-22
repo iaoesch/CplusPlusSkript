@@ -6795,248 +6795,6 @@ spezialisierte, noch passende Version verwendet.
 Detailliertere Informationen zur \OviIndex{Templatespezialisierung} findet man in der entsprechenden
 Fachliteratur.
 
-\subsection{Template-Metaprogrammierung}
-\OviIndex{Metaprogrammierung} bedeutet, Programme zu schreiben, welche Programme schreiben. 
-In \Cpp benutzt man dazu vor allem Templates und bezeichnet dies als \OviIndex{Template-Metaprogrammierung}.
-Templatemetaprogramme arbeiten vor allem mit Typen (Template-Parametern) und bestehen vor allem aus
-Code, welcher mit Typen anstelle von Variablen arbeitet, um so den benötigten Code zu erstellen.
-Die wichtigstn Elemente der Template-Metaprogrammierung sind die Spezialisierung, damit werden Fallunterscheidungen und Bedingungen 
-realisiert, sowie die Rekusion, damit werden Schlaufen
-realisiert. In moderneren Sprachversionen kommen auch \CodeStyle{constexpr} Methoden oder Funktionen zum Einsatz. 
-
-In den Nachfolgenden Kapiteln werden einige Techniken der Template-Metaprogrammierung vorgestellt.
-\subsubsection{Typmanipulationen}
-Entfernung von const:
-\begin{CCode}
-// removes a const qualifier from a type
-
-// Primary Template, sets ist member to received Type
-template <class T>
-struct RemoveConst {
-    typedef T Result;
-};
-
-// Specialized Template, matches for const T, 
-// sets ist member result type without const
-template <class T>
-struct RemoveConst<const T> {
-    typedef T Result; // Template matches to const T, so T is without const
-};
-
-
-// Test
-const float cf; 
-constexpr RemoveConst<const int>::Result r1;    // type is int
-constexpr RemoveConst<int>::Result r2;          // type is int
-constexpr RemoveConst<decltype(cf)>::Result r3; // type is float
-\end{CCode}
-
-Entfernung von Referenz: 
-\begin{CCode}
-// removes a reference  from a type
-
-// Primary Template, sets ist member to received Type
-template <class T>
-struct RemoveRef {
-    typedef T Result;
-};
-
-// Specialized Template, matches for  T&, 
-// sets ist member result type without &
-template <class T>
-struct RemoveConst<T &> {
-    typedef T Result; // Template matches to  T &, so T is without ref
-};
-
-
-// Test
-constexpr RemoveConst<int &>::Result r1;    // type is int
-constexpr RemoveConst<int>::Result r2;      // type is int
-\end{CCode}
- Gemäss desem Muster können beliebig komplexe Typmanipulationen durchgeführt
- werden, einfach für jeden Fall ein spezialisiertes Template schreiben.
-
-\subsubsection{Kontrollfluss}
-
-
-Eine Verzweigung wird üblicherweise durch eine Templatespezialisierung realisiert.
-
-Nachfolgendes Template führt einen Test auf Gleichheit zweier Typen durch:
-\begin{CCode}
-// IsSameType: true if two types are same, false otherwise
-
-// Primary Template, sets ist member result to false
-template <class T1, class T2>
-struct IsSameType {
-    static constexpr bool Result = false;
-};
-
-// Specialized Template for the case of two identical types, 
-// sets ist member result to false
-template <class T>
-struct IsSameType <T, T>{
-    static constexpr bool Result = true;
-};
-
-
-// Test
-constexpr bool r1 = IsSameType<int, int>::Result;  // true
-constexpr bool r2 = IsSameType<int, char>::Result; // false
-\end{CCode}
-
-
-\begin{CCode}
-// Select between two types
-template <bool Selector, class T1, class T2>
-struct SelectType {
-};
-
-template <class T1, class T2>
-struct SelectType<true, T1, T2> {
-    typedef T1 Type;
-};
-
-template <class T1, class T2>
-struct SelectType<false, T1, T2> {
-    typedef T2 Type;
-};
-
-// Test
-typedef SelectType<true, int , long>::Type tt1;  // tt1 is int
-typedef SelectType<false, int , long>::Type tt2; // tt2 is long
-\end{CCode}
-
-\begin{CCode}
-
-// find type in list of types who contains a typedef named Type who matches given typ
-// (Serch for A type in List)
-
-// Generel case if more than one element is left in list
-// Returns first Element if type matches, otherwise
-// instantiates recursively itself with rest of list
-// and 'returns' that result
-template <class K, class First, class ...List>
-struct FindElementInList {
-    typedef typename SelectType<IsSameType<K, typename First::Type>::Result,
-                                First,
-                                typename FindElementInList<K, List...>::Result
-                                >::Type Result;
-};
-
-// Special case if only one element is left in list
-// 'Returns' Element if type matches, void otherwise
-template <class K, class First>
-struct FindElementInList<K, First> {
-    typedef typename SelectType<IsSameType<K, typename First::Type>::Result,
-                                First,
-                                void
-                                >::Type Result;
-};
-
-// Test
-void MetaProgramTest()
-{
-   struct TT1 {typedef int Type; float a;};
-   struct TT2 {typedef TT1 Type; int x;};
-   struct TT3 {typedef std::string Type; int x; int y;};
-
-   typedef FindElementInList<int, TT1, TT2, TT3>::Result tx1;
-   tx1 test1;
-   test1.a = 3.14;  // tx is of type TT1
-
-   typedef FindElementInList<TT1, TT1, TT2, TT3>::Result tx2;
-   tx2 test2;
-   test2.x = 3;  // tx is of type TT2
-
-   typedef FindElementInList<std::string, TT1, TT2, TT3>::Result tx3;
-   tx3 test3;
-   test3.y = 3;  // tx is of type TT3;
-
-   typedef FindElementInList<float, TT1, TT2, TT3>::Result tx4;
-   // tx4 test4;  tx4 is void, no type has typedef Type of float
-}
-\end{CCode}
-
-Hier noch ein kleines (einfaches) Beispiel, was mit "`Template-Magie"'
-alles möglich ist.
-
-Das nachfolgende Beispiel kann Binärzahlen in Dezimalzahlen
-umwandeln, und das zu Compilezeit, d.h. die Binärzahl wird
-zu Compilezeit umgewandelt. Es wird also \emph{kein} zusätzlicher
-Code erzeugt oder Speicherplatz benötigt!
-
-\begin{CCode}
-/* Binary-to-Decimal as Template Metaprogram */
-
-/* Allgemeiner Fall, rekursive Auflösung */
-template< unsigned long N > struct Bin
-  {
-  enum { value = (N % 10) +                /* Hier ist die Magie:                 */
-           2 * Bin< N / 10 > :: value } ;  /* Wert Einerstelle plus den           */
-                                           /* doppelten Wert der hoeherwertigen   */
-                                           /* Stellen, diese werden durch         */
-                                           /* rekusive Templateinstantiation      */
-                                           /* gewonnen (Rekusion endet bei N = 0) */           
-  } ;
-
-/* Spezialisierung fuer den Fall N = 0 */
-struct Bin< 0 >
-  {
-  enum { value = 0 } ;   /* Einfach, wenn N = 0 ist auch Binaerwert 0 */
-  } ;
-\end{CCode}
-
-Dieses Template könnte wie folgt angewendet werden:
-
-\begin{CCode}
-int a = Bin<1010110>::value;
-std::cout << Bin<1101010>::value << std::endl;
-int Array x[Bin<1001>::value][13];       /* Definiert 9*13 Array! */
-\end{CCode}
-Man beachte, das Ergebnis dieses Templates ist eine gewöhnliche
-numerische Konstante, die überall im Code eingesetzt werden
-kann, wo eine solche erwartet wird.
-
-
-Das Template soll nur das Prinzip zeigen, es fehlen hier noch
-Kontrollen und Fehlerhandling für illegale Binärzahlen wie
-101037012 oder zu lange Zahlen. Aber auch diese Probleme
-lassen sich mit entsprechenden Template-Tricks lösen.
-
-Ein weiteres Beispiel, welches zur Compilezeit die Fakultät berechnet:
-\begin{CCode}
-
-#include <iostream>
- 
-template <int N> struct Factorial {
- static const int result = N * Factorial<N-1>::result;
-};
- 
-template <> struct Factorial<0> {
- static const int result = 1;
-};
- 
-int main() {
- std::cout << Factorial<5>::result << "\n";
- return 0;
-}
-\end{CCode}
-
-Und ein Beispiel zum Berechnen des grössten gemeinsamen Teilers (GGT) zur Compilezeit mit
-dem Algorithmus von Euklid:
-\begin{CCode}
-
-template <int X, int Y>   struct GGT {
-        static const long result = GGT<Y, X % Y>::result;
-};
- 
-template <int X> struct GGT<X, 0> {
-        static const long result = X;
-};
-
-int t = GGT<124, 72>::result;
-
-\end{CCode}
 
 \subsection{Templateklassen und Vererbung}
 Von Templateklassen kann wie von normalen Klassen abgeleitet werden,
@@ -7742,6 +7500,248 @@ FFT<117> TheFFT2; // Compile error, 117 is not power of two
 
 \end{CCode}
 
+\subsection{Template-Metaprogrammierung}
+\OviIndex{Metaprogrammierung} bedeutet, Programme zu schreiben, welche Programme schreiben. 
+In \Cpp benutzt man dazu vor allem Templates und bezeichnet dies als \OviIndex{Template-Metaprogrammierung}.
+Templatemetaprogramme arbeiten vor allem mit Typen (Template-Parametern) und bestehen vor allem aus
+Code, welcher mit Typen anstelle von Variablen arbeitet, um so den benötigten Code zu erstellen.
+Die wichtigstn Elemente der Template-Metaprogrammierung sind die Spezialisierung, damit werden Fallunterscheidungen und Bedingungen 
+realisiert, sowie die Rekusion, damit werden Schlaufen
+realisiert. In moderneren Sprachversionen kommen auch \CodeStyle{constexpr} Methoden oder Funktionen zum Einsatz. 
+
+In den Nachfolgenden Kapiteln werden einige Techniken der Template-Metaprogrammierung vorgestellt.
+\subsubsection{Typmanipulationen}
+Entfernung von const:
+\begin{CCode}
+// removes a const qualifier from a type
+
+// Primary Template, sets ist member to received Type
+template <class T>
+struct RemoveConst {
+    typedef T Result;
+};
+
+// Specialized Template, matches for const T, 
+// sets ist member result type without const
+template <class T>
+struct RemoveConst<const T> {
+    typedef T Result; // Template matches to const T, so T is without const
+};
+
+
+// Test
+const float cf; 
+constexpr RemoveConst<const int>::Result r1;    // type is int
+constexpr RemoveConst<int>::Result r2;          // type is int
+constexpr RemoveConst<decltype(cf)>::Result r3; // type is float
+\end{CCode}
+
+Entfernung von Referenz: 
+\begin{CCode}
+// removes a reference  from a type
+
+// Primary Template, sets ist member to received Type
+template <class T>
+struct RemoveRef {
+    typedef T Result;
+};
+
+// Specialized Template, matches for  T&, 
+// sets ist member result type without &
+template <class T>
+struct RemoveConst<T &> {
+    typedef T Result; // Template matches to  T &, so T is without ref
+};
+
+
+// Test
+constexpr RemoveConst<int &>::Result r1;    // type is int
+constexpr RemoveConst<int>::Result r2;      // type is int
+\end{CCode}
+ Gemäss desem Muster können beliebig komplexe Typmanipulationen durchgeführt
+ werden, einfach für jeden Fall ein spezialisiertes Template schreiben.
+
+\subsubsection{Kontrollfluss}
+
+
+Eine Verzweigung wird üblicherweise durch eine Templatespezialisierung realisiert.
+
+Nachfolgendes Template führt einen Test auf Gleichheit zweier Typen durch:
+\begin{CCode}
+// IsSameType: true if two types are same, false otherwise
+
+// Primary Template, sets ist member result to false
+template <class T1, class T2>
+struct IsSameType {
+    static constexpr bool Result = false;
+};
+
+// Specialized Template for the case of two identical types, 
+// sets ist member result to false
+template <class T>
+struct IsSameType <T, T>{
+    static constexpr bool Result = true;
+};
+
+
+// Test
+constexpr bool r1 = IsSameType<int, int>::Result;  // true
+constexpr bool r2 = IsSameType<int, char>::Result; // false
+\end{CCode}
+
+
+\begin{CCode}
+// Select between two types
+template <bool Selector, class T1, class T2>
+struct SelectType {
+};
+
+template <class T1, class T2>
+struct SelectType<true, T1, T2> {
+    typedef T1 Type;
+};
+
+template <class T1, class T2>
+struct SelectType<false, T1, T2> {
+    typedef T2 Type;
+};
+
+// Test
+typedef SelectType<true, int , long>::Type tt1;  // tt1 is int
+typedef SelectType<false, int , long>::Type tt2; // tt2 is long
+\end{CCode}
+
+\begin{CCode}
+
+// find type in list of types who contains a typedef named Type who matches given typ
+// (Serch for A type in List)
+
+// Generel case if more than one element is left in list
+// Returns first Element if type matches, otherwise
+// instantiates recursively itself with rest of list
+// and 'returns' that result
+template <class K, class First, class ...List>
+struct FindElementInList {
+    typedef typename SelectType<IsSameType<K, typename First::Type>::Result,
+                                First,
+                                typename FindElementInList<K, List...>::Result
+                                >::Type Result;
+};
+
+// Special case if only one element is left in list
+// 'Returns' Element if type matches, void otherwise
+template <class K, class First>
+struct FindElementInList<K, First> {
+    typedef typename SelectType<IsSameType<K, typename First::Type>::Result,
+                                First,
+                                void
+                                >::Type Result;
+};
+
+// Test
+void MetaProgramTest()
+{
+   struct TT1 {typedef int Type; float a;};
+   struct TT2 {typedef TT1 Type; int x;};
+   struct TT3 {typedef std::string Type; int x; int y;};
+
+   typedef FindElementInList<int, TT1, TT2, TT3>::Result tx1;
+   tx1 test1;
+   test1.a = 3.14;  // tx is of type TT1
+
+   typedef FindElementInList<TT1, TT1, TT2, TT3>::Result tx2;
+   tx2 test2;
+   test2.x = 3;  // tx is of type TT2
+
+   typedef FindElementInList<std::string, TT1, TT2, TT3>::Result tx3;
+   tx3 test3;
+   test3.y = 3;  // tx is of type TT3;
+
+   typedef FindElementInList<float, TT1, TT2, TT3>::Result tx4;
+   // tx4 test4;  tx4 is void, no type has typedef Type of float
+}
+\end{CCode}
+
+Hier noch ein kleines (einfaches) Beispiel, was mit "`Template-Magie"'
+alles möglich ist.
+
+Das nachfolgende Beispiel kann Binärzahlen in Dezimalzahlen
+umwandeln, und das zu Compilezeit, d.h. die Binärzahl wird
+zu Compilezeit umgewandelt. Es wird also \emph{kein} zusätzlicher
+Code erzeugt oder Speicherplatz benötigt!
+
+\begin{CCode}
+/* Binary-to-Decimal as Template Metaprogram */
+
+/* Allgemeiner Fall, rekursive Auflösung */
+template< unsigned long N > struct Bin
+  {
+  enum { value = (N % 10) +                /* Hier ist die Magie:                 */
+           2 * Bin< N / 10 > :: value } ;  /* Wert Einerstelle plus den           */
+                                           /* doppelten Wert der hoeherwertigen   */
+                                           /* Stellen, diese werden durch         */
+                                           /* rekusive Templateinstantiation      */
+                                           /* gewonnen (Rekusion endet bei N = 0) */           
+  } ;
+
+/* Spezialisierung fuer den Fall N = 0 */
+struct Bin< 0 >
+  {
+  enum { value = 0 } ;   /* Einfach, wenn N = 0 ist auch Binaerwert 0 */
+  } ;
+\end{CCode}
+
+Dieses Template könnte wie folgt angewendet werden:
+
+\begin{CCode}
+int a = Bin<1010110>::value;
+std::cout << Bin<1101010>::value << std::endl;
+int Array x[Bin<1001>::value][13];       /* Definiert 9*13 Array! */
+\end{CCode}
+Man beachte, das Ergebnis dieses Templates ist eine gewöhnliche
+numerische Konstante, die überall im Code eingesetzt werden
+kann, wo eine solche erwartet wird.
+
+
+Das Template soll nur das Prinzip zeigen, es fehlen hier noch
+Kontrollen und Fehlerhandling für illegale Binärzahlen wie
+101037012 oder zu lange Zahlen. Aber auch diese Probleme
+lassen sich mit entsprechenden Template-Tricks lösen.
+
+Ein weiteres Beispiel, welches zur Compilezeit die Fakultät berechnet:
+\begin{CCode}
+
+#include <iostream>
+ 
+template <int N> struct Factorial {
+ static const int result = N * Factorial<N-1>::result;
+};
+ 
+template <> struct Factorial<0> {
+ static const int result = 1;
+};
+ 
+int main() {
+ std::cout << Factorial<5>::result << "\n";
+ return 0;
+}
+\end{CCode}
+
+Und ein Beispiel zum Berechnen des grössten gemeinsamen Teilers (GGT) zur Compilezeit mit
+dem Algorithmus von Euklid:
+\begin{CCode}
+
+template <int X, int Y>   struct GGT {
+        static const long result = GGT<Y, X % Y>::result;
+};
+ 
+template <int X> struct GGT<X, 0> {
+        static const long result = X;
+};
+
+int t = GGT<124, 72>::result;
+
+\end{CCode}
 
 
 \chapter{Die Standardbibliothek}
