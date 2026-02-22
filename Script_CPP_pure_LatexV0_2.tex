@@ -7561,10 +7561,52 @@ constexpr RemoveConst<int>::Result r2;      // type is int
  Gemäss desem Muster können beliebig komplexe Typmanipulationen durchgeführt
  werden, einfach für jeden Fall ein spezialisiertes Template schreiben.
 
+Nachfolgender Code testet, ob ein Typ
+im Parameterpack mehr als einmal enthalten ist.
+\begin{CCode}
+template<class T>
+struct UniqueHelper {
+    
+};
+
+template<class ...Fields>
+struct MustBeUnique : public UniqueHelper<Fields>... {
+};
+
+// Testing
+MustBeUnique<int, float, int*> x; // Ok
+MustBeUnique<int, float, int> y;  // Compiler error
+
+// Template only availlable if MustBeUnique does not fail to compile
+template<class ...Fields>
+static constexpr decltype(MustBeUnique<Fields...>(), bool()) isUniqueHelperf(int) {
+    return true;
+};
+
+// Allways availlable, but only selected if no other Overload
+// is availlable
+template<class ...Fields>
+static bool constexpr isUniqueHelperf(...) {
+    return false;
+};
+
+// Just convenince function which needs no Argument
+template<class ...Fields>
+static bool constexpr isUnique() {
+    return isUniqueHelperf<Fields...>(0);
+};
+
+
+constexpr bool rr = isUnique<int, int>();   // will be false
+constexpr bool rr2 = isUnique<int, int*>(); // will be true
+
+
+\end{CCode}
+
 \subsubsection{Kontrollfluss}
 
 
-Eine Verzweigung wird üblicherweise durch eine Templatespezialisierung realisiert.
+Verzweigungen und Fallunterscheidungen werden üblicherweise durch eine Templatespezialisierung realisiert.
 
 Nachfolgendes Template führt einen Test auf Gleichheit zweier Typen durch:
 \begin{CCode}
@@ -7589,7 +7631,7 @@ constexpr bool r1 = IsSameType<int, int>::Result;  // true
 constexpr bool r2 = IsSameType<int, char>::Result; // false
 \end{CCode}
 
-
+Dieses Template wählt zwischen zwei Typen aus
 \begin{CCode}
 // Select between two types
 template <bool Selector, class T1, class T2>
@@ -7611,10 +7653,14 @@ typedef SelectType<true, int , long>::Type tt1;  // tt1 is int
 typedef SelectType<false, int , long>::Type tt2; // tt2 is long
 \end{CCode}
 
+\subsubsection{Beispiele}
+
+Nachfolgendes Template prüft, ob ein gegebener Typ in einer Liste von Typen
+vorhanden ist, und liefert im Erfolgsfall den Typen zurück, sonst void.
 \begin{CCode}
 
 // find type in list of types who contains a typedef named Type who matches given typ
-// (Serch for A type in List)
+// (Serch for K type in List)
 
 // Generel case if more than one element is left in list
 // Returns first Element if type matches, otherwise
@@ -7662,7 +7708,49 @@ void MetaProgramTest()
 }
 \end{CCode}
 
-Hier noch ein kleines (einfaches) Beispiel, was mit "`Template-Magie"'
+
+
+Hier eine einfache Implementation einer Tuple-Klasse, mit der Einschränkung 
+dass jeder Eintrag ein anderer Typ sein muss. Um mehrere Einträge vom
+selben Typ zu erlauben, ist weiterer Code notwendig.
+\begin{CCode}
+template<class T>
+struct Tuplentry {
+    T Value;
+};
+
+template<class ...Elements>
+struct SimpleTuple : public Tuplentry<Elements>... {
+    
+    SimpleTuple(Elements... args) : Tuplentry<Elements>{args}... {}
+        
+template<class T>
+    T & get() {return Tuplentry<T>::Value;}
+
+template<class T>
+    void set(const T & v) {Tuplentry<T>::Value = v;}
+
+template<class T>
+    T & operator =(const T &v) {Tuplentry<T>::Value = v;}
+
+template<class T>
+   operator T() {return Tuplentry<T>::Value;}
+};
+
+void ft()
+{
+    SimpleTuple s(5, 3.14, "hans");
+    
+    s = 6.7;
+    int i = s;
+    auto d = s.get<double>();
+    s.set<int>(42);
+}
+\end{CCode}
+
+
+
+Einige weitere Beispiele, was mit "`Template-Magie"'
 alles möglich ist.
 
 Das nachfolgende Beispiel kann Binärzahlen in Dezimalzahlen
