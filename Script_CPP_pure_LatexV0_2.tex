@@ -2737,10 +2737,24 @@ int main (int argc, char *argv[])
 \section{Alternative Funktionsdefinition (Seit \CppVers{11})}
 \label{subsubsect:Alternative Funktionsdefinition}
 
-Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Dies ist vorallem bei komplexeren Templates von Vorteil.
+Der Rückgabetyp von Funktionen kann neu auch nach der Argumentenliste angegeben werden. Insbesondere können auch die
+Parametervariablen zur Typerschliessung hinzugezogen werden. Diese sind erst nach der Parameterliste verfügbar.
+Dies ist vorallem bei komplexeren Templates von Vorteil.
 
 \begin{CCode}
+	template<class T>
+	decltype(x->GetValue()) MagicFunction(const T1 &x) // Error, x in decltype nicht bekannt 
+	{
+	    return x.GetValue();
+	}
 	
+	template<class T>
+	MagicFunction(const T1 &x) -> decltype(x->GetValue()). // Ok, x bekannt 
+	{
+	    return x.GetValue();
+	}
+
+
 	// Der Rückgabetyp ist, was auch immer der Ergebnistyp der Addition von x und y ist
 	template<class T1, class T2>
 	auto MagicFunction(const T1 &x, const T2 &y) -> decltype(x+y) 
@@ -7500,7 +7514,7 @@ FFT<117> TheFFT2; // Compile error, 117 is not power of two
 
 \end{CCode}
 
-\subsection{Template-Metaprogrammierung}
+\section{Template-Metaprogrammierung}
 \OviIndex{Metaprogrammierung} bedeutet, Programme zu schreiben, welche Programme schreiben. 
 In \Cpp benutzt man dazu vor allem Templates und bezeichnet dies als \OviIndex{Template-Metaprogrammierung}.
 Templatemetaprogramme arbeiten vor allem mit Typen (Template-Parametern) und bestehen vor allem aus
@@ -7510,7 +7524,72 @@ realisiert, sowie die Rekusion, damit werden Schlaufen
 realisiert. In moderneren Sprachversionen kommen auch \CodeStyle{constexpr} Methoden oder Funktionen zum Einsatz. 
 
 In den Nachfolgenden Kapiteln werden einige Techniken der Template-Metaprogrammierung vorgestellt.
-\subsubsection{Typmanipulationen}
+\subsection{SFINAE}
+\OviIndex{SFINAE} (\OviIndex{``Substitution Failure Is Not An Error''}) ist ein wichtiges Element in der
+Template-Metaprogrammierung. Es bedeutet im wesentlichen, dass Überladungen von Template\emph{funktionen},
+welche zu Compilerfehler führen würden bei der Überladungsauflösung ignoriert werden.    
+
+\begin{CCode}
+// isAvaillable(int) only availlable if ExpressionWhichMightFail does not fail to compile
+// Gives no Compilererror, it just is ignored if ExpressionWhichMightFail fails to compile.
+// decltype(ExpressionWhichMightFail<E>(), ResultType()) is used to define the return type,
+// which is the second operand of the comma operator, in this case the type of the object ResultType().
+// the first operand of the comma operator is evaluated by the comma operator and ignored,
+// but might trigger the compiler error which suppresses this overload.
+template<class E>
+static constexpr decltype(ExpressionWhichMightFail<E>(), ResultType()) // returntype 
+isAvaillable(int) {
+    // Some Code;
+};
+
+// This Overload is Allways availlable, but only selected if no other Overload
+// is availlable, as (...) is must generic variant and only selected if no
+// other variant exists
+template<class E> 
+static constexpr ResultType // returntype
+isAvaillable(...) {
+    // Some Code;
+};
+\end{CCode} 
+
+Example to test some feature of a class
+\begin{CCode}
+// isAvaillableHelper(int) only availlable if T::WeNeedThisMethod(int, float) is valid.
+// Does not check returntype, would need additional templatecode to do so. 
+template<class E>
+static constexpr decltype(&T::WeNeedThisMethod, bool()) isAvaillableHelper(int) {
+    return true;
+};
+
+// The default Overload
+template<class ...Fields>
+static bool constexpr isAvaillableHelper(...) {
+    return false;
+};
+
+// Just convenince function which needs no Argument
+template<class ...Fields>
+static bool constexpr isAvaillable() {
+    return isAvaillableHelper<Fields...>(0);
+};
+
+// 
+class A {
+   public:
+   int WeNeedThisMethod(int, float);
+}
+
+class B {
+   public:
+   int NoSuchMethod(int, float);
+}
+
+template<class T>
+constexpr 
+\end{CCode} 
+
+
+\subsection{Typmanipulationen}
 Entfernung von const:
 \begin{CCode}
 // removes a const qualifier from a type
@@ -7603,7 +7682,7 @@ constexpr bool rr2 = isUnique<int, int*>(); // will be true
 
 \end{CCode}
 
-\subsubsection{Kontrollfluss}
+\subsection{Kontrollfluss}
 
 
 Verzweigungen und Fallunterscheidungen werden üblicherweise durch eine Templatespezialisierung realisiert.
@@ -7653,7 +7732,114 @@ typedef SelectType<true, int , long>::Type tt1;  // tt1 is int
 typedef SelectType<false, int , long>::Type tt2; // tt2 is long
 \end{CCode}
 
-\subsubsection{Beispiele}
+\subsection{Beispiele}
+\begin{CCode}
+
+template< class T, T... Ints >
+class integer_sequence {
+};
+
+namespace detail {
+template<class T, T I, T N, T... integers>
+struct make_integer_sequence_helper
+{
+    using type = typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
+};
+ 
+template<class T, T N, T... integers>
+struct make_integer_sequence_helper<T, N, N, integers...>
+{
+    using type = std::integer_sequence<T, integers...>;
+};
+}
+ 
+template<class T, T N>
+using make_integer_sequence = detail::make_integer_sequence_helper<T, 0, N>::type;
+\end{CCode}
+
+\begin{CCode}
+
+namespace demo {
+
+template< class T, T... Ints >
+class integer_sequence {
+};
+
+
+template<class T, T I, T N, T... integers>
+struct make_integer_sequence_helper
+{
+    using type = typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
+};
+
+template<class T, T N, T... integers>
+struct make_integer_sequence_helper<T, N, N, integers...>
+{
+    using type = integer_sequence<T, integers...>;
+};
+
+template<class T, T N>
+using make_integer_sequence = make_integer_sequence_helper<T, 0, N>::type;
+
+template<class T, T I, T N, T... integers>
+struct make_r_integer_sequence_helper
+{
+    using type = typename make_r_integer_sequence_helper<T, I + 1, N, integers..., N-I-1>::type;
+};
+
+template<class T, T N, T... integers>
+struct make_r_integer_sequence_helper<T, N, N, integers...>
+{
+    using type = integer_sequence<T, integers...>;
+};
+
+template<class T, T N>
+using make_r_integer_sequence = make_r_integer_sequence_helper<T, 0, N>::type;
+
+
+
+template <typename Array, int... I>
+constexpr auto array_to_tuple_impl(const Array& a, integer_sequence<int, I...>)
+{
+    return std::make_tuple(a[I]...);
+}
+
+
+
+template <typename T, std::size_t N, typename Indx = make_integer_sequence<int, N>>
+constexpr auto array_to_tuple(const std::array<T, N>& a)
+{
+    return array_to_tuple_impl(a, Indx{});
+}
+
+constexpr std::array<int, 4> array{11, 22, 33, 44};
+
+template <typename Array, int... I>
+constexpr auto flip_array_impl(const Array& a, integer_sequence<int, I...>)
+{
+    return std::array{a[I]...};
+}
+
+template <typename T, std::size_t N, typename Indx = make_r_integer_sequence<int, N>>
+constexpr auto flip_array(const std::array<T, N>& a)
+{
+    return flip_array_impl(a, Indx{});
+}
+
+//constexpr std::array<int, 4> array{11, 22, 33, 44};
+
+static auto tuple1 = array_to_tuple(array);
+static constexpr auto flippedarr = flip_array(array);
+constexpr std::array<int, 4> array2 = flippedarr;
+const int a0 = array2[0];
+const int a1 = array2[1];
+const int a2 = array2[2];
+const int a3 = array2[3];
+
+static integer_sequence<int, 10> i;
+
+}
+\begin{CCode}
 
 Nachfolgendes Template prüft, ob ein gegebener Typ in einer Liste von Typen
 vorhanden ist, und liefert im Erfolgsfall den Typen zurück, sonst void.
