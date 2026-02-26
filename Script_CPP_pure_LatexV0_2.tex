@@ -3978,10 +3978,12 @@ MyClass f2()
 \end{CCode}
 
 \subsubsection{\CppVers{11} Move-Construktor}
-Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden. Idealerweise sollte der Movekonstruktor als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
+der Standardlibrary zusammenzuarbeiten.
+
 \begin{CCode}
    ...
-                MyClass(MyClass &&Source);  // Move-Konstruktor (&& und kein const)
+                MyClass(MyClass &&Source) noexcept;  // Move-Konstruktor (&& und kein const)
    ...
 
 \end{CCode}
@@ -4033,9 +4035,11 @@ a = b;      // Aufruf des Zuweisungsoperators
 
 \subsection{\CppVers{11} Move-Zuweisungsoperator}
 Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+Idealerweise sollte der Movezuweisungsoperator als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
+der Standardlibrary zusammenzuarbeiten.
 \begin{CCode}
    ...
-                MyClass & MyClass::operator=(MyClass &&Source);  // Move-Movezuweisungsoperator (&& und kein const)
+                MyClass & MyClass::operator=(MyClass &&Source) noexcept;  // Move-Movezuweisungsoperator (&& und kein const)
    ...
 
 \end{CCode}
