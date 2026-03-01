@@ -14831,14 +14831,46 @@ Der C Compiler hingegen benutzt direkt die Funktionsnamen. Für den Linker sind d
 Die Funktion \CodeStyle{int TuWas(int a, float Zahl, char *Text)} könnte
 in  \Cpp zum Beispiel als \CodeStyle{_Z5TuWasifpc} codiert werden.
 
-Zudem schreibt der Standard nicht vor, dass C und \Cpp die gleiche \OviIndex{Calling-Convention} benutzen müssen, d.h. dass C und  \Cpp bei
-Funktionsaufrufen die Parameter in anderer Reihenfolge auf den Stack legen dürfen, und auch die Register anders verwendet
-werden dürfen (Framepointer, Returnvalue, Skratchregister, etc.)
+Zudem schreibt der Standard nicht vor, dass C und \Cpp die gleiche \OviIndex{Calling-Convention} benutzen müssen.  C und  \Cpp dürfen somit bei
+Funktionsaufrufen die Parameter in anderer Reihenfolge auf den Stack legen, und auch die Register anders verwenden
+ (Framepointer, Returnvalue, Scratchregister, etc.)
 
-Um bei einer Funktionsdefinietien oder einem Funktionsaufruf das  \OviIndex{mangling} zu unterdrücken und dieselbe Callingconvention wie C zu nutzen, kann in  \Cpp 
+Um bei einer Funktionsdefinition oder einem Funktionsaufruf das  \OviIndex{mangling} zu unterdrücken und dieselbe Callingconvention wie C zu nutzen, kann in  \Cpp 
 der Deklaration ein \CodeStyle{extern "C"} vorangestellt werden. Mit \CodeStyle{extern "C"} deklarierte Funktionen dürfen weder Überladen, noch Templates oder Klassenmember sein.
 Alle Funktionspointer, welche innerhalb einer \CodeStyle{extern "C"} Deklaration definiert werden, sind ebenfalls Zeiger auf \CodeStyle{extern "C"} Funktionen.
 
+
+
+An C dürfen via Funktionszeiger auch nur Adressen von Funktionen übergeben werden, welche
+die \OviIndex{Calling-Convention} von C nutzen, also mit \CodeStyle{extern "C"} deklariert wurden.
+Viele Compiler benutzen dieselbe Calling-Convention für C und \Cpp, somit funktioniert die Übergabe
+von Adressen und Aufruf von Überladenen Funktionen, template-Funktionen und statischen Klassenmethoden via Zeiger 
+von C aus meistens, ist aber vom \emph{Standard nicht garantiert und nicht portierbar.}  
+
+\CodeStyle{extern "C"} gilt für alle betroffenen Elemente, also bei einer Funktion
+auch für alle Parameter dieser Funktion. typedefs werden jedoch so übernommen wie sie sind.
+Damit sind alle Kombinationen von Funktionszeigern und Funktionen in C oder C++ Modus möglich.
+(Funktionszeiger als Parameter, Funktionszeiger als Rückgabewert, jeweils C oder \Cpp).
+
+
+\begin{CCode}
+// Zeiger auf C-Funktion, welche einen Zeiger auf C-Funktion als Parameter hat
+extern "C" void (foo*)(int(*)(int)); 
+
+// Zeigertyp fuer Zeiger auf C++ Funktion
+typedef int (*p_cpp_fun)(int);  
+
+// Zeiger auf C-Funktion, welche einen Zeiger auf C++-Funktion als Parameter hat
+extern "C" void (foo*)(p_cpp_fun); 
+
+// Zeigertyp fuer Zeiger auf C Funktion
+extern "C" {
+    typedef int (*p_C_fun)(int);
+}
+
+// Zeiger auf C++-Funktion, welche einen Zeiger auf C-Funktion als Parameter hat
+void (foo *)(p_C_fun); 
+\end{CCode}
 
 Will man innerhalb eines Projektes Module mit C Code und Module mit
 \Cpp Code mischen, müssen im \Cpp Teil Funktionen, welche auch vom C-Teil
@@ -14853,18 +14885,26 @@ werden, müssen für den \Cpp Compiler mit \CodeStyle{extern "C"}
 deklariert werden, hingegen darf der C Compiler \emph{kein}
 \CodeStyle{extern "C"} sehen, da er dies nicht kennt.)
 
-An C dürfen via Funktionszeiger auch nur Adressen von Funktionen übergeben werden, welche
-die \OviIndex{Calling-Convention} von C nutzen, also mit \CodeStyle{extern "C"} deklariert wurden.
-Viele Compiler benutzen dieselbe Calling-Convention für C und \Cpp, somit funktioniert die Übergabe
-und Aufruf von Nicht-Member-Funtionen und statischen Klassenmethoden via Zeiger von C aus meistens,
-ist abervom Standard nicht garantiert und nicht portierbar.  
-
-
 Um trotzdem nicht zwei verschiedene Headerdateien für
 C und \Cpp zu haben, setzt man bedingte Compilierung ein,
 dazu wird das vom \Cpp Compiler standardmässig definierte Makro \CodeStyle{__cplusplus} zur
 bedingten Compilierung (Mittles \CodeStyle{#ifdef}) benutzt.
- 
+\begin{CCode}
+#ifdef __cplusplus
+// wird nur vom c++ compiler gesehen
+extern "C" {
+#endif
+
+// wird vom c++ und vom c-compiler gesehen
+void fkt_1(int a, float f);
+void fkt_2();
+
+#ifdef __cplusplus
+// wird nur vom c++ compiler gesehen
+}
+#endif
+\end{CCode}
+
 
 Gewöhnliche Strukturen (Ohne Methoden und Vererbung) 
 und globale Nicht-Klassen-Variablen
@@ -14881,8 +14921,8 @@ geschrieben werden.
 Man kann jedoch die Adressen von Objekten als \CodeStyle{void}-Pointer
 an C übergeben, und diese \CodeStyle{void}-Pointer auch wieder
 an \Cpp Code weitergeben. Diese \CodeStyle{void}-Pointer müssen anschliessend in \Cpp in den
-original Pointertypen zurück gecastet werden. Dieser Weg ist aber fehleranfaellig,
-da der Programmierer dafür verantwortlich ist, dass der \CodeStyle{void}-Pointer auch tatsaechlich
+original Pointertypen zurück gecastet werden. Dieser Weg ist aber fehleranfällig,
+da der Programmierer dafür verantwortlich ist, dass der \CodeStyle{void}-Pointer auch tatsächlich
 die Adresse des erwarteten Objektes enthält, ansonsten
 ist mit undefiniertem Verhalten zu rechnen. 
 
@@ -14970,6 +15010,10 @@ void TellCAboutIt(void *Object)
 \end{CCode}
 
 \subsection{Taskklasse für Realtime OS}
+Ein Beispiel um Callbacks in einer C-Library
+zu registrieren, hier in einer Standardkonformen
+und einer üblichen, aber Compilerabhängigen
+und nicht portierbaren Variante.
 
 \begin{CCode}
 /*
@@ -14978,6 +15022,12 @@ void TellCAboutIt(void *Object)
  *  Created on: 17.03.2015
  *      Author: osi1
  */
+
+#ifdef STANDARD_KONFORM
+/* Standarkconform, deklaration must be before friend */
+/* deklaration in class */
+extern "C" void TaskStartHelperConform(void *p_arg);
+#endif
 
 class Task {
 
@@ -14990,11 +15040,18 @@ protected:
 
 
 private:
+#ifndef STANDARD_KONFORM
     /* Works on most compilers, standard requires */
     /* extern "C" otherwise this is undefined.    */
     /* behaviour                                  */
-    
     static void TaskStartHelper(void *p_arg);
+#endif
+    
+#ifdef STANDARD_KONFORM
+    /* Standarkconform */
+    friend void TaskStartHelperConform(void *p_arg);
+#endif
+
 
 public:
 	         Task(char Stack[], int Priority);
@@ -15017,17 +15074,22 @@ Task::Task(char Stack[], int Priority)
 	int Error;
 	
 	// Create Task, pass this as parameter for call of TaskStartHelper from os
+#ifdef STANDARD_KONFORM
+	Error = OSTaskCreate(TaskStartHelperConform, this, Stack, Priority);
+#else
 	Error = OSTaskCreate(TaskStartHelper, this, Stack, Priority);
+#endif
 
 	if (Error != OS_ERR_NONE) {
 		throw (TaskExcepton(Error));
 	}
 }
 
+#ifndef STANDARD_KONFORM
 /* We need a non-member method to pass the address of to the OS */
 /* the this-pointer is passed in p_arg (from TaskCreate())     */
-/* For true prtability, the function should be
-/* declared as extern "C"
+/* For true portability, the function should be                */
+/* declared as extern "C"                                      */
 void Task::TaskStartHelper(void *p_arg)
 {
 	try {
@@ -15040,6 +15102,23 @@ void Task::TaskStartHelper(void *p_arg)
 
 	static_cast<Task *>(p_arg)->Terminated = true;
 }
+#endif
+
+#ifdef STANDARD_KONFORM
+/* Standard konform */
+extern "C" void TaskStartHelperConform(void *p_arg) 
+{
+	try {
+	    /* Start our Task by calling run() */
+		static_cast<Task *>(p_arg)->Run();
+	}
+	catch (...) {
+		// Don't leak exceptions into OS
+	}
+
+	static_cast<Task *>(p_arg)->Terminated = true;
+}
+#endif
 
 void Task::WaitTime(int Time)
 {
