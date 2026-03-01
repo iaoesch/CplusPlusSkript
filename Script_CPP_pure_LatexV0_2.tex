@@ -14827,11 +14827,17 @@ Um überladene Funktionen zu unterscheiden werden die Funktionsnamen vom \Cpp Com
 dies wird als \OviIndex{Name mangling} bezeichnet.
 Der C Compiler hingegen benutzt direkt die Funktionsnamen. Für den Linker sind deshalb C und  \Cpp Module nicht kompatibel. 
 
+ 
 Die Funktion \CodeStyle{int TuWas(int a, float Zahl, char *Text)} könnte
 in  \Cpp zum Beispiel als \CodeStyle{_Z5TuWasifpc} codiert werden.
 
-Um dieses  \OviIndex{mangling} zu unterdrücken, kann in  \Cpp 
-der Deklaration ein \CodeStyle{extern "C"} vorangestellt werden.
+Zudem schreibt der Standard nicht vor, dass C und \Cpp die gleiche \OviIndex{Calling-Convention} benutzen müssen, d.h. dass C und  \Cpp bei
+Funktionsaufrufen die Parameter in anderer Reihenfolge auf den Stack legen dürfen, und auch die Register anders verwendet
+werden dürfen (Framepointer, Returnvalue, Skratchregister, etc.)
+
+Um bei einer Funktionsdefinietien oder einem Funktionsaufruf das  \OviIndex{mangling} zu unterdrücken und dieselbe Callingconvention wie C zu nutzen, kann in  \Cpp 
+der Deklaration ein \CodeStyle{extern "C"} vorangestellt werden. Mit \CodeStyle{extern "C"} deklarierte Funktionen dürfen weder Überladen, noch Templates oder Klassenmember sein.
+Alle Funktionspointer, welche innerhalb einer \CodeStyle{extern "C"} Deklaration definiert werden, sind ebenfalls Zeiger auf \CodeStyle{extern "C"} Funktionen.
 
 
 Will man innerhalb eines Projektes Module mit C Code und Module mit
@@ -14846,6 +14852,13 @@ können sie vom \Cpp Teil nicht aufgerufen werden.
 werden, müssen für den \Cpp Compiler mit \CodeStyle{extern "C"}
 deklariert werden, hingegen darf der C Compiler \emph{kein}
 \CodeStyle{extern "C"} sehen, da er dies nicht kennt.)
+
+An C dürfen via Funktionszeiger auch nur Adressen von Funktionen übergeben werden, welche
+die \OviIndex{Calling-Convention} von C nutzen, also mit \CodeStyle{extern "C"} deklariert wurden.
+Viele Compiler benutzen dieselbe Calling-Convention für C und \Cpp, somit funktioniert die Übergabe
+und Aufruf von Nicht-Member-Funtionen und statischen Klassenmethoden via Zeiger von C aus meistens,
+ist abervom Standard nicht garantiert und nicht portierbar.  
+
 
 Um trotzdem nicht zwei verschiedene Headerdateien für
 C und \Cpp zu haben, setzt man bedingte Compilierung ein,
@@ -14977,6 +14990,10 @@ protected:
 
 
 private:
+    /* Works on most compilers, standard requires */
+    /* extern "C" otherwise this is undefined.    */
+    /* behaviour                                  */
+    
     static void TaskStartHelper(void *p_arg);
 
 public:
@@ -15009,6 +15026,8 @@ Task::Task(char Stack[], int Priority)
 
 /* We need a non-member method to pass the address of to the OS */
 /* the this-pointer is passed in p_arg (from TaskCreate())     */
+/* For true prtability, the function should be
+/* declared as extern "C"
 void Task::TaskStartHelper(void *p_arg)
 {
 	try {
