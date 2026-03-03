@@ -2733,6 +2733,9 @@ int main (int argc, char *argv[])
                  // auf Auswahl)
 }
 \end{CCode}
+Hinweis: Wird in einer abgeleiten Klasse eine Methode der Basisklasse überladen, wird die
+Methode der Basisklasse verdeckt, und muss mit \CodeStyle{using} bei Bedarf wieder
+sichtbar gemacht werden. Details siehe \myref{subsect:Sichtbarmachung}.
 
 \section{Alternative Funktionsdefinition (Seit \CppVers{11})}
 \label{subsubsect:Alternative Funktionsdefinition}
@@ -5041,6 +5044,41 @@ c.f();    // Access protected member of baseclass via  derived class
 
 \end{CCode}
 
+\subsection{Sichtbarmachung von verdeckten Methoden der Basisklasse}
+\label{subsect:Sichtbarmachung}
+Wenn in einer abgeleiteten Klasse eine Methode der Basisklasse \emph{überladen} wird (Nicht überschrieben), wird die Methode der Basisklasse verdeckt, und ist in der abgeleiteten Klasse nicht mehr sichtbar und muss mit dem Qualifizierten Namen (\CodeStyle{Basisklasse::Methode()}) aufgerufen werden.  Mit der \OviIndex{using}-direktive kann die Methode der Basisklasse in die abgeleitete Klasse übernommen werden und wieder sichtbar gemacht werden (und dabei mit neuen Zugriffsrechten versehen werden).  
+\begin{CCode}
+class Parent {
+      
+   public:
+      DoIt(int a);
+      DoIt(int a, double b);
+      
+      DontDoIt(int a);
+      DontDoIt(int a, double b);
+      
+      Hidden(int a);
+};
+
+class Child : public Parent {
+   public:
+      DoIt(float a);    // Hides all DoIts from Parent
+      DontDoIt(int a);  // Hides all DontDoIts from Parent
+      Hidden(float *a); // Hides all Hidden from Parent
+  
+   using Parent::DoIt;     // makes alle Parent DoIt Methodes visible
+   using Parent::DontDoIt; // Dito, but DontDoIt(int) is still used from Child
+   
+};
+
+Child c;  
+Child c.DoIt(5);     // Calls Parent::DoIt
+Child c.DoIt(3.14f); // Calls Child::DoIt
+Child c.DontDoIt(5); // Calls Child::c.DontDoIt
+Child c.Hidden(3);   // Error, Parent::Hiden is not accesible
+
+\end{CCode}
+
 
 \subsection{übernehmen von Methoden der Basisklasse}
 \label{subsect:MethodImport}
@@ -5068,6 +5106,8 @@ class Child : public Parent {
 Child c(5);  // uses constructor of base class
 
 \end{CCode}
+
+
 
 \subsection{Verbieten der Vererbung}
 Mit dem Bezeichner \OviIndex{final} (der Bezeichner final ist kein Schlüsselwort und hat nur an dieser Stelle eine besondere Bedeutung) kann des Ableiten von einer Klasse verboten werden:
