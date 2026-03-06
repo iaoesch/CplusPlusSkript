@@ -6964,6 +6964,21 @@ namespace hacker {
 }
 \end{CCode}
 
+\section{Unnamed oder anonyme Template Parameter}
+\label{subsubsect:UnnamedTemplateParameter}
+
+Templateparameter dürfen auch ohne Namen sein (\OviIndex{Unnamed Template Parameter}):
+\begin{CCode}
+	template<typename T, typename, typename = int> struct whatever{T x;};
+	
+	whatever<int, float, char> w1;  
+	whatever<int, double, char> w2;  // incompatible to W1, but same memory layout
+	whatever<int, double> w3;        // incompatible to W1 und w2, but same memory layout
+	whatever<int, double, int> w4;   // same type as W3,
+\end{CCode}
+
+Wird üblicherweise zur Erzeugung unterschiedlicher Typen verwendet, insbesondere in der Template Meta Programmierung.
+
 \section{Template mit variabler Argumentenanzahl (Seit \CppVers{11})}
 \label{subsubsect:TemplateVarArg}
 
@@ -6983,7 +6998,7 @@ Ein einfaches Beispiel:
 		
 	};
 \end{CCode}
-Mit \CodeStyle{typename... P} oder \CodeStyle{class... P} wird ein Parameterpack erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit \CodeStyle{...} abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
+Mit \CodeStyle{typename... P} oder \CodeStyle{class... P} wird ein \OviIndex{Parameterpack} erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit \CodeStyle{...} abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
 Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
 Der Operator \CodeStyle{sizeof...(P)} liefert die Anzahl Elemente im Pack als konstanten Integerwert.
 
@@ -7205,7 +7220,7 @@ Ein weiters Beispiel für den Sonderfall benutzerdefinierter Literale mit templat
 
 \subsection{Fold Expressions (Seit \CppVers{17})}
 \label{subsect:FoldExpressions}
-Mit \OviIndex{Fold Expressions} können die Argumente eines Parameterpacks miteinander verknüpft werden,
+Mit \OviIndex{Fold Expressions} können die Argumente eines \OviIndex{Parameterpacks} miteinander verknüpft werden,
 d.h. mit einem binären Operator verknüpft werden:
 
 \begin{CCode}
@@ -7601,20 +7616,20 @@ Example to test some feature of a class
 // isAvaillableHelper(int) only availlable if T::WeNeedThisMethod(int, float) is valid.
 // Does not check returntype, would need additional templatecode to do so. 
 template<class E>
-static constexpr decltype(&T::WeNeedThisMethod, bool()) isAvaillableHelper(int) {
+static constexpr decltype(&E::WeNeedThisMethod, bool()) isAvaillableHelper(int) {
     return true;
 };
 
 // The default Overload
-template<class ...Fields>
+template<class E>
 static bool constexpr isAvaillableHelper(...) {
     return false;
 };
 
 // Just convenince function which needs no Argument
-template<class ...Fields>
+template<class E>
 static bool constexpr isAvaillable() {
-    return isAvaillableHelper<Fields...>(0);
+    return isAvaillableHelper<E>(0);
 };
 
 // 
@@ -7628,8 +7643,10 @@ class B {
    int NoSuchMethod(int, float);
 }
 
-template<class T>
-constexpr 
+static constexpr bool rr4 = isAvaillable<A>();
+static constexpr bool rr5 = isAvaillable<B>();
+
+
 \end{CCode} 
 
 
