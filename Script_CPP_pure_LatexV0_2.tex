@@ -7589,12 +7589,13 @@ Template-Metaprogrammierung. Es bedeutet im wesentlichen, dass Überladungen von 
 welche zu Compilerfehler führen würden bei der Überladungsauflösung ignoriert werden.    
 
 \begin{CCode}
-// isAvaillable(int) only availlable if ExpressionWhichMightFail does not fail to compile
-// Gives no Compilererror, it just is ignored if ExpressionWhichMightFail fails to compile.
-// decltype(ExpressionWhichMightFail<E>(), ResultType()) is used to define the return type,
-// which is the second operand of the comma operator, in this case the type of the object ResultType().
-// the first operand of the comma operator is evaluated by the comma operator and ignored,
-// but might trigger the compiler error which suppresses this overload.
+// isAvaillable(int) only availlable if ExpressionWhichMightFail does not fail to 
+// compile Gives no Compilererror, it just is ignored if ExpressionWhichMightFail 
+// fails to compile. decltype(ExpressionWhichMightFail<E>(), ResultType()) is used 
+// to define the return type, which is the second operand of the comma operator, 
+// in this case the type of the object ResultType(). The first operand of the comma 
+// operator is evaluated by the comma operator and ignored, but might trigger the 
+// compiler error which suppresses this overload.
 template<class E>
 static constexpr decltype(ExpressionWhichMightFail<E>(), ResultType()) // returntype 
 isAvaillable(int) {
@@ -7613,8 +7614,8 @@ isAvaillable(...) {
 
 Example to test some feature of a class
 \begin{CCode}
-// isAvaillableHelper(int) only availlable if T::WeNeedThisMethod(int, float) is valid.
-// Does not check returntype, would need additional templatecode to do so. 
+// isAvaillableHelper(int) only availlable if T::WeNeedThisMethod(int, float) is 
+// valid. Does not check returntype, would need additional templatecode to do so. 
 template<class E>
 static constexpr decltype(&E::WeNeedThisMethod, bool()) isAvaillableHelper(int) {
     return true;
