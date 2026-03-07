@@ -2737,6 +2737,35 @@ Hinweis: Wird in einer abgeleiten Klasse eine Methode der Basisklasse überladen,
 Methode der Basisklasse verdeckt, und muss mit \CodeStyle{using} bei Bedarf wieder
 sichtbar gemacht werden. Details siehe \myref{subsect:Sichtbarmachung}.
 
+Mit \index{=delete} einer überladenen Funktion kann der Aufruf einer Funktion mit
+unerwünschten Argumenten verhindert werden. Dabei muss für jeden Typen eine
+überladene Funktion mit \CodeStyle{=delete} definiert werden.
+(Kann auch mit Templates vereinfacht werden)
+ 
+\begin{CCode}
+	int OnlyIntWanted(int a) {
+	}
+	
+	int OnlyIntPossible(int a) {
+	}
+	
+	int OnlyIntPossible(float a) = delete; // deletes also double
+	int OnlyIntPossible(char a) = delete;
+	int OnlyIntPossible(bool a) = delete;
+	
+int main (int argc, char *argv[])
+{
+    OnlyIntWanted(3.9) // Unwanted, but compiles
+
+    OnlyIntPossible(3.9)  // Error
+    OnlyIntPossible(true) // Error
+    OnlyIntPossible('a')  // Error
+    OnlyIntPossible(3L)   // long is OK, converted to int
+
+}
+\end{CCode}
+ 
+
 \section{Alternative Funktionsdefinition (Seit \CppVers{11})}
 \label{subsubsect:Alternative Funktionsdefinition}
 
@@ -6281,6 +6310,16 @@ const char* Maximum(const char *a, const char *b)  // gilt fuer alle Strings
 }
 \end{CCode}
 
+\subsection{Verbieten von unerwünschten Templateinstanzen}
+Unerwünschte Templateinstanzen können durch Überladen und \OviIndex{= delete} 
+verboten werden.
+
+\begin{CCode}
+template <class T>        
+T *Maximum (T *a, T *b) = delete // Template kann fuer Zeiger
+                                 // nicht benutzt werden.
+\end{CCode}
+
 \subsection{Vereinfachte Funktionstemplate-Definition}
  \label{subsect:VereinfachteFunktionstemplateDefinition}
 Seit \CppVers{20} gibt es eine abgekürzte Syntax für Funktionstemplates, anstelle der 
@@ -7648,6 +7687,24 @@ static constexpr bool rr4 = isAvaillable<A>();
 static constexpr bool rr5 = isAvaillable<B>();
 
 
+template<class T>
+void CallOptional (T t)
+{
+    // Calls Method if availlable
+    // no erroer if method does n  ot exist
+    if constexpr (isAvaillable<T>()) {
+       t.WeNeedThisMethod(6, 3.14f);
+    }
+}
+
+void TestOptional() {
+    A a;
+    B b;
+    CallOptional(a);
+    CallOptional(b);
+}
+
+
 \end{CCode} 
 
 
@@ -7794,6 +7851,37 @@ typedef SelectType<true, int , long>::Type tt1;  // tt1 is int
 typedef SelectType<false, int , long>::Type tt2; // tt2 is long
 \end{CCode}
 
+Schlaufen werden durch rekursive Templates realisiert. Hier ein einfaches Beispiel,
+welches die Anzahl von ints in der Parameterliste ermittelt. Mit einem zusätzlichen
+Parameter könnte das template zum Zählen eines wählbaren Typs erweitert werden.
+\begin{CCode}
+template<class First, class ...Rest>
+class Loop {
+    
+    static constexpr int Increment = IsSameType<int, First>::Result?1:0;
+                                        
+    public:
+    typedef First CurrentType;
+    static constexpr int NumberOfInts = Loop<Rest...>::NumberOfInts + Increment;
+};
+
+template<class Last>
+class Loop<Last> {
+    
+    static constexpr int Increment = IsSameType<int, Last>::Result?1:0;
+    
+public:
+    typedef Last CurrentType;
+    static constexpr int NumberOfInts = Increment;
+};
+
+// Count wird auf 3 gesetzt, da drei ints in der Parameterliste sind
+static constexpr int Count = Loop<int, float, double, int, float, int>::NumberOfInts;
+
+
+\end{CCode}
+
+
 \subsection{Beispiele}
 \begin{CCode}
 
@@ -7901,7 +7989,7 @@ const int a3 = array2[3];
 static integer_sequence<int, 10> i;
 
 }
-\begin{CCode}
+\end{CCode}
 
 Nachfolgendes Template prüft, ob ein gegebener Typ in einer Liste von Typen
 vorhanden ist, und liefert im Erfolgsfall den Typen zurück, sonst void.
@@ -13455,8 +13543,8 @@ Library
 
 \section{\CppVers{26}}
 \index{C++ 26}
-Bereits in der Planungs- und Diskussionsphase.
-Mögliche Erweiterungen:
+Im Wesentlichen abgeschlossen, Verabschiedung noch ausstehend.
+Geplante Erweiterungen:
 \begin{itemize}
 \item linalg Library (Matrix und Vektor Operationen)
 \item Reflexion (Zugriff auf Information über Code selbst)
@@ -13467,9 +13555,12 @@ Mögliche Erweiterungen:
 \item Erweiterungen in der Concurency Library
 \item Weitere Libraryfunktionen durch constexpr ergänzt
 \item Pattern Matching, wahrscheinlich eher \CppVers{29} 
-\item Execution (Framework für paralleles Ausfuehren von Aufträgen), wahrscheinlich eher \CppVers{29} 
+\item Execution (Framework für paralleles Ausführen von Aufträgen), wahrscheinlich eher \CppVers{29} 
 \end{itemize}
 
+\section{\CppVers{29}}
+\index{C++ 29}
+Bereits in der Startphase.
 
 \appendix
 \chapter{Anhang}
