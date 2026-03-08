@@ -2111,14 +2111,14 @@ Eine Variablendefinition muss immer die Form
 Datentyp Variablenname; 
 aufweisen. Es ist möglich (und guter Stil), eine Variable bei der Definition gleich zu initialisieren:
 
-\CodeStyle{Datentyp Variablenname = Wert;} (Siehe auch Kapitel \myref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
+\CodeStyle{Datentyp Variablenname = Wert;} oder besser \CodeStyle{Datentyp Variablenname\{Wert\};} (Siehe auch Kapitel \myref{subsubsect:VereinheitlichteInitialisierung} auf S.\pageref{subsubsect:VereinheitlichteInitialisierung})
 
 Für Variablennamen dürfen Klein- und Grossbuchstaben sowie der Unterstrich '\_' und die Ziffern 0-9 verwendet werden. Sonderzeichen und Umlaute sind nicht erlaubt. Namen dürfen nicht mit Ziffern beginnen.
 
 \begin{CCode}
 int a;           // Eine Ganzahlige Variable definieren (meist 32 Bit)
 float b;         // Eine Fliesskommazahl Variable definieren
-float b = 3.14;  // Eine Ganzahlige Variable definieren
+float b {3.14};  // Eine Fliesskommazahl Variable definieren und initialisieren
 char c;          // Eine Zeichenvariable definieren (8 Bit)
 \end{CCode}
 
@@ -2480,6 +2480,7 @@ können. In \Cpp ist das in folgenden Fällen möglich:
 In den Fällen 2-5 gilt es nicht als \emph{Narrowing} wenn der Ausgangswert \emph{constexpr} (oder ein Literal) ist, welcher im Zieltyp
 vollständig Platz hat, wobei der Verlust von signifikanten Dezimalstellen ignoriert wird.
 \begin{CCode}
+// x{...} und = {...} are alternative variants with the same effect
 
 char Trouble = 2000;          // Compiles, gives probably a warning
 char NoTrouble = {2000};      // Error
@@ -7924,19 +7925,36 @@ static constexpr int Count = Loop<int, float, double, int, float, int>::NumberOf
 
 
 \subsection{Beispiele}
+
+
+Erzeugen eines Templates, welches mit einer Folge von Konstanten eines Integer Types definiert ist.
+(Würde im Prinzip für alle Typen funktionieren, zu welchen der Wert 1 addiert werden kann.) 
 \begin{CCode}
 
+// Der Typ fuer unsere Sequenz
 template< class T, T... Ints >
 class integer_sequence {
 };
 
-namespace detail {
+// Rekursives Template zur Erzeugung der Sequenz, in jeder Rekursion wird der 
+// nächsthöhere Wert der Sequenz in integers angehängt 
+// (in integers wird die Sequenz aufgebaut, 
+// N ist der  Endwert von I, 
+// I wird in jeder Rekursion um 1 erhöht, bis I gleich N ist). 
+// Das Ergebnis ist im Member type abgespeichert
+namespace internal {
 template<class T, T I, T N, T... integers>
 struct make_integer_sequence_helper
 {
-    using type = typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
+    // I hat den Wert N nicht erreicht, weiter iterieren, benutze type der
+    // nächsten Rekursion 
+    using type = 
+         typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
 };
  
+// Das Ende der Rekursion ist erreicht, sobald I (zweiter Parameter des Templates) 
+// gleich N ist, die Sequenz in integers ist somit vollständig und der Rueckgabewert 
+// type kann definiert werden
 template<class T, T N, T... integers>
 struct make_integer_sequence_helper<T, N, N, integers...>
 {
@@ -7944,17 +7962,23 @@ struct make_integer_sequence_helper<T, N, N, integers...>
 };
 }
  
+// Einfache Schnittstelle zur Erzeugung einer Sequenz 
 template<class T, T N>
-using make_integer_sequence = detail::make_integer_sequence_helper<T, 0, N>::type;
+using make_integer_sequence = internal::make_integer_sequence_helper<T, 0, N>::type;
+\end{CCode}
+
+Beispiel:
+
+\begin{CCode}
+typedef make_integer_sequence<int, 5> Sequenze;
+
+// Sequenze ist jetzt synonym fuer
+// integer_sequence<int, 0, 1, 2, 3, 4>
 \end{CCode}
 
 \begin{CCode}
 
 namespace demo {
-
-template< class T, T... Ints >
-class integer_sequence {
-};
 
 
 template<class T, T I, T N, T... integers>
@@ -7971,6 +7995,41 @@ struct make_integer_sequence_helper<T, N, N, integers...>
 
 template<class T, T N>
 using make_integer_sequence = make_integer_sequence_helper<T, 0, N>::type;
+
+
+
+// Rekursives Template zur Erzeugung der Sequenz, in jeder Rekursion wird der 
+// nächsthöhere Wert der Sequenz in integers angehängt 
+// (in integers wird die Sequenz aufgebaut, 
+// N ist der  Endwert von I, 
+// I wird in jeder Rekursion um 1 erhöht, bis I gleich N ist). 
+// Das Ergebnis ist im Member type abgespeichert
+namespace internal {
+template<class T, T I, T N, T... integers>
+struct make_integer_sequence_helper
+{
+    // I hat den Wert N nicht erreicht, weiter iterieren, benutze type der
+    // nächsten Rekursion 
+    using type = 
+         typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
+};
+ 
+// Das Ende der Rekursion ist erreicht, sobald I (zweiter Parameter des Templates) 
+// gleich N ist, die Sequenz in integers ist somit vollständig und der Rueckgabewert 
+// type kann definiert werden
+template<class T, T N, T... integers>
+struct make_integer_sequence_helper<T, N, N, integers...>
+{
+    using type = std::integer_sequence<T, integers...>;
+};
+}
+ 
+// Einfache Schnittstelle zur Erzeugung einer Sequenz 
+template<class T, T N>
+using make_integer_sequence = internal::make_integer_sequence_helper<T, 0, N>::type;
+\end{CCode}
+
+
 
 template<class T, T I, T N, T... integers>
 struct make_r_integer_sequence_helper
