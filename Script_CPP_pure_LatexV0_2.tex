@@ -2461,6 +2461,45 @@ f2({5, 1.23f});
 	
 \end{CCode}
 
+\section{Non-Narrowing Initialisierung (Seit \CppVers{11})}
+\label{sect:NonNarrowingInitialisierung}
+
+Werden Objekte (inklusive Skalare) mit geschweiften Klammern initialisiert, darf kein \OviIndex{Narrowing} (Verlust von Genauigkeit)
+stattfinden, das gilt bei \CodeStyle{x = \{...\}} und \CodeStyle{x\{...\}}.
+
+Unter \emph{Narrowing} versteht man eine möglicherweise unsichere Typumwandlung, bei der Overflows oder Verlust von Genauigkeit auftreten
+können. In \Cpp ist das in folgenden Fällen möglich:
+\begin{enumerate}
+\item Fliesskomma nach Ganzzahl
+\item Fliesskomma nach kleinerem Fliesskoma (Z. B. \CodeStyle{double} nach \CodeStyle{float})
+\item Ganzzahl nach Fliesskomma
+\item Integer nach kleinerem Integer (Z. B. \CodeStyle{long} nach \CodeStyle{int})
+\item Signed nach unsigned oder umgekehrt
+\end{enumerate}
+ 
+In den Fällen 2-5 gilt es nicht als \emph{Narrowing} wenn der Ausgangswert \emph{constexpr} (oder ein Literal) ist, welcher im Zieltyp
+vollständig Platz hat, wobei der Verlust von signifikanten Dezimalstellen ignoriert wird.
+\begin{CCode}
+
+char Trouble = 2000;          // Compiles, gives probably a warning
+char NoTrouble = {2000};      // Error
+char AlsoNoTrouble{2000};     // Error
+
+long Big = 1L;                // Ok
+constexpr long One = 1L;      // Ok
+
+char c1{Big};                 // Error
+char c2{One};                 // Ok, constexpr 1L fits into char
+
+int x{c1};                    // Ok, char fits into int
+
+double d = {3.14};            // Ok 
+float f = {d};                // Error
+double d2 = {f};              // Ok, float fits in double
+\end{CCode}
+
+Es ist guter Stil, Variablen immer mit \CodeStyle{\{...\}} zu initialisieren, so werden (mögliche) Overflows bereits
+beim Compilieren verhindert.
 
 \chapter{Kontrollstrukturen}
 C/\Cpp besitzt alle gängigen Kontrollstrukturen, die meisten funktionieren ähnlich oder gleich wie bei C.
