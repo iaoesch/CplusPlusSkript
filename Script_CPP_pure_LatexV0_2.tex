@@ -2311,6 +2311,155 @@ Val = MyArray.at(10);        //Liefert den Wert des 11. Elementes (Exception fal
 
 \end{CCode}
 
+\section{Vereinheitlichte Initialisierung (Seit \CppVers{11})}
+\label{subsubsect:VereinheitlichteInitialisierung}
+
+Es gibt in \Cpp von alters her verschiedene Möglichkeiten, Variablen zu initialisieren. Vor \CppVers{11} waren nicht für jeden Datentyp jede Variante möglich:
+\begin{CCode}
+int i = 5;                    // Initialisierung von Skalaren
+struct Complex z = {4, 5};    // Initialisierung von Strukturen
+int arr[2] = {4, 5};          // Initialisierung von Arrays
+A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
+\end{CCode}
+
+Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht \index{Vereinheitlichte Initialisierung} \index{Initialisierung, vereinheitlicht}(Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
+der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \myref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
+
+ 
+Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
+
+Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
+
+Wenn ein passender std::initializer\_list<> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
+(Siehe auch Kapitel \myref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
+
+\begin{CCode}
+class A {. // Is an Aggregate
+public:
+    int i = 5; // Member initializer since c++14 allowed in aggregates
+    float f;
+};
+
+class B : public A { // Is an Aggregate
+   public:
+    int *ip;
+};
+
+class C : public A { // Is not an Aggregate due to a private member
+    int *ip;  // private
+};
+
+class D : public A { // Is not an Aggregate due to a defined constructor
+public:
+    D(int x_) : x (x_) {}  // User defined constructor
+    D(int x_, double d_) : x (x_) {}  // User defined constructor
+    int x;
+};
+
+class E {
+public:
+    E(std::initializer_list<int> l);
+};
+
+
+static int arr2[5] = {4,5,6,7,8};
+static int arr3[5](4,5,6,7,8);  // Since C++20
+static int arr4[5]{4,5,6,7,8};
+static int arr5[5]{};     // Default initialized
+static int arr6[5] = {};  // Default initialized
+
+static int i1 = 42;
+static int i2 = {42};
+static int i3(42);
+static int i4{42};
+static int i5{};     // Default initialized
+static int i6 = {};  // Default initialized
+
+//static A a1 = 42; // Needs constructor
+static A a2 = {42, 3.14f};
+static A a3(42, 3.14f); // Since C++20
+static A a4{42, 3.14f};
+static A a5{};      // Default initialized
+static A a6 = {};   // Default initialized
+
+//static B b1 = 42; // Needs constructor
+static B b2 = {{42, 3.14f}, &i2};
+static B b2a = {42, 3.14f, &i2};
+static B b3({42, 3.14f}, &i2);  // Since C++20
+static B b4{42, 3.14f, &i2};
+static B b5{};      // Default initialized
+static B b6 = {};   // Default initialized
+
+static A arrA2[3] = {{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
+static A arrA3[3]({4, 3.14f},{5, 5.14f}, {6, 6.14f});  // Since C++20
+static A arrA4[3]{{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
+static A arrA5[3]{};    // Default initialized
+static A arrA6[3] = {}; // Default initialized
+
+//static C b1 = 42; // Needs constructor
+// static C c2 = {{42, 3.14f}, &i2}; // Error, private member
+// static C c2a = {42, 3.14f, &i2};  // Error, private member
+// static C c3({42, 3.14f}, &i2);    // Error, private member
+// static C c4{42, 3.14f, &i2};      // Error, private member
+static C c5{};      // Default initialized
+static C c6 = {};   // Default initialized
+
+static D d1 = 42; // Ok, calls constructor
+//static D d2 = {{42, 3.14f}, &i2}; // Error, no matching constructor
+//static D d2a = {42, 3.14f, &i2};  // Error, no matching constructor
+//static D d3({42, 3.14f}, &i2);    // Error, no matching constructor
+//static D d4{42, 3.14f, &i2};      // Error, no matching constructor
+//static D d5{};                    // Error, no matching constructor
+//static D d6 = {};                 // Error, no matching constructor
+
+// Calls constructor D(int) for each object in array
+static D arrD2[3] = {4, 5, 6};
+static D arrD3[3](3,4,5);  // Since C++20
+static D arrD4[3]{3,4,5};
+
+// Calls constructor D(int, double) for each object in array
+static D arrDD2[3] = {{4, 3.14}, {5, 4.25}, {6, 5.36}};
+static D arrDD3[3]({4, 3.14}, {5, 4.25}, {6, 5.36});  // Since C++20
+static D arrDD4[3]{{4, 3.14}, {5, 4.25}, {6, 5.36}};
+
+// Calls constructor E(std::initializer_list<int> l)
+// static E e1 = 42;           // Error, no matching constructor
+static E e2 = {42, 43, 47};    // Ok matches to list of any length  
+static E e2a = {42};           // Ok matches to list of any length
+static E e3({42, 43, 47, 49}); // Ok matches to list of any length
+static E e4{42, 5};            // Ok matches to list of any length
+static E e5{};                 // Ok matches to list of any length
+static E e6 = {};              // Ok matches to list of any length
+
+\end{CCode}
+
+Die gleichen Regeln gelten auch für die Initialisierung von Returnwerten oder Funktionsargumente:
+
+\begin{CCode}
+
+class DemoClass {
+
+   private:
+   int a;
+   float b;	
+		
+   public:
+   DemoClass(int _a, float _b) : a(_a), b(_b) {};
+		
+};
+	
+	
+DemoClass f() {
+   return {2, 2.7f};
+}
+	
+void f2(DemoClass c) {
+}
+	
+f2({5, 1.23f});
+	
+	
+\end{CCode}
 
 
 \chapter{Kontrollstrukturen}
@@ -4704,155 +4853,6 @@ class StudentClass {
 };
 \end{CCode}
 
-\subsection{Vereinheitlichte Initialisierung (Seit \CppVers{11})}
-\label{subsubsect:VereinheitlichteInitialisierung}
-
-Es gibt in \Cpp von alters her verschiedene Möglichkeiten, Variablen zu initialisieren. Vor \CppVers{11} waren nicht für jeden Datentyp jede Variante möglich:
-\begin{CCode}
-int i = 5;                    // Initialisierung von Skalaren
-struct Complex z = {4, 5};    // Initialisierung von Strukturen
-int arr[2] = {4, 5};          // Initialisierung von Arrays
-A c(12, 5);                   // Initialisierung von Objekten mit Konstruktor
-\end{CCode}
-
-Seit \CppVers{11} sind die Initialisierungsvarianten vereinheitlicht \index{Vereinheitlichte Initialisierung} \index{Initialisierung, vereinheitlicht}(Mit \CppVers{14} und \CppVers{17} wurden einige kleinere Anpassungen vorgenommen, welche hier bereits berücksichtigt, aber nicht speziell erwähnt werden). Insbesondere können Skalare mit
-der Konstruktorsyntax, und alle Aggregate (dazu gehören Strukturen, Arrays und Klassen ohne protected oder private member, ohne virtuelle Methoden oder virtuellen Basisklassen und ohne Konstruktoren, siehe auch Kapitel \myref{subsect:AgregatInitialisierung} auf S.\pageref{subsect:AgregatInitialisierung}) mit einer Liste in geschweiften Klammern initialisiert werden. 
-
- 
-Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführt: Skalare (POD) werden zu 0, 0.0 oder nullptr initialisert, bei Arrays und Aggregaten werden die einzelnen Elemente Defaultinitialisiert und bei Klassen welche keine Aggregate sind wird der Defaultkonstruktor aufgerufen.
-
-Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
-
-Wenn ein passender std::initializer\_list<> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
-(Siehe auch Kapitel \myref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
-
-\begin{CCode}
-class A {. // Is an Aggregate
-public:
-    int i = 5; // Member initializer since c++14 allowed in aggregates
-    float f;
-};
-
-class B : public A { // Is an Aggregate
-   public:
-    int *ip;
-};
-
-class C : public A { // Is not an Aggregate due to a private member
-    int *ip;  // private
-};
-
-class D : public A { // Is not an Aggregate due to a defined constructor
-public:
-    D(int x_) : x (x_) {}  // User defined constructor
-    D(int x_, double d_) : x (x_) {}  // User defined constructor
-    int x;
-};
-
-class E {
-public:
-    E(std::initializer_list<int> l);
-};
-
-
-static int arr2[5] = {4,5,6,7,8};
-static int arr3[5](4,5,6,7,8);  // Since C++20
-static int arr4[5]{4,5,6,7,8};
-static int arr5[5]{};     // Default initialized
-static int arr6[5] = {};  // Default initialized
-
-static int i1 = 42;
-static int i2 = {42};
-static int i3(42);
-static int i4{42};
-static int i5{};     // Default initialized
-static int i6 = {};  // Default initialized
-
-//static A a1 = 42; // Needs constructor
-static A a2 = {42, 3.14f};
-static A a3(42, 3.14f); // Since C++20
-static A a4{42, 3.14f};
-static A a5{};      // Default initialized
-static A a6 = {};   // Default initialized
-
-//static B b1 = 42; // Needs constructor
-static B b2 = {{42, 3.14f}, &i2};
-static B b2a = {42, 3.14f, &i2};
-static B b3({42, 3.14f}, &i2);  // Since C++20
-static B b4{42, 3.14f, &i2};
-static B b5{};      // Default initialized
-static B b6 = {};   // Default initialized
-
-static A arrA2[3] = {{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
-static A arrA3[3]({4, 3.14f},{5, 5.14f}, {6, 6.14f});  // Since C++20
-static A arrA4[3]{{4, 3.14f},{5, 5.14f}, {6, 6.14f}};
-static A arrA5[3]{};    // Default initialized
-static A arrA6[3] = {}; // Default initialized
-
-//static C b1 = 42; // Needs constructor
-// static C c2 = {{42, 3.14f}, &i2}; // Error, private member
-// static C c2a = {42, 3.14f, &i2};  // Error, private member
-// static C c3({42, 3.14f}, &i2);    // Error, private member
-// static C c4{42, 3.14f, &i2};      // Error, private member
-static C c5{};      // Default initialized
-static C c6 = {};   // Default initialized
-
-static D d1 = 42; // Ok, calls constructor
-//static D d2 = {{42, 3.14f}, &i2}; // Error, no matching constructor
-//static D d2a = {42, 3.14f, &i2};  // Error, no matching constructor
-//static D d3({42, 3.14f}, &i2);    // Error, no matching constructor
-//static D d4{42, 3.14f, &i2};      // Error, no matching constructor
-//static D d5{};                    // Error, no matching constructor
-//static D d6 = {};                 // Error, no matching constructor
-
-// Calls constructor D(int) for each object in array
-static D arrD2[3] = {4, 5, 6};
-static D arrD3[3](3,4,5);  // Since C++20
-static D arrD4[3]{3,4,5};
-
-// Calls constructor D(int, double) for each object in array
-static D arrDD2[3] = {{4, 3.14}, {5, 4.25}, {6, 5.36}};
-static D arrDD3[3]({4, 3.14}, {5, 4.25}, {6, 5.36});  // Since C++20
-static D arrDD4[3]{{4, 3.14}, {5, 4.25}, {6, 5.36}};
-
-// Calls constructor E(std::initializer_list<int> l)
-// static E e1 = 42;           // Error, no matching constructor
-static E e2 = {42, 43, 47};    // Ok matches to list of any length  
-static E e2a = {42};           // Ok matches to list of any length
-static E e3({42, 43, 47, 49}); // Ok matches to list of any length
-static E e4{42, 5};            // Ok matches to list of any length
-static E e5{};                 // Ok matches to list of any length
-static E e6 = {};              // Ok matches to list of any length
-
-\end{CCode}
-
-Die gleichen Regeln gelten auch für die Initialisierung von Returnwerten oder Funktionsargumente:
-
-\begin{CCode}
-
-class DemoClass {
-
-   private:
-   int a;
-   float b;	
-		
-   public:
-   DemoClass(int _a, float _b) : a(_a), b(_b) {};
-		
-};
-	
-	
-DemoClass f() {
-   return {2, 2.7f};
-}
-	
-void f2(DemoClass c) {
-}
-	
-f2({5, 1.23f});
-	
-	
-\end{CCode}
 
 \section{Placement new, alignof(), alignas()}
 \label{section:PlacementNew}
