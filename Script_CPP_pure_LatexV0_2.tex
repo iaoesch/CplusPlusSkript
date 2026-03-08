@@ -7976,61 +7976,9 @@ typedef make_integer_sequence<int, 5> Sequenze;
 // integer_sequence<int, 0, 1, 2, 3, 4>
 \end{CCode}
 
+Dasselbe wie oben, aber für rückwärts laufende Sequenz:
 \begin{CCode}
-
-namespace demo {
-
-
-template<class T, T I, T N, T... integers>
-struct make_integer_sequence_helper
-{
-    using type = typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
-};
-
-template<class T, T N, T... integers>
-struct make_integer_sequence_helper<T, N, N, integers...>
-{
-    using type = integer_sequence<T, integers...>;
-};
-
-template<class T, T N>
-using make_integer_sequence = make_integer_sequence_helper<T, 0, N>::type;
-
-
-
-// Rekursives Template zur Erzeugung der Sequenz, in jeder Rekursion wird der 
-// nächsthöhere Wert der Sequenz in integers angehängt 
-// (in integers wird die Sequenz aufgebaut, 
-// N ist der  Endwert von I, 
-// I wird in jeder Rekursion um 1 erhöht, bis I gleich N ist). 
-// Das Ergebnis ist im Member type abgespeichert
-namespace internal {
-template<class T, T I, T N, T... integers>
-struct make_integer_sequence_helper
-{
-    // I hat den Wert N nicht erreicht, weiter iterieren, benutze type der
-    // nächsten Rekursion 
-    using type = 
-         typename make_integer_sequence_helper<T, I + 1, N, integers..., I>::type;
-};
- 
-// Das Ende der Rekursion ist erreicht, sobald I (zweiter Parameter des Templates) 
-// gleich N ist, die Sequenz in integers ist somit vollständig und der Rueckgabewert 
-// type kann definiert werden
-template<class T, T N, T... integers>
-struct make_integer_sequence_helper<T, N, N, integers...>
-{
-    using type = std::integer_sequence<T, integers...>;
-};
-}
- 
-// Einfache Schnittstelle zur Erzeugung einer Sequenz 
-template<class T, T N>
-using make_integer_sequence = internal::make_integer_sequence_helper<T, 0, N>::type;
-\end{CCode}
-
-
-
+namespace detail {
 template<class T, T I, T N, T... integers>
 struct make_r_integer_sequence_helper
 {
@@ -8042,52 +7990,89 @@ struct make_r_integer_sequence_helper<T, N, N, integers...>
 {
     using type = integer_sequence<T, integers...>;
 };
+}
 
 template<class T, T N>
-using make_r_integer_sequence = make_r_integer_sequence_helper<T, 0, N>::type;
+using make_r_integer_sequence = detail::make_r_integer_sequence_helper<T, 0, N>::type;
+\end{CCode}
 
 
-
+Anwendungen:
+Umwandeln eines std::arrays in ein tuple:
+\begin{CCode}
+namespace detail {
+// Nimmt ein std::array und eine integersequenz entsprechender Länge entgegen,
+// und packt alle Elemente des Arrays in ein tuple 
 template <typename Array, int... I>
 constexpr auto array_to_tuple_impl(const Array& a, integer_sequence<int, I...>)
 {
+    // Expandiert I, somit wird der Reihe nach jedes Arrayelement ausgewählt
+    // (a[I]... Wird zu a[0], a[1], a[2], ... sofern in I eine Integersequenz
+    // 0, 1, 2, ... abgespeichert ist)
     return std::make_tuple(a[I]...);
 }
-
-
-
-template <typename T, std::size_t N, typename Indx = make_integer_sequence<int, N>>
-constexpr auto array_to_tuple(const std::array<T, N>& a)
-{
-    return array_to_tuple_impl(a, Indx{});
 }
 
+// Template erschliesst T und N aus Aufruf von array_to_tuple() aus den Parametern
+// des Aufrufs, Index wird aus den erschlossenen Parametern automatisch erzeugt
+template <typename T, std::size_t N, typename Index = make_integer_sequence<int, N>>
+constexpr auto array_to_tuple(const std::array<T, N>& a)
+{
+    return array_to_tuple_impl(a, Index{});
+}
+
+// Beispiel
+
+// Ein Array mit 4 Elementen
 constexpr std::array<int, 4> array{11, 22, 33, 44};
 
+// Erzeugt ein Tuple mit den 4 Elementen des Arrays
+static auto tuple1 = array_to_tuple(array);
+\end{CCode}
+
+
+Umdrehen des Inhaltes eines std::arrays:
+\begin{CCode}
+
+// Nimmt ein std::array und eine integersequenz entsprechender Länge entgegen,
+// und packt alle Elemente des Arrays in umgekehrter Reihenfolge in eine neues
+// Array   
 template <typename Array, int... I>
 constexpr auto flip_array_impl(const Array& a, integer_sequence<int, I...>)
 {
+    // Expandiert I, somit wird der Reihe nach jedes Arrayelement ausgewählt
+    // (a[I]... Wird zu a[N], ..., a[1], a[0], ... sofern in I eine Integersequenz
+    // N, N-1, ... , 1, 0  abgespeichert ist)
     return std::array{a[I]...};
 }
 
-template <typename T, std::size_t N, typename Indx = make_r_integer_sequence<int, N>>
+// Template erschliesst T und N aus Aufruf von flip_array() aus den Parametern
+// des Aufrufs, Index wird aus den erschlossenen Parametern automatisch erzeugt
+// (Beachten Index wird mit einer reversen Sequenz erzeugt)
+template <typename T, std::size_t N, typename Index = make_r_integer_sequence<int, N>>
 constexpr auto flip_array(const std::array<T, N>& a)
 {
-    return flip_array_impl(a, Indx{});
+    return flip_array_impl(a, Index{});
 }
 
-//constexpr std::array<int, 4> array{11, 22, 33, 44};
+// Array mit 4 Elementen
+constexpr std::array<int, 4> array{11, 22, 33, 44};
 
-static auto tuple1 = array_to_tuple(array);
+// Array mit denselben Werten in umgekehrter Reihenfolge
+// (Umdrehung zur Compilezeit)
 static constexpr auto flippedarr = flip_array(array);
-constexpr std::array<int, 4> array2 = flippedarr;
-const int a0 = array2[0];
-const int a1 = array2[1];
-const int a2 = array2[2];
-const int a3 = array2[3];
 
-static integer_sequence<int, 10> i;
+// Flippedarr ist eine Compilezeitkonstante, seine Inhalte
+// koennten auch als Caselabels verwendet werden, so koennten
+// zur Compilezeit die Zuordnung von Caselabels zu
+// Case-Code konfiguriert werden:
 
+void f(int x) {
+   switch(x) {
+      case flippedarr[0]: /* some code */ break;
+      case flippedarr[1]: /* some code */ break;
+      case flippedarr[2]: /* some code */ break;
+      case flippedarr[3]: /* some code */ break;
 }
 \end{CCode}
 
@@ -8192,7 +8177,10 @@ alles möglich ist.
 Das nachfolgende Beispiel kann Binärzahlen in Dezimalzahlen
 umwandeln, und das zu Compilezeit, d.h. die Binärzahl wird
 zu Compilezeit umgewandelt. Es wird also \emph{kein} zusätzlicher
-Code erzeugt oder Speicherplatz benötigt!
+Code erzeugt oder Speicherplatz benötigt! Das ganze könnte
+einfacher auch mit constexpr-Funktionen gelöst werden.
+Mit der Einführung der 0xb-Literale nur noch ein akademisches
+Beispiel.
 
 \begin{CCode}
 /* Binary-to-Decimal as Template Metaprogram */
@@ -8232,7 +8220,8 @@ Kontrollen und Fehlerhandling für illegale Binärzahlen wie
 101037012 oder zu lange Zahlen. Aber auch diese Probleme
 lassen sich mit entsprechenden Template-Tricks lösen.
 
-Ein weiteres Beispiel, welches zur Compilezeit die Fakultät berechnet:
+Ein weiteres Beispiel, welches zur Compilezeit die Fakultät berechnet,
+auch das könnte einfacher mit constexpr-Funktionen gelöst werden:
 \begin{CCode}
 
 #include <iostream>
@@ -8252,7 +8241,8 @@ int main() {
 \end{CCode}
 
 Und ein Beispiel zum Berechnen des grössten gemeinsamen Teilers (GGT) zur Compilezeit mit
-dem Algorithmus von Euklid:
+dem Algorithmus von Euklid, 
+ebenfalls einfacher mit constexpr-Funktionen zu lösen:
 \begin{CCode}
 
 template <int X, int Y>   struct GGT {
