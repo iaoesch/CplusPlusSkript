@@ -2491,11 +2491,13 @@ constexpr long One = 1L;      // Ok
 char c1{Big};                 // Error
 char c2{One};                 // Ok, constexpr 1L fits into char
 
-int x{c1};                    // Ok, char fits into int
+int x{c1};                    // Ok, char always fits into int
 
-double d = {3.14};            // Ok 
+constexpr double pi = {3.141592653589793}; // Ok, looses some digits 
+double d = {2.7};             // Ok 
 float f = {d};                // Error
-double d2 = {f};              // Ok, float fits in double
+float fpi = {pi};             // Ok, constexpr fits into float, looses some digits
+double d2 = {f};              // Ok, float always fits in double
 \end{CCode}
 
 Es ist guter Stil, Variablen immer mit \CodeStyle{\{...\}} zu initialisieren, so werden (mögliche) Overflows bereits
