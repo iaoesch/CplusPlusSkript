@@ -7846,6 +7846,186 @@ constexpr bool rr2 = isUnique<int, int*>(); // will be true
 
 \end{CCode}
 
+\subsection{Arbeiten mit Typenlisten}
+
+Eine wichtige Grundlage für die Metaprogrammierung ist der Umgang
+mit und die Manipulation von Typenlisten. Eine Typeliste ist nichts anderes als ein Klassentemplate parametrisiert mit einem Parameterpack:
+\begin{CCode}
+template <class ...Elements>
+struct TypenListe;
+\end{CCode}
+Da dieses nur zur Speicherung von Typen benötigt wird, braucht es nicht einmal
+vollständig definiert zu werden.
+
+Für den einfacheren Umgang und die bessere Lesbarkeit definieren wir ein
+Hilfstemplate zur Erzeugung von Listen:
+\begin{CCode}
+template <class ...Types>
+struct BuildList_ {
+    using Result = TypenListe<Types ...>;
+};
+
+// Vereinfachung
+template <class ...Types>
+using BuildList = typename BuildList_<Types...>::Result;
+
+// Ohne Vereinfachung
+using List1 = BuildList_<int, int, double>::Result;
+
+// -> List1 hat den typen List<int, int, double>
+
+// Einfacher
+using List2 = BuildList<int, int, double>;
+
+// -> List2 hat den typen List<int, int, double>
+
+\end{CCode}
+
+Mit folgendem Template kann einer Liste ein weiteres Element
+hinzugefügt werden. Achtung, es können immer nur neue Typen erzeugt werden, bestehende können nicht verändert oder überschrieben werden. 
+\begin{CCode}
+template <class ToAppend, class ...Types>
+struct PushBack_;
+
+template <class ToAppend, class ...Types>
+struct PushBack_<ToAppend, TypenListe<Types...>> {
+    using Result = TypenListe<Types ..., ToAppend>;
+};
+
+// Vereinfachung
+template <class ToAppend, class List>
+using PushBack = typename PushBack_<ToAppend, List>::Result;
+
+// -> List2 hat den Typen List<int, int, double>
+
+using List3 = PushBack<short, List2>;
+
+// -> List3 hat den Typen List<int, int, double, short>
+\end{CCode}
+
+Mit folgendem Template kann aus einer Liste das erste  Element
+entfernt werden. Achtung, es können immer nur neue Typen erzeugt werden, bestehende können nicht verändert oder überschrieben werden. 
+\begin{CCode}
+template <class First, class ...Types>
+struct PopFront_;
+
+template <class First, class ...Types>
+struct PopFront_<TypenListe<First, Types...>> {
+    using Result = TypenListe<Types...>;
+};
+
+// Vereinfachung
+template <class List>
+using PopFront = typename PopFront_<List>::Result;
+
+// -> List3 hat den Typen List<int, int, double, short>
+
+using List4 = PopFront<List3>;
+
+// -> List4 hat den Typen List<int, double, short>
+\end{CCode}
+
+\begin{minipage}[t]{0.6\textwidth}
+ 
+Erklärung:
+
+\begin{CCode}
+template <class First, class ...Types>
+struct PopFront_;
+\end{CCode}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+Definition des Basistemplates, notwendig für die Spezialisierung
+\end{minipage}
+
+\begin{minipage}[t]{0.6\textwidth}
+\begin{CCode}
+template <class First, class ...Types>
+\end{CCode}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+Einleitung der Spezialisierung (Fast wie Deklaration von
+Variablen in normalem Code), im Template wird ein Typ First,
+sowie ein Parameterpack von Typen eingesetzt
+\end{minipage}
+
+\begin{minipage}[t]{0.6\textwidth}
+\begin{CCode}
+struct PopFront_<TypenListe<First, Types...>> {
+\end{CCode}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+Spezialisierung, das Template wird mit einem Parameter (\CodeStyle{TypenListe<...>}) aufgerufen.
+Der Parameter \CodeStyle{TypenListe} besteht aus einer Liste von Typen, nämlich einem Ersten (\CodeStyle{First}), und den Restlichen, also dem Parameterpack (\CodeStyle{Types...})
+\end{minipage}
+
+\begin{minipage}[t]{0.6\textwidth}
+\begin{CCode}
+    using Result = TypenListe<Types...>;
+\end{CCode}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+Hier wird der Ergebnistyp des Templates definiert, also \CodeStyle{TypenListe<Types...>}, also eine Liste der Typen der ursprünglichen Liste, ohne den Ersten (\CodeStyle{First})
+\end{minipage}
+
+Mit folgendem Template kann das erste Element einer Liste gelesen
+werden. Achtung, es können immer nur neue Typen erzeugt werden, 
+bestehende können nicht verändert oder überschrieben werden. 
+\begin{CCode}
+template <class First, class ...Types>
+struct Front_;
+
+template <class First, class ...Types>
+struct Front_<TypenListe<First, Types...>> {
+    using Result = First;
+};
+
+// Vereinfachung
+template <class List>
+using Front = typename Front_<List>::Result;
+
+// -> List4 hat den Typen List<int, double, short>
+
+using Type1 = Front<List4>;
+
+// -> Type1 hat den Typen int
+\end{CCode}
+
+Mit folgendem Template kann das n-te Element einer Liste gelesen
+werden. Achtung, es können immer nur neue Typen erzeugt werden, 
+bestehende können nicht verändert oder überschrieben werden. 
+\begin{CCode}
+
+template <int Index, class ...Types>
+struct At_;
+
+template <class First, class ...Types>
+struct At_<0, TypenListe<First, Types...>> {
+    using Result = First;
+};
+
+template <int Index, class First, class ...Types>
+struct At_<Index, TypenListe<First, Types...>> {
+    using Result = typename At_<Index-1, TypenListe<Types...>>::Result;
+};
+
+// Vereinfachung
+template <int Index, class List>
+using At = typename At_<Index, List>::Result;
+
+// -> List4 hat den Typen List<int, double, short>
+
+using Type5 = At<1, List4>;
+
+// -> Type5 hat den Typen duble (Element Nr 1 in List4)
+\end{CCode}
+
+Nach diesem Prinzip können beliebige Listenmanipulationen generiert werden:
+Liste Teilen, Listen zusammenfügen, Elemente mit bestimmten Eigenschaften
+in neue Liste zusammentragen, Liste sortieren, ...
+
+
+
 \subsection{Kontrollfluss}
 
 
