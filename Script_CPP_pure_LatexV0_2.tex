@@ -2331,7 +2331,10 @@ Mit leeren Klammern \{\} wird eine \OviIndex{Defaultinitialisierung} durchgeführ
 Werden Objekte welche keine Aggregate sind mit einer Liste initialisert, versucht der Compiler einen zur Liste passenden Konstruktor zu finden und verwendet nach Möglichkeit diesen. 
 
 Wenn ein passender std::initializer\_list<> Konstruktor vorhanden ist, wird dieser vor den anderen Konstruktoren bevorzugt.
-(Siehe auch Kapitel \myref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten})
+(Siehe auch Kapitel \myref{subsubsect:Initialisiererlisten} auf S.\pageref{subsubsect:Initialisiererlisten}).
+
+Mit den geschweiften Klammern kann nun jede Art von Objekt (Skalar, Pointer, Referenz, Objekt, Aggregat) initialisiert werden, dies ist die bevorzugte und empfohlene Art, Objekte aller
+Art zu initialisieren.
 
 \begin{CCode}
 class A {. // Is an Aggregate
@@ -7926,7 +7929,7 @@ static constexpr int Count = Loop<int, float, double, int, float, int>::NumberOf
 
 \subsection{Beispiele}
 
-
+Hier einige Beispiele zur Metaprogrammierung, weitere Beispiele siehe \myref{sect:TemplateMetaProgrammBeispiele}.
 Erzeugen eines Templates, welches mit einer Folge von Konstanten eines Integer Types definiert ist.
 (Würde im Prinzip für alle Typen funktionieren, zu welchen der Wert 1 addiert werden kann.) 
 \begin{CCode}
@@ -15798,7 +15801,9 @@ static void IRQ_Handler(void)
 \end{CCode}
 
 
-\section{Das erste Template Meta Programm}
+\section{Template Meta Programm Beispiele}
+\label{sect:TemplateMetaProgrammBeispiele}
+\subsection{Das erste Template Meta Programm}
 
 Nachfolgend der Code des Template Metaprogramms von Erwin Unruh, mit dem er belegte,
 das der Template-Mechanismus Turing-Vollständig ist und die Ausführung beliebiger
@@ -15874,7 +15879,7 @@ P:\HC\D386_O> exit
 
 \end{ConsoleOutput}
 
-\section{Typsicheres Bitfeld für Hardwarezugriff}
+\subsection{Typsicheres Bitfeld für Hardwarezugriff}
 
 Nachfolgend der Code für ein Bitfeld mit typsicherem Zugriff, kann beliebig ausgebaut werden.
 Zudem werden verschiedene Templatetechniken (Vergleich zweier Typen, Auswahl zwischen zwei Typen,
@@ -16442,8 +16447,283 @@ int main()
 
 \end{CCode}
 
+\subsection{Sortieren einer Typeliste (Parameterpack)}
+Dieses Beispiel sortiert die Typen eines Parameterpacks mittels Mergesort.
+
+Kann eingesetzt werden, um Parameterpacks mit gleichen Typen aber unterschiedlicher
+Reihenfolge in identische Packs zu konvertieren. Damit kann verhindert werden, 
+dass Templates mit identischen Parametern, aber in unterscheidlicher Reihenfolge
+als unterschiedliche Typen angesehen werden. So ist \CodeStyle{std::tuple<int, float>}
+inkompatibel zu \CodeStyle{std::tuple<float, int>}.
 
 
+
+\begin{CCode}
+{
+Origin: Fatih BAKIR, 11.11.2020, https://stackoverflow.com/a/64795244
+All comments added by I. Oesch, 9.3.2026
+
+#include <type_traits>
+#include <string_view>
+
+// We need a compile-time sorting criteria (typeid is not constexpr), either we 
+// give an ID for each type (for each type a line of code...), or we use a 
+// non-standard compilerdependend way to get the name of a type at compiletime
+// as done below:
+template <typename T>
+constexpr auto type_name() noexcept {
+    std::string_view name = "Error: unsupported compiler", prefix, suffix;
+#ifdef __clang__
+    name = __PRETTY_FUNCTION__;
+    prefix = "auto type_name() [T = ";
+    suffix = "]";
+#elif defined(__GNUC__)
+    name = __PRETTY_FUNCTION__;
+    prefix = "constexpr auto type_name() [with T = ";
+    suffix = "]";
+#elif defined(_MSC_VER)
+    name = __FUNCSIG__;
+    prefix = "auto __cdecl type_name<";
+    suffix = ">(void) noexcept";
+#else
+    static_assert(false, "Unsupported compiler!");
+#endif
+    name.remove_prefix(prefix.size());
+    name.remove_suffix(suffix.size());
+    return name;
+}
+
+// List of Parameters, just a template t contain a parameterpack
+// is used like a variable is used in normal code
+template <class... Ts>
+struct list;
+
+// Istantiates the template with sorted parameters 
+//
+// Parameters:
+// Ins: template to intantiate (template template parameter)
+// ...: Parameters to pass on sorted to Ins
+//  
+// 'Returntype': type contains instantiated template ins (Ins<sorted(...)>
+
+template <template <class...> class Ins, class...> struct instantiate;
+
+template <template <class...> class Ins, class... Ts> 
+struct instantiate<Ins, list<Ts...>> {
+    using type = Ins<Ts...>;
+};
+
+// Alias for easier usage
+template <template <class...> class Ins, class... Ts> 
+using instantiate_t = typename instantiate<Ins, Ts...>::type;
+
+
+// Concatenates two lists
+// Parameters:
+//
+// Ts: First list
+// Us: Second list
+//
+// 'Result' Concatenated list in type
+
+template <class...> struct concat;
+
+// Takes two lists, concatenates to one List in type
+template <class... Ts, class... Us>
+struct concat<list<Ts...>, list<Us...>>
+{
+    using type = list<Ts..., Us...>;
+};
+
+// Alias for easier usage
+template <class... Ts>
+using concat_t = typename concat<Ts...>::type;
+
+// Takes N elements from list
+// (In fact it does more then take, it splits list into two lists)
+// Parameters:
+//
+// Count: Number of elements to take from list
+// Ts:    List to take elements from 
+//
+// Result: Sublist of first count elements in type
+// Result: Sublist of other elements in rest
+
+template <int Count, class... Ts>
+struct take;
+
+
+// Alias for easier usage
+template <int Count, class... Ts>
+using take_t = typename take<Count, Ts...>::type;
+
+// spezialization to take 0 elements (end of rekursion) 
+// -> empty result
+template <class... Ts>
+struct take<0, list<Ts...>> {
+    using type = list<>;
+    using rest = list<Ts...>;
+};
+
+// spezialization to take 1 element (end of rekursion) 
+// -> just place first element in result type
+template <class A, class... Ts>
+struct take<1, list<A, Ts...>> {
+    using type = list<A>;
+    using rest = list<Ts...>;
+};
+
+// General case, build result recursively
+template <int Count, class A, class... Ts>
+struct take<Count, list<A, Ts...>> {
+    using type = concat_t<list<A>, take_t<Count - 1, list<Ts...>>>;
+    using rest = typename take<Count - 1, list<Ts...>>::rest;
+};
+
+// Sorts a list, base template
+template <class... Types>
+struct sort_list;
+
+// Alias for easier usage
+template <class... Ts>
+using sorted_list_t = typename sort_list<Ts...>::type;
+
+// Simple case, just one element in list, create a list with this element
+template <class A>
+struct sort_list<list<A>> {
+    using type = list<A>;
+};
+
+// Comparision function used to sort
+// Calls typename to get a constant string representing the type and compares the 
+// string (at compile time)
+// Parameters:
+//
+// Left, Right: Types to compare
+//
+// Result: true if Left < Right
+//
+template <class Left, class Right>
+static constexpr bool less_than = type_name<Left>() < type_name<Right>();
+
+// Case for list of two elements, create sorted list
+// Parameters:
+//
+// Left, Right: Types to sort
+//
+// Result: Sorted list of two types in type
+
+template <class A, class B>
+struct sort_list<list<A, B>> {
+    using type = std::conditional_t<less_than<A, B>, list<A, B>, list<B, A>>;
+};
+
+// Merge combines two sorted list into a single sorted list
+//
+// Usage: merge<A, B>::type
+//
+// Parameters:
+// A: sorted typelist, might be empty
+// B: sorted typelist, might be empty
+//
+// Result: merged sorted list of A and B in type
+
+template <class...>
+struct merge;
+
+// Alias for easier usage
+template <class... Ts>
+using merge_t = typename merge<Ts...>::type;
+
+// Simple case: A is empty 
+// just an empty list and an nonempty list to merge, just return the nonempty list
+template <class... Bs>
+struct merge<list<>, list<Bs...>> {
+    using type = list<Bs...>;
+};
+
+// Simple case: B is empty 
+// just an nonempty list and an empty list to merge, just return the nonempty list
+template <class... As>
+struct merge<list<As...>, list<>> {
+    using type = list<As...>;
+};
+
+// General case, compares first element of each list, takes lower element from its
+// list and create new list with it, and append rekursive result of merge of list
+// an reduced list
+//
+// Example: merge<A, B>, head of A must be before head of B:
+// gives using type = list<a0> + merge<list<a1,...an>, B>::type>
+//
+// + represents concatenation of two lists (concat_t<>)
+// a0 is first element of A
+// a1 ... other elemnts of A
+// merge<list<a1,...an>, B>::type returns the merged list of a1...an and b0...bn
+//
+// list<AHead, As> splits list into first element and rest
+// 
+// std::conditional_t is a template from the standard library:
+//    conditional_t<bool, A, B> retunrs A if bool is true, otherwise B
+//
+template <class AHead, class... As, class BHead, class... Bs>
+struct merge<list<AHead, As...>, list<BHead, Bs...>> {
+    using type = std::conditional_t<
+                            // if (
+                            less_than<AHead, BHead>, 
+                            // )
+                            concat_t<list<AHead>, 
+                                     merge_t<list<As...>, list<BHead, Bs...>>>, 
+                            // else         
+                            concat_t<list<BHead>, 
+                                     merge_t<list<AHead, As...>, list<Bs...>>>                                     
+                  >;
+};
+
+// Entrypoint for our sorting, last specialisation of our sort_list template.
+// is used for lists containing more than 2 Elements, cases for 2 and 1 Element
+// are handled above
+//
+// Working: Splits list into two lists, and calls (instantates) sort_list 
+// recursively for both halves, and merges the sorted results of both calls into
+// one sorted list
+// (Recursion: if halved lists have more than 2 members, this instance is called 
+//  again, otherwise the cases for 2 or 1 element are called) 
+//
+// Param: 
+//  list: list of types to sort
+//
+// Result: sorted list in type
+//
+template <class... Types>
+struct sort_list<list<Types...>> {
+    static constexpr auto first_size = sizeof...(Types) / 2;
+    using split = take<first_size, list<Types...>>;
+    using type = merge_t<
+        sorted_list_t<typename split::type>, 
+        sorted_list_t<typename split::rest>>;
+};
+
+template <class... Ts>
+struct MyActualContainer {
+    
+};
+
+template <class... Ts>
+using MyContainer = instantiate_t<MyActualContainer, sorted_list_t<list<Ts...>>>;
+
+struct a {
+};
+struct b {
+};
+struct c {
+};
+
+static_assert(std::is_same_v<
+              MyContainer<a, b, c, c, c>, 
+              MyContainer<c, b, c, a, c>>);
+
+\end{CCode}
 \section{Glossar}
 {
 \setlength{\extrarowheight}{0.8ex}
