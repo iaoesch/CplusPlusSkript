@@ -7968,6 +7968,7 @@ Der Parameter \CodeStyle{TypenListe} besteht aus einer Liste von Typen, nämlich 
 Hier wird der Ergebnistyp des Templates definiert, also \CodeStyle{TypenListe<Types...>}, also eine Liste der Typen der ursprünglichen Liste, ohne den Ersten (\CodeStyle{First})
 \end{minipage}
 
+
 Mit folgendem Template kann das erste Element einer Liste gelesen
 werden. Achtung, es können immer nur neue Typen erzeugt werden, 
 bestehende können nicht verändert oder überschrieben werden. 
@@ -8018,6 +8019,32 @@ using At = typename At_<Index, List>::Result;
 using Type5 = At<1, List4>;
 
 // -> Type5 hat den Typen duble (Element Nr 1 in List4)
+\end{CCode}
+
+Ein Template zur Instanzierung eines Templates mit einer
+Typenliste. Hinweis: Mit \CodeStyle{template<class ...> class} wird
+ein template-template Parameter definiert, also ein Template, welches
+als Parameter übergeben wird, und hier der Form \CodeStyle{template<class ...>}
+entsprechen muss. 
+\begin{CCode}
+ template <template<class ...> class TemplateToInstantiate, class ...Types>
+struct InstantiateTemplateFromList_;
+
+template <template <class...> class TemplateToInstantiate, class... Ts>
+struct InstantiateTemplateFromList_<TemplateToInstantiate, TypenListe<Ts...>> {
+    // Uebergebenes Template mit Inhalt von Liste instanzieren
+    using type = TemplateToInstantiate<Ts...>;
+};
+
+// Vereinfachung
+template <template <class...> class TemplateToInstantiate, class T>
+using InstantiateTemplateFromList = typename InstantiateTemplateFromList_<TemplateToInstantiate, T>::type;
+
+// -> List4 hat den Typen List<int, double, short>
+
+using mytuple = InstantiateTemplateFromList<std::tuple, List4>;
+
+// -> mytuple hat den Typen std::tuple<int, double, short>
 \end{CCode}
 
 Nach diesem Prinzip können beliebige Listenmanipulationen generiert werden:
@@ -9154,7 +9181,225 @@ Einige Beispiele:
 
 \end{CCode}
 
+\section{Pair, Tuple}
+\OviIndex{Pair} und \OviIndex{Tuple} sind eine Art templatebasierte ad-hoc-Strukturen, um ein Paar oder eine Gruppe von Werten aufzunehmen. 
+Zusammenfügen:
+\subsection{Pair}
+\label{sect:Pair}
+\OviIndex{std::Pair} 
+#include <complex>
+#include <iostream>
+#include <string>
+#include <tuple>
+#include <utility>
+ 
+int main()
+{
+    auto print = [](auto rem, auto const& pair)
+    {
+        std::cout << rem << "(" << pair.first << ", " << pair.second << ")\n";
+    };
+ 
+    std::pair<int, float> p1;
+    print("(1) Value-initialized: ", p1);
+ 
+    std::pair<int, double> p2{42, 3.1415};
+    print("(2) Initialized with two values: ", p2);
+ 
+    std::pair<char, int> p4{p2};
+    print("(4) Implicitly converted: ", p4);
+ 
+    std::pair<std::complex<double>, std::string> p6
+        {std::piecewise_construct, std::forward_as_tuple(0.123, 7.7),
+            std::forward_as_tuple(10, 'a')};
+    print("(8) Piecewise constructed: ", p6);
+}
+\subsection{Tuple}
+\label{sect:Tuple}
+\OviIndex{std::Tuple} 
+Ein \OviIndex{Tuple} ist eine Art ad-hoc-Struktur, um eine Gruppe von Werten aufzunehmen. 
+Zusammenfügen:
+std::tuuple_cat()
+std::make_from_tuple()
+std::apply
+Tuple hat automatisch alle Vergleichsoperatoren, wenn alle Member vergleichbar sind.
+ make_from_tuple
+(C++17)
+	construct an object with a tuple of arguments
+(function template)
+#include <iostream>
+#include <tuple>
+#include <utility>
+ 
+int add(int first, int second) { return first + second; }
+ 
+template<typename T>
+T add_generic(T first, T second) { return first + second; }
+ 
+auto add_lambda = [](auto first, auto second) { return first + second; };
+ 
+template<typename... Ts>
+std::ostream& operator<<(std::ostream& os, std::tuple<Ts...> const& theTuple)
+{
+    std::apply
+    (
+        [&os](Ts const&... tupleArgs)
+        {
+            os << '[';
+            std::size_t n{0};
+            ((os << tupleArgs << (++n != sizeof...(Ts) ? ", " : "")), ...);
+            os << ']';
+        }, theTuple
+    );
+    return os;
+}
+ 
+int main()
+{
+    // OK
+    std::cout << std::apply(add, std::pair(1, 2)) << '\n';
+ 
+    // Error: can't deduce the function type
+    // std::cout << std::apply(add_generic, std::make_pair(2.0f, 3.0f)) << '\n'; 
+ 
+    // OK
+    std::cout << std::apply(add_lambda, std::pair(2.0f, 3.0f)) << '\n'; 
+ 
+    // advanced example
+    std::tuple myTuple{25, "Hello", 9.31f, 'c'};
+    std::cout << myTuple << '\n';
+}
 
+#include <iostream>
+#include <tuple>
+ 
+struct Foo
+{
+    Foo(int first, float second, int third)
+    {
+        std::cout << first << ", " << second << ", " << third << '\n';
+    }
+};
+ 
+int main()
+{
+    auto tuple = std::make_tuple(42, 3.14f, 0);
+    std::make_from_tuple<Foo>(std::move(tuple));
+}
+
+#include <iostream>
+#include <string>
+#include <tuple>
+ 
+// helper function to print a tuple of any size
+template<class Tuple, std::size_t N>
+struct TuplePrinter
+{
+    static void print(const Tuple& t)
+    {
+        TuplePrinter<Tuple, N - 1>::print(t);
+        std::cout << ", " << std::get<N-1>(t);
+    }
+};
+ 
+template<class Tuple>
+struct TuplePrinter<Tuple, 1>
+{
+    static void print(const Tuple& t)
+    {
+        std::cout << std::get<0>(t);
+    }
+};
+ 
+template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
+void print(const std::tuple<Args...>& t)
+{
+    std::cout << "()\n";
+}
+ 
+template<typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
+void print(const std::tuple<Args...>& t)
+{
+    std::cout << "(";
+    TuplePrinter<decltype(t), sizeof...(Args)>::print(t);
+    std::cout << ")\n";
+}
+// end helper function
+ 
+int main()
+{
+    std::tuple<int, std::string, float> t1(10, "Test", 3.14);
+    int n = 7;
+    auto t2 = std::tuple_cat(t1, std::make_tuple("Foo", "bar"), t1, std::tie(n));
+    n = 42;
+    print(t2);
+}
+
+std::tuple<double, char, std::string> get_student(int id)
+{
+    switch (id)
+    {
+        case 0: return {3.8, 'A', "Lisa Simpson"};
+        case 1: return {2.9, 'C', "Milhouse Van Houten"};
+        case 2: return {1.7, 'D', "Ralph Wiggum"};
+        case 3: return {0.6, 'F', "Bart Simpson"};
+    }
+ 
+    throw std::invalid_argument("id");
+}
+ 
+int main()
+{
+    const auto student0 = get_student(0);
+    std::cout << "ID: 0, "
+              << "GPA: " << std::get<0>(student0) << ", "
+              << "grade: " << std::get<1>(student0) << ", "
+              << "name: " << std::get<2>(student0) << '\n';
+ 
+    const auto student1 = get_student(1);
+    std::cout << "ID: 1, "
+              << "GPA: " << std::get<double>(student1) << ", "
+              << "grade: " << std::get<char>(student1) << ", "
+              << "name: " << std::get<std::string>(student1) << '\n';
+ 
+    double gpa2;
+    char grade2;
+    std::string name2;
+    std::tie(gpa2, grade2, name2) = get_student(2);
+    std::cout << "ID: 2, "
+              << "GPA: " << gpa2 << ", "
+              << "grade: " << grade2 << ", "
+              << "name: " << name2 << '\n';
+ 
+    // C++17 structured binding:
+    const auto [gpa3, grade3, name3] = get_student(3);
+    std::cout << "ID: 3, "
+              << "GPA: " << gpa3 << ", "
+              << "grade: " << grade3 << ", "
+              << "name: " << name3 << '\n';
+}
+#include <iostream>
+#include <string>
+#include <tuple>
+ 
+int main()
+{
+    auto t = std::make_tuple(1, "Foo", 3.14);
+ 
+    // Index-based access
+    std::cout << "( " << std::get<0>(t)
+              << ", " << std::get<1>(t)
+              << ", " << std::get<2>(t)
+              << " )\n";
+ 
+    // Type-based access (C++14 or later)
+    std::cout << "( " << std::get<int>(t)
+              << ", " << std::get<const char*>(t)
+              << ", " << std::get<double>(t)
+              << " )\n";
+ 
+    // Note: std::tie and structured binding may also be used to decompose a tuple.
+}
 \section{Uhrzeit, Datum und Zeitintervalle std::chrono}
 \label{sect:STDChrono}
 In der Headerdatei \CodeStyle{<chrono>} werden verschieden Typen und Methoden zum Umgang mit Zeiten und Zeitpunkten definiert. \index{chrono}\index{std::chrono}
@@ -10431,6 +10676,71 @@ void main()
 }
 \end{CCode}
 
+\section{Source Loction (Informationen zur aktuell Compilierten Datei, \CppVers{20})}
+\label{section:StandardSTL}
+Mit \CppVers{20} gibt es eine objektorientierte Alternative zu den Makros  \CodeStyle{__FILE__} \CodeStyle{__LINE__}
+Die \OviIndex{STL} (\OviIndex{Standard Template Library}) war eine der ersten Anwendungen, die umfassend von Templates gebrauch 
+
+\begin{CCode}
+#include <iostream>
+#include <source_location>
+#include <string_view>
+ 
+void log(const std::string_view message,
+         const std::source_location location =
+               std::source_location::current())
+{
+    std::clog << "file: "
+              << location.file_name() << '('
+              << location.line() << ':'
+              << location.column() << ") `"
+              << location.function_name() << "`: "
+              << message << '\n';
+}
+ 
+template<typename T>
+void fun(T x)
+{
+    log(x); // line 20
+}
+ 
+int main(int, char*[])
+{
+    log("Hello world!"); // line 25
+    fun("Hello C++20!");
+}
+
+class LoggingException : public exception {
+   public:
+   LoggingException(std::string Message_, std::source_location Location_ = std::source_location::current()) : 
+        Message(Message) ,    
+        Location(Location_) {};
+   const char *what() const noexcept override {return Message 
+                                                  + Location.file_name() 
+                                                  + std::to_string(Location.line()); }
+                                                  + Location.function_name();} 
+   
+   private:
+   std::string Message;
+   std::source_location Location;
+}
+
+\end{CCode}
+
+\section{Stack Trace (Informationen zum Callstack, \CppVers{23})}
+\label{section:StandardSTL}
+\begin{CCode}
+class TracingException : public exception {
+   public:
+   TracingException(std::string Message_) : Message(Message) , Stacktrace(stacktrace::current(1)) {};
+   const char *what() const noexcept override {return Message + std::to_string(Stacktrace); }
+   
+   private:
+   std::string Message;
+   std::stacktrace Stacktrace;
+}
+
+\end{CCode}
 
 
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
@@ -16904,6 +17214,10 @@ static_assert(std::is_same_v<
               MyContainer<c, b, c, a, c>>);
 
 \end{CCode}
+\section{Debugging}
+ \myref{subsect:Sourceinfoo}
+ \myref{subsect:Stacktraceee}
+
 \section{Glossar}
 {
 \setlength{\extrarowheight}{0.8ex}
@@ -16920,7 +17234,7 @@ STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, 
 GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
 RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
 POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
-SFINAE& Substitution Failure Is Not An Error\\
+SFINAE& Substitution Failure Is Not An Error  \myref{subsect:SINAEF}\\
 \end{tabular}
 }
 
