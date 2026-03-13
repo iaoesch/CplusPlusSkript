@@ -2152,10 +2152,11 @@ zu einer Variable zusammengefasst. (Im Gegensatz zu 'normalen' globalen Variable
 
 
 
+
 \subsection{Structured Bindings (Seit \CppVers{17})}
 \label{subsubsect:StructuredBindings}
 \index{Structured Bindings}
-Neu können strukturierte Datentypen automatisch in Einzelvariablen umgepackt werden. Dadurch können unter anderem auch mehrere Werte aus einer Funktion/Methode zurückgegeben werden:
+Neu können strukturierte Datentypen automatisch in Einzelvariablen umgepackt werden. Dadurch können unter anderem auch mehrere Werte aus einer Funktion/Methode zurückgegeben werden. Structured Bindings werden oft zusammen mit \CodeStyle{std::tuple} eingesetzt (Siehe \myref{subsect:Tuple}):
 
 \begin{CCode}
 	
@@ -9181,225 +9182,160 @@ Einige Beispiele:
 
 \end{CCode}
 
-\section{Pair, Tuple}
-\OviIndex{Pair} und \OviIndex{Tuple} sind eine Art templatebasierte ad-hoc-Strukturen, um ein Paar oder eine Gruppe von Werten aufzunehmen. 
-Zusammenfügen:
+\section{std::pair und std::tuple}
+\OviIndex{Pair} und \OviIndex{Tuple} sind eine Art templatebasierte ad-hoc-Strukturen, um ein Paar oder eine Gruppe von Werten aufzunehmen.  Tuple werden oft zusammen mit  structured Bindings (Siehe \myref{subsubsect:StructuredBindings}) eingesetzt, und Pair wird intensiv in der Standardlibrary verwendet. 
+
 \subsection{Pair}
-\label{sect:Pair}
-\OviIndex{std::Pair} 
-#include <complex>
-#include <iostream>
-#include <string>
-#include <tuple>
-#include <utility>
- 
+\label{subsect:Pair}
+In einem \OviIndex{std::Pair} werden zwei Werte unterschiedlichen oder gleichen Types gemeinsam abgelegt. Es ist eine templatebasierte Struktur mit den zwei Elementen  \CodeStyle{first} und \CodeStyle{second}. Sie ist ideal, um zwei zusammengehörende Werte als Einheit zu behandeln, in der Standardlibrary werden so zum Beispiel im Container \CodeStyle{std::map} (Siehe \myref{subsubsect:map}) Schlüssel und Wert gemeinsam abgelegt.
+
+\begin{CCode}
+ #include <utility>
+
+std::pair<int, double> f1()
+{
+   return {4, 3.14};
+}
+
+
+auto f2()
+{
+   return std::make_pair(4, 3.14);
+}
+
+float f3(std::pair<int, double> p)
+{
+   auto p1 = f1();
+   
+   p.first = p1.first + p.first;
+   p.second = p1.second + p.second;
+   
+   return p.first * p.second; 
+}
+
 int main()
 {
-    auto print = [](auto rem, auto const& pair)
-    {
-        std::cout << rem << "(" << pair.first << ", " << pair.second << ")\n";
-    };
- 
-    std::pair<int, float> p1;
-    print("(1) Value-initialized: ", p1);
- 
-    std::pair<int, double> p2{42, 3.1415};
-    print("(2) Initialized with two values: ", p2);
- 
-    std::pair<char, int> p4{p2};
-    print("(4) Implicitly converted: ", p4);
- 
-    std::pair<std::complex<double>, std::string> p6
-        {std::piecewise_construct, std::forward_as_tuple(0.123, 7.7),
-            std::forward_as_tuple(10, 'a')};
-    print("(8) Piecewise constructed: ", p6);
+   f3({4, 2.5});
+   
+   float f = f3(f2());
 }
+\end{CCode}
+
 \subsection{Tuple}
-\label{sect:Tuple}
+\label{subsect:Tuple}
 \OviIndex{std::Tuple} 
 Ein \OviIndex{Tuple} ist eine Art ad-hoc-Struktur, um eine Gruppe von Werten aufzunehmen. 
-Zusammenfügen:
-std::tuuple_cat()
-std::make_from_tuple()
-std::apply
-Tuple hat automatisch alle Vergleichsoperatoren, wenn alle Member vergleichbar sind.
- make_from_tuple
-(C++17)
-	construct an object with a tuple of arguments
-(function template)
-#include <iostream>
-#include <tuple>
-#include <utility>
- 
-int add(int first, int second) { return first + second; }
- 
-template<typename T>
-T add_generic(T first, T second) { return first + second; }
- 
-auto add_lambda = [](auto first, auto second) { return first + second; };
- 
-template<typename... Ts>
-std::ostream& operator<<(std::ostream& os, std::tuple<Ts...> const& theTuple)
+
+Ein Tuple kann mit  \CodeStyle{std::make_tuple(..)} aus einer Liste von Variablen oder Werten erzeugt werden, der Compiler erschliesst die Anzahl und Art der Tuplemember aus den Parametern. Oder das Tuple kann mit den gewünschten Parametern instanziert (und allenfalls Initialisiert werden),. Weiter kann ein Tuple 'automatisch' beim Aufrufen einer Funktion, oder beim return-Statement erzeugt werden: 
+\begin{CCode}
+   auto t = std::make_tuple(4, 3.14, 7L);
+   std::tuple<int, char> t2 = {3,'h'};
+
+std::tuple<int, double, long> f1()
 {
-    std::apply
-    (
-        [&os](Ts const&... tupleArgs)
-        {
-            os << '[';
-            std::size_t n{0};
-            ((os << tupleArgs << (++n != sizeof...(Ts) ? ", " : "")), ...);
-            os << ']';
-        }, theTuple
-    );
-    return os;
-}
- 
-int main()
-{
-    // OK
-    std::cout << std::apply(add, std::pair(1, 2)) << '\n';
- 
-    // Error: can't deduce the function type
-    // std::cout << std::apply(add_generic, std::make_pair(2.0f, 3.0f)) << '\n'; 
- 
-    // OK
-    std::cout << std::apply(add_lambda, std::pair(2.0f, 3.0f)) << '\n'; 
- 
-    // advanced example
-    std::tuple myTuple{25, "Hello", 9.31f, 'c'};
-    std::cout << myTuple << '\n';
+   // Tuple wird gemaess returntyp erzeugt
+   return {4, 3.14, 1L};
 }
 
-#include <iostream>
-#include <tuple>
- 
-struct Foo
+auto f2()
 {
-    Foo(int first, float second, int third)
-    {
-        std::cout << first << ", " << second << ", " << third << '\n';
-    }
-};
- 
-int main()
-{
-    auto tuple = std::make_tuple(42, 3.14f, 0);
-    std::make_from_tuple<Foo>(std::move(tuple));
+   // Ein Tuple aus Parameterliste erzeugen
+   return std::make_tuple(4, 3.14, 7L);
 }
 
-#include <iostream>
-#include <string>
-#include <tuple>
- 
-// helper function to print a tuple of any size
-template<class Tuple, std::size_t N>
-struct TuplePrinter
+// f3 will ein tuple<int, double, long> als argument
+void f3(std::tuple<int, double, long> p)
 {
-    static void print(const Tuple& t)
-    {
-        TuplePrinter<Tuple, N - 1>::print(t);
-        std::cout << ", " << std::get<N-1>(t);
-    }
-};
- 
-template<class Tuple>
-struct TuplePrinter<Tuple, 1>
-{
-    static void print(const Tuple& t)
-    {
-        std::cout << std::get<0>(t);
-    }
-};
- 
-template<typename... Args, std::enable_if_t<sizeof...(Args) == 0, int> = 0>
-void print(const std::tuple<Args...>& t)
-{
-    std::cout << "()\n";
-}
- 
-template<typename... Args, std::enable_if_t<sizeof...(Args) != 0, int> = 0>
-void print(const std::tuple<Args...>& t)
-{
-    std::cout << "(";
-    TuplePrinter<decltype(t), sizeof...(Args)>::print(t);
-    std::cout << ")\n";
-}
-// end helper function
- 
-int main()
-{
-    std::tuple<int, std::string, float> t1(10, "Test", 3.14);
-    int n = 7;
-    auto t2 = std::tuple_cat(t1, std::make_tuple("Foo", "bar"), t1, std::tie(n));
-    n = 42;
-    print(t2);
 }
 
-std::tuple<double, char, std::string> get_student(int id)
+int f4()
 {
-    switch (id)
-    {
-        case 0: return {3.8, 'A', "Lisa Simpson"};
-        case 1: return {2.9, 'C', "Milhouse Van Houten"};
-        case 2: return {1.7, 'D', "Ralph Wiggum"};
-        case 3: return {0.6, 'F', "Bart Simpson"};
-    }
- 
-    throw std::invalid_argument("id");
+   // Ein zu f3 passendes Tuple mit Initialisiererliste erzeugen
+   f3({4, 2.5, 1L});
 }
- 
+\end{CCode}
+Ein Tuple hat automatisch alle Vergleichsoperatoren, wenn alle Member vergleichbar sind. Dabei werden 
+alle Member der Reihe nach verglichen und das Resultat aus den Einzelvergleichen gewonnen.
+\begin{CCode}
+std::tuple<int, char, float> t1 = {3,'a', 5.0};
+std::tuple<int, char, float> t2 = {3,'b', 4.0};
+
+bool Result = t1 < t2; //liefert true, da 3 == 3, 'a' < 'b'  (float wird nicht mehr verglichen)
+\end{CCode}
+Mit \CodeStyle{std::get<Index>()}  kann auf die einzelnen Tuplemember zugegriffen werden, wobei index entweder ein (Compile) konstanter Integerwert, der als Index in das Tuple dient, oder einer der Typen, aus denen das Tuple besteht, sein kann. beim Zugriff mittels Typ muss dieser eindeutig sein, es darf nicht zwei Member mit demselben Typen geben :
+\begin{CCode}
+float f3(std::tuple<int, double, long> p)
+{
+   std::get<0>(p) = std::get<0>(p) + std::get<2>(p);
+   std::get<long>(p) = std::get<long>(p) + std::get<intt>(p);
+
+   return std::get<long>(p) * std::get<double>(p);
+}
+\end{CCode}
+Mit \CodeStyle{std::tuple_cat()}  kann ein Tuple aus einer Aneinanderhängung mehrerer Tuple erzeugt werden.
+\begin{CCode}
+   auto t1 = std::make_tuple(1, "test", 4.0f, 2L, 1);
+   std::tuple<int, char> t2 = {3,'h'};
+   
+   // t5 wird zu {1, "test", 4.0f, 2L, 1, 4.5, "Test", 3,'h'}
+   auto t5 = std::tuple_cat(t1, std::make_tuple(4.5, "Test"), t2);
+\end{CCode}
+Mit \CodeStyle{std::apply()}  kann eine Funktion oder ein aufrufbares Objekt wie eine Lambdafunktion mit den Tuplemember als Argumente aufgerufen werden:
+\begin{CCode}
+int CallMe(int i, double d, long l)
+{
+   return i + d + l;
+}
+
+template<class ...P>
+void CallMeToo(P...args)
+{
+   ((std::cout << args),...);
+}
+
+void CallWithTupleContent(std::tuple<int, double, long> p)
+{
+   std::apply(CallMe, p);
+}
+
+template<class ...P>
+void CallWithTupleContentToo(std::tuple<P...> p)
+{
+   std::apply(CallMeToo<P...>, p);
+}
+
 int main()
 {
-    const auto student0 = get_student(0);
-    std::cout << "ID: 0, "
-              << "GPA: " << std::get<0>(student0) << ", "
-              << "grade: " << std::get<1>(student0) << ", "
-              << "name: " << std::get<2>(student0) << '\n';
- 
-    const auto student1 = get_student(1);
-    std::cout << "ID: 1, "
-              << "GPA: " << std::get<double>(student1) << ", "
-              << "grade: " << std::get<char>(student1) << ", "
-              << "name: " << std::get<std::string>(student1) << '\n';
- 
-    double gpa2;
-    char grade2;
-    std::string name2;
-    std::tie(gpa2, grade2, name2) = get_student(2);
-    std::cout << "ID: 2, "
-              << "GPA: " << gpa2 << ", "
-              << "grade: " << grade2 << ", "
-              << "name: " << name2 << '\n';
- 
-    // C++17 structured binding:
-    const auto [gpa3, grade3, name3] = get_student(3);
-    std::cout << "ID: 3, "
-              << "GPA: " << gpa3 << ", "
-              << "grade: " << grade3 << ", "
-              << "name: " << name3 << '\n';
+   CallWithTupleContent({1,4.8, 1L});
+
+   auto t1 = std::make_tuple(1, "test", 4.0f, 2L, 1);
+   CallWithTupleContentToo(t1);
+
+   std::tuple<int, char> t2 = {3,'h'};
+   CallWithTupleContentToo(t2);
+
+   std::tuple<int, char, double> t3 = std::make_tuple(1, 'H', 4.0);
+   CallWithTupleContentToo(t3);
 }
-#include <iostream>
-#include <string>
-#include <tuple>
- 
+\end{CCode}
+Mit \CodeStyle{std::make_from_tuple<Typ>()}  kann ein Objekt aus den Tuplemember erzeugt werden, dabei wird der Konstruktor von Typ aufgerufen, und diem Member dem Kostruktor als Argumente übergeben:
+\begin{CCode}
+class Demo {
+   int i;
+   float f;
+   long l;
+
+   public:
+   Demo(int i_, float f_, long l_) : i(i_), f(f_), l(l_) {}
+};
+
 int main()
 {
-    auto t = std::make_tuple(1, "Foo", 3.14);
- 
-    // Index-based access
-    std::cout << "( " << std::get<0>(t)
-              << ", " << std::get<1>(t)
-              << ", " << std::get<2>(t)
-              << " )\n";
- 
-    // Type-based access (C++14 or later)
-    std::cout << "( " << std::get<int>(t)
-              << ", " << std::get<const char*>(t)
-              << ", " << std::get<double>(t)
-              << " )\n";
- 
-    // Note: std::tie and structured binding may also be used to decompose a tuple.
+   std::tuple<int, float, long> t6;
+   auto d = std::make_from_tuple<Demo>(t6);
 }
+\end{CCode}
+
 \section{Uhrzeit, Datum und Zeitintervalle std::chrono}
 \label{sect:STDChrono}
 In der Headerdatei \CodeStyle{<chrono>} werden verschieden Typen und Methoden zum Umgang mit Zeiten und Zeitpunkten definiert. \index{chrono}\index{std::chrono}
@@ -10677,69 +10613,89 @@ void main()
 \end{CCode}
 
 \section{Source Loction (Informationen zur aktuell Compilierten Datei, \CppVers{20})}
-\label{section:StandardSTL}
-Mit \CppVers{20} gibt es eine objektorientierte Alternative zu den Makros  \CodeStyle{__FILE__} \CodeStyle{__LINE__}
-Die \OviIndex{STL} (\OviIndex{Standard Template Library}) war eine der ersten Anwendungen, die umfassend von Templates gebrauch 
-
-\begin{CCode}
+\label{section:source_location}
+Mit \CppVers{20} gibt es eine objektorientierte Alternative zu den Makros  \CodeStyle{__FILE__} und \CodeStyle{__LINE__} sowie dem Bezeichner  \CodeStyle{__func__}. Objekte der Klasse \OviIndex{std::source\_location} liefern Informatiionen zu Datei, Zeilennumer und Funktionsname der Stelle, an welcher ein Objekt dieser Klasse instanziert wurde.
+Mit  der statischen Methods  \CodeStyle{std::source_location::current()} wird ein   \CodeStyle{std::source_location} Objekt mit der Information zur Aufrufstelle erzeugt. Mit den Methoden  \CodeStyle{file_name()},  \CodeStyle{Location.line()}  und  \CodeStyle{function_name()} können diese Informationen abgerufen werden.
+(\begin{CCode}
 #include <iostream>
 #include <source_location>
-#include <string_view>
  
-void log(const std::string_view message,
-         const std::source_location location =
-               std::source_location::current())
-{
-    std::clog << "file: "
-              << location.file_name() << '('
-              << location.line() << ':'
-              << location.column() << ") `"
-              << location.function_name() << "`: "
-              << message << '\n';
-}
- 
-template<typename T>
-void fun(T x)
-{
-    log(x); // line 20
-}
- 
-int main(int, char*[])
-{
-    log("Hello world!"); // line 25
-    fun("Hello C++20!");
-}
-
 class LoggingException : public exception {
-   public:
-   LoggingException(std::string Message_, std::source_location Location_ = std::source_location::current()) : 
+   public:        
+   
+   // Trick: Defaultparameter mit Initialisation, die Initialisation wird am Aufrufpunkt
+   // des Konstruktors  durchgefuehrt, und somit beinhaltet das Objekt die Daten des Aufrufpunktes
+
+    LoggingException(std::string Message_, std::source_location Location_ = std::source_location::current()) : 
         Message(Message) ,    
         Location(Location_) {};
-   const char *what() const noexcept override {return Message 
-                                                  + Location.file_name() 
-                                                  + std::to_string(Location.line()); }
-                                                  + Location.function_name();} 
+        
+   const char *what() const noexcept override {return (Message.c_str();} 
+   
+   const std::string Details() const noexcept  {return (Message 
+                                                  + Location.file_name()                    // Name der Datei
+                                                  + std::to_string(Location.line()); }.   // Zeilennummer
+                                                  + Location.function_name();}          // Name der Funktion
    
    private:
    std::string Message;
    std::source_location Location;
 }
 
+void f() 
+{
+   if (Error) {
+       throw   LoggingException("Got an Error"); 
+   }
+}
+
+void main()
+{
+   try {
+      f();
+     } catch (LoggingException &e) {
+        // Gibt Datei, Zeilennummer und Funktionsname vom Fehlerort aus
+        std::cout << e.Details();
+     } 
+}
+
 \end{CCode}
 
 \section{Stack Trace (Informationen zum Callstack, \CppVers{23})}
-\label{section:StandardSTL}
+\label{section:stacktrace}
+Mit der Klasse  \OviIndex{std::stacktrace} kann der aktuelle \OviIndex{Callstack} (Verschachtelung der Funktionsaufrufe) abgespeichert und ausgegeben werden. Mit  \CodeStyle{stacktrace::current(n)} kann ein Objekt mit den Informationen zum  Zustand des Callstacks zum Aufrufzeitpunkt erzeugt werden. Der Parameter n gibt an, wieviele der neuesten Einträge ignoriert werden sollen. Mit \CodeStyle{std::to_string()} kann das \CodeStyle{std::stacktrace}-Objekt in eine. String umgewandelt werden.
 \begin{CCode}
 class TracingException : public exception {
    public:
+   // Erzeugt einen Callstack beim Generieren einer Exception, der Parameter 1 bei current(1)
+   // sorgt dafuer, dass der Konstruktoraufruf selbst nicht im Callstack-Objekt aufgefuehrt wird
    TracingException(std::string Message_) : Message(Message) , Stacktrace(stacktrace::current(1)) {};
-   const char *what() const noexcept override {return Message + std::to_string(Stacktrace); }
+   
+   const char *what() const noexcept override {return Message.c_str();}
+   
+    const std::string Details() const noexcept  {return Message + std::to_string(Stacktrace); }
    
    private:
    std::string Message;
    std::stacktrace Stacktrace;
 }
 
+void f() 
+{
+   if (Error) {
+       throw   TracingException("Got an Error"); 
+   }
+}
+
+void main()
+{
+   try {
+      f();
+     } catch (TracingException &e) {
+        // Gibt Callstack (Aufrufverschachtelung zum Zeitpunkt der Exception aus
+        std::cout << e.Details();
+     } 
+}
 \end{CCode}
 
 
@@ -11071,6 +11027,7 @@ while(!Liste.empty()) {            /* Solange Liste nicht leer ist */
 
 
 \subsubsection{Kurzübersicht zu Container map<> aus der \Cpp - Standardbibliothek}
+\label{subsubsect:map}
 Die \OviIndex{map} ist ein \OviIndex{assozitiver Container}, das heisst er verwaltet Wertepaare.
 Ein Wert ist der \OviIndex{Schlüssel} des Paares, und der andere Wert beinhaltet die
 Daten, welche unter diesem Schlüssel abgelegt sind. Maps werden üblicherweise als \OviIndex{Binärbaum}
@@ -17215,8 +17172,10 @@ static_assert(std::is_same_v<
 
 \end{CCode}
 \section{Debugging}
- \myref{subsect:Sourceinfoo}
- \myref{subsect:Stacktraceee}
+Zum Debuggen bieten sich nebst den von C bekannten Techniken auch die Klassen 
+ \CodeStyle{std::source_location}  (Siehe  \myref{section:source_location}) und \CodeStyle{std::stacktrace}  (Siehe  \myref{section:stacktrace})
+ an.
+ 
 
 \section{Glossar}
 {
