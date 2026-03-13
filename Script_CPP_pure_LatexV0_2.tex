@@ -2653,9 +2653,9 @@ while (j < 19) {
 \end{CCode}
 Geschrieben werden
 
-\subsection{Automatische For-Schlaufe (Seit \CppVers{11})}
+\subsection{Range-based (Automatische) For-Schlaufe (Seit \CppVers{11})}
 \label{subsec:AutomaticForLoop}
-
+\index{Range-based for} \index{for, Range-based}
 Eine For-Schlaufe, welche über alle Elemente eines Arrays, einer Initialisiererliste oder eines Standard-Containers iterieren soll, kann wie folgt vereinfacht werden:
 
 \begin{CCode}
@@ -2733,7 +2733,7 @@ Output:
 
 \phantomsection
 \label{subsubsect:foroptionalinitialisierer}
-Seit \CppVers{20} kann die automatische for-Schlaufe ebenfalls einen Initialisierungsteil haben:
+Seit \CppVers{20} kann die Range-Based for-Schlaufe ebenfalls einen Initialisierungsteil haben:
 
 \begin{CCode}
 	
@@ -10615,7 +10615,7 @@ void main()
 \section{Source Loction (Informationen zur aktuell Compilierten Datei, \CppVers{20})}
 \label{section:source_location}
 Mit \CppVers{20} gibt es eine objektorientierte Alternative zu den Makros  \CodeStyle{__FILE__} und \CodeStyle{__LINE__} sowie dem Bezeichner  \CodeStyle{__func__}. Objekte der Klasse \OviIndex{std::source\_location} liefern Informatiionen zu Datei, Zeilennumer und Funktionsname der Stelle, an welcher ein Objekt dieser Klasse instanziert wurde.
-Mit  der statischen Methods  \CodeStyle{std::source_location::current()} wird ein   \CodeStyle{std::source_location} Objekt mit der Information zur Aufrufstelle erzeugt. Mit den Methoden  \CodeStyle{file_name()},  \CodeStyle{Location.line()}  und  \CodeStyle{function_name()} können diese Informationen abgerufen werden.
+Mit  der statischen Methods  \CodeStyle{std::source_location::current()} wird ein   \CodeStyle{std::source_location} Objekt mit der Information zur Aufrufstelle erzeugt. Mit den Methoden  \CodeStyle{file_name()},  \CodeStyle{line()}  und  \CodeStyle{function_name()} können diese Informationen abgerufen werden.
 (\begin{CCode}
 #include <iostream>
 #include <source_location>
@@ -11050,6 +11050,7 @@ Schlüssel nicht sortiert werden).
 Der Wert kann ein beliebiger Datentyp sein (Im Extremfall eine Liste
 oder eine weitere map). 
 
+Schlüssel und Wert werden in der Map als '\CodeStyle{std::pair}' (Siehe \myref{subsect:Pair}) abgelegt.
 
 Als Beispiel erstellen wir eine map mit Studenten und ihren Noten.
 
