@@ -17203,10 +17203,37 @@ static_assert(std::is_same_v<
 
 \end{CCode}
 \section{Debugging}
-Zum Debuggen bieten sich nebst den von C bekannten Techniken auch die Klassen 
+Zur Ausgabe von Debuginformationen bieten sich nebst den von C bekannten Techniken auch die Klassen 
  \CodeStyle{std::source_location}  (Siehe  \myref{section:source_location}) und \CodeStyle{std::stacktrace}  (Siehe  \myref{section:stacktrace})
- an.
+ an. 
  
+ Nachfolgend einige Tips zum Debuggen:
+\begin{description}
+\item[ Compilerwarnungen beachten.]
+Ein Modul sollte sich möglichst ohne Warnungen compilieren lassen, jede verbleibende Warnung überprüfen, nicht einfach ignorieren. Bei den Compileroptionen möglichst alle Warnungen einschalten.
+\item[Auf nicht initialisierte Variablen/Member achten.]
+Probleme mit Programmteilen, die einmal laufen und anschliessend nie mehr, oder einmalig unkorrekt und anschliessend fehlerfrei laufen, lassen sich oft auf uninitialisierte Variablen (Insbesondere Pointer) zurückführen. Sicherstellen dass alle Objekte korrekt initialisiert werden, resp. deren Konstruktor(en) das richtige tun. (Und Pointer nur einsetzen wenn es nicht anders geht.)
+\item[Auf Überschreiten von Arraygrenzen achten]
+In \Cpp kann problemlos über Arraygrenzen hinaus geschrieben werden (oben und unten), was oft zu Totalabstürzen, manchmal aber nur zur Veränderung von benachbarten Variablen führt (Schwer lokalisierbarer Fehler !!!). Möglicherweise in Debugversion vor jedem Arrayzugriff Index auf Bereich überprüfen (Bei \Cpp-Containern aus der Standarlibrary \CodeStyle{at()} statt \CodeStyle{[]} benutzen  (Achtung, ineffizienter Code!)
+\item[Selbstüberprüfenden Code schreiben.]
+Zu Beginn jeder Methode die Argumente auf Plausibilität prüfen (Wie Contracts bei \CppVers{26}), insbesondere NULL-Pointer. Testfunktionen schreiben, die Datenstrukturen (Listen, Bäume, ...) auf ihre Integrität hin untersuchen. Diese Testroutinen beim Debuggen an strategisch wichtigen Punkten aufrufen.
+\item[Fehler eingrenzen.]
+Durch Ausgaben, Statusanzeigen oder grobschrittiges Debuggen Fehler eingrenzen, bis fehlererzeugende Methode oder Codezeile lokalisiert ist. Eventuell Hilfscode schreiben um Fehler weiter einzugrenzen.
+\item[Fehler isolieren.]
+Methoden, die als Fehlerquelle in Frage kommen durch vereinfachte Versionen ersetzen und prüfen ob Fehler verschwindet, so kann fehlerhafte Methoden gefunden werden.
+\item[Methoden und Klassen separat testen.]
+Verdächtige Methoden und Klassen aus der Applikation entfernen und in ein einfaches Testprogramm einbauen, das die Methode(n) während längerer Zeit mit Testdaten oder Zufallsdaten aufruft und das Ergebnis jeweils überprüft, dieser Test kann mit einer Integritätskontrolle kombiniert werden.
+\item[Statusinformationen ausgeben]
+Systemzustand ausgeben, ev. auf LED oder freie Portbits, wenn keine andere Ausgabemöglichkeit vorhanden ist. So kann der Lauf des Programms verfolgt und unerwünschtes Verhalten erkannt werden. Auch Timingprobleme können so analysiert werden (Z.B. mit KO oder Logikanalyzer); dies ist meist sogar die einfachste Möglichkeit, Timingprobleme zu erkennen. 
+\item[Bei Sporadischen Fehlern]
+Ein Logfile oder einen Tracebuffer (Grosses Array mit ausreichend Platz für Einträge, als Ringbuffer aufgebaut der immer die n letzten Ereignisse bereit hält) einfügen, worin ständig Systemzustände oder wichtige Ereignisse (Funktionsaufrufe, Argumente, Interrupts, Benutzereingaben, Systemzeit in ms/us) abspeichert werden. Im Fehlerfall den Inhalt von Logfile oder Tracebuffer sichern. Die Analyse dieser Daten kann helfen, den Fehler zu lokalisieren.
+\item[Fehler in Speicherverwaltung]
+Bei Verdacht auf Fehler in Speicherverwaltung, oder auch als Vorsichtsmassnahme kann eine eigene Speicherverwaltung benutzt werden, die auf typische Fehler in der Speicherbenutzung achtet: Rückgabe nicht allozierten Speichers, doppelte Rückgabe desselben Speicherblocks, Allozieren aber nie Freigeben eines Speicherblockes, beschränkt auch das Überschreiten der Speicherblockgrenzen (Block am Anfang und am Ende grösser machen und diese Schutzbereiche mit Testmuster füllen, bei Rückgabe prüfen ob diese Testmuster unversehrt sind). Dazu die Operatoren \CodeStyle{new} und \CodeStyle{delete} neu definieren, oder entsprechende Library einsetzen.
+\item[Spezialcode für Fehlerfall schreiben]
+Extracode schreiben, der beim Erkennen eines Fehlers aufgerufen wird und möglichst viele Informationen des aktuellen Systemzustandes ausgibt oder in ein File schreibt, oder einen Breakpoint auf diesen Extracode setzen, so dass im Fehlerfall der Debugger zum Zuge kommt.
+\item[Bei HW-naher Programmierung auf volatile und Stacküberlauf achten]
+Variablen die von der HW oder Interrupts verändert werden, müssen als volatile deklariert werden. Lokale Variablen von Funktionen werden auf dem Stack abgelegt, lokale Arrays oder grosse lokale Objekte können bei Mikrokontrollern schnell zu Stacküberlauf führen. Unerklärliches  Fehlverhalten oder Abstürze können auch auf einen Stacküberlauf zurückzuführen sein. Besonders bei Echtzeitbetriebssystemen sind die Defaultgrössen für die Stacks für die einzelnen Tasks oft knapp bemessen.
+\end{description}
 
 \section{Glossar}
 {
