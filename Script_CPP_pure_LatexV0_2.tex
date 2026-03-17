@@ -7682,6 +7682,7 @@ FFT<117> TheFFT2; // Compile error, 117 is not power of two
 \end{CCode}
 
 \section{Template-Metaprogrammierung}
+\label{sect:TemplateMetaprogrammierung}
 \OviIndex{Metaprogrammierung} bedeutet, Programme zu schreiben, welche Programme schreiben. 
 In \Cpp benutzt man dazu vor allem Templates und bezeichnet dies als \OviIndex{Template-Metaprogrammierung}.
 Templatemetaprogramme arbeiten vor allem mit Typen (Template-Parametern) und bestehen vor allem aus
@@ -7692,6 +7693,7 @@ realisiert. In moderneren Sprachversionen kommen auch \CodeStyle{constexpr} Meth
 
 In den Nachfolgenden Kapiteln werden einige Techniken der Template-Metaprogrammierung vorgestellt.
 \subsection{SFINAE}
+\label{subsect:SFINAE}
 \OviIndex{SFINAE} (\OviIndex{``Substitution Failure Is Not An Error''}) ist ein wichtiges Element in der
 Template-Metaprogrammierung. Es bedeutet im wesentlichen, dass Überladungen von Template\emph{funktionen},
 welche zu Compilerfehler führen würden bei der Überladungsauflösung ignoriert werden.    
@@ -17226,7 +17228,7 @@ Verdächtige Methoden und Klassen aus der Applikation entfernen und in ein einfac
 \item[Statusinformationen ausgeben]
 Systemzustand ausgeben, ev. auf LED oder freie Portbits, wenn keine andere Ausgabemöglichkeit vorhanden ist. So kann der Lauf des Programms verfolgt und unerwünschtes Verhalten erkannt werden. Auch Timingprobleme können so analysiert werden (Z.B. mit KO oder Logikanalyzer); dies ist meist sogar die einfachste Möglichkeit, Timingprobleme zu erkennen. 
 \item[Bei Sporadischen Fehlern]
-Ein Logfile oder einen Tracebuffer (Grosses Array mit ausreichend Platz für Einträge, als Ringbuffer aufgebaut der immer die n letzten Ereignisse bereit hält) einfügen, worin ständig Systemzustände oder wichtige Ereignisse (Funktionsaufrufe, Argumente, Interrupts, Benutzereingaben, Systemzeit in ms/us) abspeichert werden. Im Fehlerfall den Inhalt von Logfile oder Tracebuffer sichern. Die Analyse dieser Daten kann helfen, den Fehler zu lokalisieren.
+Ein Logfile oder einen Tracebuffer (Grosses Array mit ausreichend Platz für Einträge, als Ringbuffer aufgebaut der immer die n letzten Ereignisse bereit hält) einfügen, worin ständig Systemzustände oder wichtige Ereignisse (Funktionsaufrufe, Argumente, Interrupts, Benutzereingaben, Systemzeit in ms/us) abgespeichert werden. Im Fehlerfall den Inhalt von Logfile oder Tracebuffer sichern. Die Analyse dieser Daten kann helfen, den Fehler zu lokalisieren. Dazu kann auch eine neue Klasse mit derselben Schnittstelle der zu überwachenden Klasse entworfen werden, welche einerseits alle Aufrufe logt, und andrerseits an die Originalklasse weiterleitet. Das geht besonders gut wenn die Originalschnittstelle bereits auf virtuellen Funktionen basiert  (\emph{Dekorator-Pattern}). 
 \item[Fehler in Speicherverwaltung]
 Bei Verdacht auf Fehler in Speicherverwaltung, oder auch als Vorsichtsmassnahme kann eine eigene Speicherverwaltung benutzt werden, die auf typische Fehler in der Speicherbenutzung achtet: Rückgabe nicht allozierten Speichers, doppelte Rückgabe desselben Speicherblocks, Allozieren aber nie Freigeben eines Speicherblockes, beschränkt auch das Überschreiten der Speicherblockgrenzen (Block am Anfang und am Ende grösser machen und diese Schutzbereiche mit Testmuster füllen, bei Rückgabe prüfen ob diese Testmuster unversehrt sind). Dazu die Operatoren \CodeStyle{new} und \CodeStyle{delete} neu definieren, oder entsprechende Library einsetzen.
 \item[Spezialcode für Fehlerfall schreiben]
@@ -17239,19 +17241,27 @@ Variablen die von der HW oder Interrupts verändert werden, müssen als volatile d
 {
 \setlength{\extrarowheight}{0.8ex}
 \begin{tabular}{lp{0.8\textwidth}}
-OOP&	Objekt Orientierte Programmierung\\
-OOD&	Objekt Orientierter Design\\
-OOA&	Objekt Orientierte Analyse\\
-UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
 ADT&	Abstrakter Daten Typ. Ein Datentyp, von dem genau beschrieben ist, was er macht und was er für Eigenschaften hat, es ist jedoch nicht festgelegt, wie er das macht. Das heisst seine Funktion und seine Schnittstelle ist genau definiert, aber sonst nichts. Häufig werden ATD mathematisch beschrieben.\\
-K'tor&	Kurzform für Konstruktor\\
+BOOST&  Umfangreiche Templatelibrary, wird ständig erweitert, oft Quelle für Neuerungen in der \Cpp Standardlibrary. \\
+CRTP&  curiously recurring template pattern, eine Klasse erbt von einer Templateklasse, welche mit ihr selbst parametrisiert ist (\texttt{class A : public B<A> \{ ... \}}) \\
 C'tor&	Kurzform für Constructor\\
 D'tor&	Kurzform für Destruktor\\
-STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, Mengen) und Algorithmen (Suchen, Sortieren, Ersetzen), die auf Templates basiert.\\
 GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
-RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
+K'tor&	Kurzform für Konstruktor\\
+L-Value& Urprünglich alles was links von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
+GL-Value& Genereller L-Value. \\
+OOA&	Objekt Orientierte Analyse\\
+OOD&	Objekt Orientierter Design\\
+OOP&	Objekt Orientierte Programmierung\\
 POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
-SFINAE& Substitution Failure Is Not An Error  \myref{subsect:SINAEF}\\
+PR-Value& Pure R-Value. \\
+RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
+R-Value& Urprünglich alles was rechts von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
+SFINAE& Substitution Failure Is Not An Error, siehe auch \myref{subsect:SFINAE}\\
+STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, Mengen) und Algorithmen (Suchen, Sortieren, Ersetzen), die auf Templates basiert. Mittlerweile Bestandteil der Standadrdlibrary\\
+TMP&   Template Meta Programming, siehe auch \myref{sect:TemplateMetaprogrammierung}\\ 
+UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
+X-Value& eXpiring value, ein Wert der nicht mehr lange lebt. \\
 \end{tabular}
 }
 
