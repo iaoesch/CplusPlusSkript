@@ -13445,6 +13445,13 @@ Compilersettings:\\
 
 Eine weitere Optimierungsmöglichkeit wäre der Einsatz zweier separater Methoden zum Setzen und Löschen der Leds, (SetLed() und ClearLed()), damit würde das if im Sourcecode und die entsprechenden Befehle im Assemblercode entfallen. Im Gegenzug würde mehr Speicherplatz für den Code benötigt.
 
+\section{Hardwareinformationen}
+Seit  \CppVers{17} sind im Header \CodeStyle{<new>} die Konstanten \CodeStyle{std::hardware_destructive_interference_size}  und \CodeStyle{std::hardware_constructive_interference_size} definiert, welche Informationen über die Cachelines liefern.
+Auf den meisten Systemen  entspricht   \CodeStyle{std::hardware_destructive_interference_size} der L1 Cacheline-Grösse.
+\index{L1 Cache} \index{Cache line Size}.
+
+Im Header \CodeStyle{<thread>} ist für die Klassen  \CodeStyle{thread} und  \CodeStyle{jthread} die. statische Methode  \CodeStyle{hardware_concurrency()}  definiert, welche die Anzahl der hardwaremässig unterstützten parallelen Threads zurückliefert.  Falls der Wert unbekannt oder nicht definiert ist, wird 0 zurückgeliefert.
+
 \chapter{Standardisierungen}
 
 \newif\ifshowdetails
