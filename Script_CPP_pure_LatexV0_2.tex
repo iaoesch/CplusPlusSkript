@@ -6245,6 +6245,29 @@ Der Benutzer eines Templates kann selbst angeben, für welchen Datentyp das Templ
 Es können \OviIndex{Funktionstemplate} und \OviIndex{Klassentemplates} erzeugt werden. Achtung, Templates werden normalerweise vollständig in einer Headerdatei definiert, welche vom Anwender des Templates mittels \#include eingebunden werden muss.
 
 In diesem Kapitel werden Templates nur kurz vorgestellt, eine umfassende Beschreibung von Templates kann in entsprechender Fachliteratur nachgeschlagen werden. Wer schon mal einen Blick in einen der Standardheader der STL (Z. B. \CodeStyle{vector}) geworfen hat, weiss das Template-Programmierung sehr schnell zu schwer nachvollziehbarem Code führt. (Die Anwendung dagegen ist meist sehr einfach). Template-Parameter und Template-Spezialisierungen werden hier nur am Rande gestreift.
+\section{Template Syntax}
+Ein Template wird mit dem Schlüsselwort  \CodeStyle{template} gefolgt von einer Parameterliste in spitzen Klammern eingeleitet. Anschliessend folgt eine Klassen-, eine Funktions- oder eine Variablendefinition.
+ 
+Die Parameterliste kann aus Typen, Nicht-Typen und Template Parametern bestehen. \OviIndex{Typeparameter} werden mit den Schlüsselworten  \CodeStyle{class}  oder  \CodeStyle{typename} , oder einem \OviIndex{Constraintname} (Siehe Konzepte,  \myref{sect:Konzepts}) definiert, \OviIndex{Nontypeparameter} werden mit einem Typennamen definiert,  und \OviIndex{template Parameter} werden mit dem Schlüsselwort \CodeStyle{template} definiert.
+Bei der Definition von Typ-Parametern sind die Schlüsselworte \CodeStyle{class} und  \CodeIndex{typename} austauschbar, sie haben dieselbe Bedeutung.
+
+\begin{CCode}
+// Typeparameter und non-type Parameter
+template <class T, int N>
+....
+
+// Typeparameter und non-type Parameter
+template <typename T, T N>
+....
+
+// Constrained Typeparameter und non-type Parameter
+template <Constraint T, int N>
+....
+
+// template Parameter und non-type Parameter
+template <template<class, double> class T, int N>
+....
+\end{CCode}
 
 \section{Funktionstemplates}
 Mit dem nachfolgenden Template wird eine generische Funktion zur
