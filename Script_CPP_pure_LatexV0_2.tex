@@ -63,7 +63,11 @@
 
 
 
+\usepackage{tocloft}
 
+\advance\cftsecnumwidth 0.5em\relax
+\advance\cftsubsecindent 0.5em\relax
+\advance\cftsubsecnumwidth 0.5em\relax
 %Einstellungen der Seitenränder
 %\usepackage[left=2.5cm,right=2.5cm,top=1cm,bottom=1cm,includeheadfoot]{geometry}
 %alte Rechtschreibung
@@ -638,9 +642,10 @@ Es gibt zwei Formen für den Includebefehl:
 
 Zusätzlich gibt es einige vordefinierte Makros, welche Informationen über den Compiler und Dateien enthalten: \CodeStyle{__FILE__, __LINE__, __DATE__, __TIME__, __cplusplus} und weitere. \CodeStyle{__cplusplus} ist definiert, wenn ein \Cpp Compiler compiliert.
 
+
 \emph{Die aus C bekannten Makros (\#defines) sollten in \Cpp nicht mehr eingesetzt werden, da typsichere Alternativen wie \CodeStyle{const, constexpr} und \CodeStyle{inline}-Funktionen zur Verfügung stehen. Makros bereiten viel Ärger, da sie Namensbereiche nicht beachten und unerwünschte und unerwartete Ersetzungen vornehmen!}
 
-Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if und wie erwähnt \CodeStyle{inline / constexpr / const} anstelle von makros  (\#defines)) 
+Grundsätzlich bieten neuere  \Cpp Versionen in vielen Fällen bessere Alternativen zum bisherigen Einsatz von Präprozessorbefehlen.  (Module statt  \#include, \CodeStyle{if constexpr} statt  \#if und wie erwähnt \CodeStyle{inline / constexpr / const} anstelle von makros  (\#defines), sowie mit \CppVers{26} die Klasse \CodeStyle{std::source_location} welche anstelle \CodeStyle{__FILE__} und \CodeStyle{__LINE__} zum Einsatz kommen sollte, siehe  \myref{section:source_location})) 
 
 
 
