@@ -17209,6 +17209,12 @@ static_assert(std::is_same_v<
               MyContainer<c, b, c, a, c>>);
 
 \end{CCode}
+\section{Programmiertechniken}
+\subsection{Policybasiertes Programmieren}
+Mit Policies können auf einfache Art konfigurierbare Klassen erzeugt werden. Policies sind voneinender unabhängige (Orthogonale) Aspekte einer Klasse.
+Policies werden durch eine Kombination von Mehrfachvererbung und Templates realisiert. 
+
+
 \section{Debugging}
 Zur Ausgabe von Debuginformationen bieten sich nebst den von C bekannten Techniken auch die Klassen 
  \CodeStyle{std::source_location}  (Siehe  \myref{section:source_location}) und \CodeStyle{std::stacktrace}  (Siehe  \myref{section:stacktrace})
