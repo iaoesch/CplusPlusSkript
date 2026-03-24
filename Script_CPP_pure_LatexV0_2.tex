@@ -15543,231 +15543,6 @@ Complex polar in degree
 
 \NextPagePlease 
 
-\section{Programmiertechniken}
-\subsection{Policies}
-\begin{CCode}
-#include <iostream>
-
-
-struct Command {
-    char ID;
-    int32_t  Command;
-    int16_t  Para;
-};
-
-struct Query {
-    char ID;
-    int32_t  Query;
-};
-
-template <class T>
-class Serializer {
-};
-
-template <class T>
-class SerializerBase {
-protected:
-    const T *Data;
-
-public:
-    void SetData(const T *Data_) {Data = Data_;}
-};
-
-
-template <>
-class Serializer<Command> : public SerializerBase<Command>{
-public:
-    int GetNextValue(int Index, int &Size, const uint8_t *&Buffer) {
-        switch(Index) {
-        case 0: Size = sizeof(Data->ID); Buffer = (const uint8_t *)&Data->ID; return 1;
-        case 1: Size = sizeof(Data->Command); Buffer = (const uint8_t *)&Data->Command; return 2;
-        case 2: Size = sizeof(Data->Para); Buffer = (const uint8_t *)&Data->Para; return -1;
-        default: return -1;
-        }
-    }
-};
-
-template <>
-class Serializer<Query> : public SerializerBase<Query>{
-public:
-
-    int GetNextValue(int Index, int &Size, const uint8_t *&Buffer) {
-        switch(Index) {
-        case 0: Size = sizeof(Data->ID); Buffer = (const uint8_t *)&Data->ID; return 1;
-        case 1: Size = sizeof(Data->Query); Buffer = (const uint8_t *)&Data->Query; return -1;
-        default: return -1;
-        }
-    }
-};
-
-class SwappEndianness {
-
-    void ToStream2(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        ToBuffer[0] = FromBuffer[1];
-        ToBuffer[1] = FromBuffer[0];
-    }
-
-    void ToStream4(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        ToStream2(FromBuffer, ToBuffer+2);
-        ToStream2(FromBuffer+2, ToBuffer);
-    }
-
-    void ToStream8(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        ToStream4(FromBuffer, ToBuffer+4);
-        ToStream4(FromBuffer+4, ToBuffer);
-    }
-
-public:
-    void ToStream(int Size, const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        switch(Size) {
-        case 1: *ToBuffer = *FromBuffer; break;
-        case 2: ToStream2(FromBuffer, ToBuffer); break;
-        case 4: ToStream4(FromBuffer, ToBuffer); break;
-        case 8: ToStream8(FromBuffer, ToBuffer); break;
-        default:
-        }
-    }
-};
-
-class DontSwappEndianness {
-
-    void ToStream2(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        ToBuffer[0] = FromBuffer[0];
-        ToBuffer[1] = FromBuffer[1];
-    }
-
-    void ToStream4(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        ToStream2(FromBuffer, ToBuffer);
-        ToStream2(FromBuffer+2, ToBuffer+2);
-    }
-
-    void ToStream8(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        ToStream4(FromBuffer, ToBuffer);
-        ToStream4(FromBuffer+4, ToBuffer+4);
-    }
-
-public:
-    void ToStream(int Size, const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
-        switch(Size) {
-        case 1: *ToBuffer = *FromBuffer; break;
-        case 2: ToStream2(FromBuffer, ToBuffer); break;
-        case 4: ToStream4(FromBuffer, ToBuffer); break;
-        case 8: ToStream8(FromBuffer, ToBuffer); break;
-        default:
-        }
-    }
-};
-
-
-class SimpleChecksumm {
-protected:
-    uint16_t CalculateChecksumm(const uint8_t *Start, const uint8_t * const End) {
-        uint16_t Summ = 0;
-        while (Start < End) {
-            Summ += *Start;
-            Start++;
-        }
-        return Summ;
-    }
-};
-
-class XorChecksumm {
-protected:
-    uint16_t CalculateChecksumm(const uint8_t *Start, const uint8_t * const End) {
-        uint16_t Summ = 0;
-        while (Start < End) {
-            // Summ rotieren
-            uint16_t t = (Summ >> 15) & 1;
-            Summ = (Summ << 1) | t;
-            Summ ^= *Start;
-
-            Start++;
-        }
-        return Summ;
-    }
-};
-
-
-template<class T, class Serializer, class Endianness, class ChecksumGenerator>
-class SimpleMessageBuilder : public Serializer, Endianness, ChecksumGenerator {
-private:
-    typedef uint16_t CheckSummType;
-    typedef uint16_t LengthType;
-    static constexpr uint8_t StartSymbol = '<';
-    static constexpr uint8_t EndSymbol = '>';
-
-    static constexpr uint16_t PayloadStartOffset = sizeof(StartSymbol) + sizeof(LengthType);
-    static constexpr uint16_t FrameSize = PayloadStartOffset + sizeof(EndSymbol) + sizeof(CheckSummType);
-
-public:
-
-    uint16_t Serialize(T const &t, uint8_t *Buffer, uint32_t Buffersize) {
-        Serializer::SetData(&t);
-        int Index = 0;
-        int Size;
-        uint8_t *NextFreeBufferSpace  = Buffer + PayloadStartOffset;
-        uint16_t Length = 0;
-        const uint8_t *SourceData;
-        while (Index >= 0) {
-            Index = Serializer::GetNextValue(Index, Size, SourceData);
-            std::cout << "i: " << Index << " S: " << Size << "\n";
-            if (NextFreeBufferSpace < Buffer + PayloadStartOffset + Buffersize) {
-                Endianness::ToStream(Size, SourceData, NextFreeBufferSpace);
-                NextFreeBufferSpace += Size;
-                Length = Length + Size;
-            } else {
-                // Do some errorhandling
-                std::cout << "Error";
-            }
-        }
-        Buffer[0] = StartSymbol;
-        *(NextFreeBufferSpace + sizeof(CheckSummType)) = EndSymbol;
-        Endianness::ToStream(sizeof(Length), (const uint8_t *)&Length, Buffer + sizeof(StartSymbol));
-        CheckSummType CheckSumm = ChecksumGenerator::CalculateChecksumm(Buffer + sizeof(StartSymbol), NextFreeBufferSpace);
-        Endianness::ToStream(sizeof(CheckSumm), (const uint8_t *)&CheckSumm, NextFreeBufferSpace);
-        return Length + FrameSize;
-    }
-};
-
-
-typedef SimpleMessageBuilder<Query, Serializer<Query>, DontSwappEndianness, SimpleChecksumm> StandardMessage;
-typedef SimpleMessageBuilder<Query, Serializer<Query>, DontSwappEndianness, XorChecksumm> OtherMessage;
-typedef SimpleMessageBuilder<Query, Serializer<Query>, SwappEndianness, XorChecksumm> SimpleMessage;
-
-
-template <class T>
-void TestMessageBuilder ()
-{
-    Query TheQuery;
-    TheQuery.Query = 0x03040506;
-    TheQuery.ID = 0x02;
-    T Convertor;
-
-    uint8_t Buffer[100] = {0};
-
-    uint16_t Length = Convertor.Serialize(TheQuery, Buffer, 100);
-
-    std::cout << "\n<";
-    for (size_t i = 0; i < Length; i++) {
-        std::cout << (int)Buffer[i] << ", ";
-    }
-    std::cout << ">\n";
-    std::cout << "\n[";
-    for (size_t i = 0; i < 10; i++) {
-        std::cout << (int)Buffer[i] << ", ";
-    }
-    std::cout << "... ]\n";
-}
-
-int main()
-{
-    TestMessageBuilder<StandardMessage>();
-    TestMessageBuilder<OtherMessage>();
-    TestMessageBuilder<SimpleMessage>();
-}
-
-
-\end{CCode}
 
 
  
@@ -17439,8 +17214,239 @@ static_assert(std::is_same_v<
 \end{CCode}
 \section{Programmiertechniken}
 \subsection{Policybasiertes Programmieren}
-Mit Policies können auf einfache Art konfigurierbare Klassen erzeugt werden. Policies sind voneinender unabhängige (Orthogonale) Aspekte einer Klasse.
+Mit Policies können auf einfache Art konfigurierbare Klassen erzeugt werden. Policies sind voneinender unabhängige (Orthogonale) Aspekte einer Klasse. (Man könnte auch sagen, das 'was' wird vom 'wie' getrennt).
 Policies werden durch eine Kombination von Mehrfachvererbung und Templates realisiert. 
+
+Als Beispiel eine Klasse, welche Strukturierte Daten in einem Bytestream umwandelt (Daten in Telegramme umwandelt).
+
+Die Klasse soll unterschiedliche Datenstrukturen serialisieren, dabei für little-endian oder big-endian konfiguriert werden können und eine benutzerdefinierted Checksumme über die Daten berechnen.
+
+Definition der Datenstrukturen, kann beliebig erweitert werden:
+\begin{CCode}
+#include <iostream>
+
+struct Command {
+    char ID;
+    int32_t  Command;
+    int16_t  Para;
+};
+
+struct Query {
+    char ID;
+    int32_t  Query;
+};
+\end{CCode}
+Für jede Datenstruktur braucht es einen serialisierer:
+\begin{CCode}
+template <class T>
+class Serializer {
+};
+
+template <class T>
+class SerializerBase {
+protected:
+    const T *Data;
+
+public:
+    void SetData(const T *Data_) {Data = Data_;}
+};
+
+
+template <>
+class Serializer<Command> : public SerializerBase<Command>{
+public:
+    int GetNextValue(int Index, int &Size, const uint8_t *&Buffer) {
+        switch(Index) {
+        case 0: Size = sizeof(Data->ID); Buffer = (const uint8_t *)&Data->ID; return 1;
+        case 1: Size = sizeof(Data->Command); Buffer = (const uint8_t *)&Data->Command; return 2;
+        case 2: Size = sizeof(Data->Para); Buffer = (const uint8_t *)&Data->Para; return -1;
+        default: return -1;
+        }
+    }
+};
+
+template <>
+class Serializer<Query> : public SerializerBase<Query>{
+public:
+
+    int GetNextValue(int Index, int &Size, const uint8_t *&Buffer) {
+        switch(Index) {
+        case 0: Size = sizeof(Data->ID); Buffer = (const uint8_t *)&Data->ID; return 1;
+        case 1: Size = sizeof(Data->Query); Buffer = (const uint8_t *)&Data->Query; return -1;
+        default: return -1;
+        }
+    }
+};
+\end{CCode}
+\begin{CCode}
+class SwappEndianness {
+
+    void ToStream2(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        ToBuffer[0] = FromBuffer[1];
+        ToBuffer[1] = FromBuffer[0];
+    }
+
+    void ToStream4(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        ToStream2(FromBuffer, ToBuffer+2);
+        ToStream2(FromBuffer+2, ToBuffer);
+    }
+
+    void ToStream8(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        ToStream4(FromBuffer, ToBuffer+4);
+        ToStream4(FromBuffer+4, ToBuffer);
+    }
+
+public:
+    void ToStream(int Size, const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        switch(Size) {
+        case 1: *ToBuffer = *FromBuffer; break;
+        case 2: ToStream2(FromBuffer, ToBuffer); break;
+        case 4: ToStream4(FromBuffer, ToBuffer); break;
+        case 8: ToStream8(FromBuffer, ToBuffer); break;
+        default:
+        }
+    }
+};
+
+class DontSwappEndianness {
+
+    void ToStream2(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        ToBuffer[0] = FromBuffer[0];
+        ToBuffer[1] = FromBuffer[1];
+    }
+
+    void ToStream4(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        ToStream2(FromBuffer, ToBuffer);
+        ToStream2(FromBuffer+2, ToBuffer+2);
+    }
+
+    void ToStream8(const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        ToStream4(FromBuffer, ToBuffer);
+        ToStream4(FromBuffer+4, ToBuffer+4);
+    }
+
+public:
+    void ToStream(int Size, const uint8_t *FromBuffer, uint8_t *ToBuffer)  {
+        switch(Size) {
+        case 1: *ToBuffer = *FromBuffer; break;
+        case 2: ToStream2(FromBuffer, ToBuffer); break;
+        case 4: ToStream4(FromBuffer, ToBuffer); break;
+        case 8: ToStream8(FromBuffer, ToBuffer); break;
+        default:
+        }
+    }
+};
+
+
+class SimpleChecksumm {
+protected:
+    uint16_t CalculateChecksumm(const uint8_t *Start, const uint8_t * const End) {
+        uint16_t Summ = 0;
+        while (Start < End) {
+            Summ += *Start;
+            Start++;
+        }
+        return Summ;
+    }
+};
+
+class XorChecksumm {
+protected:
+    uint16_t CalculateChecksumm(const uint8_t *Start, const uint8_t * const End) {
+        uint16_t Summ = 0;
+        while (Start < End) {
+            // Summ rotieren
+            uint16_t t = (Summ >> 15) & 1;
+            Summ = (Summ << 1) | t;
+            Summ ^= *Start;
+
+            Start++;
+        }
+        return Summ;
+    }
+};
+
+
+template<class T, class Serializer, class Endianness, class ChecksumGenerator>
+class SimpleMessageBuilder : public Serializer, Endianness, ChecksumGenerator {
+private:
+    typedef uint16_t CheckSummType;
+    typedef uint16_t LengthType;
+    static constexpr uint8_t StartSymbol = '<';
+    static constexpr uint8_t EndSymbol = '>';
+
+    static constexpr uint16_t PayloadStartOffset = sizeof(StartSymbol) + sizeof(LengthType);
+    static constexpr uint16_t FrameSize = PayloadStartOffset + sizeof(EndSymbol) + sizeof(CheckSummType);
+
+public:
+
+    uint16_t Serialize(T const &t, uint8_t *Buffer, uint32_t Buffersize) {
+        Serializer::SetData(&t);
+        int Index = 0;
+        int Size;
+        uint8_t *NextFreeBufferSpace  = Buffer + PayloadStartOffset;
+        uint16_t Length = 0;
+        const uint8_t *SourceData;
+        while (Index >= 0) {
+            Index = Serializer::GetNextValue(Index, Size, SourceData);
+            std::cout << "i: " << Index << " S: " << Size << "\n";
+            if (NextFreeBufferSpace < Buffer + PayloadStartOffset + Buffersize) {
+                Endianness::ToStream(Size, SourceData, NextFreeBufferSpace);
+                NextFreeBufferSpace += Size;
+                Length = Length + Size;
+            } else {
+                // Do some errorhandling
+                std::cout << "Error";
+            }
+        }
+        Buffer[0] = StartSymbol;
+        *(NextFreeBufferSpace + sizeof(CheckSummType)) = EndSymbol;
+        Endianness::ToStream(sizeof(Length), (const uint8_t *)&Length, Buffer + sizeof(StartSymbol));
+        CheckSummType CheckSumm = ChecksumGenerator::CalculateChecksumm(Buffer + sizeof(StartSymbol), NextFreeBufferSpace);
+        Endianness::ToStream(sizeof(CheckSumm), (const uint8_t *)&CheckSumm, NextFreeBufferSpace);
+        return Length + FrameSize;
+    }
+};
+
+
+typedef SimpleMessageBuilder<Query, Serializer<Query>, DontSwappEndianness, SimpleChecksumm> StandardMessage;
+typedef SimpleMessageBuilder<Query, Serializer<Query>, DontSwappEndianness, XorChecksumm> OtherMessage;
+typedef SimpleMessageBuilder<Query, Serializer<Query>, SwappEndianness, XorChecksumm> SimpleMessage;
+
+
+template <class T>
+void TestMessageBuilder ()
+{
+    Query TheQuery;
+    TheQuery.Query = 0x03040506;
+    TheQuery.ID = 0x02;
+    T Convertor;
+
+    uint8_t Buffer[100] = {0};
+
+    uint16_t Length = Convertor.Serialize(TheQuery, Buffer, 100);
+
+    std::cout << "\n<";
+    for (size_t i = 0; i < Length; i++) {
+        std::cout << (int)Buffer[i] << ", ";
+    }
+    std::cout << ">\n";
+    std::cout << "\n[";
+    for (size_t i = 0; i < 10; i++) {
+        std::cout << (int)Buffer[i] << ", ";
+    }
+    std::cout << "... ]\n";
+}
+
+int main()
+{
+    TestMessageBuilder<StandardMessage>();
+    TestMessageBuilder<OtherMessage>();
+    TestMessageBuilder<SimpleMessage>();
+}
+
+
+\end{CCode}
 
 
 \section{Debugging}
