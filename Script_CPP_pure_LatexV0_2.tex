@@ -17236,7 +17236,7 @@ struct Query {
     int32_t  Query;
 };
 \end{CCode}
-Für jede Datenstruktur braucht es einen serialisierer:
+Für jede Datenstruktur braucht es einen Serialisierer:
 \begin{CCode}
 template <class T>
 class Serializer {
@@ -17278,6 +17278,7 @@ public:
     }
 };
 \end{CCode}
+Konfiguration der Byte-Reihenfolge (Little-Endian versus Big-Endian)
 \begin{CCode}
 class SwappEndianness {
 
@@ -17336,6 +17337,9 @@ public:
         }
     }
 };
+\end{CCode}
+Policies für Prüfsummenberechnung
+\begin{CCode}
 
 
 class SimpleChecksumm {
@@ -17366,6 +17370,9 @@ protected:
     }
 };
 
+\end{CCode}
+Und jetzt die eigentliche, frei konfigurierbare Telegrammstream bildende Klasse
+\begin{CCode}
 
 template<class T, class Serializer, class Endianness, class ChecksumGenerator>
 class SimpleMessageBuilder : public Serializer, Endianness, ChecksumGenerator {
@@ -17408,12 +17415,21 @@ public:
     }
 };
 
-
+\end{CCode}
+Wir wollen Telegramme mit normaler Prüfsumme und normaler Bytereihenfolge:
+\begin{CCode}
 typedef SimpleMessageBuilder<Query, Serializer<Query>, DontSwappEndianness, SimpleChecksumm> StandardMessage;
+\end{CCode}
+Wir wollen Telegramme mit xor-Prüfsumme und normaler Bytereihenfolge:
+\begin{CCode}
 typedef SimpleMessageBuilder<Query, Serializer<Query>, DontSwappEndianness, XorChecksumm> OtherMessage;
+\end{CCode}
+Wir wollen Telegramme mit xor-Prüfsumme und umgekehrter Bytereihenfolge:
+\begin{CCode}
 typedef SimpleMessageBuilder<Query, Serializer<Query>, SwappEndianness, XorChecksumm> SimpleMessage;
-
-
+\end{CCode}
+Einfacher Testcode, als Template damit Code nur einmal geschrieben werden muss
+\begin{CCode}
 template <class T>
 void TestMessageBuilder ()
 {
@@ -17437,6 +17453,9 @@ void TestMessageBuilder ()
     }
     std::cout << "... ]\n";
 }
+\end{CCode}
+Hauptprogramm zum Test einiger Kombinationsvarianten
+\begin{CCode}
 
 int main()
 {
@@ -17444,10 +17463,10 @@ int main()
     TestMessageBuilder<OtherMessage>();
     TestMessageBuilder<SimpleMessage>();
 }
-
-
 \end{CCode}
-
+Im Prinzip könnte auch die Position von Länge und Prüfsumme, sowie Start- und Endsymbol konfiguriert werden.
+Auch Codierung und Verschlüsselung könnte konfigurierbar gemacht werden. Und natürlich müsste auch die gegenteilige
+Operation realisiert werden (Deserialisierung),
 
 \section{Debugging}
 Zur Ausgabe von Debuginformationen bieten sich nebst den von C bekannten Techniken auch die Klassen 
@@ -17491,6 +17510,7 @@ BOOST&  Umfangreiche Templatelibrary, wird ständig erweitert, oft Quelle für Neu
 CRTP&  curiously recurring template pattern, eine Klasse erbt von einer Templateklasse, welche mit ihr selbst parametrisiert ist (\texttt{class A : public B<A> \{ ... \}}) \\
 C'tor&	Kurzform für Constructor\\
 D'tor&	Kurzform für Destruktor\\
+Deep Copy& Vollständige Kopie, Objekt und alle vom Objekt referenzierte Objekte werden kopiert.\\
 GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
 K'tor&	Kurzform für Konstruktor\\
 L-Value& Urprünglich alles was links von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
@@ -17499,11 +17519,14 @@ OOA&	Objekt Orientierte Analyse\\
 OOD&	Objekt Orientierter Design\\
 OOP&	Objekt Orientierte Programmierung\\
 POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
+PIMPL&  Pointer to Implementation, Technik zum verstecken von Information, da in Klasse in Header nur Zeiger auf Daten sichtbar ist, Datenstruktur ist nur in Implementationsdatei sichtbar.\\
 PR-Value& Pure R-Value. \\
 RAII&      Resource Allocation Is In initialisation (Resourcenverwaltung über Konstruktoren und Destruktoren)\\
 RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
 R-Value& Urprünglich alles was rechts von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
 SFINAE& Substitution Failure Is Not An Error, siehe auch \myref{subsect:SFINAE}\\
+Shallow Copy& Unvollständige Kopie, nur Objekt wird kopiert, alle vom Objekt referenzierten Objekte werden mit dem Original geteilt.\\
+slicing& Bei Zuweisung von abgeleiteten Objekt an Basisklassenobjekt wird nur der Basisklassenteil kopiert. Im allgemeinen unerwünscht, desshalb wird mit Pointer oder Referenzen gearbeitet\\
 STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, Mengen) und Algorithmen (Suchen, Sortieren, Ersetzen), die auf Templates basiert. Mittlerweile Bestandteil der Standadrdlibrary\\
 TMP&   Template Meta Programming, siehe auch \myref{sect:TemplateMetaprogrammierung}\\ 
 UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
@@ -17671,7 +17694,7 @@ Die folgenden von Martin Fowler und Kent Beck beschriebenen Smells beziehen sich
 \item	\textbf{Ausgeschlagenes Erbe (engl. Refused Bequest)},\newline
     Unterklassen brauchen die Methoden und Daten gar nicht, die sie von den Oberklassen erben (siehe auch Liskovsches Substitutionsprinzip)
 \item	\textbf{Kommentare},\newline
-    Kommentare erleichtern im Allgemeinen die Verständlichkeit. Kommentare erscheinen jedoch häufig genau dort notwendig zu sein, wo der Code schlecht ist. Kommentare können somit ein Hinweis auf schlechten Code sein.
+    Kommentare erleichtern im Allgemeinen die Verständlichkeit. Kommentare scheinen jedoch häufig genau dort notwendig zu sein, wo der Code schlecht ist. Kommentare können somit ein Hinweis auf schlechten Code sein.
 \end{itemize}
 
 Neben den von Fowler erwähnte Smells gibt es noch eine Reihe von Code-Smells die oft auch unter Programmierungs-Anti-Pattern erwähnt werden:
@@ -17697,15 +17720,29 @@ Neben den von Fowler erwähnte Smells gibt es noch eine Reihe von Code-Smells die
     Verschachtelte if/else/for/do/while-Statements. Sie machen den Code unlesbar.
 \end{itemize}
 \section{\Cpp-Checkliste}
-Sobald eine Funktion virtuell ist, sollte auch der Destruktor virtuell sein.
+Sobald eine Methode einer Klasse virtuell ist, sollte auch deren Destruktor virtuell sein.
 
 Wenn eine Klasse einen Destruktor benötigt, sind im allgemeinen auch der
-Copykonstruktor und der Zuweisungsoperator selbst zu schreiben, oder allenfalls
+Copykonstruktor, der Zuweisungsoperator und allenfalls Move-Konstruktor und Move-Zuweisung selbst zu schreiben, oder allenfalls
 als privat zu deklarieren. Siehe auch 'Rule of 3, 5, 0', \myref{subsect:Ruleof350}
 
 Für jede Klasse je eine eigene Deklarations- (Header-) und Implementationsdatei. (Ausnahme
 Hilfsklassen)
 
+Sind \CodeStyle{new} und \CodeStyle{delete} wirklich notwendig, Alternativen wie \CodeStyle{unique_ptr}, \CodeStyle{shared-ptr}
+oder Container aus der Standardlibrary (wie \CodeStyle{vector}, \CodeStyle{list} oder \CodeStyle{deque}) in Betracht ziehen.
+
+Methoden und Funktionen soweit möglich als \CodeStyle{const} und \CodeStyle{constexpr} definieren, allenfalls mit \CodeStyle{const} überladen.
+
+Bei grösseren Projekten Namespaces verwenden.
+
+Bei \CodeStyle{array} und \CodeStyle{vector} \CodeStyle{at()} statt \CodeStyle{[]} verwenden, ausser in zeitkritischen Abschnitten.
+
+Bei globalen / statischen Objekten sicherstellen das keine gegenseitige Abhängigkeiten bestehen, da die Erzeugungsreihenfolge (Konstruktoraufrufe) globaler Objekte nicht definiert ist, und sogar von Compilelauf zu Compilelauf ändern kann. (Allenfalls als static Variable einer Funktion definieren, und Zugriff über dieses Funktion (Singleton Pattern)).
+
+In Multithreading Applikationen sicherstellen, dass alle Methoden gemeinsam genutzter Objekte und Klassen threadsafe sind, insbesondere auch Konstruktoren und Destruktoren. Gilt auch für Elemente aus der Standardlibrary. 
+
+  
 
 
 
