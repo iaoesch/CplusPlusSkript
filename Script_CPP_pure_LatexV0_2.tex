@@ -17763,6 +17763,11 @@ Wenn eine Klasse einen Destruktor benötigt, sind im allgemeinen auch der
 Copykonstruktor, der Zuweisungsoperator und allenfalls Move-Konstruktor und Move-Zuweisung selbst zu schreiben, oder allenfalls
 als privat zu deklarieren. Siehe auch 'Rule of 3, 5, 0', \myref{subsect:Ruleof350}
 
+Leeren Destruktor mit \CodeStyle{virtual ~D() = default;} statt \CodeStyle{virtual ~D() \{\}} definieren, gibt optimaleren Code.
+
+Movekonstruktor und Movezuweisungsoperator wenn möglich als \CodeStyle{noexcept} definieren, sonst werden sie
+von der Standartlibrary nicht benutzt.
+
 Für jede Klasse je eine eigene Deklarations- (Header-) und Implementationsdatei. (Ausnahme
 Hilfsklassen)
 
