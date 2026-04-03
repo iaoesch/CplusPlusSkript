@@ -3018,7 +3018,6 @@ Dies ist vorallem bei komplexeren Templates von Vorteil.
 \index{Automatische Rückgabetyp-Deduktion}
 Der Rückgabetyp von Funktionen kann neu aus dem Return-Statement erschlossen werden:
 \begin{CCode}
-	
 	auto f1(int x, int y) // Rueckgabewert ist int
 	{
 	   return 2;  // 2 ist int
@@ -3036,10 +3035,48 @@ Der Rückgabetyp von Funktionen kann neu aus dem Return-Statement erschlossen wer
 		{
 		   return d; // d ist double
 		}
-	};
-	
-	
+	};	
 \end{CCode}
+In seltenen Fällen muss \CodeIndex{decltype(auto)} verwendet werden:
+\begin{CCode}
+	int NoRefReturnung(int x, int y) // Rueckgabewert ist int&
+	{
+	   static int x;
+	   return x;  
+	}
+
+	int &RefReturnung(int x, int y) // Rueckgabewert ist int&
+	{
+	   static int x;
+	   return x;  
+	}
+
+	auto Wrapper1(int x, int y) // Rueckgabewert ist int
+	{
+	   return NoRefReturnung(x, y);  // Rueckgabewert von NoRefReturnung ist int
+	}
+
+	auto Wrapper2(int x, int y) // Rueckgabewert ist int (keine Referenz !)
+	{
+	   return RefReturnung(x, y);  // Rueckgabewert von NoRefReturnung ist int&
+	}
+
+	decltype(auto) Wrapper3(int x, int y) // Rueckgabewert ist int
+	{
+	   return NoRefReturnung(x, y);  // Rueckgabewert von NoRefReturnung ist int
+	}
+
+	decltype(auto) Wrapper4(int x, int y) // Rueckgabewert ist int&, also Referenz
+	{
+	   return RefReturnung(x, y);  // Rueckgabewert von NoRefReturnung ist int&
+	}
+\end{CCode}
+Ohne \CodeStyle{decltype(auto)} müsste je nach Fall \CodeStyle{decltype(auto)} für Rückgabe by Value
+oder \CodeStyle{decltype(auto &)} für Rückgabe by Reference verwendet werden, bei \CodeStyle{decltype(auto)} 
+entfällt die Unterscheidung, es wird automatisch die passende Variante gewählt.
+
+	
+
 
 
 \section{constexpr Funktionen (Seit \CppVers{11})}
