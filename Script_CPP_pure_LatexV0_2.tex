@@ -3093,7 +3093,7 @@ Grundsätzlich wird eine Lambda-Funktion wie folgt definiert:
 	[capture](parameters)->return_type{body}
 \end{CCode}
 
-Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren. Seit \CppVers{14} können auch initialisierte Variablen im Captureblock stehen (\CodeStyle{[x = a + 5 *b]}  a und b werden von der definierenden Funktion gelesen, x ist eine lokale Variable des Lambdablocks)
+Mit \emph{Capture} kann der Funktion Zugriff auf Variablen der definierenden Funktion (Welche nicht mit der aufrufenden Funktion übereinstimmen muss) gegeben werden. Der Zugriff kann by Value oder by Reference erfolgen. Die \OviIndex{Capture-Liste} darf auch leer sein. Achtung, eine Lambda-Funktion mit einem Capture-Block darf nicht aufgerufen werden, wenn die referenzierten Variablen nicht mehr existieren. Seit \CppVers{14} können auch initialisierte Variablen im Captureblock stehen (\CodeStyle{[x = a + 5 *b]}  a und b werden von der definierenden Funktion gelesen, x ist eine lokale Variable des Lambdablocks). Der Typ der initialisierten Variable ist immer \CodeStyle{auto} und darf auch eine Referenz sein.  
 
 Seit \CppVers{17} kann mit \CodeStyle{*this} im Captureblock das durch this referenzierte Objekt by Value captured werden (d.h. es wird eine Kopie des Objektes an das Lamda übergeben). 
 
@@ -3105,16 +3105,22 @@ Seit \CppVers{17} kann mit \CodeStyle{*this} im Captureblock das durch this refe
 
 Beispiele
 \begin{CCode}
-	int q;
-  int r;
+	int w;
+    int u;
   
 	[](int x, int y) -> float { return x + y; } // Rückgabetyp ist float
 	[](int x, int y) { return x + y; } // Impliziter Rückgabetyp durch return
 	[](int& x) { ++x; }                // Rückgabetyp ist void (Weder return noch ->)
 	[]() { ++global_x; }               // Keine Argumente, zugriff auf globale Variable
 	[]{ ++global_x; }                  // Dasselbe, () kann weggelassen werden
-	[&q, r](int& x) { q += r*++x; }    // Erlaubt Zugriff auf die Variable q und 
-	                             //kopiert  die Variable r der definierenden Funktion 
+	[&w, u](int& x) { w += u*++x; }    // Erlaubt Zugriff auf die Variable w und 
+	                             //kopiert  die Variable u der definierenden Funktion 
+	                             
+	[&r = u, z = 4*u + w](int& x) { r += z*++x; }  // Erzeugt eine lokale Referenz r, welche
+	                                   // auf u verweist, und eine lokale Variable z, welche
+	                                   // mit dem Wert 4*u + w initialisiert wird.
+	                                   // r und z haben beide ein implizites auto als Typ.
+
 	// Einsatzbeispiel
 	std::vector<int> Liste;
 	int Total = 0;
@@ -17561,6 +17567,7 @@ PR-Value& Pure R-Value. \\
 RAII&      Resource Allocation Is In initialisation (Resourcenverwaltung über Konstruktoren und Destruktoren)\\
 RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
 R-Value& Urprünglich alles was rechts von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
+RVO& Return Value Optimization, statt ein Objekt zurückzugeben wird das Objekt direkt im Zielbereich erzeugt. Diese Optimierung ist für Compiler mittlerweile verpflichtend. \\
 SFINAE& Substitution Failure Is Not An Error, siehe auch \myref{subsect:SFINAE}\\
 Shallow Copy& Unvollständige Kopie, nur Objekt wird kopiert, alle vom Objekt referenzierten Objekte werden mit dem Original geteilt.\\
 slicing& Bei Zuweisung von abgeleiteten Objekt an Basisklassenobjekt wird nur der Basisklassenteil kopiert. Im allgemeinen unerwünscht, desshalb wird mit Pointer oder Referenzen gearbeitet\\
@@ -17775,6 +17782,14 @@ Sind \CodeStyle{new} und \CodeStyle{delete} wirklich notwendig, Alternativen wie
 oder Container aus der Standardlibrary (wie \CodeStyle{vector}, \CodeStyle{list} oder \CodeStyle{deque}) in Betracht ziehen.
 
 Methoden und Funktionen soweit möglich als \CodeStyle{const} und \CodeStyle{constexpr} definieren, allenfalls mit \CodeStyle{const} überladen.
+
+Methoden und Funktionen soweit möglich als \CodeStyle{noexcept} definieren, ergibt effizienteren Code, im Gegenzug ruft das Programm \CodeStyle{std::terminate()} auf und beendet das Programm wenn dennoch eine Exception auftritt.
+
+Pass by Value kann in vielen Fällen effizienter sein, wenn die Betroffenen Objekte die Move-Semantik unterstützen.
+
+\CodeStyle{return std::move(x);} vermeiden, einfach \CodeStyle{return x;} benutzen. Dank RVO (Return Value Optimization) wird
+im zweiten Fall optimalerer Code erzeugt. 
+
 
 Bei grösseren Projekten Namespaces verwenden.
 
