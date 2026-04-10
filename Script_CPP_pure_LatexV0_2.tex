@@ -3103,6 +3103,8 @@ Seit \CppVers{17} kann mit \CodeStyle{*this} im Captureblock das durch this refe
 
 \emph{Body} enthält den Code der Funktion.
 
+Defaultmässig sind Lambdafunktionen \CodeStyle{const}, d.h. sie können Variablem vom Captureblock nicht modifizieren, mit dem Schlüsselwort \CodeStyle{mutable} kann dies erlaubt werden: \CodeStyle{[w](int& x)  mutable \{ w += x; \}}, ohne \CodeStyle{mutable} wäre die Änderung von w nicht zulässig. (Es wird die lokale Kopie von w verändert, nicht das gecapturete 'original' w.
+
 Beispiele
 \begin{CCode}
 	int w;
@@ -3151,6 +3153,23 @@ Containern) abgespeichert werden. Dabei erleichtert die automatische Typerkennun
 	std::for_each( begin(Liste), end(Liste), fkt);
 \end{CCode}
 Lambdafunktionen ohne Capture-Block können auch passenden Funktionszeigern zugewiesen werden, Lambdafunktionen mit Capture-Block sind nicht kompatibel mit Funktionszeigern, da ein Objekt zur Aufnahme der Capture-Variablen erzeugt werden muss.
+
+Mit dem +-operator kann die Umwandlung eines Captureblock-losen Lambdas in ein Funktionszeiger erzwungen werden:
+\begin{CCode}
+	int q;
+    extern void f(bool(fptr*)(int &x)); // Funktion erwartet Funktionszeiger
+  
+	// Lambda Funktion in Funktionspointer Fktptr Abspeichern
+	auto Fktptr = +[](int& x, )  -> bool { return x*x;} 
+	
+	f(Fktptr); // Funktion mit Pointer auf Lambda aufrufen
+	
+	// Direkt ein Captureloses Lambda uebergeben geht auch,
+	// wird implizit in Funktionspointer umgewandelt 
+    f([](int& x, )  -> bool { return x*x;}); 
+	
+
+\end{CCode}
 
 Auch generische Lambdafunktionen sind seit \CppVers{14} möglich (Siehe \myref{subsection:GenerischeLambdafunktionen})
 
@@ -3855,7 +3874,7 @@ Die folgenden Operatoren sind grundsätzlich nicht überladbar:
 
 
 \section{Benutzerdefinierte Literale (Seit \CppVers{11})}
-\index{Benutzerdefinierte Literale}
+\index{Benutzerdefinierte Literale}\index{UDL}\index{User defined literals}
 \label{subsubsect:BenutzerdefinierteLiterale}
 Bisher konnten nur die vom Compiler definierten Literale benutzt werden, neu kann der Anwender eigene Suffixes für Literale definieren. Also anstelle 123u könnte jetzt auch 123\_Magic oder 123\_kg benutzt werden. Ein benutzerdefinierter Suffix muss immer mit einem \_ beginnen (Literale ohne \_ am Anfang sind reserviert für zukünftige Erweiterungen, wie Zeitdauern in \CodeStyle{std::chrono}, siehe \myref{subsect:STDChrono:Duration}).
 
@@ -10989,7 +11008,10 @@ while(!Vektor.empty()) {       /* Solange Vektor nicht leer ist */
 
 \subsubsection{Kurzübersicht zu Container deque (Double ended queue)}
 \index{deque}
-Wie vector, zusätzlich ist Einfügen und Entfernen auch am Anfang effizient möglich.
+Wie \CodeStyle{vector}, zusätzlich ist Einfügen und Entfernen auch am Anfang effizient möglich. Im Gegensatz zu 
+\CodeStyle{vector} sind die Daten aber nicht in einem zusammenhängenden Speicherblock, sondern in mehreren
+nicht zusammenhängenden Speicherblöcken abgelegt. Zugriff mittles \CodeStyle{[]} und \CodeStyle{at()} ist
+jedoch wie beim \CodeStyle{vector} in konstanter Zeit garantiert.
 \begin{CCode}
 #include <deque>
 
@@ -11006,6 +11028,7 @@ Arr2.push_front(6);       // fügt 6 vorne an (Hat nun Grösse 15)
 \subsubsection{forward\_list}
 \index{forward\_list}
 Einfach verkettete Liste. Indizierter Zugriff ist nicht möglich,  Anhängen oder Entfernen am Anfang ist effizient möglich.
+Braucht weniger Speicherplatz pro Element, da kein Rückwärtspointer notwendig ist.
 \begin{CCode}
 #include <forward_list>
 
@@ -11203,7 +11226,7 @@ Seit \CppVers{23} sind alle Methoden von \CodeStyle{Bitset<>} constexpr, entspre
 \index{unordered\_multimap}
 \index{unordered\_set}
 \index{unordered\_multiset}
-Funktionieren wie die entsprechenden assoziativen Container, basieren jedoch auf einer \OviIndex{Hashtabelle}. Erlauben das schnelle Auffinden eines Objektes mit einem Schlüssel (Suchbegriff).
+Funktionieren wie die entsprechenden assoziativen Container, basieren jedoch auf einer \OviIndex{Hashtabelle}. Erlauben das schnelle Auffinden eines Objektes mit einem Schlüssel (Suchbegriff). Für die Abzulegenden Daten muss eine Hash-Funktion geliefert werden.
 \subsubsection{Container Adapter stack}
 \index{stack}
 Lässt den darunterliegenden Container als Stack (LIFO) nutzen, also eine Struktur, die das Hinzufügen und Entfernen von Objekten an einem Ende erlaubt.
@@ -11402,7 +11425,7 @@ int Count = std::count_if(&Array[0], &Array[9], Test);
 
 Alle Container sind Ranges, und alle Ranges liefern  einen Iterator auf ihren Anfang ( \CodeStyle{begin()}), sowie einen Sentinel (Wächter) der das Ende kennzeichnet ( \CodeStyle{end()}). Wie gewohnt kann mit dem Anfangsiterator bis zum Sentinel durch die Datenmenge iteriert werden, wobei die Daten aber auch während der Iteration erst generiert werden können. 
 
-Die meisten Algorithmen sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden, falls der ganze Container bearbeitet werden soll.
+Die meisten Algorithmen sind um die neue Range Schnittstelle erweitert worden, nun müssen nicht mehr Start- und End-Iterator übergeben werden, es reicht, einfach einen Range zu übergeben. Und da alle gängigen Container auch Ranges sind, können diese direkt an Algorithmen übergeben werden, falls der ganze Container bearbeitet werden soll. Die Range-basierten Algorithmen sind im Namesbereich \CodeIndex{std::ranges} definiert.
 \begin{CCode}
 int main()
 {
@@ -11420,8 +11443,9 @@ int main()
 
 Ranges (In diesem Falle als \OviIndex{View} bezeichnet) können auch auf Bereiche oder Teilbereiche von anderen Ranges verweisen, mehrere Ranges zu einem zusammenfassen, oder Ranges aufteilen, und/oder die Elemente Ihrer Quellranges filtern oder transformieren. Iteratoren einer View enthalten üblicherweise Iteratoren auf den untergeordneten Range, und delegieren Zugriff auf die Daten und das Iterieren an diese und führen selbst nur die zu ihrem View gehörenden Filterungen oder Transformationen durch. 
  
-Views können  kaskadiert \index{Kaskadieren von Views} (Hinterienander geschaltet) werden (\OviIndex{Pipelines}), dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden. Views können die Daten der Quelle umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten. Views speichern üblicherweise keine Daten, sondern greifen bei jedem Zugriff wieder auf die Daten des untergeordneten Ranges zurück und berecheen ihre Werte allenfalls neu, komplexere Views können aus Effizienzgründen Caching einsetzen..
-Mit einer View kann so zum Beispiel ein Vector von Personen-Objekten nur das Attribut Alter oder ein aus anderen Attributen berechneter Wert geliefert werden. (Wird als Projektion bezeichnet). 
+Views können  kaskadiert \index{Kaskadieren von Views} (Hintereinander geschaltet) werden (\OviIndex{Pipelines}), dabei kann die Kaskadierung von Views aus der Standardlibrary durch den überladenen  \CodeStyle{operator |()} vereinfacht werden. Views können die Daten der Quelle umrechnen oder nur Teilmengen/Attribute der untergeordneten Daten weiterleiten. Views speichern üblicherweise keine Daten, sondern greifen bei jedem Zugriff wieder auf die Daten des untergeordneten Ranges zurück und berechnen ihre Werte allenfalls neu, komplexere Views können aus Effizienzgründen Caching einsetzen.
+
+Mit einer View kann so zum Beispiel ein Vector von Personen-Objekten nur das Attribut Alter oder ein aus anderen Attributen berechneter Wert geliefert werden. (Wird als \emph{Projektion} bezeichnet, siehe weiter unten). 
 
 Eine View kann mit Anfangsiterator und Sentinel, mit Anfangsiterator und Länge, mit einem Range oder einem Standard-C-Array initialisiert werden. Eine View kann in einen undefinierten Zustand gelangen, wenn der darunter liegende Range verändert wird, desshalb sollten Views nur kurz vor ihrer Verwendung erzeugt werden, und sichergestellt sein das der darunterliegende Range wärend der Lebensdauer der View nicht verändert wird. 
 
@@ -11464,7 +11488,7 @@ In obigem Beispiel würde der Iterator von \CodeStyle{filter} bei jeder Inkrement
 
 Der Iterator von \CodeStyle{Quadriere} würde bei jeder Inkrementation einfach den Iterator auf  \CodeStyle{filter} Inkrementieren. Bei einem Lesezugriff wird das Ergebnis des Lesezugriffs auf den Iterator auf die \CodeStyle{filter} mit der Transformationsfunktion transformiert und zurückgeliefert.
 
-Einfache Views aus der Standarbibliothek sind 
+Einfache Views aus der Standardbibliothek sind (Liste ist nur kleiner Auszug)
 \begin{description}
 %\item[\CodeStyle{std::ranges::subrange<>}] 
 %	Liefert eine Teilansicht auf einem Range, definiert durch Anfangsiterator und Sentinel.
@@ -11474,6 +11498,12 @@ Einfache Views aus der Standarbibliothek sind
 	Liefert eine Teilansicht auf einen Range, definiert durch Anfangsiterator und einen Zähler.
 \item[std::ranges::take<>] 
 	Liefert eine Teilansicht auf einen Range, definiert durch einen Range und einem Zähler. Liefert die ersten n Elemente aus Range, ist counted() vorzuziehen.
+\item[std::ranges::drop<>] 
+	Liefert eine Teilansicht auf einen Range, definiert durch einen Range und einem Zähler. Verwirft die ersten n Elemente aus Range.
+\item[std::ranges::take\_while<>] 
+	Liefert eine Teilansicht auf einen Range, definiert durch einen Range und eine Bedingung. Liefert solange Elemente aus Range bis die Bedingung nicht mehr erfüllt ist.
+\item[std::ranges::drop\_while<>] 
+	Liefert eine Teilansicht auf einen Range, definiert durch einen Range und einem Zähler. Verwirft solange Elemente aus Range bis die Bedingung nicht mehr erfüllt ist.
 \end{description}
 Ein Grossteil der Algorithmen wurde für ranges überladen, und zudem um eine (optionale) \OviIndex{Projektion} erweitert. Mit der Projektion kann eine Transformation auf jedes Element angewendet werden, und das Resultat der Transformation wird vom Algorithmus weiterverwendet. Dabei werden die Elemente nicht verändert. Einige Algorithmen funktionieren (noch) nicht mit Ranges, insbesondere numerische und parallele Algorithmen. Zudem kann es Probleme geben wenn temporäre Ranges an Algorithmen übergeben werden, welche Iteratoren auf diesen temporären Range zurückliefern (z. B. \CodeStyle{find()}). 
 
@@ -17547,7 +17577,7 @@ Variablen die von der HW oder Interrupts verändert werden, müssen als volatile d
 \section{Glossar}
 {
 \setlength{\extrarowheight}{0.8ex}
-\begin{tabular}{lp{0.8\textwidth}}
+\begin{longtable}{lp{0.8\textwidth}}
 ADT&	Abstrakter Daten Typ. Ein Datentyp, von dem genau beschrieben ist, was er macht und was er für Eigenschaften hat, es ist jedoch nicht festgelegt, wie er das macht. Das heisst seine Funktion und seine Schnittstelle ist genau definiert, aber sonst nichts. Häufig werden ATD mathematisch beschrieben.\\
 BOOST&  Umfangreiche Templatelibrary, wird ständig erweitert, oft Quelle für Neuerungen in der \Cpp Standardlibrary. \\
 CRTP&  curiously recurring template pattern, eine Klasse erbt von einer Templateklasse, welche mit ihr selbst parametrisiert ist (\texttt{class A : public B<A> \{ ... \}}) \\
@@ -17573,9 +17603,10 @@ Shallow Copy& Unvollständige Kopie, nur Objekt wird kopiert, alle vom Objekt ref
 slicing& Bei Zuweisung von abgeleiteten Objekt an Basisklassenobjekt wird nur der Basisklassenteil kopiert. Im allgemeinen unerwünscht, desshalb wird mit Pointer oder Referenzen gearbeitet\\
 STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, Mengen) und Algorithmen (Suchen, Sortieren, Ersetzen), die auf Templates basiert. Mittlerweile Bestandteil der Standadrdlibrary\\
 TMP&   Template Meta Programming, siehe auch \myref{sect:TemplateMetaprogrammierung}\\ 
+UDL&   User defined literal, siehe auch \myref{subsubsect:BenutzerdefinierteLiterale}\\ 
 UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
 X-Value& eXpiring value, ein Wert der nicht mehr lange lebt. \\
-\end{tabular}
+\end{longtable}
 }
 
 \NextPagePlease
