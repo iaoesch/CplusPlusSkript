@@ -1529,6 +1529,111 @@ int main(int argc, char *argv[])
 
 Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von \CodeStyle{main()} werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
 
+% Probably better create own chapter 'move semantic'?
+\section{Move Semantik}
+\label{sect:MoveSemantik}
+
+\subsection{Temporäre Objekte}
+In \Cpp werden an vielen Stellen \OviIndex{temporäre Objekte} (\OviIndex{Anonyme Zwischenergebnisse}) erzeugt, welche \Cpp vor  \CppVers{11} den Ruf eingebracht haben, eine ineffiziente Sprache zu sein. Hier einige Beispiele für \OviIndex{Temporaries}: 
+ 
+\begin{CCode}
+	std::string f() 
+	{
+	   return "Hans";  // Temporärer Rueckgabewert
+	}
+	
+	void g(std::string s)
+	{
+	}
+	
+	void demo() {
+
+   	   std::string a; 
+	   std::string b; 
+	
+	   std::string c = a + b, // Ergebnis von a+b wird in Temporary abgespeichert
+	                          // und c mit Temporary initialisiert
+	
+	   g("Hans") // Temporaeres Stringobjekt wird erzeugt
+	   
+	   std::string d = f(); // d wird mit Temporary initialisiert
+	
+	} 
+\end{CCode}
+Temporäre Objekte haben meist eine kurze Lebensdauer und werden als Parameter an Methoden, oder als Initialisierungswerte für neue Objekte verwendet, in beiden Fällen werden oft Kopien (Bei der Initialisierung immer) des Temporaries und damit der Resourcen erzeugt. Das Temporary wird anschliessend samt seinen Resourcen gelöscht.
+
+Temporary sind somit besonders inneffizient, wenn zu deren Erzeugung Resourcen (z.B. Speicher) alloziert werden. Compiler versuchen, unnötige Temporaries soweit als möglich zu vermeiden. Insbesondere Temporaries bei Rückgabewerten von Funktionen werden durch die RVO (Return Value Optimization) vermieden, indem das Temporary direkt im Zielbereich erzeugt wird.
+
+Durch Übergabe by Reference statt by Value kann der Programmierer ebenfalls Kopien von Temporaries vermeiden, allerdings sind nur const Referenzen erlaubt, da Temporaries nicht verändert werden dürfen (Verändern von Werten welche nicht mehr weiterexistieren ist in den allermeisten Fällen ein Programmiererfehler).
+
+\subsection{Vermeidung unnötiger Kopien}
+
+Mit der in \CppVers{11} eingeführten \OviIndex{Move-Semantik} können die Resourcen eines Objektes in ein anderes verschoben werden. Die erlaubt das vermeiden unnötiger Kopien, wenn die Resourcen im Quellobjekt nicht mehr benötigt werden. Damit kann ebenfalls erzwungen werden, dass für bestimmte Objekte Resourcen nur verschoben, aber nie kopiert werden können (Z. B. Unique Pointer).
+
+Die Move-Semantik wird durch die in \CppVers{11} eingeführten R-Value-Referenzen (siehe \myref{subsec:RValueRefs}) unterstützt. Diese binden an R-Values, also an Objekte welche 'am Sterben' sind. Die als R-Value-Referenzen entgegengenommenen Objekte dürfen (und sollen) von der Methode oder Funktion 'ausgeschlachtet' werden, d.h. die Resourcen übernommen statt kopiert werden. Dabei muss sichergestellt sein, dass der Destruktor des ausgeschlachteten Objektes mit dem 'Ausgeschlachteten' Zustand umgehen kann. Üblicherweise werden vorallem Movekonstruktor und Move-Zuweisung implementiert, so dass beim Erzeugen oder Zuweisen von Objekten wenn möglich die Resourcen übernommen statt kopiert werden. Der Kompiler ruft automatisch die Movevarianten von Konstruktor oder Zuweisung auf, wenn die Quelle ein temporäres Objekt (x-Value) ist, z. B. der Returnwert einer Methode oder ein mit \CodeStyle{std::move()} markiertes Objekt.
+ 
+\subsection{Wertekategorien}
+\label{sect:Wertekategorien}
+Mit der Einführung der \OviIndex{Move-Semantik} in  \CppVers{11} wurden die Wertekategorien neu definiert. Die bisherigen Kategorien R-Value und L-Value reichten nicht aus, alle Kombinationen der folgenden zwei unabhängigen Eigenschaften zu beschreiben:
+\begin{description}
+\item[Das Objekt hat eine Identität:]  Es ist möglich festzustellen, ob zwei Ausdrücke auf dasselbe Element verweisen, zum Beispiel durch Vergleich der Adressen die durch die Ausdrücke referenziert werden. 
+\item[Das Objekt is verschiebbar:]  Movekonstruktor, Movezuweisungsoperator oder eine andere Funktion mit Move-Semantik kann an das Objekt binden (hat einen \&\&-Parameter, also ein R-Value Referenz passend zum Objekt)
+\end{description}
+
+Daraus ergeben sich folgende Definitionen:
+\begin{itemize}
+\item Ausdrücke, welche eine Identität haben und nicht verschoben werden können heissen \OviIndex{L-Values}
+\item Ausdrücke, welche eine Identität haben und verschoben werden können heissen \OviIndex{X-Values}
+\item Ausdrücke, welche keine Identität haben und verschoben werden können heissen \OviIndex{PR-Values}
+\item Ausdrücke, welche keine Identität haben und nicht verschoben werden können gibt es nicht
+\end{itemize}
+
+\emph{Jeder Ausdruck gehört zu genau einer der obigen Kategorien.}
+ 
+Dazu gibt es noch folgende Oberkategorien: 
+\begin{itemize}
+\item Ausdrücke, welche eine Identität haben heissen \OviIndex{GL-Values}, L-Values und X-Values sind also auch GL-Values.
+\item Ausdrücke, welche verschoben werden können heissen \OviIndex{R-Values}, PR-Values und X-Values sind also auch R-Values.
+\end{itemize}  
+
+R-Values (also PR-Values und X-Values) können an R-Value Referenzen binden. Auf R-Values kann der Adressoperator nicht angewendet werden, und sie können nicht das Ziel einer Zuweisung sein.  
+
+%With the introduction of move semantics in C++11, value categories were redefined to characterize two independent properties of expressions[5]:
+%
+%    has identity: it's possible to determine whether the expression refers to the same entity as another expression, such as by comparing addresses of the objects or the functions they identify (obtained directly or indirectly);
+%    can be moved from: move constructor, move assignment operator, or another function overload that implements move semantics can bind to the expression. 
+%
+%In C++11, expressions that:
+%
+%    have identity and cannot be moved from are called lvalue expressions;
+%    have identity and can be moved from are called xvalue expressions;
+%    do not have identity and can be moved from are called prvalue ("pure rvalue") expressions;
+%    do not have identity and cannot be moved from are not used[6]. 
+%
+%The expressions that have identity are called "glvalue expressions" (glvalue stands for "generalized lvalue"). Both lvalues and xvalues are glvalue expressions.
+%
+%The expressions that can be moved from are called "rvalue expressions". Both prvalues and xvalues are rvalue expressions. 
+%
+%Value categories
+% 
+%C++
+% 
+%C++ language
+% 
+%Expressions
+% 
+%
+%Each C++ expression (an operator with its operands, a literal, a variable name, etc.) is characterized by two independent properties: a type and a value category. Each expression has some non-reference type, and each expression belongs to exactly one of the three primary value categories: prvalue, xvalue, and lvalue.
+%
+%    a glvalue (?generalized? lvalue) is an expression whose evaluation determines the identity of an object or function;
+%    a prvalue (?pure? rvalue) is an expression whose evaluation computes the value of an operand of a built-in operator (such prvalue has no result object), or initializes an object (such prvalue is said to have a result object). 
+%
+%        The result object may be a variable, an object created by new-expression, a temporary created by temporary materialization, or a member thereof. Note that non-void discarded expressions have a result object (the materialized temporary). Also, every class and array prvalue has a result object except when it is the operand of decltype; 
+%
+%    an xvalue (an ?eXpiring? value) is a glvalue that denotes an object whose resources can be reused;
+%    an lvalue (so-called, historically, because lvalues could appear on the left-hand side of an assignment expression) is a glvalue that is not an xvalue;
+%    an rvalue (so-called, historically, because rvalues could appear on the right-hand side of an assignment expression) is a prvalue or an xvalue. 
+
 \chapter{Datentypen}
 \section{Einfache Datentypen}
 Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ. 
@@ -17586,17 +17691,18 @@ D'tor&	Kurzform für Destruktor\\
 Deep Copy& Vollständige Kopie, Objekt und alle vom Objekt referenzierte Objekte werden kopiert.\\
 GUI&	Graphical User Interface, graphische Benutzerschnittstelle\\
 K'tor&	Kurzform für Konstruktor\\
-L-Value& Urprünglich alles was links von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
-GL-Value& Genereller L-Value. \\
+L-Value& Urprünglich alles was links von einem Gleichheitszeichen (Zuweisung) stehen kann, siehe auch \myref{sect:Wertekategorien}
+\\
+GL-Value& Genereller L-Value, siehe auch \myref{sect:Wertekategorien}. \\
 OOA&	Objekt Orientierte Analyse\\
 OOD&	Objekt Orientierter Design\\
 OOP&	Objekt Orientierte Programmierung\\
 POD& Plain Old Datatype. Die von C her bekannten Datentypen (Keine Klassen oder Objekte)\\
 PIMPL&  Pointer to Implementation, Technik zum verstecken von Information, da in Klasse in Header nur Zeiger auf Daten sichtbar ist, Datenstruktur ist nur in Implementationsdatei sichtbar.\\
-PR-Value& Pure R-Value. \\
+PR-Value& Pure R-Value, siehe auch \myref{sect:Wertekategorien}. \\
 RAII&      Resource Allocation Is In initialisation (Resourcenverwaltung über Konstruktoren und Destruktoren)\\
 RTTI&	Run Time Type Information. Die Möglichkeit, zur Laufzeit Informationen über Datentypen zu erhalten.\\
-R-Value& Urprünglich alles was rechts von einem Gleichheitszeichen (Zuweisung) stehen kann. \\
+R-Value& Urprünglich alles was rechts von einem Gleichheitszeichen (Zuweisung) stehen kann, siehe auch \myref{sect:Wertekategorien}. \\
 RVO& Return Value Optimization, statt ein Objekt zurückzugeben wird das Objekt direkt im Zielbereich erzeugt. Diese Optimierung ist für Compiler mittlerweile verpflichtend. \\
 SFINAE& Substitution Failure Is Not An Error, siehe auch \myref{subsect:SFINAE}\\
 Shallow Copy& Unvollständige Kopie, nur Objekt wird kopiert, alle vom Objekt referenzierten Objekte werden mit dem Original geteilt.\\
@@ -17605,7 +17711,7 @@ STL&	Standard Template Library. Eine Bibliothek von Containern (Listen, Arrays, 
 TMP&   Template Meta Programming, siehe auch \myref{sect:TemplateMetaprogrammierung}\\ 
 UDL&   User defined literal, siehe auch \myref{subsubsect:BenutzerdefinierteLiterale}\\ 
 UML&	Unified Modeling Language, Eine Methode zur Objektorientierten Modellierung von Systemen. Die Methode ist nicht auf Software beschränkt, sie kann universell eingesetzt werden.\\
-X-Value& eXpiring value, ein Wert der nicht mehr lange lebt. \\
+X-Value& eXpiring value, ein Wert der nicht mehr lange lebt, siehe auch \myref{sect:Wertekategorien}. \\
 \end{longtable}
 }
 
@@ -17816,7 +17922,7 @@ Methoden und Funktionen soweit möglich als \CodeStyle{const} und \CodeStyle{cons
 
 Methoden und Funktionen soweit möglich als \CodeStyle{noexcept} definieren, ergibt effizienteren Code, im Gegenzug ruft das Programm \CodeStyle{std::terminate()} auf und beendet das Programm wenn dennoch eine Exception auftritt.
 
-Pass by Value kann in vielen Fällen effizienter sein, wenn die Betroffenen Objekte die Move-Semantik unterstützen.
+Pass by Value kann in vielen Fällen effizienter sein, wenn die Betroffenen Objekte die Move-Semantik (Siehe auch \myref{sect:MoveSemantik}) unterstützen.
 
 \CodeStyle{return std::move(x);} vermeiden, einfach \CodeStyle{return x;} benutzen. Dank RVO (Return Value Optimization) wird
 im zweiten Fall optimalerer Code erzeugt. 
