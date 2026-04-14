@@ -1529,17 +1529,16 @@ int main(int argc, char *argv[])
 
 Vor dem Aufruf von \CodeStyle{main()} werden sämtliche Konstruktoren globaler Objekte aufgerufen (Wobei die Reihenfolge undefiniert ist), und nach dem Ende von \CodeStyle{main()} werden noch sämtliche Destruktoren globaler Objekte aufgerufen.
 
-% Probably better create own chapter 'move semantic'?
 \section{Move Semantik}
 \label{sect:MoveSemantik}
 
 \subsection{Temporäre Objekte}
-In \Cpp werden an vielen Stellen \OviIndex{temporäre Objekte} (\OviIndex{Anonyme Zwischenergebnisse}) erzeugt, welche \Cpp vor  \CppVers{11} den Ruf eingebracht haben, eine ineffiziente Sprache zu sein. Hier einige Beispiele für \OviIndex{Temporaries}: 
+In \Cpp werden an vielen Stellen \OviIndex{temporäre Objekte} (\OviIndex{Anonyme Zwischenergebnisse}) erzeugt, welche neben anderem \Cpp vor  \CppVers{11} den Ruf eingebracht haben, eine ineffiziente Sprache zu sein. Hier einige Beispiele für \OviIndex{Temporaries}: 
  
 \begin{CCode}
 	std::string f() 
 	{
-	   return "Hans";  // Temporärer Rueckgabewert
+	   return "Hans";         // Temporärer Rueckgabewert
 	}
 	
 	void g(std::string s)
@@ -1551,22 +1550,24 @@ In \Cpp werden an vielen Stellen \OviIndex{temporäre Objekte} (\OviIndex{Anonyme
    	   std::string a; 
 	   std::string b; 
 	
-	   std::string c = a + b, // Ergebnis von a+b wird in Temporary abgespeichert
-	                          // und c mit Temporary initialisiert
+	   std::string c = a + b, // Ergebnis von a+b wird in Temporary 
+	                          // abgespeichert und c mit diesem 
+	                          // Temporary initialisiert
 	
-	   g("Hans") // Temporaeres Stringobjekt wird erzeugt
+	   g("Hans")              // Temporaeres Stringobjekt wird erzeugt
+	                          // und in Parameter s von g() kopiert
 	   
-	   std::string d = f(); // d wird mit Temporary initialisiert
+	   std::string d = f();   // d wird mit Temporary initialisiert
 	
 	} 
 \end{CCode}
-Temporäre Objekte haben meist eine kurze Lebensdauer und werden als Parameter an Methoden, oder als Initialisierungswerte für neue Objekte verwendet, in beiden Fällen werden oft Kopien (Bei der Initialisierung immer) des Temporaries und damit der Resourcen erzeugt. Das Temporary wird anschliessend samt seinen Resourcen gelöscht.
+Temporäre Objekte haben meist eine kurze Lebensdauer und werden häufig als Parameter an Methoden, oder als Initialisierungswerte für neue Objekte weiterverwendet, in beiden Fällen werden üblicherweise Kopien (Bei der Initialisierung immer) des Temporaries und damit der Resourcen erzeugt. Das Temporary wird anschliessend samt seinen Resourcen gelöscht.
 
 Temporary sind somit besonders inneffizient, wenn zu deren Erzeugung Resourcen (z.B. Speicher) alloziert werden. Compiler versuchen, unnötige Temporaries soweit als möglich zu vermeiden. Insbesondere Temporaries bei Rückgabewerten von Funktionen werden durch die RVO (Return Value Optimization) vermieden, indem das Temporary direkt im Zielbereich erzeugt wird.
 
-Durch Übergabe by Reference statt by Value kann der Programmierer ebenfalls Kopien von Temporaries vermeiden, allerdings sind nur const Referenzen erlaubt, da Temporaries nicht verändert werden dürfen (Verändern von Werten welche nicht mehr weiterexistieren ist in den allermeisten Fällen ein Programmiererfehler).
-
 \subsection{Vermeidung unnötiger Kopien}
+
+Durch Übergabe by Reference statt by Value kann der Programmierer Kopien von Temporaries vermeiden, allerdings sind nur const Referenzen erlaubt, da Temporaries nicht verändert werden dürfen (Verändern von Werten welche nicht mehr weiterexistieren ist in den allermeisten Fällen ein Programmiererfehler).
 
 Mit der in \CppVers{11} eingeführten \OviIndex{Move-Semantik} können die Resourcen eines Objektes in ein anderes verschoben werden. Die erlaubt das vermeiden unnötiger Kopien, wenn die Resourcen im Quellobjekt nicht mehr benötigt werden. Damit kann ebenfalls erzwungen werden, dass für bestimmte Objekte Resourcen nur verschoben, aber nie kopiert werden können (Z. B. Unique Pointer).
 
@@ -1577,7 +1578,7 @@ Die Move-Semantik wird durch die in \CppVers{11} eingeführten R-Value-Referenzen
 Mit der Einführung der \OviIndex{Move-Semantik} in  \CppVers{11} wurden die Wertekategorien neu definiert. Die bisherigen Kategorien R-Value und L-Value reichten nicht aus, alle Kombinationen der folgenden zwei unabhängigen Eigenschaften zu beschreiben:
 \begin{description}
 \item[Das Objekt hat eine Identität:]  Es ist möglich festzustellen, ob zwei Ausdrücke auf dasselbe Element verweisen, zum Beispiel durch Vergleich der Adressen die durch die Ausdrücke referenziert werden. 
-\item[Das Objekt is verschiebbar:]  Movekonstruktor, Movezuweisungsoperator oder eine andere Funktion mit Move-Semantik kann an das Objekt binden (hat einen \&\&-Parameter, also ein R-Value Referenz passend zum Objekt)
+\item[Das Objekt ist verschiebbar:]  Ein Movekonstruktor, ein Movezuweisungsoperator oder eine andere Funktion mit Move-Semantik kann an das Objekt binden (hat einen \&\&-Parameter, also ein R-Value Referenz passend zum Objekt)
 \end{description}
 
 Daraus ergeben sich folgende Definitionen:
@@ -1633,6 +1634,16 @@ R-Values (also PR-Values und X-Values) können an R-Value Referenzen binden. Auf 
 %    an xvalue (an ?eXpiring? value) is a glvalue that denotes an object whose resources can be reused;
 %    an lvalue (so-called, historically, because lvalues could appear on the left-hand side of an assignment expression) is a glvalue that is not an xvalue;
 %    an rvalue (so-called, historically, because rvalues could appear on the right-hand side of an assignment expression) is a prvalue or an xvalue. 
+
+Zusammenfassend:
+\begin{description}
+\item[glvalue:] Ein Ausdruck der die Identität eines Objektes liefert, also im Wesentlichen seinen Speicherort (Adresse). Das kann z. B. ein Variablenname oder eine dereferenzierte Adresse sein. Beispiele: \CodeStyle{Name}, \CodeStyle{Array[i]}, \CodeStyle{*ptr}, \CodeStyle{(*(ptr + array[i])->offset} 
+\item[xvalue:] exspiring Value, ein glvalue dessen Resourcen weiterverwendet werden können, da der Wert nicht mehr weiter verwendet wird. Üblicherweise das Resultat von \CodeStyle{std::move}. 
+\item[lvalue:] Ein glvalue der kein xvalue ist, historisch definiert als etwas, das auf der linken Seite eines Zuweisungsoperators stehen kann.
+\item[prvalue:] Ein Ausdruck der den Wert eines eingebauten Operanden bestimmt oder ein Objekt initialisiert. Im Falle der eingebauten Operanden ist das Ergebnis ein POD (wir int, float, pointer...) und kein Objekt. Im zweiten Fall kann das Ergebnis (Initialisierte Objekt) eine Variable, ein dynamisch erzeugtes Objekt oder ein \OviIndex{materialisiertes temporary} sein. 
+\item[rvalue:] Ein prvalue oder ein xvalue, historisch definiert als etwas, das auf der rechten Seite eines Zuweisungsoperators stehen kann.
+\end{description}
+
 
 \chapter{Datentypen}
 \section{Einfache Datentypen}
