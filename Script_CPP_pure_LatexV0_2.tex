@@ -1641,15 +1641,16 @@ Zusammenfassend:
 \item[xvalue:] exspiring Value, ein glvalue dessen Resourcen weiterverwendet werden können, da der Wert nicht mehr weiter verwendet wird. Üblicherweise das Resultat von \CodeStyle{std::move}. 
 \item[lvalue:] Ein glvalue der kein xvalue ist, historisch definiert als etwas, das auf der linken Seite eines Zuweisungsoperators stehen kann.
 \item[prvalue:] Ein Ausdruck der den Wert eines eingebauten Operanden bestimmt oder ein Objekt initialisiert. Im Falle der eingebauten Operanden ist das Ergebnis ein POD (wir int, float, pointer...) und kein Objekt. Im zweiten Fall kann das Ergebnis (Initialisierte Objekt) eine Variable, ein dynamisch erzeugtes Objekt oder ein \OviIndex{materialisiertes temporary} sein. 
+(der prvalue ist der initialisierende Ausdruck, nicht das initialisierte Objekt).
 \item[rvalue:] Ein prvalue oder ein xvalue, historisch definiert als etwas, das auf der rechten Seite eines Zuweisungsoperators stehen kann.
 \end{description}
-
+Materialisieren heisst, dass aus einem prvalue effektiv ein Objekt wird, der prvalue selbst ist kein Objekt, sondern nur ein 'potentielles' Objekt. Ein prvalue wird erst materialisiert, wenn das Objekt effektiv benötigt wird. Oft wird der prvalue anstelle eines Temporaries weitergereicht. Dadurch wird das Erzeugen unnötiger Temporaries vermieden. 
 
 \chapter{Datentypen}
 \section{Einfache Datentypen}
 Neben den bereits von C bekannten Datentypen wie \CodeStyle{char, int, u16_t, float} usw. gibt es in \Cpp den Datentypen \CodeStyle{bool} für die logischen Werte \CodeStyle{true} und \CodeStyle{false}. Alle relationalen und logischen Operatoren haben ein Ergebnis von diesem Typ. 
 
-Seit \CppVers{11} gibt es die typen \CodeStyle{char16_t und char16_t} für UTF-16 resp. UTF-32 codierte Zeichen. Mit \CppVers{20} ist noch der Typ \CodeStyle{char8_t} \label{subsubsect:UTF8CharType} für  UTF-8 codierte Zeichen dazugekommen. Alle char.. typen haben mindestens soviele Bits wie angegeben.
+Seit \CppVers{11} gibt es die Typen \CodeStyle{char16_t und char16_t} für UTF-16 resp. UTF-32 codierte Zeichen. Mit \CppVers{20} ist noch der Typ \CodeStyle{char8_t} \label{subsubsect:UTF8CharType} für  UTF-8 codierte Zeichen dazugekommen. Alle char.. typen haben mindestens soviele Bits wie angegeben.
 
 Für Zeichenketten gibt es die Stringklasse aus der Standardlibrary (Siehe \myref{sect:strings}).
 
