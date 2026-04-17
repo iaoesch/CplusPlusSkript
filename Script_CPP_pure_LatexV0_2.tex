@@ -11691,43 +11691,59 @@ Das zweite Argument \{\} ist notwendig, da an zweiter Stelle vor der Projektion 
     
  
 
-\section{Allokatoren (Seit \CppVers{11})}
+\section{Allokatoren und Speicherresourcen (Seit \CppVers{11})}
 \label{sect:Allokatoren}
 
-Die Allokatoren-Bibliothek bietet verschiedene Klassen fürs Speichermanagement, welche für unterschiedliche Einsätze optimiert sind. Selbstverständlich können auch eigene Allokatoren geschrieben weerden, falls die zur Verfügung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary können mit Allokatoren parametrisiert werden, falls für die entsprechenden Objekte nicht die Standard-Speicherverwaltung zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln können, falls ein Speicher aufgebraucht ist.
+Die Allokatoren-Bibliothek bietet verschiedene Klassen fürs Speichermanagement, welche für unterschiedliche Einsätze optimiert sind. Selbstverständlich können auch eigene \OviIndex{Allokatoren} geschrieben weerden, falls die zur Verfügung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary können mit Allokatoren parametrisiert werden, falls für die entsprechenden Objekte nicht die Standard-Speicherverwaltung zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln können, falls ein Speicher aufgebraucht ist.
 
-Einem Allokator kann bei der Erzeugung eine Speicherresource (\CodeStyle{std::pmr::memory_resource})angegeben werden, diese Resource wird anschliessend vom Allokator verwaltet.  Wenn keine Resource angegeben wird, benutzt der Allokator die Defaultresource, welche Standartmässig mit  \CodeStyle{std::pmr::new_delete_resource} initialisiert ist, vom Anwender aber geändert werden kann.
+Einem Allokator kann bei der Erzeugung eine \OviIndex{Speicherresource} (\CodeStyle{std::pmr::memory_resource}) angegeben werden, diese Resource wird anschliessend vom Allokator verwaltet.  Wenn keine Resource angegeben wird, benutzt der Allokator die Defaultresource, welche Standartmässig mit  \CodeStyle{std::pmr::new_delete_resource} initialisiert ist, vom Anwender aber geändert werden kann.
 
-Ein Allokator muss mit dem Typen der zu erzeugenden Objeklte parametrisiert werden, liefert jedoch nur uninitialisierte Speicherblöcke mit passender Grösse und passendem Alignement zurück, keine Objekte.
+\subsection{Allokatoren}
+Ein Allokator muss mit dem Typen der zu erzeugenden Objekte parametrisiert werden, liefert jedoch nur uninitialisierte Speicherblöcke mit passender Grösse und passendem Alignement zurück, keine Objekte.
 
-Folgende Allokatoren sind mit \CppVers{17} verfügbar:
+Folgende Allokatoren sind mit \CppVers{17} verfügbar, von jedem Allokator können beliebig viele Instanzen erzeugt werden.:
 \begin{description}
 \item[ std::allocator]  Defaultallocator, seit \CppVers{11} verfügbar, benutzt einfach das globale  \CodeStyle{new} und \CodeStyle{delete}, wird in der Standardlibrary von allen Komponenten defaultmässig verwendet.
-\item[ std::scoped_allocator_adaptor]  Damit können verschachtelte Allokatoren gebaut werden, welche für Verschachtelte Container (z. B. Liste von Vectoren von Maps) benutzt werden können. Für den äussersten Container wird der äusserste Allokator, für den nächst inneren Container der nächst innere Allokator verwendet. Wenn es mehr Container als Allokatoren hat, wird der innerste Allokator für die restlichen Container verwendet.
-\item[ std::pmr::polymorphic_allocator]  Ein Allokator, der mit unterschiedlichen Speicherresourcen umgehen kann. Dieser Allokator muss mit einer Speicherresource (\CodeStyle{std::pmr::memory_resource}), oder einem anderen Allokator initialisiert werden, im zweiten Fall wird die Speicherresource des anderen Allokators mit verwendet.
+\item[ std::scoped\_allocator\_adaptor]  Damit können verschachtelte Allokatoren gebaut werden, welche für Verschachtelte Container (z. B. Liste von Vectoren von Maps) benutzt werden können. Für den äussersten Container wird der äusserste Allokator, für den nächst inneren Container der nächst innere Allokator verwendet. Wenn es mehr Container als Allokatoren hat, wird der innerste Allokator für die restlichen Container verwendet.
+\item[ std::pmr::polymorphic\_allocator]  Ein Allokator, der mit unterschiedlichen Speicherresourcen umgehen kann. Dieser Allokator muss mit einer Speicherresource (\CodeStyle{std::pmr::memory_resource}), oder einem anderen Allokator initialisiert werden, im zweiten Fall wird die Speicherresource des anderen Allokators mit verwendet.
 \end{description}
 
 Vom Programmierer können nach belieben Allokatoren selbst definiert werden, sie müssen einfach die Allokatorschnittstelle zur Verfügung stellen.
 
-Speicherresourcen stellen den Allokatoren Speicher zur Verfügung. Aktuell greift nur der  \CodeStyle{polymorphic_allocator} auf Speicherrresourcen zurück.  \CodeStyle{std::pmr::memory_resource} definiert die Schnittstelle für Speicherresourcen, alle Speicherresourcen müssen von dieser Klasse ableiten und die Methoden  \CodeStyle{do_allocate()},   \CodeStyle{do_deallocate()} und  \CodeStyle{do_is_equal()} überschreiben.
+\subsection{Speicherresourcen}
+\begin{sloppypar}
+Speicherresourcen stellen den Allokatoren Speicher zur Verfügung. Aktuell greift nur der  \CodeStyle{polymorphic\_allocator} auf Speicherrresourcen zurück.  \CodeStyle{std::pmr::memory_resource} definiert die Schnittstelle für Speicherresourcen, alle Speicherresourcen müssen von dieser Klasse ableiten und die Methoden  \CodeStyle{do_allocate()},   \CodeStyle{do_deallocate()} und  \CodeStyle{do_is_equal()} überschreiben.
+\end{sloppypar}
 
-Mit  \CppVers{17} werden folgende Speicherresourcen angeboten:
+Mit  \CppVers{17} werden folgende Speicherresourcen angeboten, von jeder Resourcenart können beliebig viele Instanzen erzeugt erden.:
 
 \begin{description}
-\item[std::pmr::memory_resource] Abstrakte Basisklasse, definiert Schnittstelle für alle  Speicherrresourcen
-\item[std::pmr::null_memory_resource] Liefert nie Speicher, sondern wirft immer bad_alloc Exception, kann als Ende einer Speicherverwaltungskette genutzt werden.
-\item[std::pmr::new_delete_resource] Benutzt globales \CodeStyle{new} und \CodeStyle{delete}
-\item[std::pmr::synchronized_pool_resource] Threadsafe, verwaltet mehrere Pools verschieden grosser Speicherblöcke, adaptiert Anzahl Pools und Blockgrössen der Pools an Bedarf. Greift für die Allozierung von Speicher für seine Pools auf die Im Konstruktor angegebene Speicherresource zurück. Wenn keine Resource angegeben wurde, wird auf die (globale) Defaultresource zurückgegriffen.
-\item[std::pmr::unsynchronized_pool_resource] Wie \CodeStyle{synchronized_pool_resource}, aber nicht Threadsafe, dafür effizienter.
-\item[std::pmr::monotonic_buffer_resource] Benutzt einen im Konstruktor angegebenen Speicherblock als Resource, der Speicher wird fortlaufend vergeben, freigegebener Speicher wird nicht wieder verwendet und erst freigegeben, wenn das MonotonicBufferobjekt zerstört wird. Dies ist ein sehr schneller Speicherverwalter, der für Objekte gedacht ist, welche erzeugt und nach gebrauch gemeinsam (oder überhaupt nie) gelöscht werden. Neben dem Buffer muss im Konstruktor eine upstream Speicherresource angegeben werden. Wenn kein Buffer angegeben wurde, oder der Speicher im Buffer aufgebraucht ist, wird weiterer Speicher von der upstream-Specherresource angefordert. So können mehrere Monotonic Speicherresourcen verkettet werden, als Ende der Kette kann die null_memory_resource verwendet werden
+\item[std::pmr::memory\_resource] Abstrakte Basisklasse, definiert Schnittstelle für alle  Speicherrresourcen
+\item[std::pmr::null\_memory\_resource] Liefert nie Speicher, sondern wirft immer \CodeStyle{bad_alloc} Exception, kann als Ende einer Speicherverwaltungskette genutzt werden.
+\item[std::pmr::new\_delete\_resource] Benutzt globales \CodeStyle{new} und \CodeStyle{delete}
+\item[std::pmr::synchronized\_pool\_resource] Threadsafe, verwaltet mehrere Pools verschieden grosser Speicherblöcke, adaptiert Anzahl Pools und Blockgrössen der Pools anhand des bisherigen Bedarfs. Greift für die Allozierung von Speicher für seine Pools auf die Im Konstruktor angegebene Speicherresource zurück. Wenn keine Resource angegeben wurde, wird auf die (globale) Defaultresource zurückgegriffen.
+Ist effizienter als die Standardverwaltung mit new/delete, aber weniger effizient als \CodeStyle{monotonic_buffer_resource}. Freigegebene Blöcke werden in den jeweiligen Pool zurückgegeben, die Pools selbst werden erst bei der Zerstörung des Poolresource-Objekts freigegeben.
+\item[std::pmr::unsynchronized\_pool\_resource] Wie \CodeStyle{synchronized_pool_resource}, aber nicht Threadsafe, dafür effizienter.
+\item[std::pmr::monotonic\_buffer\_resource] Benutzt einen im Konstruktor angegebenen Speicherblock als Resource, der Speicher wird fortlaufend vergeben, freigegebener Speicher wird nicht wieder verwendet und erst freigegeben, wenn das MonotonicBufferobjekt zerstört wird. Dies ist ein sehr schneller Speicherverwalter, der für Objekte gedacht ist, welche erzeugt und nach gebrauch gemeinsam (oder überhaupt nie) gelöscht werden. Neben dem Buffer muss im Konstruktor eine upstream Speicherresource angegeben werden. Wenn kein Buffer angegeben wurde, oder der Speicher im Buffer aufgebraucht ist, wird weiterer Speicher von der upstream-Specherresource angefordert. So können mehrere Monotonic Speicherresourcen verkettet werden, als Ende der Kette kann die \CodeStyle{null_memory_resource} verwendet werden
 \end{description}
 
+\subsection{Anwendung}
+Um die Speicherverwaltung komplett selbst zu übernehmen, kann die Kette  
 
+\CodeStyle{polymorphic_allocator}-\CodeStyle{synchronized_pool_resource}-\CodeStyle{monotonic_buffer_resource}
+
+ verwendet werden, und der \CodeStyle{monotonic_buffer_resource} kann ein Speicherbereich nach Bedarf übergeben werden (z.B. Shared Memory oder Akkugepuffertes RAM).
+
+Um eine für bestimmte Objektgrössen optimierte Speicherverwaltung zu erhalten, kann die Kette
+
+ \CodeStyle{polymorphic_allocator}-\CodeStyle{synchronized_pool_resource}-Standard Memoryverwaltung 
+ 
+ verwendet werden.
 
 
 Im Nachfolgenden Beispiel wird der Speicher für die Elemente einer Liste aus einem Array von Bytes entnommen.
 Der Speicher wird bei \CodeStyle{monotonic_buffer_resource} nicht zurückgegeben, erst wenn \CodeStyle{monotonic_buffer_resource}
-aufhört zu existieren steht der gesammte Speicher auf einmal wieder zur Verfügung. D.h. wenn die Liste Blöcke freigibt, stehen
+aufhört zu existieren steht der gesamte Speicher auf einmal wieder zur Verfügung. D.h. wenn die Liste Blöcke freigibt, stehen
 diese nicht wieder zur Verfügung.  \CodeStyle{monotonic_buffer_resource} ist dafür sehr schnell, weil keine 
 Verwaltung der Blöcke notwendig ist.
 
@@ -11752,10 +11768,11 @@ Verwaltung der Blöcke notwendig ist.
     
 \end{CCode}
 
+\begin{sloppypar}
 Verschiedene Buffferresourcen können beliebig verkettet werden. (Wenn einer Resource der Speicher ausgeht, fordert sie
-bei ihrem Nachfolger Speicher an. Als Ende einer Kette kann die \CodeStyle{null_memory_resource} verwendet werden, diese
+bei ihrem Nachfolger Speicher an. Als Ende einer Kette kann die \CodeStyle{null\_memory\_resource} verwendet werden, diese
 löst direkt eine Exception aus, wenn von ihr Speicher angefordert wird.
-
+\end{sloppypar}
 
 \section{Multithreading support (Seit \CppVers{11})}
 \label{sect:Multithreading}
