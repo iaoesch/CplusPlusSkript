@@ -1221,9 +1221,9 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
-Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder Vector aus der Standardbibliothek nutzen (Siehe \myref{section:StandardSTL}). Dynamische Arrays lassen sich so einfach mit \CodeStyle{std::vector} realisieren, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. Die Verwaltung des Speichers wird so vollständig durch die Bibliothek übernommen.
+Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder Vector aus der Standardbibliothek nutzen (Siehe \myref{section:StandardSTL}). Dynamische Arrays lassen sich so einfach mit \CodeStyle{std::vector} realisieren, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. Die Verwaltung des Speichers wird so vollständig durch die Bibliothek übernommen, bei Bedarf kann die Speicherverwaltung der Container durch Allokatoren (Siehe \myref{sect:Allokatoren}) konfiguriert werden.
 
-Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
+Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe auch \myref{sec:StdSmartpointer} und Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
 
 \subsection{'Manuelle' Speicherverwaltung mit new und delete}
 \label{subsubsect:newdelete}
