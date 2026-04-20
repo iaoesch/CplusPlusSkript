@@ -1221,6 +1221,7 @@ Mit den geschweiften Klammern \{ \} werden in C/\Cpp mehrere Anweisungen zu eine
 \end{CCode}
  
 \section{Dynamische Speicherverwaltung}
+\label{sect:DynamischeSpeicherverwaltung}
 Dynamischer Speicher lässt sich am Einfachsten mit Containern wie List, Map oder Vector aus der Standardbibliothek nutzen (Siehe \myref{section:StandardSTL}). Dynamische Arrays lassen sich so einfach mit \CodeStyle{std::vector} realisieren, das sind Array-ähnliche Container, welche ihre Grösse zur Laufzeit ändern können. Die Verwaltung des Speichers wird so vollständig durch die Bibliothek übernommen, bei Bedarf kann die Speicherverwaltung der Container durch Allokatoren (Siehe \myref{sect:Allokatoren}) konfiguriert werden.
 
 Alternativ können Smartpointer wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} eingesetzt werden um Objekte dynamisch zu erzeugen und zu verwalten. Auch hier wird das Speichermanagement im wesentlichen (Insbesondere das Freigeben von nicht mehr benutztem Speicher) durch die Bibliothek übernommen. (Siehe auch \myref{sec:StdSmartpointer} und Kapitel \myref{sec:Smartpointer} auf S.\pageref{sec:Smartpointer}).
@@ -1680,7 +1681,7 @@ A&& ar = static_cast<A&&>(a);
 
 %
 %The expressions f(), f().m, static_cast<A&&>(a), and a + a are xvalues. The expression ar is an lvalue.
-\item[lvalue:] Ein glvalue der kein xvalue ist, historisch definiert als etwas, das auf der linken Seite eines Zuweisungsoperators stehen kann.
+\item[lvalue:] Ein glvalue der kein xvalue ist, historisch definiert als etwas, das auch auf der linken Seite eines Zuweisungsoperators stehen kann.
 \item[prvalue:] Ein Ausdruck der den Wert eines eingebauten Operanden bestimmt oder ein Objekt initialisiert. Im Falle der eingebauten Operanden ist das Ergebnis ein POD (wir int, float, pointer...) und kein Objekt. Im zweiten Fall kann das Ergebnis (Initialisierte Objekt) eine Variable, ein dynamisch erzeugtes Objekt oder ein \OviIndex{materialisiertes temporary} sein. 
 (der prvalue ist der initialisierende Ausdruck, nicht das initialisierte Objekt).
 \item[rvalue:] Ein prvalue oder ein xvalue, historisch definiert als etwas, das auf der rechten Seite eines Zuweisungsoperators stehen kann.
@@ -1704,7 +1705,7 @@ Für Fliesskommawerte sind seit \CppVers{23} die Typen \CodeStyle{std::float16_t}
 Referenzen werden insbesondere zur Parameterübergabe bei Funktionen und Methoden benutzt. Dadurch wird
 Call by Reference erreicht, also das Kopieren von Argumenten unterdrückt. Das zurückgeben einer Referenz auf eine lokale Variable einer Methode führt wie bei Pointern zu undefiniertem Verhalten.
 
-Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \myref{subsec:RValueRefs}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
+Seit \CppVers{11} gibt es rValueReferenzen, welche effizienteren Umgang mit temporären Objekten erlauben. Siehe  \myref{subsec:RValueRefs} und \myref{sect:MoveSemantik}. rValueReferenzen erkennt man am doppelten \CodeStyle{&&} bei der Definition.
 
 \subsection{Lebensdauerverlängerung temporärer Objekte durch Referenzen}
 Wenn ein temporäres Objekt an eine Referenz gebunden wird, verlängert sich die Lebensdauer des temporären Objektes, \index{Lebensdauerverlängerung temporärer Objekte durch Referenzen} \index{temporäre Objekte, Lebensdauerverlängerung durch Referenzen} bis die Referenz ihr Lebensende erreicht. Somit können Rückgabewerte einer Methode (Die selbst aber keine Referenz sein dürfen)  an eine Referenz gebunden werden. Wenn die Referenz an eine weitere Referenz übergeben wird, wird die Lebensdauer des temporären Objektes nicht erneut verlängert.
@@ -1738,7 +1739,7 @@ Wenn ein temporäres Objekt an eine Referenz gebunden wird, verlängert sich die L
 \subsection{Einsatz von Zeigern}
 Referenzen sollten gegenüber Zeigern bevorzugt verwendet werden. Da es keine null-Referenzen gibt, werden Zeiger eingesetzt, wenn es auch kein zu benutzendes Objekt geben kann (null-pointer), alternativ sollte in diesem Fall in Erwägung gezogen werden auf  \CodeStyle{std::optional<>} (Siehe \myref{sect:VariantOptionalAny}) zurückzugreifen.
 
-In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr}. Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
+In \Cpp sollte auf die Benutzung von gewöhnlichen Zeigern (Raw-Pointern) zum Verwalten und Benutzen von dynamisch erzeugten Objekten verzichtet werden, besser und sicherer ist der Einsatz von Smart Pointern wie \CodeStyle{std::unique\_ptr} oder \CodeStyle{std::shared\_ptr} (\myref{sec:StdSmartpointer}). Diese übernehmen das Resourcenmanagement und verhindern automatisch Resourcenlecks.
 
 Bei Unique Pointern kann zur selben Zeit immer nur ein Zeiger auf ein bestimmtes Objekt zeigen, und wenn dieser Zeiger stirbt, wird auch das von ihm referenzierte Objekt gelöscht. Ein Unique-Pointer kann das von ihm referenzierte Objekt an einen anderen Unique-Pointer übergeben und wird dadurch selbst zu einen ungültigen (Null-) Pointer.
 
@@ -1785,11 +1786,11 @@ Siehe \myref{sec:StdSmartpointer} und \myref{sec:Smartpointer} zu detailliertere
 
 
 \OviIndex{RValue Referenzen} werden durch \CodeStyle{T &&r} (im Gegensatz zu \CodeStyle{T &r} bei gewöhnlichen Referenzen) definiert. Beim Kopieren und Übergeben von Parametern werden in \Cpp oft temporäre
-Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. 
+Objekte erzeugt, welche nur kurzzeitig existieren, jedoch 'Schreibgeschützt' sind. An Temporaries können nur const-Referenzen (\CodeStyle{const T &r}) binden, da das Verändern eines temorären Wertes fast immer ein Programmierfehler ist.
 
-Mit RValue Referenzen können nun temporäre Objekte verändert werden. Dies wird benötigt, um den neuen Move-Konstruktor zu implementieren. Beim \OviIndex{Move-Konstruktor} wird der Inhalt des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht).
+Nichtkonstante RValue Referenzen jedoch können an temporäre Objekte binden und erlauben deren Veränderung. Dies wird benötigt, um die mit \CppVers{11} eingeführte Movesematik (\myref{sect:MoveSemantik}) zu realisieren. Dazu werden der neu eingeführte Move-Konstruktor und der Move-Zuweisingsoperator definiert. Beim \OviIndex{Move-Konstruktor} (siehe auch \myref{subsect:MoveConstruktor}) wird der Inhalt (Inhalt = referenzierte Resourcen wie Speicher) des Quellobjektes in das Zielobjekt verschoben, anstelle kopiert wie beim Kopierkonstruktor. Damit kann überflüssiges Kopieren unterbunden werden. (Da ein Temporäres Objekt sowieso gelöscht wird, stört es nicht, wenn sein Inhalt bereits vor dem Löschen entfernt wird. Man kann deshalb mittels Move-Konstruktor direkt den Inhalt dieses Temporär-Objektes in das Neue Objekt verschieben, und spart sich so einen Kopiervorgang. Man muss nur dafür sorgen, dass der Destruktor des temporären Objektes die 'Entwendeten' Daten nicht löscht). Analoges gilt für den Move-Zuweisungsoperator (Siehe \myref{subsect:MoveZuweisungsoperator}).
 
-Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.)
+Auch 'normale' Methoden können mit RValue Referenzen überladen werden, die RValue Varianten werden in diesem Fall vom Compiler als passendste Methode ausgewählt, wenn das entsprechende Argument ein temporäres Objekt ist (Und natürlich auch, wenn das Argument selbst bereits eine RValue Referenz ist.)
 
 Beispiel:
 \begin{CCode}
@@ -4384,7 +4385,7 @@ class Other {
 
 
 \subsubsection{Copy-Construktor}
-Es gibt einen speziellen Konstruktor, genannt \OviIndex{Copy-Construktor}, der vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
+Der Kopierkonstruktor (\OviIndex{Copy-Construktor}) wird vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
 
 Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Kopierkonstruktor der Basisklasse(n)
 in der Initialisiererliste aufgeführt werden, sonst wird der Defaultkonstruktor benutzt, was üblicherweise nicht zum gewünschten Resultat führt.
@@ -4430,7 +4431,8 @@ MyClass f2()
 \end{CCode}
 
 \subsubsection{\CppVers{11} Move-Construktor}
-Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden. Idealerweise sollte der Movekonstruktor als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
+\label{subsect:MoveConstruktor}
+Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor}, dieser bindet an R-Value Referenzen (Siehe Kapitel \myref{subsec:RValueRefs}) und hilft unnötiges Kopieren zu vermeiden. Damit wird ein effizienterer Umgang mit Temporaries (\myref {subsec:Temporaries}) ermöglicht. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden. Der Movekonstruktor wird vom Compiler nicht automatisch erzeugt, wenn kein Movekonstruktor definiert wurde, greift der Compiler auf den Kopierkonstruktor zurück. Idealerweise sollte der Movekonstruktor als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
 der Standardlibrary zusammenzuarbeiten.
 
 \begin{CCode}
@@ -4486,7 +4488,8 @@ a = b;      // Aufruf des Zuweisungsoperators
 \end{CCode}
 
 \subsection{\CppVers{11} Move-Zuweisungsoperator}
-Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator} (Siehe Kapitel \myref{subsec:RValueRefs}), welcher unnötiges Kopieren vermeiden hilft und so einen effizienteren Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden.
+\label{subsect:MoveZuweisungsoperator}
+Seit \CppVers{11} gibt es neu den \OviIndex{Movezuweisungsoperator}, dieser bindet an R-Value Referenzen (Siehe Kapitel \myref{subsec:RValueRefs}) und hilft unnötiges Kopieren zu vermeiden. Damit wird ein effizienterer Umgang mit Temporaries (\myref {subsec:Temporaries}) erlaubt. Der Movezuweisungsoperator wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movezuweisungsoperator Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden. Wenn kein Movekonstruktor definiert wurde, greift der Compiler auf den normalen Zuweisungsoperator zurück.
 Idealerweise sollte der Movezuweisungsoperator als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
 der Standardlibrary zusammenzuarbeiten.
 \begin{CCode}
@@ -11476,7 +11479,7 @@ Mithilfe eines Einfüge-Iterators (Spezieller Iterator) können die Ergebnisse auc
 
 
 \subsubsection{swap()}
-\CodeIndex{swapp()} vertauscht den Inhalt zweier Objekte so effizient wie möglich. Die Defaultimplementation führt eine gewöhnliche Vertauschung über ein Hilfsobjekt durch.
+\CodeIndex{swapp()} vertauscht den Inhalt zweier Objekte so effizient wie möglich. Die Defaultimplementation führt eine gewöhnliche Vertauschung über ein Hilfsobjekt durch, dabei wird auf den Move-Konstruktor und die Move-Zuweisung zurückgegriffen, falls vorhanden.
 
 
 \begin{CCode}
@@ -11691,12 +11694,12 @@ Das zweite Argument \{\} ist notwendig, da an zweiter Stelle vor der Projektion 
     
  
 
-\section{Allokatoren und Speicherresourcen (Seit \CppVers{11})}
+\section{Allokatoren (Seit \CppVers{11}) und Speicherresourcen (Seit \CppVers{17})}
 \label{sect:Allokatoren}
 
-Die Allokatoren-Bibliothek bietet verschiedene Klassen fürs Speichermanagement, welche für unterschiedliche Einsätze optimiert sind. Selbstverständlich können auch eigene \OviIndex{Allokatoren} geschrieben weerden, falls die zur Verfügung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary können mit Allokatoren parametrisiert werden, falls für die entsprechenden Objekte nicht die Standard-Speicherverwaltung zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln können, falls ein Speicher aufgebraucht ist.
+Die Allokatoren-Bibliothek bietet verschiedene Klassen fürs Speichermanagement, welche für unterschiedliche Einsätze optimiert sind. Selbstverständlich können auch eigene \OviIndex{Allokatoren} geschrieben weerden, falls die zur Verfügung gestellten den eigenen Anforderungen nicht entsprechen. Fast alle Elemente der Standardlibrary können mit Allokatoren parametrisiert werden, falls für die entsprechenden Objekte nicht die Standard-Speicherverwaltung mit \CodeStyle{new} und \CodeStyle{delete} (Siehe \myref{sect:DynamischeSpeicherverwaltung}) zum Einsatz kommen soll. Es gibt auch polymorphe Allokatoren, welche zur Laufzeit des Programmes die Quelle des Speichers wechseln können, falls ein Speicher aufgebraucht ist.
 
-Einem Allokator kann bei der Erzeugung eine \OviIndex{Speicherresource} (\CodeStyle{std::pmr::memory_resource}) angegeben werden, diese Resource wird anschliessend vom Allokator verwaltet.  Wenn keine Resource angegeben wird, benutzt der Allokator die Defaultresource, welche Standartmässig mit  \CodeStyle{std::pmr::new_delete_resource} initialisiert ist, vom Anwender aber geändert werden kann.
+Einem Allokator kann bei der Erzeugung eine \OviIndex{Speicherresource} (\CodeStyle{std::pmr::memory_resource}) angegeben werden, diese Resource wird anschliessend vom Allokator verwaltet.  Wenn keine Resource angegeben wird, benutzt der Allokator die Defaultresource, welche Standartmässig mit  \CodeStyle{std::pmr::new_delete_resource} initialisiert ist, vom Anwender aber mit  \CodeStyle{set_default_resource()} und \CodeStyle{get_default_resource()} geändert werden kann.
 
 \subsection{Allokatoren}
 Ein Allokator muss mit dem Typen der zu erzeugenden Objekte parametrisiert werden, liefert jedoch nur uninitialisierte Speicherblöcke mit passender Grösse und passendem Alignement zurück, keine Objekte.
@@ -11710,17 +11713,18 @@ Folgende Allokatoren sind mit \CppVers{17} verfügbar, von jedem Allokator können
 
 Vom Programmierer können nach belieben Allokatoren selbst definiert werden, sie müssen einfach die Allokatorschnittstelle zur Verfügung stellen.
 
-\subsection{Speicherresourcen}
+\subsection{Speicherresourcen (Seit \CppVers{17})}
 \begin{sloppypar}
-Speicherresourcen stellen den Allokatoren Speicher zur Verfügung. Aktuell greift nur der  \CodeStyle{polymorphic\_allocator} auf Speicherrresourcen zurück.  \CodeStyle{std::pmr::memory_resource} definiert die Schnittstelle für Speicherresourcen, alle Speicherresourcen müssen von dieser Klasse ableiten und die Methoden  \CodeStyle{do_allocate()},   \CodeStyle{do_deallocate()} und  \CodeStyle{do_is_equal()} überschreiben.
+Speicherresourcen stellen den Allokatoren Speicher zur Verfügung. Aktuell greift nur der  \CodeStyle{polymorphic\_allocator} auf Speicherrresourcen zurück.  \CodeStyle{std::pmr::memory_resource} definiert die Schnittstelle für Speicherresourcen, alle Speicherresourcen müssen von dieser Klasse ableiten und die Methoden  \CodeStyle{do_allocate()},   \CodeStyle{do_deallocate()} und  \CodeStyle{do_is_equal()} überschreiben. Mit \CodeStyle{set_default_resource()} kann eine Defaultresource gestetzt werden, welche benutzt wird, wenn keine Resource angegeben wird. Defaultmässig ist als Defaultresource die \CodeStyle{std::pmr::memory_resource} gesetzt.
+
 \end{sloppypar}
 
-Mit  \CppVers{17} werden folgende Speicherresourcen angeboten, von jeder Resourcenart können beliebig viele Instanzen erzeugt erden.:
+Mit  \CppVers{17} werden folgende Speicherresourcen angeboten, von jeder Resourcenart können beliebig viele Instanzen erzeugt werden.:
 
 \begin{description}
-\item[std::pmr::memory\_resource] Abstrakte Basisklasse, definiert Schnittstelle für alle  Speicherrresourcen
+\item[std::pmr::memory\_resource] Abstrakte Basisklasse, definiert Schnittstelle für alle  Speicherresourcen
 \item[std::pmr::null\_memory\_resource] Liefert nie Speicher, sondern wirft immer \CodeStyle{bad_alloc} Exception, kann als Ende einer Speicherverwaltungskette genutzt werden.
-\item[std::pmr::new\_delete\_resource] Benutzt globales \CodeStyle{new} und \CodeStyle{delete}
+\item[std::pmr::new\_delete\_resource] Benutzt globales \CodeStyle{new} und \CodeStyle{delete} und ist die default Speicherrresource.
 \item[std::pmr::synchronized\_pool\_resource] Threadsafe, verwaltet mehrere Pools verschieden grosser Speicherblöcke, adaptiert Anzahl Pools und Blockgrössen der Pools anhand des bisherigen Bedarfs. Greift für die Allozierung von Speicher für seine Pools auf die Im Konstruktor angegebene Speicherresource zurück. Wenn keine Resource angegeben wurde, wird auf die (globale) Defaultresource zurückgegriffen.
 Ist effizienter als die Standardverwaltung mit new/delete, aber weniger effizient als \CodeStyle{monotonic_buffer_resource}. Freigegebene Blöcke werden in den jeweiligen Pool zurückgegeben, die Pools selbst werden erst bei der Zerstörung des Poolresource-Objekts freigegeben.
 \item[std::pmr::unsynchronized\_pool\_resource] Wie \CodeStyle{synchronized_pool_resource}, aber nicht Threadsafe, dafür effizienter.
@@ -12684,7 +12688,7 @@ x.operator=(t2);
 Nebst den beiden Temporaries \CodeStyle{t1} und \CodeStyle{t2} werden für die Ergebnisrückgabe der Operatorfunktionen weitere Temporaries erzeugt und wieder vernichtet.
 
 Sobald Temporäre Objekte Nicht-Triviale Konstruktoren haben, muss jedes Temporäre Objekt konstruiert und destruiert werden, was viel Laufzeit kosten kann.
-Mit den in \CppVers{11} eingeführten RValuereferenzen kann in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden (Siehe \myref{subsec:RValueRefs}).
+Mit der in \CppVers{11} eingeführten Movesemantik (\myref{sect:MoveSemantik}) kann mittels RValuereferenzen (\myref{subsec:RValueRefs}) in vielen Fällen die Anzahl unnötiger Objektkonstruktionen und Destruktionen deutlich reduziert werden.
 
 \section{Interrupt und Multithreading}
 
