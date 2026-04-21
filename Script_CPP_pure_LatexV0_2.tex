@@ -4204,7 +4204,7 @@ Methode&Wird erzeugt wenn&Beschreibung\\
 \hline
 Defaultkonstruktor&Kein anderer Konstruktor definiert&Ruft Defaultkonstruktor aller Member und Basisklassen auf\\
 \hline
-Destruktor&Kein Destruktor definiert&Macht nichts\\
+Destruktor&Kein Destruktor definiert&Macht nichts (Destruktoren aller Member und Basisklassen werden immer aufgerufen, egal ob ein Destruktor definiert ist oder nicht)\\
 \hline
 Kopierkonstruktor&Kein Kopierkonstruktor, kein Move-Konstruktor und kein Move-Zuweisungsoperator definiert&Ruft Kopierkonstruktor aller Member und Basisklassen auf\\
 \hline
@@ -4385,7 +4385,7 @@ class Other {
 
 
 \subsubsection{Copy-Construktor}
-Der Kopierkonstruktor (\OviIndex{Copy-Construktor}) wird vom Compiler jedes mal aufgerufen wird wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
+Der Kopierkonstruktor (\OviIndex{Copy-Construktor}) wird vom Compiler jedes mal aufgerufen wenn der Compiler ein Objekt kopieren muss (Argumentübergabe, Temporäre Objekte, nicht aber bei einer Zuweisung). Wenn der Programmierer keinen \OviIndex{Kopier-Konstruktor} zur Verfügung stellt, erzeugt der Compiler auch hier selbst eine entsprechende Methode.
 
 Bei abgeleiteten Klassen muss bei selbst geschriebenen Kopierkonstruktoren explizit der Kopierkonstruktor der Basisklasse(n)
 in der Initialisiererliste aufgeführt werden, sonst wird der Defaultkonstruktor benutzt, was üblicherweise nicht zum gewünschten Resultat führt.
@@ -4432,7 +4432,7 @@ MyClass f2()
 
 \subsubsection{\CppVers{11} Move-Construktor}
 \label{subsect:MoveConstruktor}
-Seit \CppVers{11} gibt es neu den \OviIndex{Movekonstruktor}, dieser bindet an R-Value Referenzen (Siehe Kapitel \myref{subsec:RValueRefs}) und hilft unnötiges Kopieren zu vermeiden. Damit wird ein effizienterer Umgang mit Temporaries (\myref {subsec:Temporaries}) ermöglicht. Der Movekonstruktor wird immer dann aufgerufen, wenn das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden. Der Movekonstruktor wird vom Compiler nicht automatisch erzeugt, wenn kein Movekonstruktor definiert wurde, greift der Compiler auf den Kopierkonstruktor zurück. Idealerweise sollte der Movekonstruktor als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
+Seit \CppVers{11} gibt es den \OviIndex{Movekonstruktor}, dieser bindet an R-Value Referenzen (Siehe Kapitel \myref{subsec:RValueRefs}) und hilft unnötiges Kopieren zu vermeiden. Damit wird ein effizienterer Umgang mit Temporaries (\myref {subsec:Temporaries}) ermöglicht. Der Movekonstruktor wird immer dann aufgerufen, wenn ein Obekt kopiert werden soll, aber das Sourceobjekt anschliessend nicht mehr gebraucht wird, somit darf der Movekonstruktor Bestandteile des Sourceobjektes 'Recyclen', da diese sowieso nicht mehr gebraucht werden. Der Movekonstruktor wird vom Compiler nicht automatisch erzeugt. Wenn kein Movekonstruktor definiert wurde, greift der Compiler auf den Kopierkonstruktor zurück. Idealerweise sollte der Movekonstruktor als \OviIndex{noexcept} definiert werden (und dann auch keine Exceptions werfen), um optimal mit
 der Standardlibrary zusammenzuarbeiten.
 
 \begin{CCode}
@@ -6470,9 +6470,9 @@ mächtiges Werkzeug zur Verfügung gestellt, welches fast wie eine eigene Sprache 
 sehr komplexe, verallgemeinerte und typunabhängige Programmierung erlaubt. Mit Templates kann parametrisierbarer Code geschrieben werden, das heisst Code, der unabhängig von Datentypen ist. 
 
 Der Benutzer eines Templates kann selbst angeben, für welchen Datentyp das Template Code erzeugen soll, er kann dabei auch Datentypen angeben, die bei der Erstellung eines Templates nicht bekannt waren.
-Es können \OviIndex{Funktionstemplate} und \OviIndex{Klassentemplates} erzeugt werden. Achtung, Templates werden normalerweise vollständig in einer Headerdatei definiert, welche vom Anwender des Templates mittels \#include eingebunden werden muss.
+Es können \OviIndex{Funktionstemplate}, \OviIndex{Klassentemplates} und \OviIndex{Variablentemplates} erzeugt werden. Achtung, Templates werden normalerweise vollständig in einer Headerdatei definiert, welche vom Anwender des Templates mittels \#include eingebunden werden muss.
 
-In diesem Kapitel werden Templates nur kurz vorgestellt, eine umfassende Beschreibung von Templates kann in entsprechender Fachliteratur nachgeschlagen werden. Wer schon mal einen Blick in einen der Standardheader der STL (Z. B. \CodeStyle{vector}) geworfen hat, weiss das Template-Programmierung sehr schnell zu schwer nachvollziehbarem Code führt. (Die Anwendung dagegen ist meist sehr einfach). Template-Parameter und Template-Spezialisierungen werden hier nur am Rande gestreift.
+In diesem Kapitel werden Templates nur kurz vorgestellt, eine umfassende Beschreibung von Templates kann in entsprechender Fachliteratur nachgeschlagen werden. Wer schon mal einen Blick in einen der Header der Standardlibrary (Z. B. \CodeStyle{vector}) geworfen hat, weiss das Template-Programmierung sehr schnell zu schwer nachvollziehbarem Code führt. (Die Anwendung dagegen ist meist sehr einfach). Template-Parameter und Template-Spezialisierungen werden hier nur am Rande gestreift.
 \section{Template Syntax}
 Ein Template wird mit dem Schlüsselwort  \CodeStyle{template} gefolgt von einer Parameterliste in spitzen Klammern eingeleitet. Anschliessend folgt eine Klassen-, eine Funktions- oder eine Variablendefinition.
  
@@ -6498,6 +6498,7 @@ template <template<class, double> class T, int N>
 \end{CCode}
 
 \section{Funktionstemplates}
+\index{Funktionstemplate}
 Mit dem nachfolgenden Template wird eine generische Funktion zur
 Bestimmung des Maximums von zwei Argumenten gleichen Typs definiert.
 Dies funktioniert aber nur für Typen, welche den Operator > definiert haben.
@@ -6826,8 +6827,8 @@ Complex c(x, y);
 \end{CCode}
 
 \subsection{Deduction Guides (Seit \CppVers{17})}
-\OviIndex{deduction guide} (Herleitungsleitfaden)
-Wenn ein Template mithilfe eines Konstruktors ohne Parametrisierung erzeugt wird, versucht der Compiler die Parameter aus den Argumenten zu erschliessen. Gelegentlich entspricht das Ergenis jedoch nicht den gewünschten Parametern. In diesen Fällen kann dem Compiler mit Deduction Guides eine Vorgabe gemacht werden.
+
+Wenn ein Template mithilfe eines Konstruktors ohne Parametrisierung erzeugt wird, versucht der Compiler die Parameter aus den Argumenten zu erschliessen. Gelegentlich entspricht das Ergenis jedoch nicht den gewünschten Parametern. In diesen Fällen kann dem Compiler mit einem \OviIndex{deduction guide} (Herleitungsleitfaden) eine Vorgabe gemacht werden.
 
 Syntax: Funktionsdeklaration in trailing return type syntax:
 Funktionsdeklaration gefolgt von -> und gewünschtem Typ
@@ -6867,7 +6868,7 @@ container(T *b, T*e) -> container<T>;
 
 \end{CCode}
 
-Wichtig, Detectionguides sagen nur aus, wie das Template zu instanzieren ist, der Konstrukter
+Wichtig, Deductionguides sagen nur aus, wie das Template zu instanzieren ist, der Konstruktor
 erhält genau die Parameter, welche ihm übergeben wurden, und muss diese so verwenden,
 dass sie zum erzeugten Template passen.
 
@@ -6916,7 +6917,7 @@ parametrisiert wird.
 \index{Template Templateparameter}
 Es ist auch möglich, einem Template ganze Template als Parameter mitzugeben,
 dazu muss dem Templateparameter das Schlüsselwort template gefolgt von der
-Typenliste in spitzen Klammern des einzusetzenden Templates. Anschliessend
+Typenliste  des einzusetzenden Templates in spitzen Klammern. Anschliessend
 können beim Instanzieren alle Template mit passender Parameterliste übergeben werden:
 
 \begin{CCode}
@@ -7318,7 +7319,7 @@ Wird üblicherweise zur Erzeugung unterschiedlicher Typen verwendet, insbesondere
 \section{Template mit variabler Argumentenanzahl (Seit \CppVers{11})}
 \label{subsubsect:TemplateVarArg}
 
-Neu können Templates Variable Argumentenlisten haben.
+Seit \CppVers{11} können Templates Variable Argumentenlisten haben.
 \begin{CCode}
 	template<typename... Values> class tuple;
 \end{CCode}
@@ -7334,7 +7335,7 @@ Ein einfaches Beispiel:
 		
 	};
 \end{CCode}
-Mit \CodeStyle{typename... P} oder \CodeStyle{class... P} wird ein \OviIndex{Parameterpack} erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit \CodeStyle{...} abgeschlossen wird, wird der ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
+Mit \CodeStyle{typename... P} oder \CodeStyle{class... P} wird ein \OviIndex{Parameterpack} erzeugt. Wenn P an ein weiteres Template übergeben wird, erhält dieses Template einfach wieder die Liste aller Parameter im Parameterpack. Wenn jedoch  P in einem Ausdruck enthalten ist, und dieser mit \CodeStyle{...} abgeschlossen wird, wird das Ganze in eine kommaseparierte Liste expandiert, und der Ausdruck für jeden Typen in P repliziert, jeweils mit dem entsprechenden Typen eingefügt.
 Der ganze Mechanismus kann dabei auf Funktions- und Klassentemplates sowie auf Typen, Kostanten und Template-Parameter angewandt werden.
 Der Operator \CodeStyle{sizeof...(P)} liefert die Anzahl Elemente im Pack als konstanten Integerwert.
 
@@ -9901,7 +9902,7 @@ zum Teil mehrfach überladen und können sehr flexibel eingesetzt werden, besonder
 wenn die Operatoren \CodeStyle{<<} nicht die gewünschte Funktionalität liefern. 
 
 
-\subsection{Formatierte Ausgabe}
+\subsection{Formatierte Ausgabe mit ostream}
 \index{Formatierte Ausgabe} Die Formatierung der Ausgabe wird über Flags gesteuert. Mit der
 Methode \CodeStyle{flags()} können die Flags gesetzt oder gelesen werden, mit
 \CodeStyle{setf()} können Flags hinzugefügt werden.
@@ -9992,12 +9993,12 @@ selbst neue Manipulatoren zu erzeugen.
 
 Einige weitere Manipulatoren: \CodeStyle{flush, endl, setbase(), dec, hex, oct, left, right}
 
-\phantomsection
+%\phantomsection
+\subsection{Formatierte Ausgabe mit std::format}
 \label{subsubsect:formated}
-\textbf{std::format}
 
-Seit \CppVers{20} gibt es mit \CodeIndex{std::format} \index{format} weitere \OviIndex{Formatiermöglichkeiten}, welche
-an \CodeIndex{printf()} aus C angelehnt sind sowie an Python angelehnt sind. Anstelle des \% muss \{\} als Platzhalter verwendet werden:
+Seit \CppVers{20} gibt es mit \CodeIndex{std::format} \index{format} eine weitere \OviIndex{Formatiermöglichkeit}, welche
+an \CodeIndex{printf()} aus C sowie an Python angelehnt ist. Anstelle des \% muss \{\} als Platzhalter verwendet werden:
 \begin{CCode}
 std::cout << std::format("{}is {} or {}!\n", "Pi", 3.14, 3); 
 \end{CCode} 
@@ -10955,16 +10956,22 @@ void main()
 \section{Container, Algorithmen und Iteratoren der \Cpp - Standardbibliothek}
 \label{section:StandardSTL}
 Die \OviIndex{STL} (\OviIndex{Standard Template Library}) war eine der ersten Anwendungen, die umfassend von Templates gebrauch machte, und zudem die Erweiterung und Verbesserung der Templatesyntax zur Folge hatte. Mittlerweile ist die STL in die \OviIndex{\Cpp - Standardbibliothek}
-integriert worden. In diesem Kapitel wird vorallem auf die aus der STL übernommenen Komponenten der \Cpp - Standardbibliothek eingegangen. Mit \CppVers{20} sind Ranges und Views (Siehe \myref{subsect:Ranges}) dazugekommen.
+integriert worden. In diesem Kapitel wird vorallem auf die aus der STL übernommenen Komponenten der \Cpp - Standardbibliothek eingegangen. Mit \CppVers{20} wurde die Standardlibrary um \OviIndex{Ranges} und \OviIndex{Views} (Siehe \myref{subsect:Ranges}) erweitert. Wenn möglich sollten die Range-basierten Container und Algorithmen verwendet werden.
 
-Die STL abstrahierte viele oft gebrauchte Elemente und Baublöcke der SW-Implementation, sie stellt universelle Templates für \OviIndex{Container}, \OviIndex{Iteratoren} und \OviIndex{Algorithmen} zur Verfügung.
+Die STL abstrahiert viele oft gebrauchte Elemente und Baublöcke der SW-Implementation, sie stellt universelle Templates für \OviIndex{Container}, \OviIndex{Iteratoren} und \OviIndex{Algorithmen} zur Verfügung.
 
 \OviIndex{Container} sind eine Art universelle Behälter für Daten. Dazu gehören Listen, Vektoren und Mengen. Bei den Containern ist nicht vorgeschrieben wie sie implementiert sind, sondern nur welche Eigenschaften sie besitzen müssen. Ein Vektor muss z.B. effizienten wahlfreien (direkten) Zugriff auf seine Elemente erlauben, eine Liste hingegen muss effizientes Einfügen und Entfernen von Objekten ermöglichen. Eine Map wiederum ordnet zwei Elemente einander zu. Dabei dient eines als Schlüssel und das andere als Wert. Mit einem Schlüssel kann man jederzeit den dazugehörigen Wert aus der Map holen. Eine Map ist somit ein assoziativer Container und kann als kleine Datenbank betrachtet werden.
 
-\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende (genauer: Hinter das Ende) einer Sequenz). Für den einfacheren Umgang mit Sequenzen gibt es seit \CppVers{20} Ranges und Views (Siehe \myref{subsect:Ranges}). Iteratoren haben je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
+
+\OviIndex{Views} Sind eine Ansicht in einen Container, einen Bereich (Range) oder eine andere View, wobei Views (und Container) selbst wieder Bereiche sind. Eine View liefert nur diejenigen Elemente aus ihrem untergeordneten Bereich, welche eine oder mehrere Bedingungen erfüllen.
+
+\OviIndex{Ranges} sind Bereiche und verweisen auf (Teil-)Bereiche in einem anderen Bereich (Range) oder Container, sie sind durch einen Anfang und ein Ende definiert, und können mit einem Iterator durchwandert werden.
 
 
-\OviIndex{Algorithmen} wiederum können auf Sequenzen und Container angewendet werden. Es gibt unter anderem folgende Algorithmen: Suchen, Sortieren, Doppelte oder mehrfache Einträge entfernen, Zufällig Mischen, Suchen und entfernen, Eine Operation auf alle Elemente anwenden, Alle Elemente zählen die eine Bedingung erfüllen, ...
+\OviIndex{Iteratoren} sind eine Art universelle Zeiger, mit denen durch Container und Ranges iteriert werden kann. Sie können unabhängig vom Container benutzt werden, wobei aber jeder Container oder Range seine eigenen Iteratoren besitzt. Mit Iteratoren können auch Bereiche von Sequenzen definiert werden. (Einer zeigt auf den Beginn und ein anderer auf das Ende (genauer: Hinter das Ende) einer Sequenz). Für den einfacheren Umgang mit Sequenzen gibt es seit \CppVers{20} Ranges und Views (Siehe \myref{subsect:Ranges}). Iteratoren besitzen je nach Container zusätzliche Eigenschaften (Wie Pointerarithmetik und Direktzugriff). 
+
+
+\OviIndex{Algorithmen} wiederum können auf Sequenzen, Ranges und Container angewendet werden. Es gibt unter anderem folgende Algorithmen: Suchen, Sortieren, Doppelte oder mehrfache Einträge entfernen, Zufällig Mischen, Suchen und entfernen, Eine Operation auf alle Elemente anwenden, Alle Elemente zählen die eine Bedingung erfüllen, ...
 
 %In dieser Übersicht werden Stellvertretend kurz die Liste, der Vektor und die Map sowie einige Algorithmen vorgestellt:
 
@@ -11401,7 +11408,7 @@ Lässt den darunterliegenden Container als priorisierte Queue nutzen, d.h. Elemen
 
 
 \subsection{Kurzübersicht zu einigen Algorithmen aus der \Cpp - Standardbibliothek}
- (Seit \CppVers{17} gibt es für die meisten Algorithmen mit execution policies überladene Varianten, welche für parallele Ausführung auf mehreren Prozessorkernen und/oder vektorisierte Ausführung optimiert sind. Siehe \myref{subsect:ExecutionPolicies})
+ (Seit \CppVers{17} gibt es für die meisten Algorithmen mit execution policies überladene Varianten, welche für parallele Ausführung auf mehreren Prozessorkernen und/oder vektorisierte Ausführung optimiert sind. Siehe \myref{subsect:ExecutionPolicies}). Algorithmen löschen Grundsätzlich keine Elemente, sie wenden nur Operationen darauf an, verschieben sie oder ordnen sie allenfalls neu. (\CodeStyle{std::erease} löscht trotz seines Namens keine Elemente, sondern verschiebt die zu löschenden Elemente nur an das Ende des Breiches. Der Benutzer muss die Elemente am Ende des Bereiches anschliessend selber löschen, wenn erforderlich)
  
 \subsubsection{for\_each()}
 Der wohl einfachste Algorithmus ist \CodeStyle{for_each}. Mit \CodeStyle{for_each}\index{for\_each} kann man einfach eine Funktion für alle Elemente in einer Sequenz aufrufen. \CodeStyle{for_each} benötigt einen Iterator auf den Begin einer Sequenz, einen Iterator der hinter das letzte Element der Sequenz zeigt und einen Funktionspointer, eine Lambdafunktion (Siehe \myref{subsec:LambdaFunctions}) oder ein Objekt mit überladenem \CodeStyle{()} operator.
