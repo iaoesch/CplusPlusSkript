@@ -407,17 +407,16 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 
 \chapter{Zu diesem Skript}
-Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
-In diesem Kurs geht es um das Kennenlernen der Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf Anwendersicht gelegt, exotischere und eher für Bibliotheksbauer relevante Themen werden beiseite gelassen oder nur kurz erwähnt. Nur gestreift wird insbesondere auch die Standard-Bibliothek.
+Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp{}.
+In diesem Kurs geht es um das Kennenlernen der Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf Anwendersicht gelegt, für den Embeddedbereich weniger relevante Themen sowie exotischere und eher für Bibliotheksbauer relevante Themen werden beiseite gelassen oder nur kurz erwähnt. Nur gestreift wird insbesondere auch die Standard-Bibliothek.
 
 
 
 \chapter{Grundlegendes}
 In diesem Dokument werden die wichtigsten Sprachkonstrukte von \Cpp kurz vorgestellt. Weitergehende und ausführliche Sprachbeschreibungen finden sich in gängiger Literatur oder im Internet. Die Sprache C wird in den nachfolgenden Kapiteln als bekannt vorausgesetzt, und Sprachmittel von \Cpp welche identisch zu C sind werden
-nur knapp abgehandelt.
+nur knapp abgehandelt. Dieses Skript basiert auf dem Sprachstandard \CppVers{23} und weist Elemente, welche nach \CppVers{11} dazugekommen sind explizit aus.
 
-\emph{Achtung,} viele in \OviIndex{C99/C11} neu eingeführte Features haben noch keinen Eingang in den offiziellen \CppVers{17} Standard 
-gefunden (Da teilweise auch nicht zweckmässig)! (Sind aber in vielen Compilern trotzdem zum Teil verfügbar) 
+\emph{Achtung,} viele in \OviIndex{C99}/\OviIndex{C11}/\OviIndex{C23} neu eingeführte Features haben noch keinen Eingang in den offiziellen \CppVers{17}, resp. \CppVers{23} Standard gefunden (Da teilweise auch nicht zweckmässig)! (Sind aber in vielen Compilern trotzdem zum Teil verfügbar) 
 
 \section{Ein einfaches \Cpp Programm}
 \begin{CCode}
