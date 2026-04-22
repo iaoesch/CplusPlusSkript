@@ -11722,32 +11722,34 @@ Vom Programmierer können nach belieben Allokatoren selbst definiert werden, sie 
 
 \subsection{Speicherresourcen (Seit \CppVers{17})}
 \begin{sloppypar}
-Speicherresourcen stellen den Allokatoren Speicher zur Verfügung. Aktuell greift nur der  \CodeStyle{polymorphic\_allocator} auf Speicherrresourcen zurück.  \CodeStyle{std::pmr::memory_resource} definiert die Schnittstelle für Speicherresourcen, alle Speicherresourcen müssen von dieser Klasse ableiten und die Methoden  \CodeStyle{do_allocate()},   \CodeStyle{do_deallocate()} und  \CodeStyle{do_is_equal()} überschreiben. Mit \CodeStyle{set_default_resource()} kann eine Defaultresource gestetzt werden, welche benutzt wird, wenn keine Resource angegeben wird. Defaultmässig ist als Defaultresource die \CodeStyle{std::pmr::memory_resource} gesetzt.
+Speicherresourcen stellen den Allokatoren Speicher zur Verfügung. Aktuell greift nur der  \CodeStyle{polymorphic\_allocator} auf Speicherrresourcen zurück.  \CodeStyle{std::pmr::memory_resource} definiert die Schnittstelle für Speicherresourcen, alle Speicherresourcen müssen von dieser Klasse ableiten und die Methoden  \CodeStyle{do_allocate()},   \CodeStyle{do_deallocate()} und  \CodeStyle{do_is_equal()} überschreiben. 
+
+Mit \CodeStyle{set_default_resource()} kann eine Defaultresource gestetzt werden, welche benutzt wird, wenn keine Resource angegeben wird. Defaultmässig ist als Defaultresource die \CodeStyle{std::pmr::new\_delete\_resource} gesetzt.
 
 \end{sloppypar}
 
 Mit  \CppVers{17} werden folgende Speicherresourcen angeboten, von jeder Resourcenart können beliebig viele Instanzen erzeugt werden.:
 
 \begin{description}
-\item[std::pmr::memory\_resource] Abstrakte Basisklasse, definiert Schnittstelle für alle  Speicherresourcen
+\item[std::pmr::memory\_resource] Abstrakte Basisklasse, definiert die Schnittstelle für alle  Speicherresourcen
 \item[std::pmr::null\_memory\_resource] Liefert nie Speicher, sondern wirft immer \CodeStyle{bad_alloc} Exception, kann als Ende einer Speicherverwaltungskette genutzt werden.
 \item[std::pmr::new\_delete\_resource] Benutzt globales \CodeStyle{new} und \CodeStyle{delete} und ist die default Speicherrresource.
-\item[std::pmr::synchronized\_pool\_resource] Threadsafe, verwaltet mehrere Pools verschieden grosser Speicherblöcke, adaptiert Anzahl Pools und Blockgrössen der Pools anhand des bisherigen Bedarfs. Greift für die Allozierung von Speicher für seine Pools auf die Im Konstruktor angegebene Speicherresource zurück. Wenn keine Resource angegeben wurde, wird auf die (globale) Defaultresource zurückgegriffen.
+\item[std::pmr::synchronized\_pool\_resource] Threadsafe, verwaltet mehrere Pools verschieden grosser Speicherblöcke, adaptiert Anzahl Pools und Blockgrössen der Pools anhand des bisherigen Bedarfs. Greift für die Allozierung von Speicher für seine Pools auf die im Konstruktor angegebene Speicherresource zurück. Wenn keine Resource angegeben wurde, wird auf die (globale) Defaultresource zurückgegriffen.
 Ist effizienter als die Standardverwaltung mit new/delete, aber weniger effizient als \CodeStyle{monotonic_buffer_resource}. Freigegebene Blöcke werden in den jeweiligen Pool zurückgegeben, die Pools selbst werden erst bei der Zerstörung des Poolresource-Objekts freigegeben.
 \item[std::pmr::unsynchronized\_pool\_resource] Wie \CodeStyle{synchronized_pool_resource}, aber nicht Threadsafe, dafür effizienter.
-\item[std::pmr::monotonic\_buffer\_resource] Benutzt einen im Konstruktor angegebenen Speicherblock als Resource, der Speicher wird fortlaufend vergeben, freigegebener Speicher wird nicht wieder verwendet und erst freigegeben, wenn das MonotonicBufferobjekt zerstört wird. Dies ist ein sehr schneller Speicherverwalter, der für Objekte gedacht ist, welche erzeugt und nach gebrauch gemeinsam (oder überhaupt nie) gelöscht werden. Neben dem Buffer muss im Konstruktor eine upstream Speicherresource angegeben werden. Wenn kein Buffer angegeben wurde, oder der Speicher im Buffer aufgebraucht ist, wird weiterer Speicher von der upstream-Specherresource angefordert. So können mehrere Monotonic Speicherresourcen verkettet werden, als Ende der Kette kann die \CodeStyle{null_memory_resource} verwendet werden
+\item[std::pmr::monotonic\_buffer\_resource] Benutzt einen im Konstruktor angegebenen Speicherblock als Resource, der Speicher wird fortlaufend vergeben, freigegebener Speicher wird nicht wieder verwendet und erst freigegeben, wenn das MonotonicBufferobjekt zerstört wird. Dies ist ein sehr schneller Speicherverwalter, der für Objekte gedacht ist, welche erzeugt und nach Gebrauch gemeinsam (oder überhaupt nie) gelöscht werden. Neben dem Buffer muss im Konstruktor eine upstream Speicherresource angegeben werden. Wenn kein Buffer angegeben wurde, oder der Speicher im Buffer aufgebraucht ist, wird weiterer Speicher von der upstream-Specherresource angefordert. So können mehrere Monotonic Speicherresourcen verkettet werden, als Ende der Kette kann die \CodeStyle{null_memory_resource} verwendet werden
 \end{description}
 
 \subsection{Anwendung}
 Um die Speicherverwaltung komplett selbst zu übernehmen, kann die Kette  
 
-\CodeStyle{polymorphic_allocator}-\CodeStyle{synchronized_pool_resource}-\CodeStyle{monotonic_buffer_resource}
+\CodeStyle{polymorphic_allocator} $\rightarrow$ \CodeStyle{synchronized_pool_resource} 	$\rightarrow$ \CodeStyle{monotonic_buffer_resource}
 
  verwendet werden, und der \CodeStyle{monotonic_buffer_resource} kann ein Speicherbereich nach Bedarf übergeben werden (z.B. Shared Memory oder Akkugepuffertes RAM).
 
 Um eine für bestimmte Objektgrössen optimierte Speicherverwaltung zu erhalten, kann die Kette
 
- \CodeStyle{polymorphic_allocator}-\CodeStyle{synchronized_pool_resource}-Standard Memoryverwaltung 
+ \CodeStyle{polymorphic_allocator} $\rightarrow$ \CodeStyle{synchronized_pool_resource} $\rightarrow$ \CodeStyle{new\_delete\_resource} 
  
  verwendet werden.
 
@@ -12353,7 +12355,11 @@ nicht notwendig).
 Bei der Entwicklung der Sprache \Cpp wurde Wert darauf gelegt, dass der generierte Code
 so effizient wie möglich wird, und zusätzlicher Aufwand nur entsteht, wenn die
 entsprechenden Features auch benutzt werden. Ein mit  \Cpp compiliertes C-Programm
-soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden wäre. Nachfolgend eine Aufstellung der Kosten von \Cpp Features:
+soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden wäre. 
+
+Die Standardlibrary wird hier nicht näher betrachtet, da jeder Compilerhersteller eine eigene Library anbietet. Man darf aber davon ausgehen, dass die Komponenten der Library maximal effizient implementiert wurden. 
+
+Nachfolgend eine Aufstellung der Kosten von \Cpp Features:
 
 
 \begin{center}
@@ -12380,6 +12386,7 @@ soll genau so effizient sein wie wenn es mit einem C-Compiler übersetzt worden w
 		 Temporäre Objekte & Nein & Ja & Ja & Ja\\
 		 constexpr Funktionen	 & Nein, sogar Platzgewinn & Nein, sogar Zeitgewinn & Ja & Ja\\
 		 const und constexpr Konstanten & Nein, meist sogar Platzgewinn & Nein, meist sogar Zeitgewinn & Ja & Ja\\
+		 Coroutinen& Nein & Nein & Ja & Ja\\
 		\hline
 		
 	\end{tabular}
@@ -12669,7 +12676,8 @@ float AnonymousLambda(int a)
 f(AnonymousLambda);
 \end{CCode}
 
-
+\subsection{Coroutinen}
+Eine gut geschriebene Coroutine (Coroutine inklusive Awaiter und Promiseobjekt) benötigt nicht mehr Code und Rechenzeit als eine von Hand geschriebene Methode mit derselben Funktionalität. Gute Compiler inlinen die Methoden von Coawaiter und Promisetype soweit als möglich und generieren sehr effizienten Code bei aktivierter Optimierung. Parameter, lokale Variablen und Zustand einer Coroutine werden in einem anonymen, versteckten Objekt angelegt, nicht auf dem Stack. 
 
 
 \subsection{Templates}
