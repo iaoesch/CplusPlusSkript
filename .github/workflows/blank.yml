@@ -15,3 +15,9 @@ jobs:
           format: pdf
           filename: Script_CPP_pure_LatexV0_2.tex
           options: -shell-escape
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-book
+          path: Script_CPP_pure_LatexV0_2.pdf
