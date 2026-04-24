@@ -19,5 +19,6 @@ jobs:
       - name: Upload PDF
         uses: actions/upload-artifact@v4
         with:
-          name: compiled-book
+          name: compiled-script
           path: Script_CPP_pure_LatexV0_2.pdf
+          archive: false
