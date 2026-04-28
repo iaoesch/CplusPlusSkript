@@ -104,6 +104,8 @@
 \usepackage{hyperref}
 \usepackage{cleveref}
 
+\usepackage{lstlangarm}
+
 \selectlanguage{german}
 
 
@@ -136,7 +138,7 @@
 }
 
 %Programmiersprachenformatierer laden
-\lstloadlanguages{[ISO]C++}
+\lstloadlanguages{[ISO]C++,[Motorola68k]Assembler}
 
 % kOPF/fUSZEILEN AUS Kommaskript verwenden
 \pagestyle{scrheadings}
@@ -233,6 +235,26 @@ tab=\rightarrowfill}
 {
 %\end{framed}
 }
+
+\lstnewenvironment{ASM}{
+\pagebreak[3]
+\lstset{showspaces=false,
+showtabs=false,
+language={[ARM]Assembler},
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+backgroundcolor=\color{Mygray},
+commentstyle=\color{mygreen},
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve},     % string literal style
+%frame=single,
+tab=\rightarrowfill}
+%\begin{framed} 
+}
+{
+%\end{framed}
+}
+
 
 %Programmcodeformater konfigurieren
 \lstset{showspaces=false,
@@ -407,7 +429,7 @@ Dieses Skript ist als unterrichtbegleitendes Material zum Modul Objekt-Orientier
 
 
 \chapter{Zu diesem Skript}
-Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp{}.
+Dieses Skript ist eine Einführung in die Objekt Orientierte Programmiersprache \Cpp.
 In diesem Kurs geht es um das Kennenlernen der Sprache und das Umsetzen eines OO Designs in ein lauffähiges Programm. Dabei wird \Cpp als Begleitsprache benutzt. Leider ist der Sprachumfang von \Cpp viel zu gross, um hier vollständig abgedeckt zu werden, deshalb wird das Schwergewicht auf Anwendersicht gelegt, für den Embeddedbereich weniger relevante Themen sowie exotischere und eher für Bibliotheksbauer relevante Themen werden beiseite gelassen oder nur kurz erwähnt. Nur gestreift wird insbesondere auch die Standard-Bibliothek.
 
 
@@ -15584,6 +15606,239 @@ int main() {
 }
 #endif
 \end{CCode}
+
+\section{Effizienz von Coroutinen}
+\label{sec:EffizienzvonCoroutinen}
+
+Beispiel für die Effizienz de Umsetzung von Coroutinen. Der Code wurde soweit gekürzt, dass nur die für diese Betrachtung relevanten Teile vorhanden sind. (Awaiter und Promise sind unvollständig). Der generierte Assemblecode stammt vom vollständigen
+Sourcecode, aber auch hier werden nur die relevanten Ausschnitte gezeigt. 
+
+\begin{CCode}
+// Simple simulated communication peripherie
+class Peripherie {
+public:
+    // Direkter Hardwarezgriff
+    bool ReadyToRead() {return *((volatile int *)1234);}
+    int  ReadValue() {RxReady = false; return *((volatile int *)4321);}
+};
+
+    
+/** Baseclass for all awaiters used in this example
+ */
+ 
+/** The awaiter object awaiting for read of data */
+// Removed all code not needed for this example
+
+template<typename PromiseType, typename SourceType>
+struct WaitAndRead {
+    
+    /** Helperfunction to determine if the coroutine may continue by checking all
+   *  things we are waiting for, returns true if anything is ready
+   */
+    bool ready() {
+        
+        return Source.ReadyToRead();
+    }
+    
+    /** Standard awaiterinterface, indication that coroutine just may
+   *  continue without blocking, if true is returned coroutine will
+   *  continue without resheduling on await, we can call ready() here,
+   *  but this may result in only this coroutine running and never give up
+   *  the processor for other routines. In this case it must be guaranteed the
+   *  ready() will return false from time to time to allow other coroutines to run
+   *
+   */
+    bool await_ready() { return ready(); }
+    
+   /** Standard awaiterinterface, will be called when coroutine
+   *  resumes, the return value of this method is the result
+   *  of the co_await or co_yield expression.
+   *  Here we just return the value read from the source
+   *
+   */
+    auto await_resume() {
+        if constexpr (DebugOutput) std::cout << "Resumed\n";
+        UnregisterAwaiter();
+        
+        return Source.ReadValue();
+    }
+};
+
+/** The return info object, required for communication, management and control
+ *  of the coroutine, Must contain an embedded promise type (Required by standard)
+ */
+struct ReturnInfoType{ // Must contain an embedded promise type
+    
+    struct promise_type {
+        
+        /// removed most of the code
+        
+        /// Coroutine is waiting on this object
+        WaitAndRead<promise_type, Peripherie> *Awaiter = nullptr;
+        
+                /// Check if coroutine can continue (No awaiter, or awaiter is ready)
+        bool IsReadyToResume() {
+            if (Awaiter == nullptr) {
+                return true;
+            } else {
+                if (Awaiter->CanContinue()){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    };
+ 
+    /// Resume the coroutine if awaiter is ready
+    void ResumeIfReady() {if (h_.promise().IsReadyToResume()) {h_();}}
+};
+
+// Deduction guides to simplify construction of awaiters, using
+// ReturnInfoType::promise_type as default parameter
+template <typename T>
+WaitAndRead(T) -> WaitAndRead<ReturnInfoType::promise_type, T>;
+
+
+// A simple Coroutine, just reading telegramms from a (simulated)
+// communicationport and placing them into a queue
+// waits with co_await for transmitter/receiver to be ready
+// Recogniced Telegramformat is '<' Data '>'
+ReturnInfoType ReceiverCoRoutine(Peripherie &ComPort, CommandQueueType &ReceiverQueue) {
+    
+    //never ends
+    while(1) {
+        std::string NewCommand;
+        int ByteReceived;
+        
+        // Read a Byte from Port, wait until Byte is availlable
+        ByteReceived = co_await WaitAndRead(ComPort);
+        
+        if (ByteReceived == '<') {
+            
+            do {
+                if (ByteReceived == '<') {
+                    NewCommand.clear();
+                } else {
+                    NewCommand.push_back(ByteReceived);
+                }
+                // Read a Byte from Port, wait until Byte is availlable
+                ByteReceived = co_await WaitAndRead(ComPort);
+                
+            } while (ByteReceived != '>');
+            
+            // Place received Command in Queue
+            ReceiverQueue.push_front(NewCommand);
+        }
+    }
+}
+
+int main() {
+    
+    // Creating two simulated comports
+    Peripherie Port1;
+    
+    
+    CommandQueueType ReceivedCommands;
+    
+    ReturnInfoType Coroutine = ReceiverCoRoutine(Port1, ReceivedCommands);
+    
+    // Continuously resume coroutines (done should allways be false,
+    // as no coroutine returns)
+    while (1) {
+        Coroutine.ResumeIfReady();
+    }
+}
+
+\end{CCode}
+
+\begin{ASM}
+L47: // Start of endless while in main : Start While while(1) {
+std::string NewCommand;
+movs r3, #0
+str r3, [r4, #32]
+strb r3, [r4, #36]
+\end{ASM}
+
+\begin{CCode}
+ByteReceived = co_await WaitAndRead(ComPort);
+// Calling
+// bool await_ready() { return ready(); }
+//    which calls
+//    bool WaitAndRead::ready() { return Source.ReadyToRead();}
+//       which calls
+//       bool Peripherie::ReadyToRead() {return *((volatile int *)1234);}
+\end{CCode}
+
+\begin{ASM}
+
+ldr r1, [r3, #1234] @ unaligned
+ldr r2, [r4, #16]
+str r6, [r4, #28]
+strd r3, r2, [r4, #56]
+mov r5, r6
+cmp r1, #0
+beq .L101 // Not ready
+.L49: Entrypoint
+// ReadAndWait::await_resume() Teil 2
+// int  Peripherie::ReadValue() {
+       RxReady = false; return *((volatile int *)4321);}
+mov r3, #4096 // (4321 - 225)
+movs r1, #0 //  RxReady = false
+ldr r3, [r3, #225] @ unaligned // *((volatile int *)4321)
+strb r1, [r2, #8]  //  RxReady = false
+if (ByteReceived == '<') {
+cmp r3, #60
+str r3, [r4, #52] //  ByteReceived
+beq .L54
+
+.L81:
+End while(1), Destruct NewCommand;
+add r6, r4, #36
+cmp r5, r6
+beq .L47 // End while(1)
+ldr r1, [r4, #36]
+mov r0, r5
+adds r1, r1, #1
+bl operator delete(void*, unsigned int)
+b .L47 // End while(1)
+
+
+// Endless while in main()
+    while (1) {
+        Coroutine.ResumeIfReady();
+    }
+
+ldr r3, [r0, #8]
+Coroutine.ResumeIfReady();
+   ReturnInfoType::IsReadyToResume() {if (Awaiter == nullptr) {
+mov r4, r0
+cbnz r3, .L120
+
+    while (1) {
+
+.L119:
+ldr r3, [r4]
+mov r0, r4
+            
+...h_(); // Call Coroutine
+blx r3
+   Coroutine.ResumeIfReady();
+   ReturnInfoType::IsReadyToResume() {if (Awaiter == nullptr) {
+ldr r3, [r4, #8]
+cmp r3, #0
+beq .L119
+.L120:
+ if (Awaiter->CanContinue()){
+   bool WaitAndRead::CanContinue() {return ready();}
+      bool WaitAndRead::ready() { return Source.ReadyToRead();}
+         bool Peripherie::ReadyToRead() {return *((volatile int *)1234);}
+    
+ldr r3, [r5, #1234] @ unaligned
+cmp r3, #0
+bne .L119
+
+\end{ASM}
 
 
 \section{selbstdfinierte Formatter}
