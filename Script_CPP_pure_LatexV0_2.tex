@@ -260,6 +260,27 @@ tab=\rightarrowfill}
 %\end{framed}
 }
 
+\lstnewenvironment{CCodeNoparagraphSpaceMarkant}{
+\pagebreak[3]
+\lstset{showspaces=false,
+showtabs=false,
+language={[ISO]C++},
+aboveskip=0pt,
+belowskip=0pt,
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+backgroundcolor=\color{ASMBackgroundHighlighted},
+commentstyle=\color{mygreen},
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve},     % string literal style
+%frame=single,
+tab=\rightarrowfill}
+%\begin{framed} 
+}
+{
+%\end{framed}
+}
+
 \lstnewenvironment{ASM}{
 \pagebreak[3]
 \lstset{showspaces=false,
@@ -15659,13 +15680,19 @@ int main() {
 
 Beispiel für die Effizienz de Umsetzung von Coroutinen. Hier wird nur der für diese Betrachtung relevanten Teil (Awaiter und Promise sind unvollständig) des Codes aufgeführt, Compiliert wurde natürlich der vollständige Code. Der generierte Assemblecode stammt vom vollständigen Sourcecode, aber auch hier werden nur die relevanten Ausschnitte gezeigt. 
 
-\begin{CCode}
+Nachfolgend die relevanten Sourcecodeauszüge, die rot hinterlegten Teile entsprechen den anschliessenden Assemblerausschnitten 
+\begin{CCodeNoparagraphSpace}
+
 // Simple simulated communication peripherie
 class Peripherie {
 public:
     // Direkter Hardwarezgriff
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}
     bool ReadyToRead() {return *((volatile int *)1234);}
-    int  ReadValue() {RxReady = false; return *((volatile int *)4321);}
+    int  ReadValue() {return *((volatile int *)4321);}
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
 };
 
     
@@ -15688,37 +15715,59 @@ struct WaitAndRead {
     }
 
     // Detach us from the promise
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
     void UnregisterAwaiter() {if (p_) { p_->UnregisterAwaiter(this); p_ = nullptr;}}
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
     
      
     /** Helperfunction to determine if the coroutine may continue by checking all
    *  things we are waiting for, returns true if anything is ready
    */
     bool ready() {
-        
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
         return Source.ReadyToRead();
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
     }
     
    /** Standard awaiterinterface, indication that coroutine just may
    *  continue without blocking
    */
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
     bool await_ready() { return ready(); }
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
     
    /** Standard awaiterinterface, will be called when coroutine
    *  resumes, 
       */
     auto await_resume() {
-        if constexpr (DebugOutput) std::cout << "Resumed\n";
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
         UnregisterAwaiter();
         
         return Source.ReadValue();
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
     }
     
     /// Check if the coroutine is ready for resheduling
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
     bool CanContinue() {return ready();}
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
     
     /** Constructor, giving object we are awaiting for */
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
     WaitAndRead(SourceType &TheSource) : Source(TheSource), p_(nullptr) {}
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
 
 
 };
@@ -15737,11 +15786,17 @@ struct ReturnInfoType{ // Must contain an embedded promise type
         
         /// Management to register/unregister awaiters
         void RegisterAwaiter(WaitAndRead *NewAwaiter) {assert(Awaiter==nullptr); Awaiter = NewAwaiter;}
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
         void UnregisterAwaiter(WaitAndRead *AwaiterToRemove) {assert(Awaiter==AwaiterToRemove); Awaiter = nullptr;}
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
 
         
         /// Check if coroutine can continue (No awaiter, or awaiter is ready)
         bool IsReadyToResume() {
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
             if (Awaiter == nullptr) {
                 return true;
             } else {
@@ -15752,10 +15807,16 @@ struct ReturnInfoType{ // Must contain an embedded promise type
                 }
             }
         }
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
     };
  
     /// Resume the coroutine if awaiter is ready
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}        
     void ResumeIfReady() {if (h_.promise().IsReadyToResume()) {h_();}}
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
 };
 
 // Deduction guides to simplify construction of awaiters, using
@@ -15771,6 +15832,8 @@ WaitAndRead(T) -> WaitAndRead<ReturnInfoType::promise_type, T>;
 ReturnInfoType ReceiverCoRoutine(Peripherie &ComPort, CommandQueueType &ReceiverQueue) {
     
     //never ends
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}
     while(1) {
         std::string NewCommand;
         int ByteReceived;
@@ -15779,6 +15842,8 @@ ReturnInfoType ReceiverCoRoutine(Peripherie &ComPort, CommandQueueType &Receiver
         ByteReceived = co_await WaitAndRead(ComPort);
         
         if (ByteReceived == '<') {
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
             
             do {
                 if (ByteReceived == '<') {
@@ -15794,12 +15859,16 @@ ReturnInfoType ReceiverCoRoutine(Peripherie &ComPort, CommandQueueType &Receiver
             // Place received Command in Queue
             ReceiverQueue.push_front(NewCommand);
         }
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}
     }
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
 }
 
 int main() {
     
-    // Creating two simulated comports
+    // Creating a simulated comports
     Peripherie Port1;
     
     
@@ -15809,11 +15878,15 @@ int main() {
     
     // Continuously resume coroutines (done should allways be false,
     // as no coroutine returns)
+\end{CCodeNoparagraphSpace}
+\begin{CCodeNoparagraphSpaceMarkant}
     while (1) {
         Coroutine.ResumeIfReady();
     }
+\end{CCodeNoparagraphSpaceMarkant}
+\begin{CCodeNoparagraphSpace}
 }
-\end{CCode}
+\end{CCodeNoparagraphSpace}
 
 Nachfolgend der generierte Assemblercode für die ersten 6 Zeilen der Coroutine, mit eingefügten
 Erklärungen und Sourcecode. Erfreulich ist, dass das Coawait mit dem Awaiterobjekt und den dazugehörigen
@@ -15872,13 +15945,14 @@ L47: // Start of endless while in main : Start While while(1) {
       // // co_await, part 2 
       // resuming part of coawait, storing result in ByteReceived
       // ReadAndWait::await_resume()
-      //    Calling int  Peripherie::ReadValue() {
-      //       executing RxReady = false; return *((volatile int *)4321);}
+      //    Calls UnregisterAwaiter() which sets awaiter in Promise to nullptr
+      //    Calls int  Peripherie::ReadValue() 
+      //       which returns  *((volatile int *)4321);
       // is simply reduced to:
    mov r3, #4096 // (4321 - 225)
-   movs r1, #0 //  RxReady = false
-   ldr r3, [r3, #225] @ unaligned // *((volatile int *)4321)
-   strb r1, [r2, #8]  //  RxReady = false
+   movs r1, #0 //  Awaiter = nullptr
+   ldr r3, [r3, #225] @ unaligned // read *((volatile int *)4321)
+   strb r1, [r2, #8]  //  Awaiter = nullptr
 \end{ASMHighlighted}
 \begin{CCodeNoparagraphSpace}
       if (ByteReceived == '<') {
