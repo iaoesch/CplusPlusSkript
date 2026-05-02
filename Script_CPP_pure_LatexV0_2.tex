@@ -197,6 +197,9 @@
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{ASMBackground}{RGB}{220,220,255}
+\definecolor{ASMBackgroundHighlighted}{RGB}{255,220,220}
+
 
 %\fcolorbox{black}{Mygray}{
 % \definecolor{myspecialcolor}{colscale}{val}
@@ -236,14 +239,58 @@ tab=\rightarrowfill}
 %\end{framed}
 }
 
+\lstnewenvironment{CCodeNoparagraphSpace}{
+\pagebreak[3]
+\lstset{showspaces=false,
+showtabs=false,
+language={[ISO]C++},
+aboveskip=0pt,
+belowskip=0pt,
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+backgroundcolor=\color{Mygray},
+commentstyle=\color{mygreen},
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve},     % string literal style
+%frame=single,
+tab=\rightarrowfill}
+%\begin{framed} 
+}
+{
+%\end{framed}
+}
+
 \lstnewenvironment{ASM}{
 \pagebreak[3]
 \lstset{showspaces=false,
 showtabs=false,
 language={[ARM]Assembler},
+aboveskip=0pt,
+belowskip=0pt,
 breaklines=true,
 basicstyle={\footnotesize \ttfamily},
-backgroundcolor=\color{Mygray},
+backgroundcolor=\color{ASMBackground},
+commentstyle=\color{mygreen},
+keywordstyle=\color{blue},       % keyword style
+stringstyle=\color{mymauve},     % string literal style
+%frame=single,
+tab=\rightarrowfill}
+%\begin{framed} 
+}
+{
+%\end{framed}
+}
+
+\lstnewenvironment{ASMHighlighted}{
+\pagebreak[3]
+\lstset{showspaces=false,
+showtabs=false,
+language={[ARM]Assembler},
+aboveskip=0pt,
+belowskip=0pt,
+breaklines=true,
+basicstyle={\footnotesize \ttfamily},
+backgroundcolor=\color{ASMBackgroundHighlighted},
 commentstyle=\color{mygreen},
 keywordstyle=\color{blue},       % keyword style
 stringstyle=\color{mymauve},     % string literal style
@@ -15610,8 +15657,7 @@ int main() {
 \section{Effizienz von Coroutinen}
 \label{sec:EffizienzvonCoroutinen}
 
-Beispiel für die Effizienz de Umsetzung von Coroutinen. Der Code wurde soweit gekürzt, dass nur die für diese Betrachtung relevanten Teile vorhanden sind. (Awaiter und Promise sind unvollständig). Der generierte Assemblecode stammt vom vollständigen
-Sourcecode, aber auch hier werden nur die relevanten Ausschnitte gezeigt. 
+Beispiel für die Effizienz de Umsetzung von Coroutinen. Hier wird nur der für diese Betrachtung relevanten Teil (Awaiter und Promise sind unvollständig) des Codes aufgeführt, Compiliert wurde natürlich der vollständige Code. Der generierte Assemblecode stammt vom vollständigen Sourcecode, aber auch hier werden nur die relevanten Ausschnitte gezeigt. 
 
 \begin{CCode}
 // Simple simulated communication peripherie
@@ -15631,7 +15677,20 @@ public:
 
 template<typename PromiseType, typename SourceType>
 struct WaitAndRead {
+
+    // The promise (coroutine) we are currently attache to
+    PromiseType *p_;
     
+    // Attach ourself to th promise of th coroutine which is awaiting on us
+    void RegisterAwaiter(PromiseType &p) {
+        p_ = &p;
+        p_->RegisterAwaiter(this);
+    }
+
+    // Detach us from the promise
+    void UnregisterAwaiter() {if (p_) { p_->UnregisterAwaiter(this); p_ = nullptr;}}
+    
+     
     /** Helperfunction to determine if the coroutine may continue by checking all
    *  things we are waiting for, returns true if anything is ready
    */
@@ -15640,28 +15699,28 @@ struct WaitAndRead {
         return Source.ReadyToRead();
     }
     
-    /** Standard awaiterinterface, indication that coroutine just may
-   *  continue without blocking, if true is returned coroutine will
-   *  continue without resheduling on await, we can call ready() here,
-   *  but this may result in only this coroutine running and never give up
-   *  the processor for other routines. In this case it must be guaranteed the
-   *  ready() will return false from time to time to allow other coroutines to run
-   *
+   /** Standard awaiterinterface, indication that coroutine just may
+   *  continue without blocking
    */
     bool await_ready() { return ready(); }
     
    /** Standard awaiterinterface, will be called when coroutine
-   *  resumes, the return value of this method is the result
-   *  of the co_await or co_yield expression.
-   *  Here we just return the value read from the source
-   *
-   */
+   *  resumes, 
+      */
     auto await_resume() {
         if constexpr (DebugOutput) std::cout << "Resumed\n";
         UnregisterAwaiter();
         
         return Source.ReadValue();
     }
+    
+    /// Check if the coroutine is ready for resheduling
+    bool CanContinue() {return ready();}
+    
+    /** Constructor, giving object we are awaiting for */
+    WaitAndRead(SourceType &TheSource) : Source(TheSource), p_(nullptr) {}
+
+
 };
 
 /** The return info object, required for communication, management and control
@@ -15676,7 +15735,12 @@ struct ReturnInfoType{ // Must contain an embedded promise type
         /// Coroutine is waiting on this object
         WaitAndRead<promise_type, Peripherie> *Awaiter = nullptr;
         
-                /// Check if coroutine can continue (No awaiter, or awaiter is ready)
+        /// Management to register/unregister awaiters
+        void RegisterAwaiter(WaitAndRead *NewAwaiter) {assert(Awaiter==nullptr); Awaiter = NewAwaiter;}
+        void UnregisterAwaiter(WaitAndRead *AwaiterToRemove) {assert(Awaiter==AwaiterToRemove); Awaiter = nullptr;}
+
+        
+        /// Check if coroutine can continue (No awaiter, or awaiter is ready)
         bool IsReadyToResume() {
             if (Awaiter == nullptr) {
                 return true;
@@ -15749,94 +15813,166 @@ int main() {
         Coroutine.ResumeIfReady();
     }
 }
-
 \end{CCode}
 
+Nachfolgend der generierte Assemblercode für die ersten 6 Zeilen der Coroutine, mit eingefügten
+Erklärungen und Sourcecode. Erfreulich ist, dass das Coawait mit dem Awaiterobjekt und den dazugehörigen
+Funktionsaufrufen komplett inlined wurde, und der Zugriff auf die HW-Register (Rot hinterlegt) sehr
+direkt und effizient erfolgt.
+\begin{CCodeNoparagraphSpace}
+   while(1) {
+\end{CCodeNoparagraphSpace}
 \begin{ASM}
 L47: // Start of endless while in main : Start While while(1) {
-std::string NewCommand;
-movs r3, #0
-str r3, [r4, #32]
-strb r3, [r4, #36]
 \end{ASM}
-
-\begin{CCode}
-ByteReceived = co_await WaitAndRead(ComPort);
-// Calling
-// bool await_ready() { return ready(); }
-//    which calls
-//    bool WaitAndRead::ready() { return Source.ReadyToRead();}
-//       which calls
-//       bool Peripherie::ReadyToRead() {return *((volatile int *)1234);}
-\end{CCode}
-
+\begin{CCodeNoparagraphSpace}
+      std::string NewCommand;
+\end{CCodeNoparagraphSpace}
 \begin{ASM}
+   movs r3, #0  // Construct new Command object
+   str r3, [r4, #32]
+   strb r3, [r4, #36]
+\end{ASM}
+\begin{CCodeNoparagraphSpace}
+      ByteReceived = co_await WaitAndRead(ComPort);
+      // Constructs awaiter and calls await_ready(),
+      // and either supends or resumes coroutine, depending on result
+      
+\end{CCodeNoparagraphSpace}
+\begin{ASMHighlighted}
+      // co_await, part 1
+      // call to await_ready() { return ready(); }
+      //    which calls
+      //    bool WaitAndRead::ready() { return Source.ReadyToRead();}
+      //       which calls
+      //       bool Peripherie::ReadyToRead() {return *((volatile int *)1234);}
+      // is simply reduced to:
+   ldr r1, [r3, #1234] @ unaligned
+\end{ASMHighlighted}
+\begin{ASM}
+   // Some construtors at work...
+   ldr r2, [r4, #16]
+   str r6, [r4, #28]
+   strd r3, r2, [r4, #56]
+   mov r5, r6
+\end{ASM}
+\begin{ASMHighlighted}
+   // Check result of await_ready()
+   cmp r1, #0
+\end{ASMHighlighted}
+\begin{ASM}
+   beq .L101 // Not ready, suspend coroutine, register awaiter, ...
 
-ldr r1, [r3, #1234] @ unaligned
-ldr r2, [r4, #16]
-str r6, [r4, #28]
-strd r3, r2, [r4, #56]
-mov r5, r6
-cmp r1, #0
-beq .L101 // Not ready
-.L49: Entrypoint
-// ReadAndWait::await_resume() Teil 2
-// int  Peripherie::ReadValue() {
-       RxReady = false; return *((volatile int *)4321);}
-mov r3, #4096 // (4321 - 225)
-movs r1, #0 //  RxReady = false
-ldr r3, [r3, #225] @ unaligned // *((volatile int *)4321)
-strb r1, [r2, #8]  //  RxReady = false
-if (ByteReceived == '<') {
-cmp r3, #60
-str r3, [r4, #52] //  ByteReceived
-beq .L54
+.L49: // Entrypoint for resuming coroutine
+\end{ASM}
+\begin{CCodeNoparagraphSpace}
+      ByteReceived = co_await WaitAndRead(ComPort);
+\end{CCodeNoparagraphSpace}
+\begin{ASMHighlighted}
+      // // co_await, part 2 
+      // resuming part of coawait, storing result in ByteReceived
+      // ReadAndWait::await_resume()
+      //    Calling int  Peripherie::ReadValue() {
+      //       executing RxReady = false; return *((volatile int *)4321);}
+      // is simply reduced to:
+   mov r3, #4096 // (4321 - 225)
+   movs r1, #0 //  RxReady = false
+   ldr r3, [r3, #225] @ unaligned // *((volatile int *)4321)
+   strb r1, [r2, #8]  //  RxReady = false
+\end{ASMHighlighted}
+\begin{CCodeNoparagraphSpace}
+      if (ByteReceived == '<') {
+\end{CCodeNoparagraphSpace}
+\begin{ASM}
+   cmp r3, #60
+   str r3, [r4, #52] //  ByteReceived
+   beq .L54 // jump to if Block, jumps back to .L81
 
 .L81:
-End while(1), Destruct NewCommand;
-add r6, r4, #36
-cmp r5, r6
-beq .L47 // End while(1)
-ldr r1, [r4, #36]
-mov r0, r5
-adds r1, r1, #1
-bl operator delete(void*, unsigned int)
-b .L47 // End while(1)
-
-
-// Endless while in main()
+   End while(1), Destruct NewCommand;
+   add r6, r4, #36 // Check if string needs destruction
+   cmp r5, r6
+   beq .L47 // End while(1)
+   
+   ldr r1, [r4, #36] // Destruct string 'Command'
+   mov r0, r5
+   adds r1, r1, #1
+   bl operator delete(void*, unsigned int)
+   b .L47 // End while(1)
+\end{ASM}
+ 
+ \medskip
+ Und hier noch der generierte Code für die Endlossschlaufe in Main, welche die Coroutine
+ fortlaufend aufruft:
+\begin{CCodeNoparagraphSpace}
+    // Endless while in main()
     while (1) {
         Coroutine.ResumeIfReady();
+        //  ResumeIfReady() calls  promise_type::IsReadyToResume()
+        //  promise_type::IsReadyToResume() calls Awaiter.Continue() if Awaiter is registred
+        //  Awaiter.Continue() calls Source.ReadyToRead()
+        // ResumeIfReady() calls h() to continue coroutine if ReadyToResume returns true
     }
+\end{CCodeNoparagraphSpace}
+\begin{ASMHighlighted}
+        // calling Coroutine.ResumeIfReady(), which calls
+        // promise_type::IsReadyToResume() which checks
+        // first if Awaiter is nullptr
+    ldr r3, [r0, #8]
+    mov r4, r0
+    cbnz r3, .L120 // Jump if Awaiter != nullptr
+                   // If no awaiter, go on and resume coroutine
+\end{ASMHighlighted}
+\begin{CCodeNoparagraphSpace}
 
-ldr r3, [r0, #8]
-Coroutine.ResumeIfReady();
-   ReturnInfoType::IsReadyToResume() {if (Awaiter == nullptr) {
-mov r4, r0
-cbnz r3, .L120
-
-    while (1) {
-
-.L119:
-ldr r3, [r4]
-mov r0, r4
-            
-...h_(); // Call Coroutine
-blx r3
-   Coroutine.ResumeIfReady();
-   ReturnInfoType::IsReadyToResume() {if (Awaiter == nullptr) {
-ldr r3, [r4, #8]
-cmp r3, #0
-beq .L119
+    while (1) {\end{CCodeNoparagraphSpace}
+\begin{ASM}
+.L119:            // While after check for ready to resume
+    ldr r3, [r4]
+    mov r0, r4
+\end{ASM}
+\begin{CCodeNoparagraphSpace}
+    h_(); // Call Coroutine
+\end{CCodeNoparagraphSpace}
+\begin{ASM}
+    blx r3
+\end{ASM}
+\begin{CCodeNoparagraphSpace}
+    Coroutine.ResumeIfReady();
+    ReturnInfoType::IsReadyToResume() {if (Awaiter == nullptr) {
+\end{CCodeNoparagraphSpace}
+\begin{ASMHighlighted}
+        // calling Coroutine.ResumeIfReady(), which calls
+        // promise_type::IsReadyToResume() which checks
+        // first if Awaiter is nullptr
+    ldr r3, [r4, #8]
+    cmp r3, #0
+    beq .L119.  // No awaiter, we can just resume Coroutine
+\end{ASMHighlighted}
+\begin{ASM}
 .L120:
- if (Awaiter->CanContinue()){
+\end{ASM}
+\begin{CCodeNoparagraphSpace}
+   if (Awaiter->CanContinue()){
    bool WaitAndRead::CanContinue() {return ready();}
       bool WaitAndRead::ready() { return Source.ReadyToRead();}
          bool Peripherie::ReadyToRead() {return *((volatile int *)1234);}
+\end{CCodeNoparagraphSpace}
+\begin{ASM}
+    // Awaiter is not nullptr
+    // promise_type::IsReadyToResume() calls 
+    // Awaiter->Continue() which calls
+    // Source.ReadyToRead()
+    //
+    // All above gets optimized todirect read of peripherie: 
+    ldr r3, [r5, #1234] @ unaligned
+    cmp r3, #0
+    bne .L119  // OK, go to call of coroutine
     
-ldr r3, [r5, #1234] @ unaligned
-cmp r3, #0
-bne .L119
+    ldr r3, [r5, #1234] @ unaligned
+    cmp r3, #0
+    beq .L120  // Not ready, skip cproutinecall
+    b .L119.   // OK, go to call of coroutine
 
 \end{ASM}
 
