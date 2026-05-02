@@ -1,0 +1,24 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Generate PDF document
+        uses: hspaans/latexmk-action@v2.1.0
+        with:
+          format: pdf
+          filename: Script_CPP_pure_LatexV0_2.tex
+          options: -shell-escape
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@v7
+        with:
+          name: compiled-script
+          path: Script_CPP_pure_LatexV0_2.pdf
+          archive: false
