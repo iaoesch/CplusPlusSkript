@@ -15678,7 +15678,7 @@ int main() {
 \section{Effizienz von Coroutinen}
 \label{sec:EffizienzvonCoroutinen}
 
-Beispiel für die Effizienz de Umsetzung von Coroutinen. Hier wird nur der für diese Betrachtung relevanten Teil (Awaiter und Promise sind unvollständig) des Codes aufgeführt, Compiliert wurde natürlich der vollständige Code. Der generierte Assemblecode stammt vom vollständigen Sourcecode, aber auch hier werden nur die relevanten Ausschnitte gezeigt. 
+Beispiel für die Effizienz der Umsetzung von Coroutinen. Hier wird nur der für diese Betrachtung relevanten Teil (Awaiter und Promise sind unvollständig) des Codes aufgeführt, Compiliert wurde natürlich der vollständige Code. Der generierte Assemblercode stammt vom vollständigen Sourcecode, aber auch hier werden nur exemplarische Ausschnitte gezeigt. 
 
 Nachfolgend die relevanten Sourcecodeauszüge, die rot hinterlegten Teile entsprechen den anschliessenden Assemblerausschnitten 
 \begin{CCodeNoparagraphSpace}
@@ -15889,7 +15889,7 @@ int main() {
 \end{CCodeNoparagraphSpace}
 
 Nachfolgend der generierte Assemblercode für die ersten 6 Zeilen der Coroutine, mit eingefügten
-Erklärungen und Sourcecode. Erfreulich ist, dass das Coawait mit dem Awaiterobjekt und den dazugehörigen
+Erklärungen und Sourcecode. Es ist gut erkennbar, dass das Coawait mit dem Awaiterobjekt und den dazugehörigen
 Funktionsaufrufen komplett inlined wurde, und der Zugriff auf die HW-Register (Rot hinterlegt) sehr
 direkt und effizient erfolgt.
 \begin{CCodeNoparagraphSpace}
@@ -16061,7 +16061,7 @@ Formatstring:
 \{:Innerformat:Outerformat\} 
 Innerformat: optional, same as for double values \# before width: Output in Polarform in radiant, \#d before width: Output in Polarform in degree, \#e before width: Output in euler notation
 
-Outererformat: optional, formatiert ganze zahl, gleivh wie für strings
+Outererformat: optional, formatiert ganze zahl, gleich wie für strings
 
 
 \begin{CCode}
